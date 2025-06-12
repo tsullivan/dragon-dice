@@ -143,22 +143,19 @@ def main():
                     app_state["help_scroll_offset_y"] = max(0, min(app_state["help_scroll_offset_y"], max_scroll))
 
             # Pass event to UI manager to handle button clicks and text input
-            updated_text = ui_manager.handle_event(event)
-            # If updated_text is not None, it means a TextInputBox processed a KEYDOWN event.
-            # We update the app_state's current_name, but we do NOT need to trigger a full
-            # UI rebuild for this, as the TextInputBox will draw its own updated text.
-            # Button clicks, handled by callbacks, will correctly set ui_needs_update.
-            if updated_text is not None:
-                # Determine which input box was active based on current screen/state
-                if app_state["screen"] == "player_setup":
-                    # This is a simplified approach assuming only one text input is active at a time
-                    # or that the order of inputs is consistent. A more robust solution
-                    # would involve the TextInputBox returning an identifier.
-                    # For now, we'll assume the first active text box is the name,
-                    # and subsequent ones (if any) are army names. This needs refinement.
-                    # Let's update based on which input box is currently active in UIManager
-                    # This requires UIManager to track which box returned text
-                    pass # UIManager now handles returning text from the active box
+            state_updates = ui_manager.handle_event(event) # Returns a dict of {state_key_to_update: new_value}
+            
+            if state_updates:
+                for key, value in state_updates.items():
+                    # Map TextInputBox IDs to app_state keys
+                    if key == "player_name": app_state["current_name"] = value
+                    elif key == "home_army_name": app_state["current_home_army_name"] = value
+                    elif key == "horde_army_name": app_state["current_horde_army_name"] = value
+                    elif key == "campaign_army_name": app_state["current_campaign_army_name"] = value
+                    # Add other mappings if new text inputs are added with different IDs
+                # No ui_needs_update = True here, as TextInputBox draws its own text.
+                # However, if button active states depend on these, then it might be needed.
+                # For now, the "Next/Start" button re-evaluates its active state during UI rebuild.
 
         # --- UI & State Update Logic ---
         if app_state["ui_needs_update"]:
@@ -190,9 +187,7 @@ def main():
                         'on_frontier_select': lambda t: handle_selection("current_frontier_terrain", t),
                         'on_next': handle_next_player
                     }
-                ) # UIManager will create the text boxes. We need to handle their input below.
-                # After creating UI, find the text boxes and link their input to app_state
-                ui_manager.link_text_inputs_to_state(app_state) # New method in UIManager
+                )
 
             elif app_state["screen"] == "gameplay":
                 engine_state = app_state["game_engine"].game_state

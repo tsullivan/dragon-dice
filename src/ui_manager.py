@@ -1,4 +1,5 @@
 import pygame
+from typing import Optional # Import Optional
 
 class Button:
     """A clickable button that can be in an active/inactive state."""
@@ -31,6 +32,7 @@ class TextInputBox:
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.font = pygame.font.Font(None, font_size)
+        self.id: Optional[str] = None # ID can be a string or None
         self.is_active = False
 
     def handle_event(self, event):
@@ -43,7 +45,8 @@ class TextInputBox:
             if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             else:
-                self.text += event.unicode
+                if event.unicode.isprintable(): # Only add printable characters
+                    self.text += event.unicode
 
     def draw(self, screen):
         border_color = "#FFFF99" if self.is_active else "white"
@@ -85,8 +88,23 @@ class UIManager:
         y_offset = -100
 
         # Name Input Box
-        name_box = TextInputBox(490, 200 + y_offset, 300, 40, selections['name'])
+        name_box = TextInputBox(490, 190 + y_offset, 300, 40, selections['name']) # Adjusted y
+        name_box.id = "player_name"
         self.elements.append(name_box)
+
+        # Army Name Input Boxes
+        home_army_name_box = TextInputBox(490, 280 + y_offset, 300, 40, selections.get('home_army_name', ''))
+        home_army_name_box.id = "home_army_name"
+        self.elements.append(home_army_name_box)
+
+        if selections.get('total_players', 1) > 1: # Only show Horde army name for multiplayer
+            horde_army_name_box = TextInputBox(490, 370 + y_offset, 300, 40, selections.get('horde_army_name', ''))
+            horde_army_name_box.id = "horde_army_name"
+            self.elements.append(horde_army_name_box)
+
+        campaign_army_name_box = TextInputBox(490, 460 + y_offset, 300, 40, selections.get('campaign_army_name', ''))
+        campaign_army_name_box.id = "campaign_army_name"
+        self.elements.append(campaign_army_name_box)
 
         # Home Terrain Buttons
         standard_terrains = ['Coastland', 'Deadland', 'Flatland', 'Highland', 'Swampland', 'Feyland', 'Wasteland']
@@ -108,26 +126,25 @@ class UIManager:
         # Next/Start Button
         is_last_player = player_index == selections['total_players'] - 1
         btn_text = "Start Game" if is_last_player else "Next Player"
-        next_btn = Button(560, 550 + y_offset, 160, 50, btn_text, callbacks['on_next'])
-        if selections['name'] and selections['home_terrain']: # and frontier terrain later
+        next_btn_y = 550 + y_offset # Adjust if necessary based on campaign army input
+        next_btn = Button(560, next_btn_y, 160, 50, btn_text, callbacks['on_next'])
+        
+        # Enable button if required fields are filled
+        required_fields = ['name', 'home_terrain', 'frontier_terrain', 'home_army_name', 'campaign_army_name']
+        if selections.get('total_players', 1) > 1:
+            required_fields.append('horde_army_name')
+        
+        if all(selections.get(field) for field in required_fields):
             next_btn.is_active = True
         self.elements.append(next_btn)
 
     def handle_event(self, event):
-        returned_text_for_main_loop = None
+        state_updates = {} # Dictionary to collect updates {state_key: new_value}
         for element in self.elements:
             element.handle_event(event)
-            
-            # This logic is to support the live update of a single text input 
-            # (e.g., player name) in the main app_state.
-            # It captures the text from the first *active* TextInputBox 
-            # that processes a KEYDOWN event.
-            if returned_text_for_main_loop is None and \
-               isinstance(element, TextInputBox) and \
-               element.is_active and \
-               event.type == pygame.KEYDOWN:
-                returned_text_for_main_loop = element.text
-        return returned_text_for_main_loop
+            if isinstance(element, TextInputBox) and element.id and element.is_active and event.type == pygame.KEYDOWN:
+                 state_updates[element.id] = element.text
+        return state_updates
 
     def draw(self, screen):
         for element in self.elements:

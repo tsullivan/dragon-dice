@@ -20,6 +20,7 @@ class GameEngine:
         self.font_small = pygame.font.Font(None, 24)
         self.font_medium = pygame.font.Font(None, 32)
         self.font_large = pygame.font.Font(None, 48)
+        self.setups = setups # Store setups for later access to army names
 
         self._setup_game(setups)
 
@@ -111,9 +112,13 @@ class GameEngine:
         # --- Place Campaign Armies (Rulebook Step 4 continued) ---
         if self.game_state.frontier_terrain:
             for player in self.game_state.players:
-                setup_data = next(s for s in self.game_state.players if s.name == player.name) # Need to access original setup data
+                # Find the original setup data for this player
+                player_setup_data = next((s for s in self.setups if s['name'] == player.name), None)
+                campaign_army_name = "Campaign Army" # Default
+                if player_setup_data:
+                    campaign_army_name = player_setup_data.get('campaign_army_name', "Campaign Army")
                 self.game_state.frontier_terrain.armies_present.append(
-                    {"player_name": player.name, "army_type": "Campaign", "army_name": setup_data.get('campaign_army_name', 'Campaign Army')}
+                    {"player_name": player.name, "army_type": "Campaign", "army_name": campaign_army_name}
                 )
         else:
             # This should ideally not happen if logic is correct
@@ -283,11 +288,11 @@ class GameEngine:
                 player_army_map = {}
                 for army_detail in terrain.armies_present:
                     player_name = army_detail.get('player_name', 'Unknown Player')
-                    army_type = army_detail.get('army_type', 'Unknown Type')
-                    army_name = army_detail.get('army_name', army_type) # Use custom name if available, else type
+                    # Use custom name if available, else fall back to army_type, then a generic default
+                    army_name = army_detail.get('army_name') or army_detail.get('army_type', 'Unknown Army')
                     if player_name not in player_army_map:
                         player_army_map[player_name] = [] # Use a list to store army names/types for this player
-                    player_army_map[player_name].add(army_type)
+                    player_army_map[player_name].append(army_name)
                 
                 for player_name, army_types_set in player_army_map.items():
                     # Display player name and then list their armies on separate lines or comma-separated
