@@ -35,7 +35,10 @@ class TextInputBox:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            self.is_active = self.rect.collidepoint(event.pos)
+            if self.rect.collidepoint(event.pos):
+                self.is_active = True
+            else:
+                self.is_active = False # Deactivate if clicked outside
         if event.type == pygame.KEYDOWN and self.is_active:
             if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
@@ -111,12 +114,20 @@ class UIManager:
         self.elements.append(next_btn)
 
     def handle_event(self, event):
+        returned_text_for_main_loop = None
         for element in self.elements:
             element.handle_event(event)
-            # Update name from text box (a bit simplified)
-            if isinstance(element, TextInputBox) and event.type == pygame.KEYDOWN:
-                 return element.text # Return new text to update state in main
-        return None
+            
+            # This logic is to support the live update of a single text input 
+            # (e.g., player name) in the main app_state.
+            # It captures the text from the first *active* TextInputBox 
+            # that processes a KEYDOWN event.
+            if returned_text_for_main_loop is None and \
+               isinstance(element, TextInputBox) and \
+               element.is_active and \
+               event.type == pygame.KEYDOWN:
+                returned_text_for_main_loop = element.text
+        return returned_text_for_main_loop
 
     def draw(self, screen):
         for element in self.elements:
@@ -175,3 +186,21 @@ class UIManager:
                             lambda: callbacks['on_submit'](input_boxes))
         submit_btn.is_active = True
         self.elements.append(submit_btn)
+
+    def create_maneuver_decision_ui(self, callbacks):
+        """Creates Yes/No buttons for the maneuver decision."""
+        self.elements = [] # Clear existing elements for this specific UI
+        
+        # Example positions, assuming a 1280x720 screen.
+        # These buttons will appear below the prompt drawn by the GameEngine.
+        center_x = 1280 / 2 
+        center_y = 720 / 2 
+        prompt_offset_y = 60 # Distance below the centrally drawn prompt text
+
+        yes_btn = Button(center_x - 150 - 10, center_y + prompt_offset_y, 150, 50, "Yes, Maneuver", callbacks['on_maneuver_yes'])
+        yes_btn.is_active = True # Visually "enabled"
+        self.elements.append(yes_btn)
+
+        no_btn = Button(center_x + 10, center_y + prompt_offset_y, 150, 50, "No, March On", callbacks['on_maneuver_no'])
+        no_btn.is_active = True # Visually "enabled"
+        self.elements.append(no_btn)

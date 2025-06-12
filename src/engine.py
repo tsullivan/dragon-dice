@@ -42,24 +42,30 @@ class GameEngine:
             home_terrain = Terrain(id=i, owner_name=player.name, type=player.home_terrain)
             self.game_state.terrains.append(home_terrain)
 
-        # --- Initial Army Placement (Rulebook Step 4) ---
-        # This simulates placing the initial Home, Horde, and Campaign armies.
+        # --- Initial Army Placement (Partial: Home & Horde Armies) ---
+        # Campaign armies are placed after Frontier is determined.
         num_players = len(self.game_state.players)
         for i, player in enumerate(self.game_state.players):
             # Place Home Army at own Home Terrain 
             home_terrain = self.game_state.terrains[i]
-            home_terrain.armies_present.append(player.name)
+            # Find the corresponding setup data to get the army name
+            setup_data = next(s for s in setups if s['name'] == player.name)
+            home_terrain.armies_present.append(
+                {"player_name": player.name, "army_type": "Home", "army_name": setup_data.get('home_army_name', 'Home Army')}
+            )
 
-            # Place Horde Army at an opponent's Home Terrain 
-            # In a 2-player game, this is always the other player.
-            opponent_index = (i + 1) % num_players
-            opponent_home_terrain = self.game_state.terrains[opponent_index]
-            opponent_home_terrain.armies_present.append(player.name)
+            # Place Horde Army at an opponent's Home Terrain
+            # Horde armies are typically placed on an opponent's terrain.
+            # In a 1-player game, this step can be skipped for the single player's Horde army.
+            if num_players > 1:
+                # Find the corresponding setup data to get the army name
+                setup_data = next(s for s in setups if s['name'] == player.name)
+                opponent_index = (i + 1) % num_players
+                opponent_home_terrain = self.game_state.terrains[opponent_index]
+                opponent_home_terrain.armies_present.append(
+                    {"player_name": player.name, "army_type": "Horde", "army_name": setup_data.get('horde_army_name', 'Horde Army')}
+                )
 
-            # Place Campaign Army at the Frontier Terrain 
-            if self.game_state.frontier_terrain:
-                self.game_state.frontier_terrain.armies_present.append(player.name)
-        
         # The game is now waiting for the user to input the result of the
         # off-screen Horde Army roll to determine the Frontier Terrain.
         self.game_state.setup_step = 'DETERMINING_FRONTIER'
@@ -102,6 +108,16 @@ class GameEngine:
             print(f"Error: Could not find player named {first_player_name}")
             # Potentially revert or handle error
 
+        # --- Place Campaign Armies (Rulebook Step 4 continued) ---
+        if self.game_state.frontier_terrain:
+            for player in self.game_state.players:
+                setup_data = next(s for s in self.game_state.players if s.name == player.name) # Need to access original setup data
+                self.game_state.frontier_terrain.armies_present.append(
+                    {"player_name": player.name, "army_type": "Campaign", "army_name": setup_data.get('campaign_army_name', 'Campaign Army')}
+                )
+        else:
+            # This should ideally not happen if logic is correct
+            print("Error: Frontier terrain not set, cannot place campaign armies.")
         self.game_state.setup_step = 'AWAITING_DISTANCE_ROLLS'
         print(f"Setup state updated to: {self.game_state.setup_step}")
 
@@ -136,13 +152,77 @@ class GameEngine:
         self.game_state.current_march_step = 'DECIDE_MANEUVER'
         print("Setup complete. Starting gameplay.")
 
+    def _advance_to_next_phase_or_player(self):
+        """
+        Advances the game to the next logical phase or player turn.
+        This should be called after a current phase/step's primary action is completed
+        and gs.current_march_step is set to 'COMPLETE'.
+        """
+        gs = self.game_state
+        current_player_name = gs.players[gs.current_player_index].name
+
+        if gs.current_march_step != 'COMPLETE':
+            # This method should only be called when a step is truly done.
+            print(f"Warning: _advance_to_next_phase_or_player called but current step {gs.current_march_step} is not 'COMPLETE'.")
+            return
+
+        if gs.current_turn_phase == 'FIRST_MARCH':
+            print(f"Player {current_player_name}'s First March complete.")
+            gs.current_turn_phase = 'SECOND_MARCH'
+            gs.current_march_step = 'DECIDE_MANEUVER' 
+            print(f"Transitioning to Second March for player {current_player_name}.")
+        
+        elif gs.current_turn_phase == 'SECOND_MARCH':
+            print(f"Player {current_player_name}'s Second March complete.")
+            gs.current_turn_phase = 'RESERVES'
+            # Assuming RESERVES phase might have its own steps, e.g., 'PLACE_RESERVES'
+            # For now, let's set it to a generic placeholder or None if it's a simple phase.
+            gs.current_march_step = None # Or 'ACTION_RESERVES'
+            print(f"Transitioning to Reserves phase for player {current_player_name}.")
+
+        elif gs.current_turn_phase == 'RESERVES':
+            # Assuming Reserves phase actions are completed and current_march_step becomes 'COMPLETE'
+            print(f"Player {current_player_name}'s Reserves phase complete.")
+            self._advance_player_turn()
+
+    def _advance_player_turn(self):
+        """Advances to the next player and resets to the First March phase."""
+        gs = self.game_state
+        gs.current_player_index = (gs.current_player_index + 1) % len(gs.players)
+        gs.current_turn_phase = 'FIRST_MARCH'
+        gs.current_march_step = 'DECIDE_MANEUVER'
+        new_player_name = gs.players[gs.current_player_index].name
+        print(f"Turn advanced. It is now {new_player_name}'s turn (First March).")
+
+    def process_maneuver_decision(self, will_maneuver: bool):
+        """Processes the player's decision on whether to maneuver."""
+        gs = self.game_state
+        if not (gs.game_phase == 'GAMEPLAY' and 
+                gs.current_turn_phase in ['FIRST_MARCH', 'SECOND_MARCH'] and # Maneuver in march phases
+                gs.current_march_step == 'DECIDE_MANEUVER'):
+            print(f"Error: Not in correct state for maneuver decision. Phase: {gs.current_turn_phase}, Step: {gs.current_march_step}")
+            return
+
+        current_player_name = gs.players[gs.current_player_index].name
+        if will_maneuver:
+            gs.current_march_step = 'AWAITING_MANEUVER_INPUT'
+            print(f"Player {current_player_name} ({gs.current_turn_phase}) chose to maneuver. Awaiting input.")
+        else:
+            gs.current_march_step = 'ROLL_FOR_MARCH'
+            print(f"Player {current_player_name} ({gs.current_turn_phase}) chose not to maneuver. Proceeding to roll for march.")
+        # After this, the UI would update. If 'ROLL_FOR_MARCH', the UI for rolling dice would appear.
+        # Once that's submitted, a method like 'process_march_roll(results)' would be called.
+        # 'process_march_roll' would then, after applying roll effects, set 
+        # gs.current_march_step = 'COMPLETE' and then call self._advance_to_next_phase_or_player().
+
     def draw(self, screen: pygame.Surface):
         """
         Draws the current game state.
-        (Placeholder - to be implemented based on game phase)
         """
-        # Example: Draw current player's name or current phase
-        pass
+        if self.game_state.game_phase == 'GAMEPLAY': # Or other conditions as needed
+            self._draw_player_panels(screen)
+            self._draw_terrain_info(screen)
+            self._draw_current_prompt(screen)
     
     def _draw_player_panels(self, screen: pygame.Surface):
         """Draws player info on the left, now with a background panel."""
@@ -174,24 +254,55 @@ class GameEngine:
         panel_surf.fill((0, 0, 0, 80))
         screen.blit(panel_surf, (start_x, start_y))
         
-        text_y = start_y + 20
+        current_terrain_y_start = start_y + 20 # Y-coordinate for the top of the current terrain's info
         all_terrains = self.game_state.terrains + ([self.game_state.frontier_terrain] if self.game_state.frontier_terrain else [])
         
         for terrain in all_terrains:
+            y_cursor = current_terrain_y_start # Reset y_cursor for each terrain
+
+            # Terrain Name
             name_text = f"{terrain.owner_name}'s {terrain.type}"
             name_surf = self.font_medium.render(name_text, True, "white")
-            screen.blit(name_surf, (start_x + 20, text_y))
+            screen.blit(name_surf, (start_x + 20, y_cursor))
+            y_cursor += name_surf.get_height() + 5 # Add padding
 
+            # Distance
             dist_text = f"Distance: {terrain.current_value or 'Not Set'}"
             dist_surf = self.font_small.render(dist_text, True, "#AAAAAA")
-            screen.blit(dist_surf, (start_x + 20, text_y + 35))
+            screen.blit(dist_surf, (start_x + 20, y_cursor))
+            y_cursor += dist_surf.get_height() + 5 # Add padding
 
-            # NEW: Draw the armies present at this terrain
-            armies_text = f"Armies Present: {', '.join(terrain.armies_present)}"
-            armies_surf = self.font_small.render(armies_text, True, "#CCCCCC")
-            screen.blit(armies_surf, (start_x + 20, text_y + 55))
+            # Armies Present Label
+            armies_label_surf = self.font_small.render("Armies Present:", True, "#CCCCCC")
+            screen.blit(armies_label_surf, (start_x + 20, y_cursor))
+            y_cursor += armies_label_surf.get_height() + 2 # Smaller padding before list
 
-            text_y += 90
+            army_detail_indent_x = start_x + 30 # Indent for the list of armies
+
+            if terrain.armies_present:
+                player_army_map = {}
+                for army_detail in terrain.armies_present:
+                    player_name = army_detail.get('player_name', 'Unknown Player')
+                    army_type = army_detail.get('army_type', 'Unknown Type')
+                    army_name = army_detail.get('army_name', army_type) # Use custom name if available, else type
+                    if player_name not in player_army_map:
+                        player_army_map[player_name] = [] # Use a list to store army names/types for this player
+                    player_army_map[player_name].add(army_type)
+                
+                for player_name, army_types_set in player_army_map.items():
+                    # Display player name and then list their armies on separate lines or comma-separated
+                    # Let's list them comma-separated for now, indented
+                    armies_list_str = ", ".join(sorted(player_army_map[player_name])) # Sort army names for consistency
+                    part_text = f"{player_name}: {armies_list_str}"
+                    part_surf = self.font_small.render(part_text, True, "#CCCCCC")
+                    screen.blit(part_surf, (army_detail_indent_x, y_cursor))
+                    y_cursor += part_surf.get_height() # Move to next line for next player's army info
+            else:
+                none_surf = self.font_small.render("None", True, "#CCCCCC")
+                screen.blit(none_surf, (army_detail_indent_x, y_cursor))
+                y_cursor += none_surf.get_height()
+
+            current_terrain_y_start = y_cursor + 15 # Add padding for the next terrain block
             
     def _draw_current_prompt(self, screen: pygame.Surface):
         """Draws the central prompt for the player's action."""
@@ -199,10 +310,17 @@ class GameEngine:
         prompt_text = ""
 
         gs = self.game_state
+        current_player_name = gs.players[gs.current_player_index].name
+
         if gs.game_phase == 'GAMEPLAY':
-            # This logic can be expanded for other phases
-            if gs.current_turn_phase == 'FIRST_MARCH' and gs.current_march_step == 'DECIDE_MANEUVER':
-                prompt_text = "Do you want to Maneuver?"
+            if gs.current_turn_phase in ['FIRST_MARCH', 'SECOND_MARCH']:
+                if gs.current_march_step == 'DECIDE_MANEUVER':
+                    prompt_text = f"{current_player_name}, do you want to Maneuver for {gs.current_turn_phase.replace('_', ' ')}?"
+                elif gs.current_march_step == 'AWAITING_MANEUVER_INPUT':
+                    prompt_text = f"{current_player_name}, select army and target for {gs.current_turn_phase.replace('_', ' ')} maneuver."
+                elif gs.current_march_step == 'ROLL_FOR_MARCH':
+                    prompt_text = f"{current_player_name}, roll for your {gs.current_turn_phase.replace('_', ' ')}."
+            # Add prompts for 'RESERVES' phase and other steps as they are implemented
         
         if prompt_text:
             prompt_surf = self.font_medium.render(prompt_text, True, "white")

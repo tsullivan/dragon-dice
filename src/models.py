@@ -4,7 +4,10 @@ from typing import List, Literal, TypedDict, Optional
 # This is the new definition that was missing
 class PlayerSetupData(TypedDict):
     """A dictionary representing the data collected for a single player during setup."""
-    name: str
+    name: str # Player name
+    home_army_name: str
+    horde_army_name: str
+    campaign_army_name: str
     home_terrain: str
     frontier_terrain: str
 
@@ -12,7 +15,13 @@ class PlayerSetupData(TypedDict):
 GamePhase = Literal['SETUP', 'GAMEPLAY']
 SetupStep = Literal['DETERMINING_FRONTIER', 'AWAITING_DISTANCE_ROLLS', 'COMPLETE']
 TurnPhase = Literal['FIRST_MARCH', 'SECOND_MARCH', 'RESERVES'] # etc.
-MarchStep = Literal['DECIDE_MANEUVER', 'AWAITING_MANEUVER_INPUT', 'COMPLETE']
+ArmyType = Literal["Home", "Horde", "Campaign"]
+class ArmyPresence(TypedDict):
+    player_name: str
+    army_name: str # Custom name for this specific army instance
+    army_type: ArmyType
+
+MarchStep = Literal['DECIDE_MANEUVER', 'AWAITING_MANEUVER_INPUT', 'ROLL_FOR_MARCH', 'COMPLETE']
 
 @dataclass
 class Player:
@@ -28,7 +37,7 @@ class Terrain:
     owner_name: str
     type: str
     current_value: Optional[int] = None
-    armies_present: List[str] = field(default_factory=list)
+    armies_present: List[ArmyPresence] = field(default_factory=list)
 
 
 @dataclass
