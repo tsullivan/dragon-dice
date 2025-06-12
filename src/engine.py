@@ -51,11 +51,40 @@ class GameEngine:
     # --------------------------------------------------------------------------
     # PUBLIC METHODS (Called by the UI/Controller)
     # --------------------------------------------------------------------------
-
+        
     def submit_frontier_selection(self, chosen_terrain_type: str, first_player_name: str):
-        """Processes the outcome of the initial Horde Army roll."""
-        if self.game_state.setup_step != 'DETERMINING_FRONTIER':
-            return
+        # ... (This method is likely already correct from our last discussion)
+        # It sets the frontier_terrain, sets currentPlayerIndex, and then...
+        self.game_state.setup_step = 'AWAITING_DISTANCE_ROLLS'
+        print(f"Setup state updated to: {self.game_state.setup_step}")
 
-        # Set the official Frontier Terrain
-        player_who_proposed = next
+    def submit_distance_rolls(self, rolls: list[dict]):
+        """Processes the starting distance rolls for all terrains."""
+        if self.game_state.setup_step != 'AWAITING_DISTANCE_ROLLS':
+            return
+        
+        # Process and validate rolls according to the rules
+        for roll_data in rolls:
+            value = int(roll_data['value'])
+            if value >= 8 or value <= 0:
+                print(f"Invalid roll of {value} submitted. Must be between 1 and 7.")
+                # In a real app, you would show an error message to the user
+                return # Abort
+            
+            final_value = 6 if value == 7 else value
+
+            # Find and update the terrain in the game state
+            terrain = next((t for t in self.game_state.terrains if t.id == roll_data['terrain_id']), None)
+            if not terrain:
+                # Check if the frontier_terrain exists and matches the ID
+                if self.game_state.frontier_terrain and self.game_state.frontier_terrain.id == roll_data['terrain_id']:
+                    terrain = self.game_state.frontier_terrain
+            
+            if terrain:
+                terrain.current_value = final_value
+
+        # Transition to gameplay
+        self.game_state.game_phase = 'GAMEPLAY'
+        self.game_state.current_turn_phase = 'FIRST_MARCH'
+        self.game_state.current_march_step = 'DECIDE_MANEUVER'
+        print("Setup complete. Starting gameplay.")

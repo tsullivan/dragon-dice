@@ -1,5 +1,12 @@
 from dataclasses import dataclass, field
-from typing import List, Literal
+from typing import List, Literal, TypedDict, Optional
+
+# This is the new definition that was missing
+class PlayerSetupData(TypedDict):
+    """A dictionary representing the data collected for a single player during setup."""
+    name: str
+    home_terrain: str
+    frontier_terrain: str
 
 # Type definitions mirroring our TypeScript types
 GamePhase = Literal['SETUP', 'GAMEPLAY']
@@ -20,16 +27,16 @@ class Terrain:
     id: int
     owner_name: str
     type: str
-    current_value: int = None
+    current_value: Optional[int] = None
 
 @dataclass
 class GameState:
     players: List[Player] = field(default_factory=list)
     terrains: List[Terrain] = field(default_factory=list)
-    frontier_terrain: Terrain = None
+    frontier_terrain: Optional[Terrain] = None
     point_value: int = 0
     current_player_index: int = 0
     game_phase: GamePhase = 'SETUP'
     setup_step: SetupStep = 'DETERMINING_FRONTIER'
     current_turn_phase: TurnPhase = 'FIRST_MARCH'
-    current_march_step: MarchStep = None
+    current_march_step: Optional[MarchStep] = None

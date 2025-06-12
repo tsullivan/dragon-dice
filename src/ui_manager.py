@@ -92,6 +92,16 @@ class UIManager:
             if selections['home_terrain'] == terrain: btn.is_active = True
             self.elements.append(btn)
 
+        # Add Frontier Terrain Buttons
+        standard_terrains = ['Coastland', 'Deadland', 'Flatland', 'Highland', 'Swampland', 'Feyland', 'Wasteland']
+        advanced_terrains = ['Castle', "Dragon's Lair", 'Grove', 'Vortex']
+        all_frontier_options = standard_terrains + advanced_terrains
+        
+        for i, terrain in enumerate(all_frontier_options):
+            btn = Button(650, 280 + i * 35 + y_offset, 200, 30, terrain, lambda t=terrain: callbacks['on_frontier_select'](t), font_size=20)
+            if selections['frontier_terrain'] == terrain: btn.is_active = True
+            self.elements.append(btn)
+
         # Next/Start Button
         is_last_player = player_index == selections['total_players'] - 1
         btn_text = "Start Game" if is_last_player else "Next Player"
@@ -111,3 +121,57 @@ class UIManager:
     def draw(self, screen):
         for element in self.elements:
             element.draw(screen)
+            
+    def create_frontier_selection_ui(self, players, selections, callbacks):
+        """Builds the UI for selecting the first player and Frontier Terrain."""
+        self.elements = []
+        y_offset = -100
+        
+        # We'll use buttons for selection to keep it simple.
+        # Who is playing first?
+        for i, player in enumerate(players):
+            btn = Button(350, 280 + i * 45 + y_offset, 200, 40, player.name, 
+                         lambda p=player: callbacks['on_first_player_select'](p.name))
+            if selections['first_player'] == player.name:
+                btn.is_active = True
+            self.elements.append(btn)
+
+        # Which terrain is the Frontier?
+        for i, player in enumerate(players):
+            text = f"{player.name}'s: {player.proposed_frontier}"
+            btn = Button(650, 280 + i * 45 + y_offset, 280, 40, text, 
+                         lambda t=player.proposed_frontier: callbacks['on_frontier_select'](t), font_size=22)
+            if selections['frontier_terrain'] == player.proposed_frontier:
+                btn.is_active = True
+            self.elements.append(btn)
+
+        # Confirm Button
+        confirm_btn = Button(540, 500, 200, 50, "Confirm Selections", callbacks['on_submit'])
+        if selections['first_player'] and selections['frontier_terrain']:
+            confirm_btn.is_active = True
+        self.elements.append(confirm_btn)
+
+    def create_distance_rolls_ui(self, terrains, callbacks):
+        """Builds the UI for inputting terrain distance rolls."""
+        self.elements = []
+        y_pos = 200
+        input_boxes = []
+
+        for terrain in terrains:
+            if not terrain: continue
+            
+            # Label
+            label_text = f"{terrain.owner_name}'s {terrain.type}"
+            label = Button(400, y_pos, 250, 40, label_text, lambda: None)
+            self.elements.append(label)
+
+            # Input box
+            input_box = TextInputBox(660, y_pos, 80, 40)
+            self.elements.append(input_box)
+            input_boxes.append({"terrain_id": terrain.id, "input_box": input_box})
+            y_pos += 50
+        
+        submit_btn = Button(540, y_pos + 20, 200, 50, "Submit Rolls & Start", 
+                            lambda: callbacks['on_submit'](input_boxes))
+        submit_btn.is_active = True
+        self.elements.append(submit_btn)
