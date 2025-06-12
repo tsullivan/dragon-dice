@@ -28,6 +28,8 @@ class Terrain:
     owner_name: str
     type: str
     current_value: Optional[int] = None
+    armies_present: List[str] = field(default_factory=list)
+
 
 @dataclass
 class GameState:

@@ -1,7 +1,7 @@
 import pygame
-from src.ui_manager import UIManager
-from src.engine import GameEngine
-from src.models import PlayerSetupData
+from ui_manager import UIManager
+from engine import GameEngine
+from models import PlayerSetupData
 
 def main():
     # --- PyGame and Font Initialization ---
