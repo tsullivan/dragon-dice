@@ -134,15 +134,6 @@ class PlayerSetupView(QWidget):
         layout.addWidget(self.status_label)
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
-        # Help Text Panel
-        help_group_box = QGroupBox("Help")
-        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
-        help_layout = QVBoxLayout(help_group_box)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        help_layout.addWidget(self.help_text_edit)
-        layout.addWidget(help_group_box)
-
         # Navigation buttons
         navigation_layout = QHBoxLayout()
         self.back_button = QPushButton("Back")
@@ -155,25 +146,17 @@ class PlayerSetupView(QWidget):
         self.next_button.clicked.connect(self._handle_next_action)
         navigation_layout.addWidget(self.next_button)
 
-
-        # Ensure help_group_box is last by removing and re-adding if it was added before navigation
-        # This step might be redundant if the order of adding widgets is already correct,
-        # but it's a safeguard.
-        # However, looking at the current structure, help_group_box is added before navigation_layout.
-        # So, we need to move navigation_layout before help_group_box.
-
-        # Correct order: Add navigation buttons, THEN the help panel.
-        # Find the layout item containing help_group_box to remove it
-        item_to_remove = None
-        for i in range(layout.count()):
-            item = layout.itemAt(i)
-            if item and item.widget() == help_group_box:
-                item_to_remove = item
-                break
-        if item_to_remove:
-            layout.removeItem(item_to_remove)
         layout.addLayout(navigation_layout) # Add navigation
+
+        # Help Text Panel
+        help_group_box = QGroupBox("Help")
+        # help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Remove fixed height
+        help_layout = QVBoxLayout(help_group_box)
+        self.help_text_edit = QTextEdit()
+        self.help_text_edit.setReadOnly(True)
+        help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box) # Re-add help panel at the end
+        layout.setStretchFactor(help_group_box, 1) # Allow help panel to stretch
 
         # Connect signals for live validation
         self.name_input.textChanged.connect(self._validate_and_update_button_state)

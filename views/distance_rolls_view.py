@@ -63,16 +63,6 @@ class DistanceRollsView(QWidget):
 
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
-        # Help Text Panel
-        help_group_box = QGroupBox("Help")
-        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
-        help_layout = QVBoxLayout(help_group_box)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self._set_distance_rolls_help_text()
-        help_layout.addWidget(self.help_text_edit)
-        layout.addWidget(help_group_box)
-
         # Navigation buttons
         navigation_layout = QHBoxLayout() # Define navigation_layout
         self.back_button = QPushButton("Back")
@@ -83,13 +73,18 @@ class DistanceRollsView(QWidget):
         submit_button.clicked.connect(self._on_submit_rolls)
         navigation_layout.addWidget(submit_button)
 
-        # Correct order: Add navigation buttons, THEN the help panel.
-        # Instead of removing and re-adding, ensure correct add order.
-        # The help_group_box was added directly to 'layout'.
-        # We add navigation_layout first, then the help_group_box.
-        layout.removeItem(layout.itemAt(layout.indexOf(help_group_box))) # Remove the help_group_box item
         layout.addLayout(navigation_layout)
+
+        # Help Text Panel
+        help_group_box = QGroupBox("Help")
+        # help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Remove fixed height
+        help_layout = QVBoxLayout(help_group_box)
+        self.help_text_edit = QTextEdit()
+        self.help_text_edit.setReadOnly(True)
+        self._set_distance_rolls_help_text()
+        help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
+        layout.setStretchFactor(help_group_box, 1) # Allow help panel to stretch
         self.setLayout(layout)
 
     def _on_submit_rolls(self):

@@ -79,24 +79,19 @@ class WelcomeView(QWidget):
         # Spacer to push help text and proceed button down
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
+        proceed_button = QPushButton("Proceed to Player Setup")
+        proceed_button.clicked.connect(self.proceed_signal.emit) # Emit the signal
+        layout.addWidget(proceed_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
         # Help Text Panel
         help_group_box = QGroupBox("Help")
-        help_group_box.setMaximumHeight(int(self.screen().geometry().height() * 0.6))
+        # help_group_box.setMaximumHeight(int(self.screen().geometry().height() * 0.6)) # Remove fixed height
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
         self._set_welcome_help_text()
         help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
-
-        proceed_button = QPushButton("Proceed to Player Setup")
-        proceed_button.clicked.connect(self.proceed_signal.emit) # Emit the signal
-        layout.addWidget(proceed_button, alignment=Qt.AlignmentFlag.AlignCenter)
-        # Correct order: Add proceed_button, THEN the help panel.
-        # Find the layout item containing help_group_box to remove it
-        item_to_remove = layout.itemAt(layout.indexOf(help_group_box))
-        if item_to_remove: layout.removeItem(item_to_remove)
-        layout.addWidget(help_group_box) # Re-add help panel at the end
 
         self.setLayout(layout)
 

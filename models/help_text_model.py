@@ -6,6 +6,10 @@ class HelpTextModel:
     def get_welcome_help(self) -> str:
         return """
 <b>Welcome to the Dragon Dice Companion!</b>
+<p>Dragon Dice is a game of fantasy battles where players assemble armies of dice representing different fantasy races and creatures.
+Each die has unique icons for movement, melee, missiles, magic, and special abilities.
+Players maneuver their armies across terrain dice, engage in combat, and attempt to capture two terrains to win the game.
+This application will help you track game state, turns, and phases, but all dice rolling and physical army management is done by you with your Dragon Dice!</p>
 <p>This screen helps you start a new game.</p>
 <p><b>UI Elements:</b></p>
 <ul>
@@ -111,9 +115,38 @@ If an 8 is rolled, roll again. If a 7 is rolled, turn the die down to 6. All ter
 <p><b>Actions:</b> Enter the defender's save results and click 'Submit Defender Saves'.</p>
 """
         }
+        # Add explanations for other phases
+        phase_explanation_map.update({
+            "EXPIRE_EFFECTS": """
+<p><b>Current Phase: Expire Effects</b></p>
+<p>Certain ongoing effects from spells or abilities may expire at the start of the turn. Check any active effects and resolve their expiration according to the rules. (Rulebook pg. 11)</p>
+<p><b>Actions:</b> After resolving, click 'Continue' (or similar button when implemented) to proceed to the next phase.</p>
+""",
+            "EIGHTH_FACE": """
+<p><b>Current Phase: Eighth Face</b></p>
+<p>If any terrain dice are showing their 8th face, the player controlling that terrain may use its special ability. (Rulebook pg. 11, pg. 6 for terrain effects)</p>
+<p><b>Actions:</b> Resolve any 8th face abilities. Click 'Continue' to proceed.</p>
+""",
+            "DRAGON_ATTACK": """
+<p><b>Current Phase: Dragon Attack</b></p>
+<p>The current player may have their dragons attack. Dragons can attack other dragons or armies at the same terrain. (Rulebook pg. 11, pg. 17-18 for dragon combat)</p>
+<p><b>Actions:</b> Follow prompts for dragon attacks (selecting dragons, targets, rolling dice, resolving damage). Click 'Continue' when all dragon attacks are resolved.</p>
+""",
+            "SPECIES_ABILITIES": """
+<p><b>Current Phase: Species Abilities</b></p>
+<p>The current player may use certain special abilities of their units, often indicated by SAIs (Special Action Icons) or described in the species rules. (Rulebook pg. 11, pg. 21+ for species)</p>
+<p><b>Actions:</b> Announce and resolve any species abilities. Click 'Continue' to proceed.</p>
+""",
+            "RESERVES": """
+<p><b>Current Phase: Reserves</b></p>
+<p>The current player may bring units from their Summoning Pool into their Reserve Area, or promote units already in Reserves. (Rulebook pg. 11, pg. 16 for reserves)</p>
+<p><b>Actions:</b> Manage your reserves. Click 'Continue' to end your turn.</p>
+"""
+        })
+
+
         phase_explanation = phase_explanation_map.get(
             current_step,
             f"<p><b>Current Step: {current_step.replace('_', ' ').title()}</b></p><p>Follow the on-screen prompts and refer to the rulebook for detailed rules for this step.</p>"
         )
         return f"<html><body>{ui_explanation}{phase_explanation}</body></html>"
-

@@ -78,16 +78,6 @@ class FrontierSelectionView(QWidget):
 
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
-        # Help Text Panel
-        help_group_box = QGroupBox("Help")
-        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
-        help_layout = QVBoxLayout(help_group_box)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self._set_frontier_help_text()
-        help_layout.addWidget(self.help_text_edit)
-        layout.addWidget(help_group_box)
-
         # Navigation buttons
         navigation_layout = QHBoxLayout() # Define navigation_layout
         self.back_button = QPushButton("Back")
@@ -100,12 +90,18 @@ class FrontierSelectionView(QWidget):
         self.submit_button.clicked.connect(self._on_submit)
         navigation_layout.addWidget(self.submit_button)
 
-        # Correct order: Add navigation buttons, THEN the help panel.
-        # Find the layout item containing help_group_box to remove it
-        item_to_remove = layout.itemAt(layout.indexOf(help_group_box))
-        if item_to_remove: layout.removeItem(item_to_remove)
         layout.addLayout(navigation_layout) # Add navigation
+
+        # Help Text Panel
+        help_group_box = QGroupBox("Help")
+        # help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Remove fixed height
+        help_layout = QVBoxLayout(help_group_box)
+        self.help_text_edit = QTextEdit()
+        self.help_text_edit.setReadOnly(True)
+        self._set_frontier_help_text()
+        help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box) # Re-add help panel at the end
+        layout.setStretchFactor(help_group_box, 1) # Allow help panel to stretch
         self.setLayout(layout)
 
     def _set_frontier_help_text(self):

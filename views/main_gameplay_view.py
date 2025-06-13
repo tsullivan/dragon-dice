@@ -87,10 +87,19 @@ class MainGameplayView(QWidget):
         # --- Phase-Specific Prompts (e.g., Dragon Attack) ---
         self.phase_specific_layout = QVBoxLayout()
         self.dragon_attack_prompt_label = QLabel("<b>Dragon Attack Phase:</b> Resolve dragon attacks. (Details TBD)")
-        self.dragon_attack_continue_button = QPushButton("Continue After Dragon Attacks")
+        self.dragon_attack_continue_button = QPushButton("Continue Past Dragon Attacks")
         self.dragon_attack_continue_button.clicked.connect(lambda: self.game_engine.advance_phase()) # Example action
         self.phase_specific_layout.addWidget(self.dragon_attack_prompt_label)
         self.phase_specific_layout.addWidget(self.dragon_attack_continue_button)
+
+        self.eighth_face_prompt_label = QLabel("<b>Eighth Face Phase:</b> Resolve any 8th face abilities.")
+        self.eighth_face_resolution_input = QLineEdit()
+        self.eighth_face_resolution_input.setPlaceholderText("Optional: Note any resolutions (e.g., 'City used for recruit')")
+        self.eighth_face_continue_button = QPushButton("Continue Past Eighth Face")
+        self.eighth_face_continue_button.clicked.connect(lambda: self.game_engine.advance_phase())
+        self.phase_specific_layout.addWidget(self.eighth_face_prompt_label)
+        self.phase_specific_layout.addWidget(self.eighth_face_resolution_input)
+        self.phase_specific_layout.addWidget(self.eighth_face_continue_button)
 
         # --- Action Choice Layout (initially hidden) ---
         self.action_choice_layout = QHBoxLayout()
@@ -135,12 +144,13 @@ class MainGameplayView(QWidget):
 
         # Help Text Panel
         help_group_box = QGroupBox("Help")
-        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
+        # help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Remove fixed height
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
         help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
+        layout.setStretchFactor(help_group_box, 1) # Allow help panel to stretch
 
         self.setLayout(layout)
         self.update_ui() # Initial UI setup
@@ -234,6 +244,9 @@ class MainGameplayView(QWidget):
         self.submit_defender_save_button.setVisible(False)
         self.dragon_attack_prompt_label.setVisible(False)
         self.dragon_attack_continue_button.setVisible(False)
+        self.eighth_face_prompt_label.setVisible(False)
+        self.eighth_face_resolution_input.setVisible(False)
+        self.eighth_face_continue_button.setVisible(False)
         # Add other phase-specific prompts to this default hiding list as they are created
 
         # Visibility for Maneuver Decision
@@ -266,11 +279,10 @@ class MainGameplayView(QWidget):
                 self.dragon_attack_prompt_label.setVisible(True)
                 self.dragon_attack_continue_button.setVisible(True)
             elif current_phase == "EIGHTH_FACE":
-                # TODO: Add UI for Eighth Face phase if needed, or a continue button
-                # For now, let's assume it might need a continue if not auto-resolved
-                # self.eighth_face_prompt_label.setVisible(True)
-                # self.eighth_face_continue_button.setVisible(True)
-                pass # Placeholder
+                self.eighth_face_prompt_label.setVisible(True)
+                self.eighth_face_resolution_input.setVisible(True)
+                self.eighth_face_resolution_input.clear() # Clear previous input
+                self.eighth_face_continue_button.setVisible(True)
             # Add other phases like SPECIES_ABILITIES, RESERVES here
         
         # Determine overall step for help text (can be phase, march_step, or action_step)
