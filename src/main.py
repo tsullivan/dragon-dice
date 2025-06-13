@@ -41,6 +41,9 @@ def main():
         "help_scroll_offset_y": 0,
         "total_help_text_height": 0,
         "current_rendered_help_key": None, # Tracks when help text content changes
+        "player_setup_panel_scroll_x": 0,
+        "player_setup_panel_content_width": 0, # Calculated by UIManager
+        "player_setup_panel_rect": None, # Calculated based on screen size
     }
     
     ui_manager = UIManager()
@@ -127,23 +130,37 @@ def main():
                 running = False
             if event.type == pygame.VIDEORESIZE:
                 app_state["ui_needs_update"] = True
+                # Invalidate panel rect so it's recalculated
+                app_state["player_setup_panel_rect"] = None
 
             if event.type == pygame.MOUSEWHEEL:
-                # Check if mouse is over the help panel before processing scroll
-                # help_panel_rect is defined in the drawing section, ensure it's accurate or pass screen dimensions
-                # For simplicity, we assume help_panel_rect from the last frame is a decent check
-                # A more robust way would be to calculate it here based on current_screen_height/width
-                temp_help_panel_rect = pygame.Rect(40, screen.get_height() - 130 - 20, screen.get_width() - 80, 130)
-                if temp_help_panel_rect.collidepoint(pygame.mouse.get_pos()):
+                mouse_pos = pygame.mouse.get_pos()
+                # Horizontal scroll for player setup panel
+                if app_state["screen"] == "player_setup" and app_state["player_setup_panel_rect"] and app_state["player_setup_panel_rect"].collidepoint(mouse_pos):
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                        scroll_speed = 40
+                        app_state["player_setup_panel_scroll_x"] -= event.y * scroll_speed
+                        max_scroll_x = max(0, app_state["player_setup_panel_content_width"] - app_state["player_setup_panel_rect"].width)
+                        app_state["player_setup_panel_scroll_x"] = max(0, min(app_state["player_setup_panel_scroll_x"], max_scroll_x))
+                # Vertical scroll for help panel
+                elif app_state.get("help_panel_rect") and app_state["help_panel_rect"].collidepoint(mouse_pos): # help_panel_rect is now in app_state
+                    help_panel_rect = app_state["help_panel_rect"] # Use the stored rect
                     scroll_speed = 30 # Pixels per wheel tick
                     app_state["help_scroll_offset_y"] -= event.y * scroll_speed
                     
                     # Clamp scroll offset
-                    max_scroll = max(0, app_state["total_help_text_height"] - (temp_help_panel_rect.height - 2 * 10)) # 10 is HELP_PANEL_PADDING_Y
+                    max_scroll = max(0, app_state["total_help_text_height"] - (help_panel_rect.height - 2 * 10)) # 10 is HELP_PANEL_PADDING_Y
                     app_state["help_scroll_offset_y"] = max(0, min(app_state["help_scroll_offset_y"], max_scroll))
 
             # Pass event to UI manager to handle button clicks and text input
-            state_updates = ui_manager.handle_event(event) # Returns a dict of {state_key_to_update: new_value}
+            # For player_setup, pass panel_rect and scroll_x for coordinate transformation
+            event_handling_args = {}
+            if app_state["screen"] == "player_setup" and app_state["player_setup_panel_rect"]:
+                event_handling_args["panel_rect_on_screen"] = app_state["player_setup_panel_rect"]
+                event_handling_args["scroll_offset_x"] = app_state["player_setup_panel_scroll_x"]
+
+            state_updates = ui_manager.handle_event(event, **event_handling_args)
             
             if state_updates:
                 for key, value in state_updates.items():
@@ -159,7 +176,8 @@ def main():
 
         # --- UI & State Update Logic ---
         if app_state["ui_needs_update"]:
-            ui_manager.elements = [] # Clear all previous UI elements
+            ui_manager.panel_elements = [] # Clear panel UI elements
+            ui_manager.fixed_elements = [] # Clear fixed UI elements
             
             if app_state["screen"] == "welcome":
                 ui_manager.create_welcome_ui(
@@ -171,7 +189,7 @@ def main():
                     }
                 )
             elif app_state["screen"] == "player_setup":
-                ui_manager.create_player_setup_ui(
+                content_width = ui_manager.create_player_setup_ui(
                     app_state['current_setup_index'],
                     {
                         "name": app_state["current_name"],
@@ -188,6 +206,7 @@ def main():
                         'on_next': handle_next_player
                     }
                 )
+                app_state["player_setup_panel_content_width"] = content_width
 
             elif app_state["screen"] == "gameplay":
                 engine_state = app_state["game_engine"].game_state
@@ -234,12 +253,13 @@ def main():
         # --- Help Panel Constants ---
         HELP_PANEL_TOTAL_HEIGHT = 130  # Overall visual height of the panel
         HELP_PANEL_BOTTOM_MARGIN = 20
-        help_panel_rect = pygame.Rect(40, current_screen_height - HELP_PANEL_TOTAL_HEIGHT - HELP_PANEL_BOTTOM_MARGIN, current_screen_width - 80, HELP_PANEL_TOTAL_HEIGHT)
+        # Store help_panel_rect in app_state for consistent access in event handling
+        app_state["help_panel_rect"] = pygame.Rect(40, current_screen_height - HELP_PANEL_TOTAL_HEIGHT - HELP_PANEL_BOTTOM_MARGIN, current_screen_width - 80, HELP_PANEL_TOTAL_HEIGHT)
+        help_panel_rect = app_state["help_panel_rect"] # Use local variable for drawing
         HELP_PANEL_PADDING_X = 15
         HELP_PANEL_PADDING_Y = 10
         help_content_max_visible_height = help_panel_rect.height - 2 * HELP_PANEL_PADDING_Y
         help_content_width = help_panel_rect.width - 2 * HELP_PANEL_PADDING_X
-
         if app_state["screen"] == "welcome":
             title_surf = font_large.render("Welcome to Dragon Dice!", True, "white")
             title_rect = title_surf.get_rect(center=(screen.get_width() / 2, 150))
@@ -254,35 +274,65 @@ def main():
             screen.blit(points_label_surf, points_label_rect)
         
         elif app_state["screen"] == "player_setup":
+            # --- Player Setup Screen Drawing ---
             title_text = f"Player {app_state['current_setup_index'] + 1} Setup"
             title_surf = font_large.render(title_text, True, "white")
-            title_rect = title_surf.get_rect(center=(screen.get_width() / 2, 80))
+            title_rect = title_surf.get_rect(center=(screen.get_width() / 2, 60)) # Title higher
             screen.blit(title_surf, title_rect)
 
-            name_label_surf = font_medium.render("Enter Player Name:", True, "white")
-            name_label_rect = name_label_surf.get_rect(center=(screen.get_width() / 2, 160))
-            screen.blit(name_label_surf, name_label_rect)
+            # Define the main panel for player setup content
+            panel_margin_x = 50
+            panel_margin_top = 120 # Space below title
+            
+            # Reserve space for the "Next/Start" button (height 50) + scrollbar (height ~15) + margins
+            # Button Y is 510. Panel should end above that. Let's say panel bottom is at Y=490.
+            # This leaves space for a 15px scrollbar and the button below.
+            # Panel height = 490 - panel_margin_top (120) = 370
+            panel_height = 370 
+            panel_margin_bottom = current_screen_height - panel_margin_top - panel_height
+            
+            if app_state["player_setup_panel_rect"] is None: # Calculate if not set or screen resized
+                app_state["player_setup_panel_rect"] = pygame.Rect(
+                    panel_margin_x,
+                    panel_margin_top,
+                    current_screen_width - 2 * panel_margin_x,
+                    current_screen_height - panel_margin_top - panel_margin_bottom
+                )
+            panel_rect = app_state["player_setup_panel_rect"]
 
-            # Labels for Army Names
-            home_army_label_surf = font_medium.render("Name your Home Army:", True, "white")
-            home_army_label_rect = home_army_label_surf.get_rect(center=(screen.get_width() / 2, 250))
-            screen.blit(home_army_label_surf, home_army_label_rect)
+            # Create content surface (wider than panel_rect for scrolling)
+            content_surface_width = max(panel_rect.width, app_state["player_setup_panel_content_width"])
+            content_surface = pygame.Surface((content_surface_width, panel_rect.height), pygame.SRCALPHA)
+            content_surface.fill((50, 50, 50, 150)) # Semi-transparent dark background for content area
+            
+            # UIManager draws its panel elements onto the content_surface
+            ui_manager.draw_panel_content(content_surface)
 
-            horde_army_label_surf = font_medium.render("Name your Horde Army:", True, "white")
-            horde_army_label_rect = horde_army_label_surf.get_rect(center=(screen.get_width() / 2, 340))
-            screen.blit(horde_army_label_surf, horde_army_label_rect)
+            # Blit the scrollable part of content_surface onto the screen
+            source_area_rect = pygame.Rect(app_state["player_setup_panel_scroll_x"], 0, panel_rect.width, panel_rect.height)
+            screen.blit(content_surface, panel_rect.topleft, source_area_rect)
 
-            campaign_army_label_surf = font_medium.render("Name your Campaign Army:", True, "white")
-            campaign_army_label_rect = campaign_army_label_surf.get_rect(center=(screen.get_width() / 2, 430))
-            screen.blit(campaign_army_label_surf, campaign_army_label_rect)
+            # Draw horizontal scrollbar for the panel
+            if app_state["player_setup_panel_content_width"] > panel_rect.width:
+                scrollbar_height = 15
+                scrollbar_track_y = panel_rect.bottom + 5 # A little below the panel
+                scrollbar_track_rect = pygame.Rect(panel_rect.left, scrollbar_track_y, panel_rect.width, scrollbar_height)
+                pygame.draw.rect(screen, (70, 70, 70), scrollbar_track_rect, border_radius=7) # Scrollbar track
 
-            home_terrain_label_surf = font_medium.render("Choose Home Terrain:", True, "white")
-            home_terrain_label_rect = home_terrain_label_surf.get_rect(center=(screen.get_width() / 2 - 200, 240)) # Adjusted for button layout
-            screen.blit(home_terrain_label_surf, home_terrain_label_rect)
+                thumb_width_ratio = panel_rect.width / app_state["player_setup_panel_content_width"]
+                scrollbar_thumb_width = max(20, scrollbar_track_rect.width * thumb_width_ratio)
+                
+                max_scroll_x_for_content = app_state["player_setup_panel_content_width"] - panel_rect.width
+                if max_scroll_x_for_content > 0:
+                    scroll_ratio_for_thumb = app_state["player_setup_panel_scroll_x"] / max_scroll_x_for_content
+                else:
+                    scroll_ratio_for_thumb = 0
+                scrollbar_thumb_x = scrollbar_track_rect.left + scroll_ratio_for_thumb * (scrollbar_track_rect.width - scrollbar_thumb_width)
+                scrollbar_thumb_rect = pygame.Rect(scrollbar_thumb_x, scrollbar_track_y, scrollbar_thumb_width, scrollbar_height)
+                pygame.draw.rect(screen, (150, 150, 150), scrollbar_thumb_rect, border_radius=7) # Scrollbar thumb
 
-            frontier_proposal_label_surf = font_medium.render("Propose Frontier Terrain:", True, "white")
-            frontier_proposal_label_rect = frontier_proposal_label_surf.get_rect(center=(screen.get_width() / 2 + 200, 240)) # Adjusted for button layout
-            screen.blit(frontier_proposal_label_surf, frontier_proposal_label_rect)
+            # Draw panel frame
+            pygame.draw.rect(screen, (100, 100, 100), panel_rect, 3, border_radius=5) # Frame
 
         elif app_state["screen"] == "gameplay":
             app_state["game_engine"].draw(screen)
@@ -368,7 +418,8 @@ def main():
                 scrollbar_thumb_rect = pygame.Rect(help_panel_rect.right - HELP_PANEL_PADDING_X + 3, scrollbar_thumb_y, 8, scrollbar_thumb_height)
                 pygame.draw.rect(screen, (100, 100, 100), scrollbar_thumb_rect, border_radius=4)
 
-        ui_manager.draw(screen) # UIManager draws its elements (buttons, inputs) on top
+        # UIManager draws its fixed elements (buttons, inputs not on a panel)
+        ui_manager.draw_fixed_content(screen)
         pygame.display.flip()
         clock.tick(60)
 
