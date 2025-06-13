@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal, QMetaObject
 from typing import Optional
-from .engine import GameEngine # Import the new GameEngine
+from engine import GameEngine # Import the new GameEngine
 
 class AppDataModel(QObject):
     """

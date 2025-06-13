@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
                                QHBoxLayout, QSpacerItem, QSizePolicy, QLineEdit)
 from PySide6.QtCore import Qt, Slot, Signal
-from ..engine import GameEngine # Assuming engine.py is in the same directory level
+from engine import GameEngine # Assuming engine.py is in the same directory level
 
 class MainGameplayView(QWidget):
     """

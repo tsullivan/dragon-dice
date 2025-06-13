@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
                                QComboBox, QFormLayout, QSpacerItem, QSizePolicy)
 from PySide6.QtCore import Qt, Signal
-from ..constants import TERRAIN_TYPES
+from constants import TERRAIN_TYPES
 
 class FrontierSelectionView(QWidget):
     """
@@ -58,4 +58,3 @@ class FrontierSelectionView(QWidget):
         selected_player = self.first_player_combo.currentText()
         selected_terrain = self.frontier_terrain_combo.currentText()
         self.frontier_data_submitted.emit(selected_player, selected_terrain)
-

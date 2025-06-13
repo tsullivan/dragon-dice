@@ -1,13 +1,13 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Qt
 
-from .views.welcome_view import WelcomeView
-from .views.player_setup_view import PlayerSetupView
-from .views.frontier_selection_view import FrontierSelectionView
-from .views.distance_rolls_view import DistanceRollsView
-from .views.main_gameplay_view import MainGameplayView
-from .controllers.gameplay_controller import GameplayController
-from .app_data_model import AppDataModel
+from views.welcome_view import WelcomeView
+from views.player_setup_view import PlayerSetupView
+from views.frontier_selection_view import FrontierSelectionView
+from views.distance_rolls_view import DistanceRollsView
+from views.main_gameplay_view import MainGameplayView
+from controllers.gameplay_controller import GameplayController
+from app_data_model import AppDataModel
 
 class MainWindow(QMainWindow):
     """

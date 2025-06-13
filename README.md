@@ -1,6 +1,6 @@
-# Dragon Dice Digital - Architecture and Project Guide (PyGame Version)
+# Dragon Dice Digital - Architecture and Project Guide (PySide6 Version)
 
-This document outlines the architectural direction, domains of code, and file structure for the Dragon Dice digital companion project, built with Python and PyGame.
+This document outlines the architectural direction, domains of code, and file structure for the Dragon Dice digital companion project, built with Python and PySide6.
 
 ## 1. Project Overview
 
@@ -8,8 +8,8 @@ This project is a standalone desktop application that serves as a **digital comp
 
 ### Technology Stack
 
-* **Python:** A versatile, high-level programming language used for the entire application logic.
-* **PyGame:** A cross-platform set of Python modules designed for writing video games. It is used to create the window, handle user input (mouse, keyboard), and render all graphics and UI elements.
+*   **Python:** A versatile, high-level programming language used for the entire application logic.
+*   **PySide6 (Qt for Python):** A set of Python bindings for the Qt cross-platform C++ framework. It is used for creating the graphical user interface (GUI), managing windows, widgets, and event handling.
 
 ## 2. Architectural Direction
 
@@ -21,37 +21,48 @@ The application is fundamentally **reactive**. It does not run on a self-contain
 
 ### b. Separation of Concerns & Code Domains
 
-To manage complexity, the codebase is divided into four distinct domains, each with a clear responsibility.
+To manage complexity, the codebase is divided into several distinct domains, each with a clear responsibility, generally following a Model-View-Controller (MVC) or Model-View-ViewModel (MVVM) inspired pattern.
 
 | Domain                       | Responsibility                                                                                                                        | Key Files/Modules              |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| **1. App Flow & Control** | The "Orchestrator." Manages the main game loop, high-level screen transitions (e.g., Welcome, Setup, Gameplay), and event handling.      | `src/main.py`                  |
-| **2. UI Rendering & Mgmt.** | The "View." Creates, draws, and manages all interactive UI elements like buttons and input boxes. It relies on callbacks to signal actions. | `src/ui_manager.py`            |
-| **3. Game Logic & Engine** | The "Rules Lawyer." Enforces the official game rules. It contains the logic for turn sequences and processing player actions.      | `src/engine.py`                |
-| **4. Data Models** | The "Game Board." Pure data containers that represent the game state (players, terrains, etc.). They contain no logic.            | `src/models.py`                |
+| **1. Application Core**    | Initializes the Qt application, manages the main window, and the application's lifecycle.                                               | `main_app.py`, `main_window.py` |
+| **2. Views (UI Screens)**  | Individual screens or UI components that the user interacts with. They display data and emit signals based on user actions.             | `views/` (e.g., `welcome_view.py`, `player_setup_view.py`) |
+| **3. Controllers**         | Mediate between Views and the Model/Engine. They handle user input logic from views and update the model or trigger engine actions.     | `controllers/` (e.g., `gameplay_controller.py`) |
+| **4. Game Logic & Engine** | The "Rules Lawyer." Enforces game rules, manages game state transitions, and processes player actions.                                  | `engine.py`                    |
+| **5. Data Model (App State)** | The "Shared State." Holds application-wide data (like number of players, point values) and game setup data. Emits signals on change. | `app_data_model.py`            |
+| **6. Shared Constants**    | Defines constants used across the application (e.g., terrain types).                                                                  | `constants.py`                 |
 
 ## 3. File Structure
 
-The file structure is organized to reflect these four domains.
+The file structure is organized to reflect these domains.
 
 ```
 .
-├── src/
-│   ├── ui_manager.py         # Domain 2: Creates/manages all UI elements.
-│   ├── engine.py             # Domain 3: Implements game rules and logic.
-│   ├── models.py             # Domain 4: All data classes (GameState, Player, etc.).
-│   └── main.py               # Domain 1: The application's entry point and game loop.
-├── assets/                   # For images, fonts, etc.
-└── requirements.txt          # Lists project dependencies (e.g., pygame).
+├── main_app.py               # Domain 1: Application entry point, QApplication setup.
+├── main_window.py            # Domain 1: Main QMainWindow, manages view switching.
+├── app_data_model.py         # Domain 5: Shared application state and setup data.
+├── engine.py                 # Domain 4: Core game logic and state machine.
+├── constants.py              # Domain 6: Shared application constants.
+├── views/                    # Domain 2: Contains all UI screen widgets.
+│   ├── __init__.py
+│   ├── welcome_view.py
+│   ├── player_setup_view.py
+│   └── ... (other views)
+├── controllers/              # Domain 3: Contains controller classes.
+│   ├── __init__.py
+│   └── gameplay_controller.py
+└── requirements.txt          # Lists project dependencies (e.g., PySide6).
 ```
-
 
 ### Key File Descriptions
 
-* **`src/main.py`**: The root of the application. It initializes PyGame, creates the main window, and runs the game loop. It holds the high-level application state (e.g., `app_state`) and the "controller" logic that responds to UI events and calls methods on the `GameEngine`.
-* **`src/ui_manager.py`**: This module handles all UI rendering and interaction. It contains classes for `Button` and `TextInputBox`, and a main `UIManager` class to create, draw, and manage the UI for each screen.
-* **`src/engine.py`**: The core of the game's logic. It accepts player input through public methods like `submit_frontier_selection()` and `submit_distance_rolls()`. It validates these actions against the rules and updates the `GameState` accordingly.
-* **`src/models.py`**: A collection of data classes (`GameState`, `Player`, `Terrain`) and type definitions (`PlayerSetupData`) that serve as the single source of truth for the game's state.
+*   **`main_app.py`**: The entry point of the application. It initializes the `QApplication` and the `MainWindow`.
+*   **`main_window.py`**: Defines the main application window (`QMainWindow`). It is responsible for managing and switching between different views (screens) and may instantiate controllers.
+*   **`app_data_model.py`**: Holds shared application state, such as player setup choices, and the `GameEngine` instance once initialized. It uses Qt's signals and slots to notify other parts of the application about data changes.
+*   **`engine.py`**: Contains the core game logic, rules enforcement, and state machine for the game's progression.
+*   **`views/` directory**: Each `.py` file in this directory typically defines a `QWidget` representing a specific screen or major UI component (e.g., `WelcomeView`, `PlayerSetupView`). These views are responsible for displaying information and emitting signals upon user interaction.
+*   **`controllers/` directory**: Contains classes that act as intermediaries between views and the model/engine. They handle logic triggered by view signals and update the `AppDataModel` or `GameEngine`.
+*   **`constants.py`**: Stores global constants used throughout the application.
 
 ## 4. Operating the Project
 
@@ -76,10 +87,9 @@ Before running the application, ensure you have **Python** installed on your sys
 
 ### Running the Application
 
-To run the game, execute the `main.py` script from the project's root directory:
-
+To run the game, execute the `main_app.py` script from the project's root directory:
 ```bash
-python src/main.py
+python main_app.py
 ```
 
-This will launch the PyGame window and start the application, beginning with the Welcome Screen.
+This will launch the Qt window and start the application, beginning with the Welcome Screen.

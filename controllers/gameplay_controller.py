@@ -1,5 +1,5 @@
 from PySide6.QtCore import QObject, Slot
-from ..engine import GameEngine # Or AppDataModel if it holds the engine
+from engine import GameEngine # Or AppDataModel if it holds the engine
 
 class GameplayController(QObject):
     def __init__(self, game_engine: GameEngine, parent=None):

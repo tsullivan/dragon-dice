@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QLineE
                                QHBoxLayout, QComboBox, QFormLayout, QSpacerItem, QSizePolicy)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIntValidator, QPalette, QColor
-from ..constants import TERRAIN_TYPES
+from constants import TERRAIN_TYPES
 
 class PlayerSetupView(QWidget):
     """

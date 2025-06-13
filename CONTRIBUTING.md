@@ -40,9 +40,9 @@ This document provides guidelines for setting up your development environment on
 
 ### Running the Application
 
-To run the application for development or testing:
+To run the application for development or testing (ensure your virtual environment is activated):
 ```bash
-python src/main.py
+python main_app.py
 ```
 
 ## Making Changes
