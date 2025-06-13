@@ -2,6 +2,8 @@ from PySide6.QtCore import QObject, Signal, QMetaObject
 from typing import Optional
 from engine import GameEngine # Import the new GameEngine
 
+from .terrain_model import Terrain
+from constants import TERRAIN_DATA # Import raw terrain data
 class AppDataModel(QObject):
     """
     Manages the shared application state.
@@ -24,12 +26,24 @@ class AppDataModel(QObject):
         self._frontier_terrain = None
         self._distance_rolls = [] # List of tuples: (player_name, distance)
         self._game_engine: Optional[GameEngine] = None
+        self._all_terrains: list[Terrain] = []
+        self._terrain_display_options: list[str] = []
+        self._initialize_terrains()
 
         # For MainWindow to track signal connections to prevent duplicates
         self._frontier_set_connection: Optional[QMetaObject.Connection] = None
         self._distance_rolls_connection: Optional[QMetaObject.Connection] = None
         self._game_engine_initialized_connection: Optional[QMetaObject.Connection] = None
 
+    def _initialize_terrains(self):
+        try:
+            for name, colors in TERRAIN_DATA:
+                self._all_terrains.append(Terrain(name=name, colors=colors))
+            self._terrain_display_options = [str(terrain) for terrain in self._all_terrains]
+        except ValueError as e:
+            print(f"Error initializing terrains in AppDataModel: {e}")
+            self._all_terrains = []
+            self._terrain_display_options = []
 
     def set_num_players(self, count):
         self._num_players = count
@@ -50,6 +64,23 @@ class AppDataModel(QObject):
 
     def get_player_setup_data(self):
         return self._player_setup_data_list
+
+    def get_all_terrains_list(self) -> list[Terrain]:
+        return self._all_terrains
+
+    def get_terrain_display_options(self) -> list[str]:
+        return self._terrain_display_options
+
+    def get_required_dragon_count(self) -> int:
+        if self._point_value is None:
+            return 0
+        # Rule: 1 dragon per 24 points or part thereof
+        return (self._point_value + 23) // 24 # Integer division, ceiling
+
+    def get_proposed_frontier_terrains(self):
+        """Returns a list of tuples (player_name, proposed_terrain_type)"""
+        return [(p_data.get("name"), p_data.get("frontier_terrain_proposal"))
+                for p_data in self._player_setup_data_list if p_data.get("frontier_terrain_proposal")]
 
     def set_frontier_and_first_player(self, first_player_name, frontier_terrain):
         self._first_player_name = first_player_name

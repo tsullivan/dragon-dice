@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QLineE
                                QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIntValidator, QPalette, QColor
-from help_text_model import HelpTextModel
+from models.help_text_model import HelpTextModel
 from components.carousel import CarouselInputWidget # Updated import
 
 class DistanceRollsView(QWidget):
@@ -74,7 +74,7 @@ class DistanceRollsView(QWidget):
         layout.addWidget(help_group_box)
 
         # Navigation buttons
-        navigation_layout = QHBoxLayout()
+        navigation_layout = QHBoxLayout() # Define navigation_layout
         self.back_button = QPushButton("Back")
         self.back_button.clicked.connect(self.back_signal.emit)
         navigation_layout.addWidget(self.back_button)
@@ -83,7 +83,13 @@ class DistanceRollsView(QWidget):
         submit_button.clicked.connect(self._on_submit_rolls)
         navigation_layout.addWidget(submit_button)
 
+        # Correct order: Add navigation buttons, THEN the help panel.
+        # Instead of removing and re-adding, ensure correct add order.
+        # The help_group_box was added directly to 'layout'.
+        # We add navigation_layout first, then the help_group_box.
+        layout.removeItem(layout.itemAt(layout.indexOf(help_group_box))) # Remove the help_group_box item
         layout.addLayout(navigation_layout)
+        layout.addWidget(help_group_box)
         self.setLayout(layout)
 
     def _on_submit_rolls(self):

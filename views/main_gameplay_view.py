@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QHBoxLayout, QSpacerItem, QSizePolicy, QLineEdit,
+                               QHBoxLayout, QSpacerItem, QSizePolicy, QLineEdit, QGridLayout,
                                QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Slot, Signal
 from engine import GameEngine # Assuming engine.py is in the same directory level
-from help_text_model import HelpTextModel
+from models.help_text_model import HelpTextModel
 
 class MainGameplayView(QWidget):
     """
@@ -45,6 +45,24 @@ class MainGameplayView(QWidget):
         layout.addWidget(self.current_player_label, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.current_phase_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
+        # --- Game State Overview Layout ---
+        self.game_state_layout = QGridLayout()
+        self.game_state_layout.setContentsMargins(10, 10, 10, 10)
+        
+        # Player Army Details Section
+        self.player_armies_group = QGroupBox("Player Armies")
+        self.player_armies_layout = QVBoxLayout() # Each player's info will be a new label here
+        self.player_armies_group.setLayout(self.player_armies_layout)
+        self.game_state_layout.addWidget(self.player_armies_group, 0, 0)
+
+        # Terrain Status Section
+        self.terrain_status_group = QGroupBox("Terrain Status")
+        self.terrain_status_layout = QVBoxLayout() # Each terrain's info will be a new label here
+        self.terrain_status_group.setLayout(self.terrain_status_layout)
+        self.game_state_layout.addWidget(self.terrain_status_group, 0, 1)
+
+        layout.addLayout(self.game_state_layout)
+
         # --- Action Buttons Layout ---
         self.action_button_layout = QHBoxLayout()
 
@@ -65,6 +83,14 @@ class MainGameplayView(QWidget):
         self.action_button_layout.addWidget(self.maneuver_input_label)
         self.action_button_layout.addWidget(self.maneuver_input_field)
         self.action_button_layout.addWidget(self.submit_maneuver_button)
+
+        # --- Phase-Specific Prompts (e.g., Dragon Attack) ---
+        self.phase_specific_layout = QVBoxLayout()
+        self.dragon_attack_prompt_label = QLabel("<b>Dragon Attack Phase:</b> Resolve dragon attacks. (Details TBD)")
+        self.dragon_attack_continue_button = QPushButton("Continue After Dragon Attacks")
+        self.dragon_attack_continue_button.clicked.connect(lambda: self.game_engine.advance_phase()) # Example action
+        self.phase_specific_layout.addWidget(self.dragon_attack_prompt_label)
+        self.phase_specific_layout.addWidget(self.dragon_attack_continue_button)
 
         # --- Action Choice Layout (initially hidden) ---
         self.action_choice_layout = QHBoxLayout()
@@ -102,6 +128,7 @@ class MainGameplayView(QWidget):
         self.melee_input_layout.addWidget(self.submit_defender_save_button)
 
         layout.addLayout(self.action_button_layout)
+        layout.addLayout(self.phase_specific_layout)
         layout.addLayout(self.action_choice_layout)
         layout.addLayout(self.melee_input_layout)
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
@@ -141,44 +168,114 @@ class MainGameplayView(QWidget):
         self.current_player_label.setText(f"Current Player: {self.game_engine.get_current_player_name()}")
         self.current_phase_label.setText(f"Phase: {self.game_engine.get_current_phase_display()}")
         
-        current_step = self.game_engine.current_march_step
+        # Update Player Army Details
+        # Clear previous army details
+        for i in reversed(range(self.player_armies_layout.count())): 
+            self.player_armies_layout.itemAt(i).widget().deleteLater()
+
+        # TODO: Fetch actual army data from game_engine
+        # Example: player_army_data = self.game_engine.get_all_player_army_details()
+        # For now, using placeholder data based on initial setup:
+        for player_info in self.game_engine.player_setup_data: # Assuming this structure exists
+            name = player_info.get('name', 'N/A')
+            # Points would be dynamic in a real game, this is initial setup points
+            # TODO: Fetch dynamic army data (location, current points/health) from game_engine
+            home_army_name = player_info.get('home_army_name', 'Home Army')
+            home_army_points = player_info.get('home_army_points', 0)
+            campaign_army_name = player_info.get('campaign_army_name', 'Campaign Army')
+            campaign_army_points = player_info.get('campaign_army_points', 0)
+            
+            # Location and distance would be dynamic
+            # Example: location = self.game_engine.get_army_location(name, home_army_name)
+            # Example: distance = self.game_engine.get_army_distance_to_frontier(name, home_army_name)
+            
+            army_label_text = f"<b>{name}</b>:<br>"
+            army_label_text += f"  Captured Terrains: {0}/2<br>" # Placeholder
+            army_label_text += f"  <i>{home_army_name}</i>: {home_army_points} pts (at {player_info.get('home_terrain', 'N/A')})<br>"
+            army_label_text += f"  <i>{campaign_army_name}</i>: {campaign_army_points} pts (at Frontier - Placeholder)<br>"
+            if self.game_engine.num_players > 1: # Assuming num_players is accessible or passed
+                horde_army_name = player_info.get('horde_army_name', 'Horde Army')
+                horde_army_points = player_info.get('horde_army_points', 0)
+                army_label_text += f"  <i>{horde_army_name}</i>: {horde_army_points} pts (at Opponent's Home - Placeholder)<br>"
+            # This is a simplified display. You'd likely have more complex data structures
+            # for armies, their locations (Home, Campaign, Horde, specific terrain name), etc.
+            army_label = QLabel(army_label_text)
+            self.player_armies_layout.addWidget(army_label)
+
+        # Update Terrain Status
+        # Clear previous terrain details
+        for i in reversed(range(self.terrain_status_layout.count())):
+            self.terrain_status_layout.itemAt(i).widget().deleteLater()
+        # TODO: Fetch actual terrain status from game_engine
+        # Example: terrain_statuses = self.game_engine.get_all_terrain_statuses()
+        # For now, placeholder:
+        terrain_status_label = QLabel(f"<b>{self.game_engine.frontier_terrain}</b> (Frontier): Face {self.game_engine.distance_rolls[0][1]} (Example)") # Placeholder
+        self.terrain_status_layout.addWidget(terrain_status_label)
+        # Add Home Terrains similarly
+
+        current_phase = self.game_engine.current_phase
+        current_march_step = self.game_engine.current_march_step
+        current_action_step = self.game_engine.current_action_step
+
+        # Default all interactive sections to hidden, then show the active one
+        self.maneuver_yes_button.setVisible(False)
+        self.maneuver_no_button.setVisible(False)
+        self.maneuver_input_label.setVisible(False)
+        self.maneuver_input_field.setVisible(False)
+        self.submit_maneuver_button.setVisible(False)
+        self.melee_action_button.setVisible(False)
+        self.missile_action_button.setVisible(False)
+        self.magic_action_button.setVisible(False)
+        self.attacker_melee_label.setVisible(False)
+        self.attacker_melee_input.setVisible(False)
+        self.submit_attacker_melee_button.setVisible(False)
+        self.defender_save_label.setVisible(False)
+        self.defender_save_input.setVisible(False)
+        self.submit_defender_save_button.setVisible(False)
+        self.dragon_attack_prompt_label.setVisible(False)
+        self.dragon_attack_continue_button.setVisible(False)
+        # Add other phase-specific prompts to this default hiding list as they are created
 
         # Visibility for Maneuver Decision
-        show_maneuver_decision = current_step == "DECIDE_MANEUVER"
-        self.maneuver_yes_button.setVisible(show_maneuver_decision)
-        self.maneuver_no_button.setVisible(show_maneuver_decision)
+        if current_march_step == "DECIDE_MANEUVER":
+            self.maneuver_yes_button.setVisible(True)
+            self.maneuver_no_button.setVisible(True)
+        elif current_march_step == "AWAITING_MANEUVER_INPUT":
+            self.maneuver_input_label.setVisible(True)
+            self.maneuver_input_field.setVisible(True)
+            self.submit_maneuver_button.setVisible(True)
+        elif current_march_step == "SELECT_ACTION":
+            self.melee_action_button.setVisible(True)
+            self.missile_action_button.setVisible(True)
+            self.magic_action_button.setVisible(True)
+        elif current_action_step == "AWAITING_ATTACKER_MELEE_ROLL":
+            self.attacker_melee_label.setVisible(True)
+            self.attacker_melee_input.setVisible(True)
+            self.attacker_melee_input.clear() # Clear previous input
+            self.submit_attacker_melee_button.setVisible(True)
+        elif current_action_step == "AWAITING_DEFENDER_SAVES":
+            self.defender_save_label.setVisible(True)
+            self.defender_save_input.setVisible(True)
+            self.defender_save_input.clear() # Clear previous input
+            self.submit_defender_save_button.setVisible(True)
+        # Add elif for other action_steps (missile, magic) here
 
-        # Visibility for Maneuver Input
-        show_maneuver_input = current_step == "AWAITING_MANEUVER_INPUT"
-        self.maneuver_input_label.setVisible(show_maneuver_input)
-        self.maneuver_input_field.setVisible(show_maneuver_input)
-        self.submit_maneuver_button.setVisible(show_maneuver_input)
-
-        # Visibility for Action Choice
-        # Assuming a state like "SELECT_ACTION" in game_engine.current_march_step
-        show_action_choice = current_step == "SELECT_ACTION"
-        self.melee_action_button.setVisible(show_action_choice)
-        self.missile_action_button.setVisible(show_action_choice)
-        self.magic_action_button.setVisible(show_action_choice)
-
-        # Visibility for Melee Inputs
-        show_attacker_melee_input = current_step == "AWAITING_ATTACKER_MELEE_ROLL"
-        self.attacker_melee_label.setVisible(show_attacker_melee_input)
-        self.attacker_melee_input.setVisible(show_attacker_melee_input)
-        self.submit_attacker_melee_button.setVisible(show_attacker_melee_input)
-
-        show_defender_save_input = current_step == "AWAITING_DEFENDER_SAVES"
-        self.defender_save_label.setVisible(show_defender_save_input)
-        self.defender_save_input.setVisible(show_defender_save_input)
-        self.submit_defender_save_button.setVisible(show_defender_save_input)
-
-        # Initially hide defender inputs if attacker inputs are shown first
-        if show_attacker_melee_input:
-            self.defender_save_label.setVisible(False)
-            self.defender_save_input.setVisible(False)
-            self.submit_defender_save_button.setVisible(False)
+        # Visibility for Phase-Specific Prompts (only if no march/action step is active)
+        elif not current_march_step and not current_action_step:
+            if current_phase == "DRAGON_ATTACK":
+                self.dragon_attack_prompt_label.setVisible(True)
+                self.dragon_attack_continue_button.setVisible(True)
+            elif current_phase == "EIGHTH_FACE":
+                # TODO: Add UI for Eighth Face phase if needed, or a continue button
+                # For now, let's assume it might need a continue if not auto-resolved
+                # self.eighth_face_prompt_label.setVisible(True)
+                # self.eighth_face_continue_button.setVisible(True)
+                pass # Placeholder
+            # Add other phases like SPECIES_ABILITIES, RESERVES here
         
-        self._set_main_gameplay_help_text(current_step)
+        # Determine overall step for help text (can be phase, march_step, or action_step)
+        help_step_key = current_action_step or current_march_step or current_phase
+        self._set_main_gameplay_help_text(help_step_key)
 
     def _set_main_gameplay_help_text(self, current_step):
         self.help_text_edit.setHtml(

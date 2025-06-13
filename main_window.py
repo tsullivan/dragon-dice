@@ -7,7 +7,7 @@ from views.frontier_selection_view import FrontierSelectionView
 from views.distance_rolls_view import DistanceRollsView
 from views.main_gameplay_view import MainGameplayView
 from controllers.gameplay_controller import GameplayController
-from app_data_model import AppDataModel
+from models.app_data_model import AppDataModel
 
 class MainWindow(QMainWindow):
     """
@@ -55,8 +55,12 @@ class MainWindow(QMainWindow):
             # For now, let's prevent moving forward if data isn't set.
             return
 
+        terrain_options = self.data_model.get_terrain_display_options()
+        required_dragons = self.data_model.get_required_dragon_count()
         player_setup_widget = PlayerSetupView(num_players=self.data_model._num_players,
-                                              point_value=self.data_model._point_value)
+                                              point_value=self.data_model._point_value,
+                                              terrain_display_options=terrain_options,
+                                              required_dragons=required_dragons)
         player_setup_widget.player_data_finalized.connect(self.handle_player_data_finalized)
         player_setup_widget.back_signal.connect(self.show_welcome_view)
         # The all_setups_complete_signal is now emitted by the data_model
@@ -70,12 +74,13 @@ class MainWindow(QMainWindow):
     def show_frontier_selection_view(self):
         print("All player setups complete. Transitioning to Frontier Selection...")
         player_names = self.data_model.get_player_names()
-        if not player_names:
-            print("Error: No player names available for frontier selection.")
+        proposed_terrains = self.data_model.get_proposed_frontier_terrains() # New method in AppDataModel
+
+        if not player_names or not proposed_terrains:
+            print("Error: No player names or proposed terrains available for frontier selection.")
             # Handle error, maybe go back to welcome or show an error message
             return
-        
-        frontier_view = FrontierSelectionView(player_names=player_names)
+        frontier_view = FrontierSelectionView(player_names=player_names, proposed_frontier_terrains=proposed_terrains)
         frontier_view.frontier_data_submitted.connect(self.handle_frontier_submission)
         frontier_view.back_signal.connect(self.show_player_setup_view)
         # Connect the model's signal to the next view transition
@@ -121,5 +126,9 @@ class MainWindow(QMainWindow):
         gameplay_view = MainGameplayView(game_engine_instance)
         gameplay_view.maneuver_decision_signal.connect(self.current_controller.handle_maneuver_decision)
         gameplay_view.maneuver_input_submitted_signal.connect(self.current_controller.handle_maneuver_input_submission)
-        # Add connections for other gameplay actions here
+        gameplay_view.melee_action_selected_signal.connect(self.current_controller.handle_melee_action_selected)
+        gameplay_view.missile_action_selected_signal.connect(self.current_controller.handle_missile_action_selected)
+        gameplay_view.magic_action_selected_signal.connect(self.current_controller.handle_magic_action_selected)
+        gameplay_view.attacker_melee_results_submitted.connect(self.current_controller.handle_attacker_melee_submission)
+        gameplay_view.defender_save_results_submitted.connect(self.current_controller.handle_defender_save_submission)
         self.switch_view(gameplay_view)

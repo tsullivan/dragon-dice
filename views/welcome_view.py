@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
                                QHBoxLayout, QTextEdit, QGroupBox, QButtonGroup, QSpacerItem, QSizePolicy)
 from PySide6.QtCore import Qt, Signal
 
-from help_text_model import HelpTextModel
+from models.help_text_model import HelpTextModel
 class WelcomeView(QWidget):
     """
     The Welcome Screen view.
@@ -88,10 +88,15 @@ class WelcomeView(QWidget):
         self._set_welcome_help_text()
         help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
-        
+
         proceed_button = QPushButton("Proceed to Player Setup")
         proceed_button.clicked.connect(self.proceed_signal.emit) # Emit the signal
         layout.addWidget(proceed_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        # Correct order: Add proceed_button, THEN the help panel.
+        # Find the layout item containing help_group_box to remove it
+        item_to_remove = layout.itemAt(layout.indexOf(help_group_box))
+        if item_to_remove: layout.removeItem(item_to_remove)
+        layout.addWidget(help_group_box) # Re-add help panel at the end
 
         self.setLayout(layout)
 

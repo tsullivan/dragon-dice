@@ -26,11 +26,12 @@ To manage complexity, the codebase is divided into several distinct domains, eac
 | Domain                       | Responsibility                                                                                                                        | Key Files/Modules              |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
 | **1. Application Core**    | Initializes the Qt application, manages the main window, and the application's lifecycle.                                               | `main_app.py`, `main_window.py` |
-| **2. Views (UI Screens)**  | Individual screens or UI components that the user interacts with. They display data and emit signals based on user actions.             | `views/` (e.g., `welcome_view.py`, `player_setup_view.py`) |
+| **2. Views (UI Screens)**  | Individual screens or UI components that the user interacts with. They display data and emit signals based on user actions.             | `views/` (e.g., `welcome_view.py`) |
 | **3. Controllers**         | Mediate between Views and the Model/Engine. They handle user input logic from views and update the model or trigger engine actions.     | `controllers/` (e.g., `gameplay_controller.py`) |
 | **4. Game Logic & Engine** | The "Rules Lawyer." Enforces game rules, manages game state transitions, and processes player actions.                                  | `engine.py`                    |
-| **5. Data Model (App State)** | The "Shared State." Holds application-wide data (like number of players, point values) and game setup data. Emits signals on change. | `app_data_model.py`            |
+| **5. Data Models**         | Hold application-wide data (like player choices, game settings) and specific data structures (like help text). Emits signals on change. | `models/` (e.g., `app_data_model.py`, `help_text_model.py`) |
 | **6. Shared Constants**    | Defines constants used across the application (e.g., terrain types).                                                                  | `constants.py`                 |
+| **7. UI Components**       | Reusable custom UI widgets used across different views.                                                                               | `components/` (e.g., `carousel.py`) |
 
 ## 3. File Structure
 
@@ -44,13 +45,20 @@ The file structure is organized to reflect these domains.
 ├── engine.py                 # Domain 4: Core game logic and state machine.
 ├── constants.py              # Domain 6: Shared application constants.
 ├── views/                    # Domain 2: Contains all UI screen widgets.
-│   ├── __init__.py
-│   ├── welcome_view.py
-│   ├── player_setup_view.py
-│   └── ... (other views)
+│   ├── __init__.py           # Makes 'views' a Python package.
+│   ├── welcome_view.py       # UI for the initial welcome screen.
+│   ├── player_setup_view.py  # UI for individual player setup.
+│   └── ... (other view files)
 ├── controllers/              # Domain 3: Contains controller classes.
-│   ├── __init__.py
-│   └── gameplay_controller.py
+│   ├── __init__.py           # Makes 'controllers' a Python package.
+│   └── gameplay_controller.py  # Handles logic for main gameplay interactions.
+├── models/                   # Domain 5: Contains data model classes.
+│   ├── __init__.py           # Makes 'models' a Python package.
+│   ├── app_data_model.py     # Holds shared application state and setup data.
+│   └── help_text_model.py    # Provides structured help text.
+├── components/               # Domain 7: Contains reusable UI component widgets.
+│   ├── __init__.py           # Makes 'components' a Python package.
+│   └── carousel.py           # Custom carousel input widget.
 └── requirements.txt          # Lists project dependencies (e.g., PySide6).
 ```
 
@@ -58,10 +66,11 @@ The file structure is organized to reflect these domains.
 
 *   **`main_app.py`**: The entry point of the application. It initializes the `QApplication` and the `MainWindow`.
 *   **`main_window.py`**: Defines the main application window (`QMainWindow`). It is responsible for managing and switching between different views (screens) and may instantiate controllers.
-*   **`app_data_model.py`**: Holds shared application state, such as player setup choices, and the `GameEngine` instance once initialized. It uses Qt's signals and slots to notify other parts of the application about data changes.
 *   **`engine.py`**: Contains the core game logic, rules enforcement, and state machine for the game's progression.
 *   **`views/` directory**: Each `.py` file in this directory typically defines a `QWidget` representing a specific screen or major UI component (e.g., `WelcomeView`, `PlayerSetupView`). These views are responsible for displaying information and emitting signals upon user interaction.
 *   **`controllers/` directory**: Contains classes that act as intermediaries between views and the model/engine. They handle logic triggered by view signals and update the `AppDataModel` or `GameEngine`.
+*   **`models/` directory**: Houses classes that manage application data. `app_data_model.py` holds shared application state (like player choices, game settings) and uses Qt signals for updates. `help_text_model.py` centralizes help text strings.
+*   **`components/` directory**: Contains custom, reusable `QWidget` subclasses that can be incorporated into various views (e.g., `carousel.py` for a carousel input).
 *   **`constants.py`**: Stores global constants used throughout the application.
 
 ## 4. Operating the Project

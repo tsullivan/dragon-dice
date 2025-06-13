@@ -19,3 +19,28 @@ class GameplayController(QObject):
     def handle_maneuver_input_submission(self, maneuver_details: str):
         print(f"[GameplayController] Handling maneuver input: {maneuver_details}")
         self.game_engine.submit_maneuver_input(maneuver_details)
+
+    @Slot()
+    def handle_melee_action_selected(self):
+        print("[GameplayController] Melee action selected")
+        self.game_engine.select_action("MELEE")
+
+    @Slot()
+    def handle_missile_action_selected(self):
+        print("[GameplayController] Missile action selected")
+        self.game_engine.select_action("MISSILE")
+
+    @Slot()
+    def handle_magic_action_selected(self):
+        print("[GameplayController] Magic action selected")
+        self.game_engine.select_action("MAGIC")
+
+    @Slot(str)
+    def handle_attacker_melee_submission(self, results: str):
+        print(f"[GameplayController] Attacker melee results: {results}")
+        self.game_engine.submit_attacker_melee_results(results)
+
+    @Slot(str)
+    def handle_defender_save_submission(self, results: str):
+        print(f"[GameplayController] Defender save results: {results}")
+        self.game_engine.submit_defender_save_results(results)

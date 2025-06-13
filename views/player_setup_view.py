@@ -2,9 +2,9 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QLineE
                                QHBoxLayout, QSpacerItem, QSizePolicy, QGridLayout,
                                QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QIntValidator, QPalette, QColor
-from constants import TERRAIN_TYPES
-from help_text_model import HelpTextModel 
+from PySide6.QtGui import QPalette, QColor # QIntValidator no longer needed
+# TERRAIN_DISPLAY_OPTIONS will now come from AppDataModel via MainWindow
+from models.help_text_model import HelpTextModel 
 from components.carousel import CarouselInputWidget # Updated import
 
 class PlayerSetupView(QWidget):
@@ -19,11 +19,13 @@ class PlayerSetupView(QWidget):
     # all_setups_complete_signal = Signal()
 
 
-    def __init__(self, num_players, point_value, parent=None): # TODO: Add current_player_index etc. as params
+    def __init__(self, num_players, point_value, terrain_display_options, required_dragons, parent=None):
         super().__init__(parent)
         self.num_players = num_players
         self.point_value = point_value
         self.help_model = HelpTextModel()
+        self.required_dragons = required_dragons
+        self.terrain_display_options = terrain_display_options
         self.current_player_index = 0 # Start with the first player
 
         layout = QVBoxLayout(self)
@@ -36,6 +38,13 @@ class PlayerSetupView(QWidget):
         font.setBold(True)
         self.title_label.setFont(font)
         layout.addWidget(self.title_label)
+
+        # Informational text for required dragons
+        self.dragon_info_label = QLabel(f"Reminder: You must bring {self.required_dragons} dragon(s) to this game (1 per 24 points or part thereof).")
+        dragon_font = self.dragon_info_label.font()
+        dragon_font.setPointSize(dragon_font.pointSize() - 2) # Slightly smaller
+        self.dragon_info_label.setFont(dragon_font)
+        layout.addWidget(self.dragon_info_label, alignment=Qt.AlignmentFlag.AlignCenter)
         
         # Main Grid Layout for all inputs
         main_grid_layout = QGridLayout()
@@ -50,13 +59,13 @@ class PlayerSetupView(QWidget):
 
         # Home Terrain
         home_terrain_label = QLabel("Home Terrain:")
-        self.home_terrain_carousel = CarouselInputWidget(allowed_values=TERRAIN_TYPES, initial_value=TERRAIN_TYPES[0])
+        self.home_terrain_carousel = CarouselInputWidget(allowed_values=self.terrain_display_options, initial_value=self.terrain_display_options[0] if self.terrain_display_options else None)
         main_grid_layout.addWidget(home_terrain_label, 1, 0)
         main_grid_layout.addWidget(self.home_terrain_carousel, 1, 1, 1, 2) # Spans 2 columns
 
         # Proposed Frontier Terrain
         proposed_frontier_label = QLabel("Proposed Frontier Terrain:")
-        self.frontier_terrain_carousel = CarouselInputWidget(allowed_values=TERRAIN_TYPES, initial_value=TERRAIN_TYPES[0])
+        self.frontier_terrain_carousel = CarouselInputWidget(allowed_values=self.terrain_display_options, initial_value=self.terrain_display_options[0] if self.terrain_display_options else None)
         main_grid_layout.addWidget(proposed_frontier_label, 2, 0)
         main_grid_layout.addWidget(self.frontier_terrain_carousel, 2, 1, 1, 2) # Spans 2 columns
 
@@ -140,14 +149,41 @@ class PlayerSetupView(QWidget):
         self.back_button.clicked.connect(self.back_signal.emit)
         navigation_layout.addWidget(self.back_button)
 
-        self.next_button = QPushButton("Next Player") # Text changes based on current player
+        self.next_button = QPushButton("Next Player") # Define self.next_button
         if self.num_players == 1:
             self.next_button.setText("Start Game")
         self.next_button.clicked.connect(self._handle_next_action)
         navigation_layout.addWidget(self.next_button)
-        
-        layout.addLayout(navigation_layout)
 
+
+        # Ensure help_group_box is last by removing and re-adding if it was added before navigation
+        # This step might be redundant if the order of adding widgets is already correct,
+        # but it's a safeguard.
+        # However, looking at the current structure, help_group_box is added before navigation_layout.
+        # So, we need to move navigation_layout before help_group_box.
+
+        # Correct order: Add navigation buttons, THEN the help panel.
+        # Find the layout item containing help_group_box to remove it
+        item_to_remove = None
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            if item and item.widget() == help_group_box:
+                item_to_remove = item
+                break
+        if item_to_remove:
+            layout.removeItem(item_to_remove)
+        layout.addLayout(navigation_layout) # Add navigation
+        layout.addWidget(help_group_box) # Re-add help panel at the end
+
+        # Connect signals for live validation
+        self.name_input.textChanged.connect(self._validate_and_update_button_state)
+        self.home_army_name_input.textChanged.connect(self._validate_and_update_button_state)
+        self.campaign_army_name_input.textChanged.connect(self._validate_and_update_button_state)
+        self.home_army_points_input.valueChanged.connect(self._validate_and_update_button_state)
+        self.campaign_army_points_input.valueChanged.connect(self._validate_and_update_button_state)
+        if self.num_players > 1:
+            self.horde_army_name_input.textChanged.connect(self._validate_and_update_button_state)
+            self.horde_army_points_input.valueChanged.connect(self._validate_and_update_button_state)
 
         self.setLayout(layout)
         self.update_for_player(self.current_player_index) # Initial setup for player 1
@@ -155,9 +191,9 @@ class PlayerSetupView(QWidget):
     def _handle_next_action(self):
         player_name = self.name_input.text().strip()
         if not player_name:
-            self._set_status_message("Player Name cannot be empty.", "red")
+            # This case should be caught by _validate_and_update_button_state,
+            # making the button disabled. But as a safeguard:
             return
-
         try:
             home_pts = self.home_army_points_input.value()
             campaign_pts = self.campaign_army_points_input.value()
@@ -165,38 +201,29 @@ class PlayerSetupView(QWidget):
             if self.num_players > 1:
                 horde_pts = self.horde_army_points_input.value()
         except AttributeError: # Should not happen if CarouselInputWidget is used
-            self._set_status_message("Error reading army points.", "red")
+            # Also should be caught by validation enabling/disabling button
             return 
 
-        total_allocated_points = home_pts + campaign_pts + horde_pts
-        max_per_army = self.point_value // 2
-
-        if total_allocated_points > self.point_value:
-            self._set_status_message(f"Total points ({total_allocated_points}) exceed limit ({self.point_value}).", "red")
+        # Re-validate before proceeding, though button state should reflect this
+        if not self._validate_inputs():
+            self.next_button.setEnabled(False) # Ensure button is disabled
             return
         
-        army_checks = [
-            ("Home Army", home_pts),
-            ("Campaign Army", campaign_pts)
-        ]
-        if self.num_players > 1:
-            army_checks.append(("Horde Army", horde_pts))
+        # Extract terrain name from the display string
+        home_terrain_display_string = self.home_terrain_carousel.value()
+        home_terrain_name = home_terrain_display_string.split(" (")[0] if home_terrain_display_string else None
 
-        for army_name, army_points in army_checks:
-            if army_points > max_per_army:
-                self._set_status_message(f"{army_name} points ({army_points}) exceed max per army ({max_per_army}).", "red")
-                return
-
-        self._set_status_message("", "green") # Clear status on success
+        frontier_proposal_display_string = self.frontier_terrain_carousel.value()
+        frontier_proposal_name = frontier_proposal_display_string.split(" (")[0] if frontier_proposal_display_string else None
 
         player_data = {
             "name": player_name,
-            "home_terrain": self.home_terrain_carousel.value(),
+            "home_terrain": home_terrain_name,
             "home_army_name": self.home_army_name_input.text(),
             "home_army_points": home_pts,
             "campaign_army_name": self.campaign_army_name_input.text(),
             "campaign_army_points": campaign_pts,
-            "frontier_terrain_proposal": self.frontier_terrain_carousel.value(),
+            "frontier_terrain_proposal": frontier_proposal_name,
         }
         if self.num_players > 1:
             player_data["horde_army_name"] = self.horde_army_name_input.text()
@@ -206,10 +233,6 @@ class PlayerSetupView(QWidget):
         self.current_player_index += 1
         if self.current_player_index < self.num_players:
             self.update_for_player(self.current_player_index)
-        # else:
-            # The AppDataModel will now emit all_player_setups_complete
-            # self.all_setups_complete_signal.emit()
-            # self.next_button.setEnabled(False) # Disable button after all setups
 
     def _set_status_message(self, message, color_name="black"):
         self.status_label.setText(message)
@@ -217,11 +240,45 @@ class PlayerSetupView(QWidget):
         palette.setColor(QPalette.ColorRole.WindowText, QColor(color_name))
         self.status_label.setPalette(palette)
 
-    # def _update_status_label(self):
-        # This method could be used for live feedback on points.
-        # For now, validation happens on button click.
-        # self._set_status_message(f"Points: ... / {self.point_value}", "blue")
+    def _validate_inputs(self) -> bool:
+        """Performs all input validations and sets status message. Returns True if valid."""
+        player_name = self.name_input.text().strip()
+        if not player_name:
+            self._set_status_message("Player Name cannot be empty.", "red")
+            return False
 
+        try:
+            home_pts = self.home_army_points_input.value()
+            campaign_pts = self.campaign_army_points_input.value()
+            horde_pts = 0
+            if self.num_players > 1:
+                horde_pts = self.horde_army_points_input.value()
+        except AttributeError:
+            self._set_status_message("Error reading army points.", "red") # Should not occur
+            return False
+
+        total_allocated_points = home_pts + campaign_pts + horde_pts
+        if total_allocated_points != self.point_value:
+            self._set_status_message(f"Total points ({total_allocated_points}) must equal game limit ({self.point_value}).", "red")
+            return False
+
+        max_per_army = self.point_value // 2
+        army_point_values = [("Home Army", home_pts), ("Campaign Army", campaign_pts)]
+        if self.num_players > 1:
+            army_point_values.append(("Horde Army", horde_pts))
+
+        for name, points in army_point_values:
+            # Rule: Each army must have at least one unit (which costs at least 1 point).
+            if points < 1: # Assuming the smallest unit/item costs at least 1 point
+                self._set_status_message(f"{name} must have at least 1 point.", "red")
+                return False
+            if points > max_per_army:
+                self._set_status_message(f"{name} points ({points}) exceed max per army ({max_per_army}).", "red")
+                return False
+        
+        self._set_status_message("Inputs valid.", "green") # Or clear message: self._set_status_message("")
+        return True
+    
     def _set_player_setup_help_text(self):
         player_num = self.current_player_index + 1
         self.help_text_edit.setHtml(
@@ -229,6 +286,10 @@ class PlayerSetupView(QWidget):
                 player_num, self.num_players, self.point_value
             )
         )
+
+    def _validate_and_update_button_state(self): # Removed @Signal() decorator
+        is_valid = self._validate_inputs()
+        self.next_button.setEnabled(is_valid)
 
     def update_for_player(self, player_index):
         self.current_player_index = player_index
@@ -246,6 +307,7 @@ class PlayerSetupView(QWidget):
         self._set_player_setup_help_text() # Update help text for the current player
         self._set_status_message("") # Clear status for new player
         self.name_input.setFocus() # Focus on the first input field
+        self._validate_and_update_button_state() # Set initial button state
 
         if self.current_player_index == self.num_players - 1:
             self.next_button.setText("Start Game")
