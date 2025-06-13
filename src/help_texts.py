@@ -1,28 +1,82 @@
-HELP_TEXTS = {
-    "welcome": "Welcome to Dragon Dice! The goal is to be the first to capture two terrains by marching armies to them.\n\n"
-               "1. Choose the number of players (1-4).\n"
-               "2. Choose the army point size (e.g., 30 points). This determines the total value of dice each player uses to build their armies.",
-    "player_setup": "Player Setup:\n\n"
-                    "1. Name: Enter a name for this player.\n"
-                    "2. Home Terrain: Choose a terrain type to be this player's Home Terrain. Their Home Army starts here.\n"
-                    "3. Propose Frontier: Choose a terrain type to propose as the game's Frontier Terrain. This is a special neutral terrain that all players can try to capture.",
-    "gameplay_setup_frontier": "Determining the Frontier & First Player:\n\n"
-                               "1. Off-Screen Roll: Before this step, each player should have rolled their Horde Army dice. The player whose Horde Army has the most 'bullseye' results (or highest total pips if tied) gets to make two choices.\n"
-                               "2. Choose First Player: The winning player selects who will take the first turn of the game.\n"
-                               "3. Choose Frontier Terrain: The winning player also chooses which of the proposed terrains becomes the game's official Frontier Terrain.",
-    "gameplay_setup_distance": "Rolling for Starting Distance:\n\n"
-                               "For each Home Terrain and the selected Frontier Terrain, roll one die (any color, any face count).\n"
-                               "The result is the starting distance to that terrain. A roll of 7 counts as 6. This distance represents how many successful march results are needed to reach and capture it.",
-    "gameplay_maneuver_decision": "Maneuver Decision Phase:\n\n"
-                                  "Your turn has two main march phases (First March, then Second March).\n"
-                                  "Before rolling dice for the current march, you may choose to Maneuver one of your armies. A maneuver allows an army to move from one terrain to another without needing a dice roll. This is useful for repositioning forces or reinforcing a location.",
-    "gameplay_maneuver_input": "Select Army and Target for Maneuver:\n\n"
-                               "Choose one of your armies (Home, Horde, or Campaign) and the target terrain you wish to move it to. Review specific maneuver rules for any restrictions (e.g., moving into an opponent's Home Terrain).",
-    "gameplay_roll_for_march": "Roll for March:\n\n"
-                               "Roll your Marching Fire dice (typically red dice) for the current march.\n"
-                               "- March Results (footprint icons): For each footprint, you may advance one of your armies one step closer to its target terrain.\n"
-                               "- Other Icons (magic, missiles, melee): These are used for combat if armies meet. Combat rules will be detailed in later phases.",
-    "gameplay_reserves": "Reserves Phase:\n\n"
-                         "After both your First and Second March phases, you enter the Reserves phase.\n"
-                         "During this phase, you can bring new units into play at your Home Terrain or any other terrain you currently control, up to your army's total point limit. (This feature will be implemented later)."
-}
+# help_texts.py
+
+def welcome_text():
+    return (
+        "Welcome to the Dragon Dice Digital Companion!\n\n"
+        "Select the number of players participating and the agreed-upon total point value for each player's force. "
+        "Click 'Proceed to Setup' to continue."
+    )
+
+def player_setup_text(player_number, total_players, game_point_limit):
+    horde_info = "Horde, " if total_players > 1 else ""
+    return (
+        f"Player {player_number} Setup:\n\n"
+        "Enter your player name.\n"
+        f"Name your Home, {horde_info}and Campaign armies.\n"
+        f"Enter the point value for each of these armies. The total points for your armies should not exceed {game_point_limit}. "
+        f"No single army can be more than {game_point_limit // 2} points (half of your total force points, rounded down).\n"
+        "Use the '< Prev' and 'Next >' buttons to select your Home Terrain (from standard terrains) and propose a Frontier Terrain (from standard or advanced terrains).\n"
+        "Click 'Next Player' or 'Start Game' when done. Use Shift + Mouse Wheel to scroll horizontally if needed."
+    )
+
+def gameplay_setup_frontier_text():
+    return (
+        "Determine Frontier & First Player:\n\n"
+        "Players should now make a maneuver roll with their physical Horde Armies (as per rulebook Step 4: Determine Order of Play).\n"
+        "The player who rolled the most maneuver results chooses to either take the first turn OR select which proposed Frontier Terrain will be used.\n"
+        "Input these two selections using the buttons above. Click 'Confirm Selections' to proceed."
+    )
+
+def gameplay_setup_distance_text():
+    return (
+        "Enter Starting Distances (Rulebook Step 5):\n\n"
+        "Each player rolls their Home Terrain die to determine its initial battle distance. The player who selected the Frontier Terrain rolls that die.\n"
+        "If a terrain die rolls an 8, roll again. If it rolls a 7, turn it down to 6.\n"
+        "Enter the resulting number (1-6) for each terrain listed above. Click 'Submit Rolls & Start' to begin the game."
+    )
+
+def gameplay_maneuver_decision_text(player_name, current_turn_phase_display):
+    return (
+        f"Maneuver Decision for {player_name}:\n\n"
+        f"It is your turn, during the {current_turn_phase_display} phase.\n"
+        "Do you wish to attempt a maneuver with your army at the current terrain? "
+        "If yes, you will select an army and potentially face a counter-maneuver. "
+        "If no, you will proceed to the Action step of this march (if applicable) or the next phase."
+    )
+
+def gameplay_maneuver_input_text(player_name, current_turn_phase_display):
+    return (
+        f"Maneuver Action for {player_name} ({current_turn_phase_display}):\n\n"
+        "Select the army you wish to maneuver and the target terrain (if multiple options exist).\n"
+        "If an opponent has an army at the same terrain, they may oppose. Both players make a maneuver roll with their physical dice.\n"
+        "Enter the results into the application when prompted. (Input UI for this step is pending)."
+    )
+
+def gameplay_roll_for_march_text(player_name, current_turn_phase_display, action_type):
+    return (
+        f"Roll for {action_type} Action ({player_name} - {current_turn_phase_display}):\n\n"
+        f"You should now roll your physical dice for the {action_type} action as indicated by the terrain or army location (Reserves).\n"
+        "Resolve any Special Action Icons (SAIs) first. Then, input the total results. (Input UI for this step is pending)."
+    )
+
+def gameplay_reserves_text(player_name):
+    return (
+        f"Reserves Phase for {player_name}:\n\n"
+        "1. Reinforce Step: You may move any or all units from your Reserve Area to any terrains.\n"
+        "2. Retreat Step: After reinforcing, you may move any or all of your units from any terrains to your Reserve Area.\n"
+        "(Detailed UI for these actions is pending)."
+    )
+
+def gameplay_general_text():
+    return (
+        "General Gameplay:\n\n"
+        "Follow the turn sequence: Expire Effects, Eighth Face, Dragon Attack, Species Abilities, First March, Second March, Reserves.\n"
+        "The application will guide you through each phase and step, prompting for actions and results.\n"
+        "Remember, all dice rolling and physical army management happens outside this app."
+    )
+
+# You might still want a helper function here or in main.py to format phase names
+# if you need it for multiple help text functions.
+# For example:
+# def _format_phase_name(phase_str):
+#     return phase_str.replace('_', ' ').title()

@@ -1,9 +1,10 @@
 import pygame
-from ui import UIManager # Corrected import
+from ui import UIManager
 from engine import GameEngine
 from models import PlayerSetupData
-from help_texts import HELP_TEXTS
+import help_texts
 from ui_utils import blit_text_wrap
+import callbacks
 
 def main():
     # --- PyGame and Font Initialization ---
@@ -14,7 +15,7 @@ def main():
     font_large = pygame.font.Font(None, 60)
     font_medium = pygame.font.Font(None, 32)
     font_small = pygame.font.Font(None, 24)
-    font_help = pygame.font.Font(None, 22) # For help text
+    font_help = pygame.font.Font(None, 22)
 
     # --- High-Level Application State ---
     app_state = {
@@ -50,120 +51,6 @@ def main():
     }
     
     ui_manager = UIManager()
-
-
-    # --- Callback Functions (The "Controller" Logic) ---
-
-    def handle_selection(state_key, value):
-        """Generic handler to update state and flag UI for a rebuild."""
-        if app_state[state_key] != value:
-            app_state[state_key] = value
-            app_state["ui_needs_update"] = True
-    
-    def proceed_to_setup():
-        """Transitions from the welcome screen to player setup."""
-        if not app_state["num_players"] or not app_state["point_value"]:
-            return
-        app_state["screen"] = "player_setup"
-        app_state["current_name"] = f"Player {app_state['current_setup_index'] + 1}"
-        app_state["ui_needs_update"] = True
-
-    def handle_cycle_terrain(state_key_terrain_name: str, direction: int):
-        """Cycles through terrain options for Home or Frontier."""
-        standard_terrains = ['Coastland', 'Deadland', 'Flatland', 'Highland', 'Swampland', 'Feyland', 'Wasteland']
-        advanced_terrains = ['Castle', "Dragon's Lair", 'Grove', 'Vortex']
-        
-        options_list = []
-        if state_key_terrain_name == "current_home_terrain":
-            options_list = standard_terrains
-        elif state_key_terrain_name == "current_frontier_terrain":
-            options_list = standard_terrains + advanced_terrains
-        else:
-            return # Should not happen
-
-        current_selection = app_state[state_key_terrain_name]
-        current_index = -1
-        if current_selection in options_list:
-            current_index = options_list.index(current_selection)
-        
-        new_index = (current_index + direction + len(options_list)) % len(options_list)
-        app_state[state_key_terrain_name] = options_list[new_index]
-        app_state["ui_needs_update"] = True
-        # Also ensure the "Next/Start" button's active state is re-evaluated
-        # This happens because ui_needs_update = True rebuilds the UI, including that button.
-
-
-    def handle_next_player():
-        """Saves the current player's setup and moves to the next, or starts the game."""
-        # Validation for required fields
-        required_app_state_keys = [
-            'current_name', 'current_home_terrain', 'current_frontier_terrain',
-            'current_home_army_name', 'current_campaign_army_name',
-            'current_home_army_points', 'current_campaign_army_points'
-        ]
-        if app_state["num_players"] > 1:
-            required_app_state_keys.extend(['current_horde_army_name', 'current_horde_army_points'])
-
-        if not all(app_state.get(key) for key in required_app_state_keys):
-            print("Error: Not all required fields are filled for player setup.")
-            # Optionally, provide more specific feedback to the user via UI
-            return
-
-        app_state["all_player_setups"].append({
-            "name": app_state['current_name'],
-            "home_terrain": app_state['current_home_terrain'],
-            "frontier_terrain": app_state['current_frontier_terrain'],
-            "home_army_name": app_state['current_home_army_name'],
-            "horde_army_name": app_state['current_horde_army_name'],
-            "campaign_army_name": app_state['current_campaign_army_name'],
-            "home_army_points": app_state['current_home_army_points'],
-            "horde_army_points": app_state['current_horde_army_points'],
-            "campaign_army_points": app_state['current_campaign_army_points'],
-        })
-
-        if app_state["current_setup_index"] < app_state["num_players"] - 1:
-            app_state["current_setup_index"] += 1
-            app_state["current_name"] = f"Player {app_state['current_setup_index'] + 1}"
-            app_state["current_home_terrain"] = None
-            app_state["current_home_army_name"] = ""
-            app_state["current_horde_army_name"] = ""
-            app_state["current_campaign_army_name"] = ""
-            app_state["current_home_army_points"] = ""
-            app_state["current_horde_army_points"] = ""
-            app_state["current_campaign_army_points"] = ""
-            app_state["current_frontier_terrain"] = None
-        else:
-            app_state["game_engine"] = GameEngine(app_state["point_value"], app_state["all_player_setups"])
-            app_state["screen"] = "gameplay"
-        
-        app_state["ui_needs_update"] = True
-
-    def handle_frontier_submission():
-        """Submits the chosen frontier and first player to the game engine."""
-        selections = app_state
-        if selections["current_frontier_selection"] and selections["current_first_player_selection"]:
-            selections["game_engine"].submit_frontier_selection(
-                selections["current_frontier_selection"],
-                selections["current_first_player_selection"]
-            )
-            app_state["ui_needs_update"] = True
-    
-    def handle_rolls_submission(input_boxes):
-        """Submits the terrain distance rolls to the game engine."""
-        rolls = [
-            {"terrain_id": item["terrain_id"], "value": item["input_box"].text}
-            for item in input_boxes
-        ]
-        app_state["game_engine"].submit_distance_rolls(rolls)
-        app_state["ui_needs_update"] = True
-
-    def handle_maneuver_decision(will_maneuver: bool):
-        """Handles the player's maneuver decision by calling the engine."""
-        engine = app_state.get("game_engine")
-        if engine:
-            engine.process_maneuver_decision(will_maneuver)
-            app_state["ui_needs_update"] = True
-
 
     # --- Main Game Loop ---
     running = True
@@ -217,6 +104,7 @@ def main():
                     elif key == "horde_army_points": app_state["current_horde_army_points"] = value
                     elif key == "campaign_army_points": app_state["current_campaign_army_points"] = value
                     # Add other mappings if new text inputs are added with different IDs
+                    app_state["ui_needs_update"] = True # Trigger UI refresh for validation display
                 # No ui_needs_update = True here, as TextInputBox draws its own text.
                 # However, if button active states depend on these, then it might be needed.
                 # For now, the "Next/Start" button re-evaluates its active state during UI rebuild.
@@ -227,15 +115,43 @@ def main():
             ui_manager.fixed_elements = [] # Clear fixed UI elements
             
             if app_state["screen"] == "welcome":
+                # Reset player setup specific states when returning to welcome
+                app_state["all_player_setups"] = []
+                app_state["current_setup_index"] = 0
+                app_state["current_name"] = ""
+                app_state["current_home_terrain"] = None
+                app_state["current_home_army_name"] = ""
+                app_state["current_horde_army_name"] = ""
+                app_state["current_campaign_army_name"] = ""
+                app_state["current_home_army_points"] = ""
+                app_state["current_horde_army_points"] = ""
+                app_state["current_campaign_army_points"] = ""
+                app_state["current_frontier_terrain"] = None
+                app_state["game_engine"] = None # Clear previous game engine
+
                 ui_manager.create_welcome_ui(
                     {"num_players": app_state["num_players"], "point_value": app_state["point_value"]},
                     {
-                        'on_player_select': lambda n: handle_selection("num_players", n),
-                        'on_point_select': lambda p: handle_selection("point_value", p),
-                        'on_proceed': proceed_to_setup
+                        'on_player_select': lambda n: callbacks.handle_selection(app_state, "num_players", n),
+                        'on_point_select': lambda p: callbacks.handle_selection(app_state, "point_value", p),
+                        'on_proceed': lambda: callbacks.proceed_to_setup(app_state)
                     }
                 )
             elif app_state["screen"] == "player_setup":
+                # Calculate points for UI display
+                current_total_allocated = 0
+                max_points_per_army = 0
+                game_point_limit = app_state.get("point_value", 0)
+                if game_point_limit: # Ensure point_value is set
+                    max_points_per_army = game_point_limit // 2
+                    try:
+                        current_total_allocated += int(app_state.get("current_home_army_points") or 0)
+                        current_total_allocated += int(app_state.get("current_campaign_army_points") or 0)
+                        if app_state["num_players"] > 1:
+                            current_total_allocated += int(app_state.get("current_horde_army_points") or 0)
+                    except ValueError:
+                        pass # Will be handled by UIManager's validation for button state
+
                 content_width = ui_manager.create_player_setup_ui(
                     app_state['current_setup_index'],
                     {
@@ -248,53 +164,59 @@ def main():
                         "home_army_points": app_state["current_home_army_points"],
                         "horde_army_points": app_state["current_horde_army_points"],
                         "campaign_army_points": app_state["current_campaign_army_points"],
-                        "total_players": app_state["num_players"]
+                        "total_players": app_state["num_players"],
+                        # For display and validation in UIManager
+                        "game_point_limit": game_point_limit,
+                        "current_total_allocated_points_str": str(current_total_allocated),
+                        "max_points_per_army": max_points_per_army,
                     },
                     {
-                        'on_prev_home_terrain': lambda: handle_cycle_terrain("current_home_terrain", -1),
-                        'on_next_home_terrain': lambda: handle_cycle_terrain("current_home_terrain", 1),
-                        'on_prev_frontier_proposal': lambda: handle_cycle_terrain("current_frontier_terrain", -1),
-                        'on_next_frontier_proposal': lambda: handle_cycle_terrain("current_frontier_terrain", 1),
-                        'on_next': handle_next_player
+                        'on_prev_home_terrain': lambda: callbacks.handle_cycle_terrain(app_state, "current_home_terrain", -1),
+                        'on_next_home_terrain': lambda: callbacks.handle_cycle_terrain(app_state, "current_home_terrain", 1),
+                        'on_prev_frontier_proposal': lambda: callbacks.handle_cycle_terrain(app_state, "current_frontier_terrain", -1),
+                        'on_next_frontier_proposal': lambda: callbacks.handle_cycle_terrain(app_state, "current_frontier_terrain", 1),
+                        'on_next': lambda: callbacks.handle_next_player(app_state, GameEngine)
                     }
                 )
                 app_state["player_setup_panel_content_width"] = content_width
 
             elif app_state["screen"] == "gameplay":
-                engine_state = app_state["game_engine"].game_state
-                if engine_state.game_phase == 'SETUP':
-                    if engine_state.setup_step == 'DETERMINING_FRONTIER':
-                        ui_manager.create_frontier_selection_ui(
-                            engine_state.players,
-                            {"first_player": app_state["current_first_player_selection"], 
-                             "frontier_terrain": app_state["current_frontier_selection"]},
-                            {
-                                'on_first_player_select': lambda p: handle_selection("current_first_player_selection", p),
-                                'on_frontier_select': lambda t: handle_selection("current_frontier_selection", t),
-                                'on_submit': handle_frontier_submission
-                            }
-                        )
-                    elif engine_state.setup_step == 'AWAITING_DISTANCE_ROLLS':
-                        terrains = engine_state.terrains + ([engine_state.frontier_terrain] or [])
-                        ui_manager.create_distance_rolls_ui(terrains, {'on_submit': handle_rolls_submission})
-                
-                elif engine_state.game_phase == 'GAMEPLAY':
-                    # Current player's turn actions
-                    if engine_state.current_turn_phase == 'FIRST_MARCH':
-                        if engine_state.current_march_step == 'DECIDE_MANEUVER':
-                            ui_manager.create_maneuver_decision_ui(
+                game_engine_instance = app_state.get("game_engine")
+                if game_engine_instance:
+                    engine_state = game_engine_instance.game_state
+                    if engine_state.game_phase == 'SETUP':
+                        if engine_state.setup_step == 'DETERMINING_FRONTIER':
+                            ui_manager.create_frontier_selection_ui(
+                                engine_state.players,
+                                {"first_player": app_state["current_first_player_selection"], 
+                                 "frontier_terrain": app_state["current_frontier_selection"]},
                                 {
-                                    'on_maneuver_yes': lambda: handle_maneuver_decision(True),
-                                    'on_maneuver_no': lambda: handle_maneuver_decision(False)
+                                    'on_first_player_select': lambda p_name: callbacks.handle_selection(app_state, "current_first_player_selection", p_name),
+                                    'on_frontier_select': lambda t_type: callbacks.handle_selection(app_state, "current_frontier_selection", t_type),
+                                    'on_submit': lambda: callbacks.handle_frontier_submission(app_state)
                                 }
                             )
-                        # elif engine_state.current_march_step == 'AWAITING_MANEUVER_INPUT':
-                        #     # Future: ui_manager.create_maneuver_input_ui(...)
-                        #     pass 
-                        # elif engine_state.current_march_step == 'ROLL_FOR_MARCH':
-                        #     # Future: ui_manager.create_march_roll_ui(...)
-                        #     pass
-                            
+                        elif engine_state.setup_step == 'AWAITING_DISTANCE_ROLLS':
+                            terrains = engine_state.terrains + ([engine_state.frontier_terrain] if engine_state.frontier_terrain else [])
+                            ui_manager.create_distance_rolls_ui(terrains, {'on_submit': lambda ib: callbacks.handle_rolls_submission(app_state, ib)})
+                    
+                    elif engine_state.game_phase == 'GAMEPLAY':
+                        # Current player's turn actions
+                        if engine_state.current_turn_phase == 'FIRST_MARCH': # Check current_turn_phase first
+                            if engine_state.current_march_step == 'DECIDE_MANEUVER':
+                                ui_manager.create_maneuver_decision_ui(
+                                    {
+                                        'on_maneuver_yes': lambda: callbacks.handle_maneuver_decision(app_state, True),
+                                        'on_maneuver_no': lambda: callbacks.handle_maneuver_decision(app_state, False)
+                                    }
+                                )
+                            # elif engine_state.current_march_step == 'AWAITING_MANEUVER_INPUT':
+                            #     # Future: ui_manager.create_maneuver_input_ui(...)
+                            #     pass 
+                            # elif engine_state.current_march_step == 'ROLL_FOR_MARCH':
+                            #     # Future: ui_manager.create_march_roll_ui(...)
+                            #     pass
+                                
             app_state["ui_needs_update"] = False # UI is now up to date
 
         # --- Drawing ---
@@ -391,7 +313,8 @@ def main():
             pygame.draw.rect(screen, (70, 80, 90), panel_rect, 2, border_radius=5) # Frame, border 2px
 
         elif app_state["screen"] == "gameplay":
-            app_state["game_engine"].draw(screen)
+            if app_state["game_engine"]:
+                app_state["game_engine"].draw(screen)
 
         # --- Drawing Help Panel (Common to most screens) ---
         current_help_key = None
@@ -400,9 +323,10 @@ def main():
         elif app_state["screen"] == "player_setup":
             current_help_key = "player_setup"
         elif app_state["screen"] == "gameplay" and app_state["game_engine"]:
-            engine_state = app_state["game_engine"].game_state
-            if engine_state.game_phase == 'SETUP':
-                # Titles and labels for gameplay setup steps drawn here, before engine.draw()
+            engine_state = app_state["game_engine"].game_state # Already checked app_state["game_engine"]
+            # Ensure engine_state is not None, though it should be guaranteed if game_engine exists
+            if engine_state and engine_state.game_phase == 'SETUP':
+                # Titles and labels for gameplay setup steps
                 if engine_state.setup_step == 'DETERMINING_FRONTIER':
                     current_help_key = "gameplay_setup_frontier"
                     title_surf = font_large.render("Determine Frontier & First Player", True, "white")
@@ -423,8 +347,7 @@ def main():
                     title_rect = title_surf.get_rect(center=(screen.get_width() / 2, 80))
                     screen.blit(title_surf, title_rect)
                     # Labels for individual roll inputs are handled by UIManager in this case
-
-            elif engine_state.game_phase == 'GAMEPLAY':
+            elif engine_state and engine_state.game_phase == 'GAMEPLAY':
                 if engine_state.current_turn_phase in ['FIRST_MARCH', 'SECOND_MARCH']:
                     if engine_state.current_march_step == 'DECIDE_MANEUVER':
                         current_help_key = "gameplay_maneuver_decision"
@@ -435,44 +358,85 @@ def main():
                 elif engine_state.current_turn_phase == 'RESERVES': # Assuming a general help for reserves for now
                     current_help_key = "gameplay_reserves"
 
+        # Fetch and render help text using the new function-based approach
+        text_to_render = ""
+        if current_help_key:
+            if current_help_key == "welcome":
+                text_to_render = help_texts.welcome_text()
+            elif current_help_key == "player_setup":
+                text_to_render = help_texts.player_setup_text(
+                    app_state['current_setup_index'] + 1,
+                    app_state['num_players'],
+                    app_state['point_value']
+                )
+            elif current_help_key == "gameplay_setup_frontier":
+                text_to_render = help_texts.gameplay_setup_frontier_text()
+            elif current_help_key == "gameplay_setup_distance":
+                text_to_render = help_texts.gameplay_setup_distance_text()
+            else: # Gameplay help texts that require game_engine
+                game_engine_instance = app_state.get("game_engine")
+                if game_engine_instance:
+                    gs = game_engine_instance.game_state
+                    if current_help_key == "gameplay_maneuver_decision":
+                        player_name = gs.players[gs.current_player_index].name
+                        turn_phase_display = gs.current_turn_phase.replace('_', ' ').title()
+                        text_to_render = help_texts.gameplay_maneuver_decision_text(player_name, turn_phase_display)
+                    elif current_help_key == "gameplay_maneuver_input":
+                        player_name = gs.players[gs.current_player_index].name
+                        turn_phase_display = gs.current_turn_phase.replace('_', ' ').title()
+                        text_to_render = help_texts.gameplay_maneuver_input_text(player_name, turn_phase_display)
+                    elif current_help_key == "gameplay_roll_for_march":
+                        player_name = gs.players[gs.current_player_index].name
+                        turn_phase_display = gs.current_turn_phase.replace('_', ' ').title()
+                        action_type = "March" # Placeholder
+                        text_to_render = help_texts.gameplay_roll_for_march_text(player_name, turn_phase_display, action_type)
+                    elif current_help_key == "gameplay_reserves":
+                        player_name = gs.players[gs.current_player_index].name
+                        text_to_render = help_texts.gameplay_reserves_text(player_name)
+                # Fallback or general gameplay help if specific context not met but key is gameplay_general
+                elif current_help_key == "gameplay_general":
+                    text_to_render = help_texts.gameplay_general_text()
 
-        if current_help_key and current_help_key in HELP_TEXTS:
+        if text_to_render:
             # Recalculate total text height if help content changed
             if app_state["current_rendered_help_key"] != current_help_key:
-                text_to_render = HELP_TEXTS[current_help_key]
                 calculated_total_height = blit_text_wrap(None, text_to_render, (0,0), font_help, "white", help_content_width, 4)
                 app_state["total_help_text_height"] = calculated_total_height
                 app_state["current_rendered_help_key"] = current_help_key
                 app_state["help_scroll_offset_y"] = 0 # Reset scroll on new text
 
-            # Draw the outer panel background
-            help_panel_bg_surface = pygame.Surface(help_panel_rect.size, pygame.SRCALPHA)
-            help_panel_bg_surface.fill((20, 20, 20, 210)) 
-            screen.blit(help_panel_bg_surface, help_panel_rect.topleft)
-            pygame.draw.rect(screen, (80, 80, 80), help_panel_rect, 1) # Border
+            if text_to_render: # Ensure we have text before trying to draw
+                # Draw the outer panel background
+                help_panel_bg_surface = pygame.Surface(help_panel_rect.size, pygame.SRCALPHA)
+                help_panel_bg_surface.fill((20, 20, 20, 210)) 
+                screen.blit(help_panel_bg_surface, help_panel_rect.topleft)
+                pygame.draw.rect(screen, (80, 80, 80), help_panel_rect, 1) # Border
 
-            # Create a surface for the scrollable content (clipping)
-            help_content_surface = pygame.Surface((help_content_width, help_content_max_visible_height), pygame.SRCALPHA)
-            help_content_surface.fill((0,0,0,0)) # Transparent
+                # Create a surface for the scrollable content (clipping)
+                help_content_surface = pygame.Surface((help_content_width, help_content_max_visible_height), pygame.SRCALPHA)
+                help_content_surface.fill((0,0,0,0)) # Transparent
 
-            # Blit the wrapped text onto this content surface, offset by scrolling
-            blit_text_wrap(help_content_surface, HELP_TEXTS[current_help_key],
-                           (0, -app_state["help_scroll_offset_y"]), # Start drawing at y=0, scrolled up by offset
-                           font_help, (220, 220, 220),
-                           help_content_width)
+                # Blit the wrapped text onto this content surface, offset by scrolling
+                blit_text_wrap(help_content_surface, text_to_render,
+                               (0, -app_state["help_scroll_offset_y"]), # Start drawing at y=0, scrolled up by offset
+                               font_help, (220, 220, 220),
+                               help_content_width)
 
-            # Blit the content surface (with clipped text) onto the main screen
-            screen.blit(help_content_surface, (help_panel_rect.left + HELP_PANEL_PADDING_X, help_panel_rect.top + HELP_PANEL_PADDING_Y))
+                # Blit the content surface (with clipped text) onto the main screen
+                screen.blit(help_content_surface, (help_panel_rect.left + HELP_PANEL_PADDING_X, help_panel_rect.top + HELP_PANEL_PADDING_Y))
 
-            # Optional: Draw a scrollbar indicator
-            if app_state["total_help_text_height"] > help_content_max_visible_height:
-                scrollbar_track_height = help_content_max_visible_height - 4 # Small padding for scrollbar
-                thumb_height_ratio = help_content_max_visible_height / app_state["total_help_text_height"]
-                scrollbar_thumb_height = max(10, scrollbar_track_height * thumb_height_ratio) # Min thumb height 10px
-                scroll_ratio = app_state["help_scroll_offset_y"] / (app_state["total_help_text_height"] - help_content_max_visible_height)
-                scrollbar_thumb_y = (help_panel_rect.top + HELP_PANEL_PADDING_Y + 2) + scroll_ratio * (scrollbar_track_height - scrollbar_thumb_height)
-                scrollbar_thumb_rect = pygame.Rect(help_panel_rect.right - HELP_PANEL_PADDING_X + 3, scrollbar_thumb_y, 8, scrollbar_thumb_height)
-                pygame.draw.rect(screen, (100, 100, 100), scrollbar_thumb_rect, border_radius=4)
+                # Optional: Draw a scrollbar indicator
+                if app_state["total_help_text_height"] > help_content_max_visible_height:
+                    scrollbar_track_height = help_content_max_visible_height - 4 # Small padding for scrollbar
+                    thumb_height_ratio = help_content_max_visible_height / app_state["total_help_text_height"]
+                    scrollbar_thumb_height = max(10, scrollbar_track_height * thumb_height_ratio) # Min thumb height 10px
+                    if (app_state["total_help_text_height"] - help_content_max_visible_height) > 0: # Avoid division by zero
+                        scroll_ratio = app_state["help_scroll_offset_y"] / (app_state["total_help_text_height"] - help_content_max_visible_height)
+                    else:
+                        scroll_ratio = 0
+                    scrollbar_thumb_y = (help_panel_rect.top + HELP_PANEL_PADDING_Y + 2) + scroll_ratio * (scrollbar_track_height - scrollbar_thumb_height)
+                    scrollbar_thumb_rect = pygame.Rect(help_panel_rect.right - HELP_PANEL_PADDING_X + 3, scrollbar_thumb_y, 8, scrollbar_thumb_height)
+                    pygame.draw.rect(screen, (100, 100, 100), scrollbar_thumb_rect, border_radius=4)
 
         # UIManager draws its fixed elements (buttons, inputs not on a panel)
         ui_manager.draw_fixed_content(screen)
