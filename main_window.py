@@ -137,4 +137,5 @@ class MainWindow(QMainWindow):
         gameplay_view.magic_action_selected_signal.connect(self.current_controller.handle_magic_action_selected)
         gameplay_view.attacker_melee_results_submitted.connect(self.current_controller.handle_attacker_melee_submission)
         gameplay_view.defender_save_results_submitted.connect(self.current_controller.handle_defender_save_submission)
+        gameplay_view.continue_to_next_phase_signal.connect(self.current_controller.handle_continue_to_next_phase)
         self.switch_view(gameplay_view)

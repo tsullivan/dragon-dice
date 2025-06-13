@@ -44,3 +44,8 @@ class GameplayController(QObject):
     def handle_defender_save_submission(self, results: str):
         print(f"[GameplayController] Defender save results: {results}")
         self.game_engine.submit_defender_save_results(results)
+
+    @Slot()
+    def handle_continue_to_next_phase(self):
+        print("[GameplayController] Continue to next phase requested.")
+        self.game_engine.advance_phase()

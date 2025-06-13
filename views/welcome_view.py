@@ -77,6 +77,7 @@ class WelcomeView(QWidget):
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
+        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
         self._set_welcome_help_text()
         help_layout.addWidget(self.help_text_edit)
         middle_section_layout.addWidget(help_group_box, 1) # Add stretch factor
@@ -114,4 +115,3 @@ class WelcomeView(QWidget):
 
     def _set_welcome_help_text(self):
         self.help_text_edit.setHtml(self.help_model.get_welcome_help())
-

@@ -131,6 +131,7 @@ class PlayerSetupView(QWidget):
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
+        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
         help_layout.addWidget(self.help_text_edit)
         middle_section_layout.addWidget(help_group_box, 1) # Add stretch factor
 

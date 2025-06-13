@@ -2,6 +2,8 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
                                QSpacerItem, QSizePolicy, QHBoxLayout, QButtonGroup,
                                QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont # Added for QFont
+
 from models.help_text_model import HelpTextModel
 
 class FrontierSelectionView(QWidget):
@@ -15,94 +17,113 @@ class FrontierSelectionView(QWidget):
     def __init__(self, player_names, proposed_frontier_terrains, parent=None):
         super().__init__(parent)
         self.player_names = player_names
-        self.proposed_frontier_terrains = proposed_frontier_terrains # List of (player_name, terrain_type)
+        # proposed_frontier_terrains is expected to be a list of (player_name, terrain_type)
+        self.proposed_frontier_terrains = proposed_frontier_terrains
         self.help_model = HelpTextModel()
-        self.selected_frontier_terrain_type = None # To store just the terrain type
+        self.setWindowTitle("Determine Frontier and First Player")
 
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+        # Overall vertical layout
+        main_layout = QVBoxLayout(self)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
 
-        title_label = QLabel("Determine Frontier & First Player")
+        # Title
+        title_label = QLabel("Determine Frontier and First Player")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         font = title_label.font()
-        font.setPointSize(24)
+        font.setPointSize(22) # Adjusted size
         font.setBold(True)
         title_label.setFont(font)
-        layout.addWidget(title_label)
+        main_layout.addWidget(title_label)
 
-        # First Player Selection with Buttons
-        first_player_label = QLabel("Select First Player:")
-        first_player_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(first_player_label)
+        # Middle Section (Selections on Left, Help on Right)
+        middle_section_layout = QHBoxLayout()
+
+        # Left Side: Selections
+        selections_widget = QWidget() # Container for left side selections
+        selections_v_layout = QVBoxLayout(selections_widget)
+        selections_v_layout.setContentsMargins(0,0,0,0) # Remove margins if groupbox is not used
+
+        # First Player Selection
+        first_player_group = QGroupBox("Select First Player") # Visually group
+        first_player_v_layout = QVBoxLayout(first_player_group) # Vertical layout inside group
 
         self.first_player_button_group = QButtonGroup(self)
-        first_player_buttons_layout = QHBoxLayout()
+        # Using QHBoxLayout for buttons if they fit, or QVBoxLayout if many
+        first_player_buttons_h_layout = QHBoxLayout()
         if self.player_names:
             for i, name in enumerate(self.player_names):
                 button = QPushButton(name)
                 button.setCheckable(True)
                 self.first_player_button_group.addButton(button, i) # Use index as ID
-                first_player_buttons_layout.addWidget(button)
+                first_player_buttons_h_layout.addWidget(button)
             if self.first_player_button_group.buttons():
-                self.first_player_button_group.buttons()[0].setChecked(True) # Default to first player
+                self.first_player_button_group.buttons()[0].setChecked(True) # Default
         else:
             no_players_label = QLabel("No Players Available")
             no_players_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            first_player_buttons_layout.addWidget(no_players_label)
-        layout.addLayout(first_player_buttons_layout)
+            first_player_buttons_h_layout.addWidget(no_players_label)
+        first_player_v_layout.addLayout(first_player_buttons_h_layout)
+        selections_v_layout.addWidget(first_player_group)
 
-        # Frontier Terrain Selection with Buttons
-        frontier_terrain_label = QLabel("Select Frontier Terrain (Proposed by Players):")
-        frontier_terrain_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(frontier_terrain_label)
+        # Frontier Terrain Selection
+        frontier_terrain_group = QGroupBox("Select Frontier Terrain") # Visually group
+        frontier_terrain_v_layout = QVBoxLayout(frontier_terrain_group)
 
         self.frontier_terrain_button_group = QButtonGroup(self)
-        frontier_terrain_buttons_layout = QVBoxLayout() # Use QVBoxLayout for potentially many proposals
-
+        # Using QVBoxLayout for terrain buttons as text can be long
+        terrain_buttons_internal_v_layout = QVBoxLayout()
         if self.proposed_frontier_terrains:
             for i, (player_name, terrain_type) in enumerate(self.proposed_frontier_terrains):
-                button_text = f"{terrain_type} (Proposed by {player_name})"
+                # Assuming terrain_type might include color info like "Terrain A (colorA, colorB)"
+                # If not, adjust button_text accordingly.
+                button_text = f"{terrain_type} - Proposed by {player_name}"
                 button = QPushButton(button_text)
                 button.setCheckable(True)
-                # Store the actual terrain type with the button for easy retrieval
-                button.setProperty("terrain_type", terrain_type)
+                button.setProperty("terrain_type", terrain_type) # Store actual terrain type
                 self.frontier_terrain_button_group.addButton(button, i)
-                frontier_terrain_buttons_layout.addWidget(button)
+                terrain_buttons_internal_v_layout.addWidget(button)
             if self.frontier_terrain_button_group.buttons():
                 self.frontier_terrain_button_group.buttons()[0].setChecked(True) # Default
         else:
             no_terrains_label = QLabel("No Frontier Terrains Proposed")
             no_terrains_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            frontier_terrain_buttons_layout.addWidget(no_terrains_label)
-        layout.addLayout(frontier_terrain_buttons_layout)
+            terrain_buttons_internal_v_layout.addWidget(no_terrains_label)
+        frontier_terrain_v_layout.addLayout(terrain_buttons_internal_v_layout)
+        selections_v_layout.addWidget(frontier_terrain_group)
+        selections_v_layout.addStretch(1) # Push groups to top
 
-        layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        middle_section_layout.addWidget(selections_widget, 1) # Selections take some space
 
-        # Navigation buttons
-        navigation_layout = QHBoxLayout() # Define navigation_layout
+        # Right Side: Help Panel
+        help_panel_group = QGroupBox("Info (Help Panel)")
+        help_panel_layout = QVBoxLayout(help_panel_group)
+        self.help_text_edit = QTextEdit()
+        self.help_text_edit.setReadOnly(True)
+        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
+        self._set_frontier_help_text()
+        help_panel_layout.addWidget(self.help_text_edit)
+        middle_section_layout.addWidget(help_panel_group, 1) # Help panel takes some space
+
+        main_layout.addLayout(middle_section_layout)
+        main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+
+
+        # Navigation Buttons (Bottom)
+        navigation_layout = QHBoxLayout()
+        navigation_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.back_button = QPushButton("Back")
         self.back_button.clicked.connect(self.back_signal.emit)
         navigation_layout.addWidget(self.back_button)
 
         self.submit_button = QPushButton("Submit Selections")
-        if not self.player_names:
+        if not self.player_names or not self.proposed_frontier_terrains: # Disable if no options
             self.submit_button.setEnabled(False)
         self.submit_button.clicked.connect(self._on_submit)
         navigation_layout.addWidget(self.submit_button)
 
-        layout.addLayout(navigation_layout) # Add navigation
-
-        # Help Text Panel
-        help_group_box = QGroupBox("Help")
-        # help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Remove fixed height
-        help_layout = QVBoxLayout(help_group_box)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self._set_frontier_help_text()
-        help_layout.addWidget(self.help_text_edit)
-        layout.addWidget(help_group_box) # Re-add help panel at the end
-        layout.setStretchFactor(help_group_box, 1) # Allow help panel to stretch
-        self.setLayout(layout)
+        main_layout.addLayout(navigation_layout)
+        self.setLayout(main_layout)
 
     def _set_frontier_help_text(self):
         self.help_text_edit.setHtml(self.help_model.get_frontier_selection_help())
@@ -112,12 +133,14 @@ class FrontierSelectionView(QWidget):
         selected_frontier_button = self.frontier_terrain_button_group.checkedButton()
 
         if not selected_player_button or not selected_frontier_button:
-            # Handle error: a selection must be made, though defaults should prevent this
             print("Error: A selection for first player and frontier terrain must be made.")
+            # Optionally, show a QMessageBox to the user
             return
 
+        # Player name is directly the button text
         selected_player_name = selected_player_button.text()
         # Retrieve the stored terrain type from the button's property
         selected_terrain_type = selected_frontier_button.property("terrain_type")
 
         self.frontier_data_submitted.emit(selected_player_name, selected_terrain_type)
+

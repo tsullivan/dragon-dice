@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from main_window import MainWindow # Changed from relative to direct import
+from main_window import MainWindow
 
 class DragonDiceApp(QApplication):
     """

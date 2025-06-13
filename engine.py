@@ -62,19 +62,20 @@ class GameEngine(QObject):
         if self.current_phase == "FIRST_MARCH" or self.current_phase == "SECOND_MARCH":
             self.current_march_step = MARCH_STEPS[0] # DECIDE_MANEUVER
         elif self.current_phase == "EXPIRE_EFFECTS":
-            # TODO: Implement logic for expiring effects
+            # Example: Auto-advancing phase
             print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
-            self.advance_phase() # Auto-advance for now
+            # In a real scenario, process effects then advance.
+            self.advance_phase() 
         elif self.current_phase == "EIGHTH_FACE":
             # TODO: Implement logic for eighth face effects
             print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
-            # self.advance_phase() # Will require UI prompt or auto-advance if no 8th faces
+            # This phase will wait for a "Continue" click from the UI
         elif self.current_phase == "DRAGON_ATTACK":
             # TODO: Implement logic for dragon attacks. This will likely involve new action_steps.
             print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
-            # self.advance_phase() # Will require UI prompt/interaction
+            # This phase will wait for a "Continue" click or specific interactions
         else:
-            # For phases like SPECIES_ABILITIES, RESERVES,
+            # For other phases like SPECIES_ABILITIES, RESERVES,
             # they might have their own internal steps or auto-advance.
             # For now, let's assume they might also auto-advance or wait for a "continue"
             print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
@@ -83,6 +84,8 @@ class GameEngine(QObject):
     def advance_phase(self):
         self.current_phase_idx += 1
         if self.current_phase_idx >= len(TURN_PHASES):
+            # Current player's turn ends, advance to next player
+            print(f"All phases complete for {self.get_current_player_name()}. Advancing player.")
             self.advance_player()
         else:
             self.current_phase = TURN_PHASES[self.current_phase_idx]
@@ -157,7 +160,45 @@ class GameEngine(QObject):
         # For now, let's assume the melee action ends here and we advance the phase.
         # In a full implementation, this would go to AWAITING_MELEE_COUNTER_ATTACK or similar.
         print(f"Melee action in {self.current_phase} complete.")
-        self.current_action_step = "" # Clear action step
+        self.current_action_step = "" # Clear action step # TODO: Refactor to controller
         # self.current_march_step = "" # Clear march step if action completes the march
         self.advance_phase() # Or advance march step if within a march
         # self.game_state_updated.emit() # advance_phase already emits
+
+    def get_all_player_summary_data(self):
+        """
+        Returns a list of dictionaries, each summarizing a player's status.
+        Example: [{'name': 'P1', 'captured_terrains': 0, 'terrains_to_win': 2, 
+                   'armies': [{'name': 'Home', 'points': 10, 'location': 'Highland'}, ...]}, ...]
+        """
+        summaries = []
+        # Placeholder: Actual captured terrains and locations would come from game state
+        terrains_to_win = 2 # Example, could be dynamic
+        for p_data in self.player_setup_data:
+            player_summary = {
+                "name": p_data.get("name", "N/A"),
+                "captured_terrains": 0, # Placeholder
+                "terrains_to_win": terrains_to_win,
+                "armies": []
+            }
+            for army_type, army_details in p_data.get("armies", {}).items():
+                player_summary["armies"].append({
+                    "name": army_details.get("name", army_type.title()),
+                    "points": army_details.get("points", 0),
+                    "location": "Unknown" # Placeholder, actual location needed
+                })
+            summaries.append(player_summary)
+        return summaries
+
+    def get_relevant_terrains_info(self):
+        """
+        Returns a list of dictionaries for relevant terrains for the current player.
+        Example: [{'name': 'Flatland', 'type': 'Frontier', 'details': 'Face 3'}, ...]
+        """
+        # Placeholder implementation
+        current_player_info = self.players_info[self.current_player_idx]
+        return [
+            {"name": self.frontier_terrain, "type": "Frontier", "details": "Contested"},
+            {"name": current_player_info.get("home_terrain", "N/A"), "type": "Home", "details": f"{current_player_info.get('name')}'s Home"},
+            # Add opponent's home terrain if applicable and identifiable
+        ]
