@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
         player_setup_widget = PlayerSetupView(num_players=self.data_model._num_players,
                                               point_value=self.data_model._point_value)
         player_setup_widget.player_data_finalized.connect(self.handle_player_data_finalized)
+        player_setup_widget.back_signal.connect(self.show_welcome_view)
         # The all_setups_complete_signal is now emitted by the data_model
         self.data_model.all_player_setups_complete.connect(self.show_frontier_selection_view)
         self.switch_view(player_setup_widget)
@@ -76,6 +77,7 @@ class MainWindow(QMainWindow):
         
         frontier_view = FrontierSelectionView(player_names=player_names)
         frontier_view.frontier_data_submitted.connect(self.handle_frontier_submission)
+        frontier_view.back_signal.connect(self.show_player_setup_view)
         # Connect the model's signal to the next view transition
         if not hasattr(self.data_model, '_frontier_set_connection') or not self.data_model._frontier_set_connection:
             self.data_model._frontier_set_connection = self.data_model.frontier_set.connect(self.show_distance_rolls_view)
@@ -95,6 +97,7 @@ class MainWindow(QMainWindow):
 
         distance_view = DistanceRollsView(player_setup_data, frontier_terrain)
         distance_view.rolls_submitted.connect(self.data_model.set_distance_rolls)
+        distance_view.back_signal.connect(self.show_frontier_selection_view)
         if not hasattr(self.data_model, '_distance_rolls_connection') or not self.data_model._distance_rolls_connection:
             # When all rolls are submitted, initialize the engine
             self.data_model._distance_rolls_connection = self.data_model.all_distance_rolls_submitted.connect(

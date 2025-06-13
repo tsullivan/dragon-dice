@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QComboBox, QFormLayout, QSpacerItem, QSizePolicy,
+                               QComboBox, QFormLayout, QSpacerItem, QSizePolicy, QHBoxLayout,
                                QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Signal
 from constants import TERRAIN_TYPES
@@ -11,6 +11,7 @@ class FrontierSelectionView(QWidget):
     """
     # Emits (first_player_name, frontier_terrain_type)
     frontier_data_submitted = Signal(str, str)
+    back_signal = Signal()
 
     def __init__(self, player_names, parent=None):
         super().__init__(parent)
@@ -51,20 +52,27 @@ class FrontierSelectionView(QWidget):
 
         # Help Text Panel
         help_group_box = QGroupBox("Help")
+        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setFixedHeight(150) # Adjust height as needed
         self._set_frontier_help_text()
         help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
+
+        # Navigation buttons
+        navigation_layout = QHBoxLayout()
+        self.back_button = QPushButton("Back")
+        self.back_button.clicked.connect(self.back_signal.emit)
+        navigation_layout.addWidget(self.back_button)
 
         self.submit_button = QPushButton("Submit Selections")
         if not self.player_names:
             self.submit_button.setEnabled(False)
         self.submit_button.clicked.connect(self._on_submit)
-        layout.addWidget(self.submit_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        navigation_layout.addWidget(self.submit_button)
 
+        layout.addLayout(navigation_layout)
         self.setLayout(layout)
 
     def _set_frontier_help_text(self):

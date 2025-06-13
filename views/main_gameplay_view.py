@@ -108,10 +108,10 @@ class MainGameplayView(QWidget):
 
         # Help Text Panel
         help_group_box = QGroupBox("Help")
+        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setFixedHeight(200) # Adjust height as needed
         help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
 

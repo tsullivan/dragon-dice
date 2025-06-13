@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QLineE
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIntValidator, QPalette, QColor
 from help_text_model import HelpTextModel
+from components.carousel import CarouselInputWidget # Updated import
 
 class DistanceRollsView(QWidget):
     """
@@ -11,6 +12,7 @@ class DistanceRollsView(QWidget):
     """
     # Emits a list of tuples: [(player_name, distance_roll_value), ...]
     rolls_submitted = Signal(list)
+    back_signal = Signal()
 
     def __init__(self, player_setup_data, frontier_terrain, parent=None):
         super().__init__(parent)
@@ -41,18 +43,15 @@ class DistanceRollsView(QWidget):
         form_layout.setContentsMargins(20, 20, 20, 20)
         form_layout.setSpacing(10)
 
-        # Validator for distance rolls (e.g., 1-12, or whatever the dice allow)
-        # For now, let's assume a reasonable range like 1-20.
-        roll_validator = QIntValidator(1, 20, self)
+        # Allowed values for distance rolls (1-6 as per rules)
+        distance_allowed_values = list(range(1, 7))
 
         for i, p_data in enumerate(self.player_setup_data):
             player_name = p_data.get("name", f"Player {i+1}")
             home_terrain = p_data.get("home_terrain", "N/A")
             
             label_text = f"{player_name} (Home: {home_terrain}):"
-            roll_input = QLineEdit()
-            roll_input.setValidator(roll_validator)
-            roll_input.setPlaceholderText("e.g., 7")
+            roll_input = CarouselInputWidget(allowed_values=distance_allowed_values, initial_value=1)
             form_layout.addRow(label_text, roll_input)
             self.roll_inputs[player_name] = roll_input
 
@@ -66,50 +65,38 @@ class DistanceRollsView(QWidget):
 
         # Help Text Panel
         help_group_box = QGroupBox("Help")
+        help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Apply constraint to the GroupBox
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setFixedHeight(150) # Adjust height as needed
         self._set_distance_rolls_help_text()
         help_layout.addWidget(self.help_text_edit)
         layout.addWidget(help_group_box)
 
+        # Navigation buttons
+        navigation_layout = QHBoxLayout()
+        self.back_button = QPushButton("Back")
+        self.back_button.clicked.connect(self.back_signal.emit)
+        navigation_layout.addWidget(self.back_button)
+
         submit_button = QPushButton("Submit All Rolls")
         submit_button.clicked.connect(self._on_submit_rolls)
-        layout.addWidget(submit_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        navigation_layout.addWidget(submit_button)
 
+        layout.addLayout(navigation_layout)
         self.setLayout(layout)
 
     def _on_submit_rolls(self):
         submitted_rolls = []
         for player_name, roll_input_field in self.roll_inputs.items():
-            roll_value_str = roll_input_field.text()
-            if not roll_value_str: # Basic validation: ensure field is not empty
-                self.status_label.setText(f"Error: Roll for {player_name} cannot be empty.")
-                palette = self.status_label.palette()
-                palette.setColor(QPalette.ColorRole.WindowText, QColor("red"))
-                self.status_label.setPalette(palette)
-                return
-            # Further validation for 1-6 range (as per rules for starting distance)
             try:
-                roll_val = int(roll_value_str)
-                if not (1 <= roll_val <= 6): # Rule: terrains start 1-6 (7->6, 8->reroll)
-                    self.status_label.setText(f"Error: Roll for {player_name} must be between 1 and 6 after adjustments.")
-                    # ... (set red color for status_label)
-                    return
-            except ValueError: # Should be caught by QIntValidator, but good practice
-                self.status_label.setText(f"Error: Invalid number for {player_name}.")
-                return
-        submitted_rolls = []
-        for player_name, roll_input_field in self.roll_inputs.items():
-            roll_value_str = roll_input_field.text()
-            if not roll_value_str: # Basic validation: ensure field is not empty
-                self.status_label.setText(f"Error: Roll for {player_name} cannot be empty.")
-                palette = self.status_label.palette()
-                palette.setColor(QPalette.ColorRole.WindowText, QColor("red"))
-                self.status_label.setPalette(palette)
-                return
-            submitted_rolls.append((player_name, int(roll_value_str)))
+                roll_val = roll_input_field.value() # Get value from CarouselInputWidget
+                # The carousel itself constrains to 1-6, so direct validation here is less critical
+                # but can be kept as a safeguard if desired.
+                submitted_rolls.append((player_name, roll_val))
+            except AttributeError: # Should not happen
+                self.status_label.setText(f"Error reading roll for {player_name}.")
+                return 
         
         self.status_label.setText("") # Clear status on success
         self.rolls_submitted.emit(submitted_rolls)
