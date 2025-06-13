@@ -1,8 +1,10 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit,
-                               QHBoxLayout, QComboBox, QFormLayout, QSpacerItem, QSizePolicy)
+                               QHBoxLayout, QComboBox, QFormLayout, QSpacerItem, QSizePolicy,
+                               QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIntValidator, QPalette, QColor
 from constants import TERRAIN_TYPES
+from help_text_model import HelpTextModel
 
 class PlayerSetupView(QWidget):
     """
@@ -19,6 +21,7 @@ class PlayerSetupView(QWidget):
         super().__init__(parent)
         self.num_players = num_players
         self.point_value = point_value
+        self.help_model = HelpTextModel()
         self.current_player_index = 0 # Start with the first player
 
         layout = QVBoxLayout(self)
@@ -94,6 +97,16 @@ class PlayerSetupView(QWidget):
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.status_label)
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+
+        # Help Text Panel
+        help_group_box = QGroupBox("Help")
+        help_layout = QVBoxLayout(help_group_box)
+        self.help_text_edit = QTextEdit()
+        self.help_text_edit.setReadOnly(True)
+        self.help_text_edit.setFixedHeight(200) # Adjust height as needed
+        help_layout.addWidget(self.help_text_edit)
+        layout.addWidget(help_group_box)
+
 
 
         self.next_button = QPushButton("Next Player") # Text changes based on current player
@@ -180,6 +193,14 @@ class PlayerSetupView(QWidget):
         # For now, validation happens on button click.
         # self._set_status_message(f"Points: ... / {self.point_value}", "blue")
 
+    def _set_player_setup_help_text(self):
+        player_num = self.current_player_index + 1
+        self.help_text_edit.setHtml(
+            self.help_model.get_player_setup_help(
+                player_num, self.num_players, self.point_value
+            )
+        )
+
     def update_for_player(self, player_index):
         self.current_player_index = player_index
         self.title_label.setText(f"Player {self.current_player_index + 1} Setup")
@@ -193,6 +214,7 @@ class PlayerSetupView(QWidget):
             self.horde_army_name_input.clear()
             self.horde_army_points_input.clear()
         self.frontier_terrain_combo.setCurrentIndex(0)
+        self._set_player_setup_help_text() # Update help text for the current player
         self._set_status_message("") # Clear status for new player
         self.name_input.setFocus() # Focus on the first input field
 

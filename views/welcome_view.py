@@ -1,6 +1,8 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QHBoxLayout
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
+                               QComboBox, QHBoxLayout, QTextEdit, QGroupBox)
 from PySide6.QtCore import Qt, Signal
 
+from help_text_model import HelpTextModel
 class WelcomeView(QWidget):
     """
     The Welcome Screen view.
@@ -13,6 +15,7 @@ class WelcomeView(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.help_model = HelpTextModel()
 
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -35,16 +38,35 @@ class WelcomeView(QWidget):
 
         # Point value selection
         self.point_value_combo = QComboBox()
-        self.point_values = {"100 Points": 100, "150 Points": 150, "200 Points": 200}
+        self.point_values = {
+            "15 Points": 15,
+            "24 Points": 24,
+            "30 Points": 30,
+            "36 Points": 36,
+            "60 Points": 60
+        }
         self.point_value_combo.addItems(list(self.point_values.keys()))
         self.point_value_combo.currentIndexChanged.connect(self._on_point_value_changed)
         layout.addWidget(QLabel("Select Army Point Value:"))
         layout.addWidget(self.point_value_combo)
 
+        # Help Text Panel
+        help_group_box = QGroupBox("Help")
+        help_layout = QVBoxLayout(help_group_box)
+        self.help_text_edit = QTextEdit()
+        self.help_text_edit.setReadOnly(True)
+        self.help_text_edit.setFixedHeight(150) # Adjust height as needed
+        self._set_welcome_help_text()
+        help_layout.addWidget(self.help_text_edit)
+        layout.addWidget(help_group_box)
+
         proceed_button = QPushButton("Proceed to Player Setup")
         proceed_button.clicked.connect(self.proceed_signal.emit) # Emit the signal
         layout.addWidget(proceed_button, alignment=Qt.AlignmentFlag.AlignCenter)
         self.setLayout(layout)
+
+    def _set_welcome_help_text(self):
+        self.help_text_edit.setHtml(self.help_model.get_welcome_help())
 
     def _on_player_count_changed(self, index):
         selected_text = self.player_count_combo.itemText(index)
