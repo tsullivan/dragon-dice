@@ -12,11 +12,18 @@ class CarouselInputWidget(QWidget):
             # Keep original type, just ensure uniqueness and sort if they are sortable
             # For terrains, sorting might be alphabetical by default if they are strings
             temp_values = []
-            seen = set()
-            for v in allowed_values:
-                if v not in seen:
-                    temp_values.append(v)
-                    seen.add(v)
+            seen_hashable_representations = set()
+            for original_item in allowed_values:
+                # Create a hashable representation for uniqueness checking
+                # Specifically for items like ('Name', [list_of_elements])
+                if isinstance(original_item, tuple) and len(original_item) > 0 and any(isinstance(el, list) for el in original_item):
+                    hashable_item = tuple(tuple(el) if isinstance(el, list) else el for el in original_item)
+                else:
+                    hashable_item = original_item # Assume it's already hashable or a primitive type
+
+                if hashable_item not in seen_hashable_representations:
+                   temp_values.append(original_item) # Store the original item
+                   seen_hashable_representations.add(hashable_item)
             try: # Try sorting, will work for numbers and strings
                 self._allowed_values = sorted(temp_values)
             except TypeError: # If values are not sortable (e.g. mixed types, though not expected here)

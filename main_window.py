@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QApplication
+from PySide6.QtCore import Qt, Signal
 
 from views.welcome_view import WelcomeView
 from views.player_setup_view import PlayerSetupView
@@ -14,6 +14,8 @@ class MainWindow(QMainWindow):
     The main window of the application.
     It will manage and display different views (screens).
     """
+    view_switched_and_ready = Signal() # Custom signal
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Dragon Dice Companion (PySide6)")
@@ -33,12 +35,16 @@ class MainWindow(QMainWindow):
         if self._current_view:
             # If you have a controller associated with the old view,
             # you might want to clean it up or delete it here too.
-            # self.current_controller = None 
+            # self.current_controller = None
+            self._current_view.hide() # Explicitly hide the old view
             self.central_widget_layout.removeWidget(self._current_view)
             self._current_view.deleteLater()
+            self._current_view = None # Clear the reference
         self._current_view = new_view_widget
         self.central_widget_layout.addWidget(self._current_view)
-
+        # Ensure the layout update and potential deletion are processed
+        QApplication.processEvents()
+        self.view_switched_and_ready.emit()
     def show_welcome_view(self):
         welcome_widget = WelcomeView()
         welcome_widget.proceed_signal.connect(self.show_player_setup_view)

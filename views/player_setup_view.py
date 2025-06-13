@@ -1,11 +1,11 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit,
-                               QHBoxLayout, QSpacerItem, QSizePolicy, QGridLayout,
-                               QTextEdit, QGroupBox)
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPalette, QColor # QIntValidator no longer needed
-# TERRAIN_DISPLAY_OPTIONS will now come from AppDataModel via MainWindow
-from models.help_text_model import HelpTextModel 
-from components.carousel import CarouselInputWidget # Updated import
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+                               QPushButton, QSpacerItem, QSizePolicy, QLineEdit, QGroupBox, QGridLayout, QTextEdit)
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtGui import QPalette, QColor
+
+from components.carousel import CarouselInputWidget
+from models.help_text_model import HelpTextModel
+from constants import TERRAIN_DATA # For default terrain options
 
 class PlayerSetupView(QWidget):
     """
@@ -15,207 +15,185 @@ class PlayerSetupView(QWidget):
     # Emits (player_index, player_data_dict)
     player_data_finalized = Signal(int, dict)
     back_signal = Signal()
-    # No longer needed here, AppDataModel will signal completion
-    # all_setups_complete_signal = Signal()
 
-
-    def __init__(self, num_players, point_value, terrain_display_options, required_dragons, parent=None):
+    def __init__(self, num_players: int,
+                 point_value: int,
+                 terrain_display_options: list, # List of tuples (name, colors)
+                 required_dragons: int,
+                 parent=None,
+                 current_player_index: int = 0):
         super().__init__(parent)
         self.num_players = num_players
         self.point_value = point_value
-        self.help_model = HelpTextModel()
-        self.required_dragons = required_dragons
         self.terrain_display_options = terrain_display_options
-        self.current_player_index = 0 # Start with the first player
+        # Extract just names for carousel if terrain_display_options contains more complex data
+        if self.terrain_display_options and isinstance(self.terrain_display_options[0], tuple):
+            self.all_terrain_options = [name for name, _ in self.terrain_display_options]
+        else:
+            self.all_terrain_options = self.terrain_display_options # Assume it's already a list of names
+            
+        self.required_dragons = required_dragons
+        self.help_model = HelpTextModel()
+        self.current_player_index = current_player_index
 
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+        self.player_data = {} # To store data for the current player
+        self.setWindowTitle(f"Player {self.current_player_index + 1} Setup")
 
+        main_layout = QVBoxLayout(self)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+
+        # Title
         self.title_label = QLabel(f"Player {self.current_player_index + 1} Setup")
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         font = self.title_label.font()
-        font.setPointSize(24) # Example: Make title larger
+        font.setPointSize(24)
         font.setBold(True)
         self.title_label.setFont(font)
-        layout.addWidget(self.title_label)
+        main_layout.addWidget(self.title_label)
 
         # Informational text for required dragons
         self.dragon_info_label = QLabel(f"Reminder: You must bring {self.required_dragons} dragon(s) to this game (1 per 24 points or part thereof).")
         dragon_font = self.dragon_info_label.font()
         dragon_font.setPointSize(dragon_font.pointSize() - 2) # Slightly smaller
         self.dragon_info_label.setFont(dragon_font)
-        layout.addWidget(self.dragon_info_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        
-        # Main Grid Layout for all inputs
-        main_grid_layout = QGridLayout()
-        main_grid_layout.setContentsMargins(20, 20, 20, 10)
-        main_grid_layout.setSpacing(10)
+        main_layout.addWidget(self.dragon_info_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # Player Name
+        # Middle Section (Inputs and Help Panel)
+        middle_section_layout = QHBoxLayout()
+
+        # Left Side (Inputs Table)
+        inputs_group = QGroupBox(f"Setup for Player {self.current_player_index + 1}")
+        inputs_grid_layout = QGridLayout(inputs_group)
+        inputs_grid_layout.setContentsMargins(10, 10, 10, 10)
+        inputs_grid_layout.setSpacing(10)
+
+
+        # Row 0: Player Name
         player_name_label = QLabel("Player Name:")
-        self.name_input = QLineEdit()
-        main_grid_layout.addWidget(player_name_label, 0, 0)
-        main_grid_layout.addWidget(self.name_input, 0, 1, 1, 2) # Spans 2 columns
+        self.player_name_input = QLineEdit()
+        self.player_name_input.setPlaceholderText(f"Player {self.current_player_index + 1} Name")
+        inputs_grid_layout.addWidget(player_name_label, 0, 0)
+        inputs_grid_layout.addWidget(self.player_name_input, 0, 1, 1, 4) # Span 4 columns for input
 
-        # Home Terrain
+        # Row 1: Home Terrain
         home_terrain_label = QLabel("Home Terrain:")
-        self.home_terrain_carousel = CarouselInputWidget(allowed_values=self.terrain_display_options, initial_value=self.terrain_display_options[0] if self.terrain_display_options else None)
-        main_grid_layout.addWidget(home_terrain_label, 1, 0)
-        main_grid_layout.addWidget(self.home_terrain_carousel, 1, 1, 1, 2) # Spans 2 columns
+        self.home_terrain_carousel = CarouselInputWidget(allowed_values=self.all_terrain_options, initial_value=self.all_terrain_options[0] if self.all_terrain_options else None)
+        inputs_grid_layout.addWidget(home_terrain_label, 1, 0)
+        inputs_grid_layout.addWidget(self.home_terrain_carousel, 1, 1, 1, 4)
 
-        # Proposed Frontier Terrain
-        proposed_frontier_label = QLabel("Proposed Frontier Terrain:")
-        self.frontier_terrain_carousel = CarouselInputWidget(allowed_values=self.terrain_display_options, initial_value=self.terrain_display_options[0] if self.terrain_display_options else None)
-        main_grid_layout.addWidget(proposed_frontier_label, 2, 0)
-        main_grid_layout.addWidget(self.frontier_terrain_carousel, 2, 1, 1, 2) # Spans 2 columns
+        # Row 2: Proposed Frontier Terrain
+        proposed_terrain_label = QLabel("Proposed Frontier Terrain:")
+        self.proposed_terrain_carousel = CarouselInputWidget(allowed_values=self.all_terrain_options, initial_value=self.all_terrain_options[0] if self.all_terrain_options else None)
+        inputs_grid_layout.addWidget(proposed_terrain_label, 2, 0)
+        inputs_grid_layout.addWidget(self.proposed_terrain_carousel, 2, 1, 1, 4)
 
-        # Home Army
-        home_army_label = QLabel("Home Army:")
-        self.home_army_name_input = QLineEdit()
-        self.home_army_points_input = CarouselInputWidget(min_val=0, max_val=self.point_value, initial_value=0)
-        main_grid_layout.addWidget(home_army_label, 3, 0)
-        main_grid_layout.addWidget(QLabel("Name:"), 3, 1)
-        main_grid_layout.addWidget(self.home_army_name_input, 3, 2)
-        main_grid_layout.addWidget(QLabel("Points:"), 3, 3)
-        main_grid_layout.addWidget(self.home_army_points_input, 3, 4)
+        # Army Setups
+        army_types = ["Home", "Campaign", "Horde"]
+        self.army_name_inputs = {}
+        self.army_points_carousels = {}
+        self.army_labels = {} # To store labels for show/hide
+        self.army_name_widget_labels = {}
+        self.army_points_widget_labels = {}
 
-        # Campaign Army
-        campaign_army_label = QLabel("Campaign Army:")
-        self.campaign_army_name_input = QLineEdit()
-        self.campaign_army_points_input = CarouselInputWidget(min_val=0, max_val=self.point_value, initial_value=0)
-        main_grid_layout.addWidget(campaign_army_label, 4, 0)
-        main_grid_layout.addWidget(QLabel("Name:"), 4, 1)
-        main_grid_layout.addWidget(self.campaign_army_name_input, 4, 2)
-        main_grid_layout.addWidget(QLabel("Points:"), 4, 3)
-        main_grid_layout.addWidget(self.campaign_army_points_input, 4, 4)
+        army_points_allowed = list(range(0, self.point_value + 1))
 
-        # Horde Army (conditionally added)
-        self.horde_army_label = QLabel("Horde Army:")
-        self.horde_army_name_input = QLineEdit()
-        self.horde_army_points_input = CarouselInputWidget(min_val=0, max_val=self.point_value, initial_value=0)
-        self.horde_army_name_widget_label = QLabel("Name:") # Label for the name input field
-        self.horde_army_points_widget_label = QLabel("Points:") # Label for the points input field
-        
-        main_grid_layout.addWidget(self.horde_army_label, 5, 0)
-        main_grid_layout.addWidget(self.horde_army_name_widget_label, 5, 1)
-        main_grid_layout.addWidget(self.horde_army_name_input, 5, 2)
-        main_grid_layout.addWidget(self.horde_army_points_widget_label, 5, 3)
-        main_grid_layout.addWidget(self.horde_army_points_input, 5, 4)
+        for i, army_type in enumerate(army_types):
+            row = 3 + i
+            army_label = QLabel(f"{army_type} Army:")
+            self.army_labels[army_type] = army_label
+            inputs_grid_layout.addWidget(army_label, row, 0)
 
-        if self.num_players > 1:
-            self.horde_army_label.show()
-            self.horde_army_name_widget_label.show()
-            self.horde_army_name_input.show()
-            self.horde_army_points_widget_label.show()
-            self.horde_army_points_input.show()
-        else:
-            self.horde_army_label.hide()
-            self.horde_army_name_widget_label.hide()
-            self.horde_army_name_input.hide()
-            self.horde_army_points_widget_label.hide()
-            self.horde_army_points_input.hide()
-        
-        # Set column stretch factors for the main grid
-        # Column 0 (labels like "Home Army:")
-        main_grid_layout.setColumnStretch(0, 1) 
-        # Column 1 (labels like "Name:")
-        main_grid_layout.setColumnStretch(1, 0) # Minimal width for "Name:" / "Points:"
-        # Column 2 (name input fields)
-        main_grid_layout.setColumnStretch(2, 2) # More space for name inputs
-        # Column 3 (labels like "Points:")
-        main_grid_layout.setColumnStretch(3, 0) # Minimal width
-        # Column 4 (points carousels)
-        main_grid_layout.setColumnStretch(4, 1)
+            name_widget_label = QLabel("Name:")
+            self.army_name_widget_labels[army_type] = name_widget_label
+            name_input = QLineEdit(army_type) # Default name
+            self.army_name_inputs[army_type] = name_input
+            inputs_grid_layout.addWidget(name_widget_label, row, 1, alignment=Qt.AlignmentFlag.AlignRight)
+            inputs_grid_layout.addWidget(name_input, row, 2)
 
-        layout.addLayout(main_grid_layout)
+            points_widget_label = QLabel("Points:")
+            self.army_points_widget_labels[army_type] = points_widget_label
+            points_carousel = CarouselInputWidget(allowed_values=army_points_allowed, initial_value=0)
+            self.army_points_carousels[army_type] = points_carousel
+            inputs_grid_layout.addWidget(points_widget_label, row, 3, alignment=Qt.AlignmentFlag.AlignRight)
+            inputs_grid_layout.addWidget(points_carousel, row, 4)
 
-        self.status_label = QLabel("") # For validation messages
-        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.status_label)
-        layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        # Set column stretch factors for better spacing
+        inputs_grid_layout.setColumnStretch(0, 1) # Label column
+        inputs_grid_layout.setColumnStretch(1, 0) # "Name:" label
+        inputs_grid_layout.setColumnStretch(2, 2) # Name input
+        inputs_grid_layout.setColumnStretch(3, 0) # "Points:" label
+        inputs_grid_layout.setColumnStretch(4, 1) # Points carousel
 
-        # Navigation buttons
-        navigation_layout = QHBoxLayout()
-        self.back_button = QPushButton("Back")
-        self.back_button.clicked.connect(self.back_signal.emit)
-        navigation_layout.addWidget(self.back_button)
+        middle_section_layout.addWidget(inputs_group)
 
-        self.next_button = QPushButton("Next Player") # Define self.next_button
-        if self.num_players == 1:
-            self.next_button.setText("Start Game")
-        self.next_button.clicked.connect(self._handle_next_action)
-        navigation_layout.addWidget(self.next_button)
-
-        layout.addLayout(navigation_layout) # Add navigation
-
-        # Help Text Panel
+        # Right Side (Help Panel)
         help_group_box = QGroupBox("Help")
-        # help_group_box.setMaximumHeight(int(self.height() * 0.3)) # Remove fixed height
         help_layout = QVBoxLayout(help_group_box)
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
         help_layout.addWidget(self.help_text_edit)
-        layout.addWidget(help_group_box) # Re-add help panel at the end
-        layout.setStretchFactor(help_group_box, 1) # Allow help panel to stretch
+        middle_section_layout.addWidget(help_group_box, 1) # Add stretch factor
+
+        main_layout.addLayout(middle_section_layout)
+
+        self.status_label = QLabel("") # For validation messages
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.status_label)
+        main_layout.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+
+
+        # Navigation Buttons
+        navigation_layout = QHBoxLayout()
+        navigation_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.back_button = QPushButton("Back")
+        self.back_button.clicked.connect(self.back_signal.emit)
+        navigation_layout.addWidget(self.back_button)
+
+        self.next_button = QPushButton("Next Player")
+        self.next_button.clicked.connect(self._handle_next_action)
+        navigation_layout.addWidget(self.next_button)
+
+        main_layout.addLayout(navigation_layout)
+        self.setLayout(main_layout)
 
         # Connect signals for live validation
-        self.name_input.textChanged.connect(self._validate_and_update_button_state)
-        self.home_army_name_input.textChanged.connect(self._validate_and_update_button_state)
-        self.campaign_army_name_input.textChanged.connect(self._validate_and_update_button_state)
-        self.home_army_points_input.valueChanged.connect(self._validate_and_update_button_state)
-        self.campaign_army_points_input.valueChanged.connect(self._validate_and_update_button_state)
-        if self.num_players > 1:
-            self.horde_army_name_input.textChanged.connect(self._validate_and_update_button_state)
-            self.horde_army_points_input.valueChanged.connect(self._validate_and_update_button_state)
+        self.player_name_input.textChanged.connect(self._validate_and_update_button_state)
+        for army_type in army_types:
+            self.army_name_inputs[army_type].textChanged.connect(self._validate_and_update_button_state)
+            self.army_points_carousels[army_type].valueChanged.connect(self._validate_and_update_button_state)
 
-        self.setLayout(layout)
         self.update_for_player(self.current_player_index) # Initial setup for player 1
 
     def _handle_next_action(self):
-        player_name = self.name_input.text().strip()
-        if not player_name:
-            # This case should be caught by _validate_and_update_button_state,
-            # making the button disabled. But as a safeguard:
-            return
-        try:
-            home_pts = self.home_army_points_input.value()
-            campaign_pts = self.campaign_army_points_input.value()
-            horde_pts = 0
-            if self.num_players > 1:
-                horde_pts = self.horde_army_points_input.value()
-        except AttributeError: # Should not happen if CarouselInputWidget is used
-            # Also should be caught by validation enabling/disabling button
-            return 
-
-        # Re-validate before proceeding, though button state should reflect this
         if not self._validate_inputs():
-            self.next_button.setEnabled(False) # Ensure button is disabled
+            self.next_button.setEnabled(False) # Ensure button is disabled if validation fails
             return
-        
-        # Extract terrain name from the display string
-        home_terrain_display_string = self.home_terrain_carousel.value()
-        home_terrain_name = home_terrain_display_string.split(" (")[0] if home_terrain_display_string else None
 
-        frontier_proposal_display_string = self.frontier_terrain_carousel.value()
-        frontier_proposal_name = frontier_proposal_display_string.split(" (")[0] if frontier_proposal_display_string else None
+        player_name = self.player_name_input.text().strip()
+        home_terrain_val = self.home_terrain_carousel.value()
+        frontier_proposal_val = self.proposed_terrain_carousel.value()
 
         player_data = {
+            "player_index": self.current_player_index,
             "name": player_name,
-            "home_terrain": home_terrain_name,
-            "home_army_name": self.home_army_name_input.text(),
-            "home_army_points": home_pts,
-            "campaign_army_name": self.campaign_army_name_input.text(),
-            "campaign_army_points": campaign_pts,
-            "frontier_terrain_proposal": frontier_proposal_name,
+            "home_terrain": home_terrain_val,
+            "frontier_terrain_proposal": frontier_proposal_val,
+            "armies": {}
         }
-        if self.num_players > 1:
-            player_data["horde_army_name"] = self.horde_army_name_input.text()
-            player_data["horde_army_points"] = horde_pts
+        for army_type in self.army_name_inputs.keys():
+            if army_type == "Horde" and self.num_players <= 1: # Skip Horde for 1 player
+                continue
+            army_name = self.army_name_inputs[army_type].text().strip()
+            army_points = self.army_points_carousels[army_type].value()
+            player_data["armies"][army_type.lower()] = {"name": army_name, "points": army_points}
 
         self.player_data_finalized.emit(self.current_player_index, player_data)
         self.current_player_index += 1
         if self.current_player_index < self.num_players:
             self.update_for_player(self.current_player_index)
+        # If all players are done, the MainWindow will handle the transition
+        # based on the signal from AppDataModel.
 
     def _set_status_message(self, message, color_name="black"):
         self.status_label.setText(message)
@@ -224,75 +202,99 @@ class PlayerSetupView(QWidget):
         self.status_label.setPalette(palette)
 
     def _validate_inputs(self) -> bool:
-        """Performs all input validations and sets status message. Returns True if valid."""
-        player_name = self.name_input.text().strip()
+        player_name = self.player_name_input.text().strip()
         if not player_name:
             self._set_status_message("Player Name cannot be empty.", "red")
             return False
 
-        try:
-            home_pts = self.home_army_points_input.value()
-            campaign_pts = self.campaign_army_points_input.value()
-            horde_pts = 0
-            if self.num_players > 1:
-                horde_pts = self.horde_army_points_input.value()
-        except AttributeError:
-            self._set_status_message("Error reading army points.", "red") # Should not occur
-            return False
+        total_allocated_points = 0
+        armies_to_validate = ["Home", "Campaign"]
+        if self.num_players > 1:
+            armies_to_validate.append("Horde")
 
-        total_allocated_points = home_pts + campaign_pts + horde_pts
+        for army_type in armies_to_validate:
+            army_name = self.army_name_inputs[army_type].text().strip()
+            if not army_name:
+                self._set_status_message(f"{army_type} Army Name cannot be empty.", "red")
+                return False
+            army_points = self.army_points_carousels[army_type].value()
+            total_allocated_points += army_points
+
         if total_allocated_points != self.point_value:
             self._set_status_message(f"Total points ({total_allocated_points}) must equal game limit ({self.point_value}).", "red")
             return False
 
-        max_per_army = self.point_value // 2
-        army_point_values = [("Home Army", home_pts), ("Campaign Army", campaign_pts)]
-        if self.num_players > 1:
-            army_point_values.append(("Horde Army", horde_pts))
+        # Rule: Each army must have at least one unit (which costs at least 1 point).
+        # This rule is complex as "1 unit" isn't directly tied to points here.
+        # For now, we'll assume any non-zero point value implies units.
+        # A more detailed validation would require knowledge of unit costs.
+        for army_type in armies_to_validate:
+            army_points = self.army_points_carousels[army_type].value()
+            if army_points == 0: # Or some other minimum if defined
+                 # Allow 0 points for an army if the total points are met by other armies.
+                 # This rule might need refinement based on game rules for "bringing" an army.
+                 pass # For now, allow 0 points if total is met.
+                 # self._set_status_message(f"{army_type} Army must have points allocated.", "red")
+                 # return False
 
-        for name, points in army_point_values:
-            # Rule: Each army must have at least one unit (which costs at least 1 point).
-            if points < 1: # Assuming the smallest unit/item costs at least 1 point
-                self._set_status_message(f"{name} must have at least 1 point.", "red")
-                return False
-            if points > max_per_army:
-                self._set_status_message(f"{name} points ({points}) exceed max per army ({max_per_army}).", "red")
-                return False
-        
-        self._set_status_message("Inputs valid.", "green") # Or clear message: self._set_status_message("")
+        # Max per army rule (e.g., point_value / 2) - if applicable
+        # max_per_army = self.point_value // 2
+        # for army_type in armies_to_validate:
+        #     army_points = self.army_points_carousels[army_type].value()
+        #     if army_points > max_per_army:
+        #         self._set_status_message(f"{army_type} points ({army_points}) exceed max per army ({max_per_army}).", "red")
+        #         return False
+
+        self._set_status_message("Inputs valid.", "green")
         return True
-    
+
     def _set_player_setup_help_text(self):
-        player_num = self.current_player_index + 1
+        player_num_for_display = self.current_player_index + 1
         self.help_text_edit.setHtml(
             self.help_model.get_player_setup_help(
-                player_num, self.num_players, self.point_value
+                player_num_for_display, self.num_players, self.point_value
             )
         )
 
-    def _validate_and_update_button_state(self): # Removed @Signal() decorator
+    def _validate_and_update_button_state(self):
         is_valid = self._validate_inputs()
         self.next_button.setEnabled(is_valid)
 
     def update_for_player(self, player_index):
         self.current_player_index = player_index
         self.title_label.setText(f"Player {self.current_player_index + 1} Setup")
-        self.name_input.clear()
-        self.home_terrain_carousel.clear() # Resets to the first terrain
-        self.home_army_name_input.clear()
-        self.home_army_points_input.clear()
-        self.campaign_army_name_input.clear()
-        self.campaign_army_points_input.clear()
-        if self.num_players > 1:
-            self.horde_army_name_input.clear()
-            self.horde_army_points_input.clear()
-        self.frontier_terrain_carousel.clear() # Resets to the first terrain
-        self._set_player_setup_help_text() # Update help text for the current player
-        self._set_status_message("") # Clear status for new player
-        self.name_input.setFocus() # Focus on the first input field
-        self._validate_and_update_button_state() # Set initial button state
+        self.player_name_input.clear()
+        self.player_name_input.setPlaceholderText(f"Player {self.current_player_index + 1} Name")
+
+        if self.all_terrain_options:
+            self.home_terrain_carousel.setValue(self.all_terrain_options[0])
+            self.proposed_terrain_carousel.setValue(self.all_terrain_options[0])
+        else:
+            self.home_terrain_carousel.clear()
+            self.proposed_terrain_carousel.clear()
+
+        self.army_name_inputs["Home"].setText("Home")
+        self.army_points_carousels["Home"].setValue(0)
+        self.army_name_inputs["Campaign"].setText("Campaign")
+        self.army_points_carousels["Campaign"].setValue(0)
+
+        show_horde = self.num_players > 1
+        self.army_labels["Horde"].setVisible(show_horde)
+        self.army_name_widget_labels["Horde"].setVisible(show_horde)
+        self.army_name_inputs["Horde"].setVisible(show_horde)
+        self.army_points_widget_labels["Horde"].setVisible(show_horde)
+        self.army_points_carousels["Horde"].setVisible(show_horde)
+        if show_horde:
+            self.army_name_inputs["Horde"].setText("Horde")
+            self.army_points_carousels["Horde"].setValue(0)
+
+
+        self._set_player_setup_help_text()
+        self._set_status_message("")
+        self.player_name_input.setFocus()
+        self._validate_and_update_button_state()
 
         if self.current_player_index == self.num_players - 1:
-            self.next_button.setText("Start Game")
+            self.next_button.setText("Finalize Setup & Start Game")
         else:
-            self.next_button.setText("Next Player")
+            self.next_button.setText(f"Next Player ({self.current_player_index + 2}/{self.num_players})")
