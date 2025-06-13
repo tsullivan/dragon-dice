@@ -38,6 +38,31 @@ class GameEngine:
                 home_terrain=setup['home_terrain'],
                 proposed_frontier=setup['frontier_terrain'],
             )
+
+            # Validate army points for this player
+            total_force_points = self.game_state.point_value
+            max_points_in_one_army = total_force_points // 2
+
+            try:
+                home_pts = int(setup.get('home_army_points', 0))
+                horde_pts = int(setup.get('horde_army_points', 0)) if len(setups) > 1 else 0 # Horde only relevant for >1 player
+                campaign_pts = int(setup.get('campaign_army_points', 0))
+
+                if not (home_pts > 0 and campaign_pts > 0 and (horde_pts > 0 if len(setups) > 1 else True)):
+                    print(f"Validation Error for {player.name}: Each active army must have at least 1 point.")
+                    # Handle error: perhaps raise an exception or mark setup as invalid
+                    return 
+
+                for army_pts in [home_pts, horde_pts, campaign_pts]:
+                    if army_pts > max_points_in_one_army:
+                        print(f"Validation Error for {player.name}: Army points ({army_pts}) exceed max allowed ({max_points_in_one_army}).")
+                        # Handle error
+                        return
+            except ValueError:
+                print(f"Validation Error for {player.name}: Army points must be valid numbers.")
+                # Handle error
+                return
+
             self.game_state.players.append(player)
             
             home_terrain = Terrain(id=i, owner_name=player.name, type=player.home_terrain)
@@ -231,35 +256,46 @@ class GameEngine:
     
     def _draw_player_panels(self, screen: pygame.Surface):
         """Draws player info on the left, now with a background panel."""
-        start_x, start_y, width, height = 20, 150, 300, 400
+        screen_w = screen.get_width()
+        panel_width = 320  # Slightly wider to match image proportions better
+        panel_height = 350 # Adjusted height
+        start_x = 50 # Consistent margin like player_setup panel
+        start_y = 150
         
         # Draw a semi-transparent panel background
-        panel_surf = pygame.Surface((width, height), pygame.SRCALPHA)
-        panel_surf.fill((0, 0, 0, 80)) # Black with some transparency
+        panel_surf = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
+        panel_surf.fill((30, 35, 40, 180)) # Darker, less transparent
         screen.blit(panel_surf, (start_x, start_y))
+        pygame.draw.rect(screen, (70, 80, 90), (start_x, start_y, panel_width, panel_height), 2, border_radius=5) # Frame
 
         # Draw content on top
         text_y = start_y + 20
+        inner_padding_x = 20
         for player in self.game_state.players:
             color = "#FFFF99" if player.player_number - 1 == self.game_state.current_player_index else "white"
             name_surf = self.font_medium.render(player.name, True, color)
-            screen.blit(name_surf, (start_x + 20, text_y))
+            screen.blit(name_surf, (start_x + inner_padding_x, text_y))
             
-            terrain_surf = self.font_small.render(f"Terrains Captured: {player.captured_terrains} / 2", True, "#AAAAAA")
-            screen.blit(terrain_surf, (start_x + 20, text_y + 35))
+            terrain_surf = self.font_small.render(f"Terrains Captured: {player.captured_terrains} / 2", True, "#B0B0B0") # Lighter grey
+            screen.blit(terrain_surf, (start_x + inner_padding_x, text_y + 35))
             
             text_y += 80
 
     def _draw_terrain_info(self, screen: pygame.Surface):
         """Draws terrain info on the right, including armies present."""
-        width = screen.get_width()
-        start_x, start_y, panel_width, height = width - 320, 150, 300, 550
+        screen_w = screen.get_width()
+        panel_width = 320 # Match player panel width
+        panel_height = 500 # Adjusted height to fit content
+        start_x = screen_w - panel_width - 50 # Consistent margin
+        start_y = 150
 
-        panel_surf = pygame.Surface((panel_width, height), pygame.SRCALPHA)
-        panel_surf.fill((0, 0, 0, 80))
+        panel_surf = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
+        panel_surf.fill((30, 35, 40, 180)) # Darker, less transparent
         screen.blit(panel_surf, (start_x, start_y))
+        pygame.draw.rect(screen, (70, 80, 90), (start_x, start_y, panel_width, panel_height), 2, border_radius=5) # Frame
         
         current_terrain_y_start = start_y + 20 # Y-coordinate for the top of the current terrain's info
+        inner_padding_x = 20
         all_terrains = self.game_state.terrains + ([self.game_state.frontier_terrain] if self.game_state.frontier_terrain else [])
         
         for terrain in all_terrains:
@@ -268,21 +304,20 @@ class GameEngine:
             # Terrain Name
             name_text = f"{terrain.owner_name}'s {terrain.type}"
             name_surf = self.font_medium.render(name_text, True, "white")
-            screen.blit(name_surf, (start_x + 20, y_cursor))
+            screen.blit(name_surf, (start_x + inner_padding_x, y_cursor))
             y_cursor += name_surf.get_height() + 5 # Add padding
 
             # Distance
             dist_text = f"Distance: {terrain.current_value or 'Not Set'}"
-            dist_surf = self.font_small.render(dist_text, True, "#AAAAAA")
-            screen.blit(dist_surf, (start_x + 20, y_cursor))
+            dist_surf = self.font_small.render(dist_text, True, "#B0B0B0") # Lighter grey
+            screen.blit(dist_surf, (start_x + inner_padding_x, y_cursor))
             y_cursor += dist_surf.get_height() + 5 # Add padding
 
             # Armies Present Label
-            armies_label_surf = self.font_small.render("Armies Present:", True, "#CCCCCC")
-            screen.blit(armies_label_surf, (start_x + 20, y_cursor))
+            armies_label_surf = self.font_small.render("Armies Present:", True, "#D0D0D0") # Lighter grey
+            screen.blit(armies_label_surf, (start_x + inner_padding_x, y_cursor))
             y_cursor += armies_label_surf.get_height() + 2 # Smaller padding before list
-
-            army_detail_indent_x = start_x + 30 # Indent for the list of armies
+            army_detail_indent_x = start_x + inner_padding_x + 10 # Indent for the list of armies
 
             if terrain.armies_present:
                 player_army_map = {}
@@ -298,12 +333,12 @@ class GameEngine:
                     # Display player name and then list their armies on separate lines or comma-separated
                     # Let's list them comma-separated for now, indented
                     armies_list_str = ", ".join(sorted(player_army_map[player_name])) # Sort army names for consistency
-                    part_text = f"{player_name}: {armies_list_str}"
-                    part_surf = self.font_small.render(part_text, True, "#CCCCCC")
+                    part_text = f"{player_name}: {armies_list_str}" # Player name could be colored if current player
+                    part_surf = self.font_small.render(part_text, True, "#C0C0C0") # Lighter grey
                     screen.blit(part_surf, (army_detail_indent_x, y_cursor))
                     y_cursor += part_surf.get_height() # Move to next line for next player's army info
             else:
-                none_surf = self.font_small.render("None", True, "#CCCCCC")
+                none_surf = self.font_small.render("None", True, "#C0C0C0") # Lighter grey
                 screen.blit(none_surf, (army_detail_indent_x, y_cursor))
                 y_cursor += none_surf.get_height()
 
@@ -332,7 +367,7 @@ class GameEngine:
             # Draw a simple background for the prompt
             bg_rect = prompt_surf.get_rect(center=(width / 2, height / 2)).inflate(40, 30)
             prompt_bg_surf = pygame.Surface(bg_rect.size, pygame.SRCALPHA)
-            prompt_bg_surf.fill((20, 20, 20, 180))
+            prompt_bg_surf.fill((30, 35, 40, 200)) # Darker, slightly more opaque
             screen.blit(prompt_bg_surf, bg_rect)
             
             prompt_rect = prompt_surf.get_rect(center=bg_rect.center)

@@ -8,6 +8,9 @@ class PlayerSetupData(TypedDict):
     home_army_name: str
     horde_army_name: str
     campaign_army_name: str
+    home_army_points: str # Storing as string from input, convert to int later
+    horde_army_points: str
+    campaign_army_points: str
     home_terrain: str
     frontier_terrain: str
 

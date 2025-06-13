@@ -1,5 +1,5 @@
 import pygame
-from ui_manager import UIManager
+from ui import UIManager # Corrected import
 from engine import GameEngine
 from models import PlayerSetupData
 from help_texts import HELP_TEXTS
@@ -30,6 +30,9 @@ def main():
         "current_home_army_name": "",
         "current_horde_army_name": "",
         "current_campaign_army_name": "",
+        "current_home_army_points": "",
+        "current_horde_army_points": "",
+        "current_campaign_army_points": "",
         "current_frontier_terrain": None,
         # Engine setup selections
         "current_first_player_selection": None,
@@ -65,19 +68,57 @@ def main():
         app_state["current_name"] = f"Player {app_state['current_setup_index'] + 1}"
         app_state["ui_needs_update"] = True
 
+    def handle_cycle_terrain(state_key_terrain_name: str, direction: int):
+        """Cycles through terrain options for Home or Frontier."""
+        standard_terrains = ['Coastland', 'Deadland', 'Flatland', 'Highland', 'Swampland', 'Feyland', 'Wasteland']
+        advanced_terrains = ['Castle', "Dragon's Lair", 'Grove', 'Vortex']
+        
+        options_list = []
+        if state_key_terrain_name == "current_home_terrain":
+            options_list = standard_terrains
+        elif state_key_terrain_name == "current_frontier_terrain":
+            options_list = standard_terrains + advanced_terrains
+        else:
+            return # Should not happen
+
+        current_selection = app_state[state_key_terrain_name]
+        current_index = -1
+        if current_selection in options_list:
+            current_index = options_list.index(current_selection)
+        
+        new_index = (current_index + direction + len(options_list)) % len(options_list)
+        app_state[state_key_terrain_name] = options_list[new_index]
+        app_state["ui_needs_update"] = True
+        # Also ensure the "Next/Start" button's active state is re-evaluated
+        # This happens because ui_needs_update = True rebuilds the UI, including that button.
+
+
     def handle_next_player():
         """Saves the current player's setup and moves to the next, or starts the game."""
-        if not app_state['current_name'] or not app_state['current_home_terrain'] or not app_state['current_frontier_terrain']:
-            # Add checks for army names if they become mandatory
+        # Validation for required fields
+        required_app_state_keys = [
+            'current_name', 'current_home_terrain', 'current_frontier_terrain',
+            'current_home_army_name', 'current_campaign_army_name',
+            'current_home_army_points', 'current_campaign_army_points'
+        ]
+        if app_state["num_players"] > 1:
+            required_app_state_keys.extend(['current_horde_army_name', 'current_horde_army_points'])
+
+        if not all(app_state.get(key) for key in required_app_state_keys):
+            print("Error: Not all required fields are filled for player setup.")
+            # Optionally, provide more specific feedback to the user via UI
             return
 
         app_state["all_player_setups"].append({
             "name": app_state['current_name'],
             "home_terrain": app_state['current_home_terrain'],
+            "frontier_terrain": app_state['current_frontier_terrain'],
             "home_army_name": app_state['current_home_army_name'],
             "horde_army_name": app_state['current_horde_army_name'],
             "campaign_army_name": app_state['current_campaign_army_name'],
-            "frontier_terrain": app_state['current_frontier_terrain'],
+            "home_army_points": app_state['current_home_army_points'],
+            "horde_army_points": app_state['current_horde_army_points'],
+            "campaign_army_points": app_state['current_campaign_army_points'],
         })
 
         if app_state["current_setup_index"] < app_state["num_players"] - 1:
@@ -87,6 +128,9 @@ def main():
             app_state["current_home_army_name"] = ""
             app_state["current_horde_army_name"] = ""
             app_state["current_campaign_army_name"] = ""
+            app_state["current_home_army_points"] = ""
+            app_state["current_horde_army_points"] = ""
+            app_state["current_campaign_army_points"] = ""
             app_state["current_frontier_terrain"] = None
         else:
             app_state["game_engine"] = GameEngine(app_state["point_value"], app_state["all_player_setups"])
@@ -169,6 +213,9 @@ def main():
                     elif key == "home_army_name": app_state["current_home_army_name"] = value
                     elif key == "horde_army_name": app_state["current_horde_army_name"] = value
                     elif key == "campaign_army_name": app_state["current_campaign_army_name"] = value
+                    elif key == "home_army_points": app_state["current_home_army_points"] = value
+                    elif key == "horde_army_points": app_state["current_horde_army_points"] = value
+                    elif key == "campaign_army_points": app_state["current_campaign_army_points"] = value
                     # Add other mappings if new text inputs are added with different IDs
                 # No ui_needs_update = True here, as TextInputBox draws its own text.
                 # However, if button active states depend on these, then it might be needed.
@@ -198,11 +245,16 @@ def main():
                         "home_army_name": app_state["current_home_army_name"],
                         "horde_army_name": app_state["current_horde_army_name"],
                         "campaign_army_name": app_state["current_campaign_army_name"],
+                        "home_army_points": app_state["current_home_army_points"],
+                        "horde_army_points": app_state["current_horde_army_points"],
+                        "campaign_army_points": app_state["current_campaign_army_points"],
                         "total_players": app_state["num_players"]
                     },
                     {
-                        'on_home_select': lambda t: handle_selection("current_home_terrain", t),
-                        'on_frontier_select': lambda t: handle_selection("current_frontier_terrain", t),
+                        'on_prev_home_terrain': lambda: handle_cycle_terrain("current_home_terrain", -1),
+                        'on_next_home_terrain': lambda: handle_cycle_terrain("current_home_terrain", 1),
+                        'on_prev_frontier_proposal': lambda: handle_cycle_terrain("current_frontier_terrain", -1),
+                        'on_next_frontier_proposal': lambda: handle_cycle_terrain("current_frontier_terrain", 1),
                         'on_next': handle_next_player
                     }
                 )
@@ -283,13 +335,17 @@ def main():
             # Define the main panel for player setup content
             panel_margin_x = 50
             panel_margin_top = 120 # Space below title
+            scrollbar_height_with_margin = 25 # 15 for scrollbar + 5 top margin + 5 bottom margin
+            continue_button_y_pos = 510 # As set in UIManager
+            continue_button_height_with_margin = 50 + 10 # Button height + margin below it before help panel
             
-            # Reserve space for the "Next/Start" button (height 50) + scrollbar (height ~15) + margins
-            # Button Y is 510. Panel should end above that. Let's say panel bottom is at Y=490.
-            # This leaves space for a 15px scrollbar and the button below.
-            # Panel height = 490 - panel_margin_top (120) = 370
-            panel_height = 370 
-            panel_margin_bottom = current_screen_height - panel_margin_top - panel_height
+            # Panel bottom should be above the scrollbar, which is above the continue button
+            panel_bottom_y = continue_button_y_pos - scrollbar_height_with_margin - 10 # 10px margin above scrollbar
+            panel_height = panel_bottom_y - panel_margin_top
+            
+            # This calculation might be off if screen height changes; dynamic calculation is better.
+            # For now, this aims to fit the image's relative spacing.
+            panel_margin_bottom = current_screen_height - panel_margin_top - panel_height # Recalculate based on new panel_height
             
             if app_state["player_setup_panel_rect"] is None: # Calculate if not set or screen resized
                 app_state["player_setup_panel_rect"] = pygame.Rect(
@@ -303,7 +359,7 @@ def main():
             # Create content surface (wider than panel_rect for scrolling)
             content_surface_width = max(panel_rect.width, app_state["player_setup_panel_content_width"])
             content_surface = pygame.Surface((content_surface_width, panel_rect.height), pygame.SRCALPHA)
-            content_surface.fill((50, 50, 50, 150)) # Semi-transparent dark background for content area
+            content_surface.fill((40, 45, 50)) # Opaque dark background for panel content area
             
             # UIManager draws its panel elements onto the content_surface
             ui_manager.draw_panel_content(content_surface)
@@ -316,7 +372,7 @@ def main():
             if app_state["player_setup_panel_content_width"] > panel_rect.width:
                 scrollbar_height = 15
                 scrollbar_track_y = panel_rect.bottom + 5 # A little below the panel
-                scrollbar_track_rect = pygame.Rect(panel_rect.left, scrollbar_track_y, panel_rect.width, scrollbar_height)
+                scrollbar_track_rect = pygame.Rect(panel_rect.left, scrollbar_track_y, panel_rect.width, scrollbar_height -2) # slightly thinner track
                 pygame.draw.rect(screen, (70, 70, 70), scrollbar_track_rect, border_radius=7) # Scrollbar track
 
                 thumb_width_ratio = panel_rect.width / app_state["player_setup_panel_content_width"]
@@ -328,11 +384,11 @@ def main():
                 else:
                     scroll_ratio_for_thumb = 0
                 scrollbar_thumb_x = scrollbar_track_rect.left + scroll_ratio_for_thumb * (scrollbar_track_rect.width - scrollbar_thumb_width)
-                scrollbar_thumb_rect = pygame.Rect(scrollbar_thumb_x, scrollbar_track_y, scrollbar_thumb_width, scrollbar_height)
+                scrollbar_thumb_rect = pygame.Rect(scrollbar_thumb_x, scrollbar_track_y, scrollbar_thumb_width, scrollbar_height -2)
                 pygame.draw.rect(screen, (150, 150, 150), scrollbar_thumb_rect, border_radius=7) # Scrollbar thumb
 
             # Draw panel frame
-            pygame.draw.rect(screen, (100, 100, 100), panel_rect, 3, border_radius=5) # Frame
+            pygame.draw.rect(screen, (70, 80, 90), panel_rect, 2, border_radius=5) # Frame, border 2px
 
         elif app_state["screen"] == "gameplay":
             app_state["game_engine"].draw(screen)
