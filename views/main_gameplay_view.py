@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
 from PySide6.QtCore import Qt, Slot, Signal
 from PySide6.QtGui import QFont # Added for QFont usage
 
-from engine import GameEngine # Assuming engine.py is in the same directory level
+from game_logic.engine import GameEngine # Assuming engine.py is in the same directory level
 from models.help_text_model import HelpTextModel
 from components.player_summary_widget import PlayerSummaryWidget # Import the new component
 from components.melee_action_widget import MeleeActionWidget # Import MeleeActionWidget
@@ -12,6 +12,7 @@ from components.maneuver_input_widget import ManeuverInputWidget # Import Maneuv
 from components.action_choice_widget import ActionChoiceWidget # Import ActionChoiceWidget
 from components.help_panel_widget import HelpPanelWidget # Import the new component
 from components.active_effects_widget import ActiveEffectsWidget # Import ActiveEffectsWidget
+import constants
 
 class MainGameplayView(QWidget):
     """
@@ -168,11 +169,11 @@ class MainGameplayView(QWidget):
         self.continue_to_next_phase_signal.emit()
         
     def _handle_action_selected(self, action_type: str):
-        if action_type == "MELEE":
+        if action_type == constants.ACTION_MELEE: # Use constant
             self.melee_action_selected_signal.emit()
-        elif action_type == "MISSILE":
+        elif action_type == constants.ACTION_MISSILE: # Use constant
             self.missile_action_selected_signal.emit()
-        elif action_type == "MAGIC":
+        elif action_type == constants.ACTION_MAGIC: # Use constant
             self.magic_action_selected_signal.emit()
 
 
@@ -233,34 +234,34 @@ class MainGameplayView(QWidget):
         self.dragon_attack_continue_button.hide()
         
         # Eighth Face elements specific to the HTML structure
-        is_eighth_face_phase = (current_phase == "EIGHTH_FACE")
+        is_eighth_face_phase = (current_phase == constants.PHASE_EIGHTH_FACE)
         self.eighth_face_description_label.setVisible(is_eighth_face_phase)
         self.eighth_face_input_field.setVisible(is_eighth_face_phase)
         self.eighth_face_add_button.setVisible(is_eighth_face_phase)
         if is_eighth_face_phase:
              self.eighth_face_input_field.clear()
 
-
         # Show relevant widgets based on current game step
-        if current_march_step == "DECIDE_MANEUVER":
+        if current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
             self.maneuver_input_widget.show()
             self.maneuver_input_widget.reset_to_decision() # Ensure it's showing Yes/No
-        elif current_march_step == "AWAITING_MANEUVER_INPUT":
+        elif current_march_step == constants.MARCH_STEP_AWAITING_MANEUVER_INPUT:
             self.maneuver_input_widget.show() # The widget itself handles showing the input field
-        elif current_march_step == "SELECT_ACTION":
+        elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
             self.action_choice_widget.show()
-        elif current_action_step == "AWAITING_ATTACKER_MELEE_ROLL":
+        elif current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
             self.melee_action_widget.show()
             self.melee_action_widget.show_attacker_input()
-        elif current_action_step == "AWAITING_DEFENDER_SAVES":
+        elif current_action_step == constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
             self.melee_action_widget.show()
             self.melee_action_widget.show_defender_input()
         elif not current_march_step and not current_action_step: # General phase prompts
-            if current_phase == "DRAGON_ATTACK":
+            if current_phase == constants.PHASE_DRAGON_ATTACK:
                 self.dragon_attack_prompt_label.show()
                 self.dragon_attack_continue_button.show()
             # Eighth face is handled above its own section
             # Add other general phase UIs here
+            # e.g., elif current_phase == PHASE_SPECIES_ABILITIES: ...
 
         # Update Help Text
         help_key = current_action_step or current_march_step or current_phase

@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal, QMetaObject
 from typing import Optional
-from engine import GameEngine # Import the new GameEngine
+from game_logic.engine import GameEngine # Import the new GameEngine
 
 from .terrain_model import Terrain
 from constants import TERRAIN_DATA # Import raw terrain data

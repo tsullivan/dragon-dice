@@ -1,5 +1,6 @@
 from PySide6.QtCore import QObject, Slot
-from engine import GameEngine # Or AppDataModel if it holds the engine
+from game_logic.engine import GameEngine # Or AppDataModel if it holds the engine
+import constants # Import action constants
 
 class GameplayController(QObject):
     def __init__(self, game_engine: GameEngine, parent=None):
@@ -23,17 +24,17 @@ class GameplayController(QObject):
     @Slot()
     def handle_melee_action_selected(self):
         print("[GameplayController] Melee action selected")
-        self.game_engine.select_action("MELEE")
+        self.game_engine.select_action(constants.ACTION_MELEE)
 
     @Slot()
     def handle_missile_action_selected(self):
         print("[GameplayController] Missile action selected")
-        self.game_engine.select_action("MISSILE")
+        self.game_engine.select_action(constants.ACTION_MISSILE)
 
     @Slot()
     def handle_magic_action_selected(self):
         print("[GameplayController] Magic action selected")
-        self.game_engine.select_action("MAGIC")
+        self.game_engine.select_action(constants.ACTION_MAGIC)
 
     @Slot(str)
     def handle_attacker_melee_submission(self, results: str):
