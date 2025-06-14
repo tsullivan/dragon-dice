@@ -11,6 +11,7 @@ from components.melee_action_widget import MeleeActionWidget # Import MeleeActio
 from components.maneuver_input_widget import ManeuverInputWidget # Import ManeuverInputWidget
 from components.action_choice_widget import ActionChoiceWidget # Import ActionChoiceWidget
 from components.help_panel_widget import HelpPanelWidget # Import the new component
+from components.active_effects_widget import ActiveEffectsWidget # Import ActiveEffectsWidget
 
 class MainGameplayView(QWidget):
     """
@@ -75,6 +76,11 @@ class MainGameplayView(QWidget):
 
         top_main_content_h_layout.addWidget(self.current_player_terrains_group, 1)
         main_content_v_layout.addLayout(top_main_content_h_layout)
+
+        # 2.1.1.c Active Effects Display
+        self.active_effects_widget = ActiveEffectsWidget()
+        main_content_v_layout.addWidget(self.active_effects_widget)
+
 
         # 2.1.2. Bottom part of main content: Phase Specific Actions
         self.phase_actions_group = QGroupBox() # No title, border for structure
@@ -209,6 +215,10 @@ class MainGameplayView(QWidget):
         self.terrains_list_label.setHtml(terrains_html)
         if not relevant_terrains:
             self.terrains_list_label.setText("No terrain data available.")
+
+        # Update Active Effects Display
+        displayable_effects = self.game_engine.get_displayable_active_effects()
+        self.active_effects_widget.update_effects(displayable_effects)
 
         # Manage visibility of action elements based on game state
         current_phase = self.game_engine.current_phase # Use the direct attribute
