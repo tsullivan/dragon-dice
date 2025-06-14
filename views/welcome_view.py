@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
 from PySide6.QtCore import Qt, Signal, Slot
 
 from models.help_text_model import HelpTextModel
+from components.help_panel_widget import HelpPanelWidget # Import the new component
 
 class WelcomeView(QWidget):
     """
@@ -73,14 +74,9 @@ class WelcomeView(QWidget):
         middle_section_layout.addWidget(selections_group)
 
         # Right Side (Info Panel)
-        help_group_box = QGroupBox("Help")
-        help_layout = QVBoxLayout(help_group_box)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
+        self.help_panel = HelpPanelWidget("Info (Help Panel)") # Use the new component
         self._set_welcome_help_text()
-        help_layout.addWidget(self.help_text_edit)
-        middle_section_layout.addWidget(help_group_box, 1) # Add stretch factor
+        middle_section_layout.addWidget(self.help_panel, 1) # Add stretch factor
 
         main_layout.addLayout(middle_section_layout)
         main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
@@ -114,4 +110,4 @@ class WelcomeView(QWidget):
                 self.point_value_selected_signal.emit(self.point_value_button_group.buttons()[0].group().id(self.point_value_button_group.buttons()[0]))
 
     def _set_welcome_help_text(self):
-        self.help_text_edit.setHtml(self.help_model.get_welcome_help())
+        self.help_panel.set_help_text(self.help_model.get_welcome_help())

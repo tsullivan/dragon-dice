@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
                                QFormLayout, QSpacerItem, QSizePolicy, QHBoxLayout,
-                               QTextEdit, QGroupBox)
+                               QTextEdit, QGroupBox, QComboBox)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont # Added for QFont
 
 from models.help_text_model import HelpTextModel
-from components.carousel import CarouselInputWidget
+from components.help_panel_widget import HelpPanelWidget # Import the new component
 
 class DistanceRollsView(QWidget):
     """
@@ -20,7 +20,7 @@ class DistanceRollsView(QWidget):
         self.player_setup_data = player_setup_data
         self.frontier_terrain = frontier_terrain
         self.help_model = HelpTextModel()
-        self.roll_inputs = {} # To store CarouselInputWidget widgets: {player_name: CarouselInputWidget}
+        self.roll_inputs = {} # To store QComboBox widgets: {player_name: QComboBox}
         self.setWindowTitle("Enter Starting Distances")
 
         # Overall vertical layout
@@ -65,9 +65,13 @@ class DistanceRollsView(QWidget):
             home_terrain = p_data.get("home_terrain", "N/A")
             
             label_text = f"{player_name} (Home: {home_terrain}):"
-            roll_input_widget = CarouselInputWidget(allowed_values=distance_allowed_values, initial_value=1)
-            form_layout.addRow(label_text, roll_input_widget)
-            self.roll_inputs[player_name] = roll_input_widget
+            roll_combo_box = QComboBox()
+            for val in distance_allowed_values:
+                roll_combo_box.addItem(str(val), val) # Store actual int value as userData
+            if distance_allowed_values:
+                roll_combo_box.setCurrentIndex(0) # Default to the first item (1)
+            form_layout.addRow(label_text, roll_combo_box)
+            self.roll_inputs[player_name] = roll_combo_box
         
         inputs_v_layout.addWidget(distance_rolls_group)
         inputs_v_layout.addStretch(1) # Push group to top
@@ -75,14 +79,9 @@ class DistanceRollsView(QWidget):
         middle_section_layout.addWidget(inputs_widget, 1) # Inputs take some space
 
         # Right Side: Help Panel
-        help_panel_group = QGroupBox("Info (Help Panel)")
-        help_panel_layout = QVBoxLayout(help_panel_group)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
+        self.help_panel = HelpPanelWidget("Info (Help Panel)") # Use the new component
         self._set_distance_rolls_help_text()
-        help_panel_layout.addWidget(self.help_text_edit)
-        middle_section_layout.addWidget(help_panel_group, 1) # Help panel takes some space
+        middle_section_layout.addWidget(self.help_panel, 1) # Help panel takes some space
 
         main_layout.addLayout(middle_section_layout)
         
@@ -112,10 +111,10 @@ class DistanceRollsView(QWidget):
     def _on_submit_rolls(self):
         submitted_rolls = []
         all_valid = True
-        for player_name, roll_input_carousel in self.roll_inputs.items():
-            roll_val = roll_input_carousel.value()
-            # CarouselInputWidget should inherently provide a valid value from its allowed_values
-            if roll_val is None: # Should not happen if carousel is initialized properly
+        for player_name, roll_combo_box in self.roll_inputs.items():
+            roll_val = roll_combo_box.currentData() # Get the int value
+
+            if roll_val is None: # Should not happen if combo box is populated
                 self.status_label.setText(f"Error: No roll value for {player_name}.")
                 all_valid = False
                 break
@@ -130,6 +129,6 @@ class DistanceRollsView(QWidget):
 
 
     def _set_distance_rolls_help_text(self):
-        self.help_text_edit.setHtml(
+        self.help_panel.set_help_text(
             self.help_model.get_distance_rolls_help(self.frontier_terrain)
         )

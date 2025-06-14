@@ -6,6 +6,11 @@ from PySide6.QtGui import QFont # Added for QFont usage
 
 from engine import GameEngine # Assuming engine.py is in the same directory level
 from models.help_text_model import HelpTextModel
+from components.player_summary_widget import PlayerSummaryWidget # Import the new component
+from components.melee_action_widget import MeleeActionWidget # Import MeleeActionWidget
+from components.maneuver_input_widget import ManeuverInputWidget # Import ManeuverInputWidget
+from components.action_choice_widget import ActionChoiceWidget # Import ActionChoiceWidget
+from components.help_panel_widget import HelpPanelWidget # Import the new component
 
 class MainGameplayView(QWidget):
     """
@@ -52,9 +57,9 @@ class MainGameplayView(QWidget):
         top_main_content_h_layout = QHBoxLayout()
 
         # 2.1.1.a Player Armies Info (for all players)
-        self.player_armies_info_group = QGroupBox() # No title, border for structure
+        self.player_armies_info_group = QGroupBox("Player Summaries") # Give it a title
         self.player_armies_info_layout = QVBoxLayout(self.player_armies_info_group)
-        # This layout will be populated with QLabel or QTextEdit for each player's summary
+        # This layout will be populated with PlayerSummaryWidget instances
         top_main_content_h_layout.addWidget(self.player_armies_info_group, 1)
 
         # 2.1.1.b Current Player and Terrains
@@ -90,62 +95,24 @@ class MainGameplayView(QWidget):
         # Container for other dynamic action buttons/inputs from old MainGameplayView
         self.dynamic_actions_layout = QVBoxLayout() # Will hold various action widgets
         
-        # Maneuver decision buttons
-        self.maneuver_decision_buttons_layout = QHBoxLayout()
-        self.maneuver_yes_button = QPushButton("Maneuver: Yes")
-        self.maneuver_no_button = QPushButton("Maneuver: No")
-        self.maneuver_yes_button.clicked.connect(lambda: self.maneuver_decision_signal.emit(True))
-        self.maneuver_no_button.clicked.connect(lambda: self.maneuver_decision_signal.emit(False))
-        self.maneuver_decision_buttons_layout.addWidget(self.maneuver_yes_button)
-        self.maneuver_decision_buttons_layout.addWidget(self.maneuver_no_button)
-        self.dynamic_actions_layout.addLayout(self.maneuver_decision_buttons_layout)
-
-        # Maneuver input elements
-        self.maneuver_input_layout = QHBoxLayout()
-        self.maneuver_input_label = QLabel("Enter Maneuver Details:")
-        self.maneuver_input_field = QLineEdit()
-        self.maneuver_input_field.setPlaceholderText("e.g., 'Flyers to hex 123'")
-        self.submit_maneuver_button = QPushButton("Submit Maneuver")
-        self.submit_maneuver_button.clicked.connect(self._on_submit_maneuver_input)
-        self.maneuver_input_layout.addWidget(self.maneuver_input_label)
-        self.maneuver_input_layout.addWidget(self.maneuver_input_field)
-        self.maneuver_input_layout.addWidget(self.submit_maneuver_button)
-        self.dynamic_actions_layout.addLayout(self.maneuver_input_layout)
+        # Maneuver Input Widget
+        self.maneuver_input_widget = ManeuverInputWidget()
+        self.maneuver_input_widget.maneuver_decision_made.connect(self.maneuver_decision_signal.emit)
+        self.maneuver_input_widget.maneuver_details_submitted.connect(self.maneuver_input_submitted_signal.emit)
+        self.dynamic_actions_layout.addWidget(self.maneuver_input_widget)
 
         # Action Choice Layout
-        self.action_choice_buttons_layout = QHBoxLayout()
-        self.melee_action_button = QPushButton("Melee Action")
-        self.missile_action_button = QPushButton("Missile Action")
-        self.magic_action_button = QPushButton("Magic Action")
-        self.melee_action_button.clicked.connect(self.melee_action_selected_signal.emit)
-        self.missile_action_button.clicked.connect(self.missile_action_selected_signal.emit)
-        self.magic_action_button.clicked.connect(self.magic_action_selected_signal.emit)
-        self.action_choice_buttons_layout.addWidget(self.melee_action_button)
-        self.action_choice_buttons_layout.addWidget(self.missile_action_button)
-        self.action_choice_buttons_layout.addWidget(self.magic_action_button)
-        self.dynamic_actions_layout.addLayout(self.action_choice_buttons_layout)
+        self.action_choice_widget = ActionChoiceWidget()
+        self.action_choice_widget.action_selected.connect(self._handle_action_selected)
+        self.dynamic_actions_layout.addWidget(self.action_choice_widget)
+        self.action_choice_widget.hide() # Initially hidden
 
         # Melee Action Input Layout
-        self.melee_inputs_layout_widget = QWidget() # Container for melee inputs
-        melee_specific_inputs_v_layout = QVBoxLayout(self.melee_inputs_layout_widget)
-        self.attacker_melee_label = QLabel("Attacker: Enter Melee Results:")
-        self.attacker_melee_input = QLineEdit()
-        self.attacker_melee_input.setPlaceholderText("e.g., '5 hits, 2 SAIs'")
-        self.submit_attacker_melee_button = QPushButton("Submit Attacker Melee")
-        self.submit_attacker_melee_button.clicked.connect(self._on_submit_attacker_melee)
-        melee_specific_inputs_v_layout.addWidget(self.attacker_melee_label)
-        melee_specific_inputs_v_layout.addWidget(self.attacker_melee_input)
-        melee_specific_inputs_v_layout.addWidget(self.submit_attacker_melee_button)
-
-        self.defender_save_label = QLabel("Defender: Enter Save Results:")
-        self.defender_save_input = QLineEdit()
-        self.defender_save_input.setPlaceholderText("e.g., '3 saves'")
-        self.submit_defender_save_button = QPushButton("Submit Defender Saves")
-        self.submit_defender_save_button.clicked.connect(self._on_submit_defender_saves)
-        melee_specific_inputs_v_layout.addWidget(self.defender_save_label)
-        melee_specific_inputs_v_layout.addWidget(self.defender_save_input)
-        melee_specific_inputs_v_layout.addWidget(self.submit_defender_save_button)
-        self.dynamic_actions_layout.addWidget(self.melee_inputs_layout_widget)
+        self.melee_action_widget = MeleeActionWidget()
+        self.melee_action_widget.attacker_results_submitted.connect(self.attacker_melee_results_submitted.emit)
+        self.melee_action_widget.defender_results_submitted.connect(self.defender_save_results_submitted.emit)
+        self.dynamic_actions_layout.addWidget(self.melee_action_widget)
+        self.melee_action_widget.hide() # Initially hidden
         
         # Other phase-specific prompts (like Dragon Attack) from old code
         self.dragon_attack_prompt_label = QLabel("<b>Dragon Attack Phase:</b> Resolve dragon attacks.")
@@ -161,13 +128,8 @@ class MainGameplayView(QWidget):
         middle_section_layout.addWidget(main_content_widget, 3) # Main content takes more space
 
         # 2.2. Right Side: Help Panel
-        help_panel_group = QGroupBox("Info (Help Panel)")
-        help_panel_layout = QVBoxLayout(help_panel_group)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
-        help_panel_layout.addWidget(self.help_text_edit)
-        middle_section_layout.addWidget(help_panel_group, 1)
+        self.help_panel = HelpPanelWidget("Info (Help Panel)") # Use the new component
+        middle_section_layout.addWidget(self.help_panel, 1)
 
         main_layout.addLayout(middle_section_layout)
 
@@ -185,19 +147,6 @@ class MainGameplayView(QWidget):
         
         self.update_ui() # Initial call
 
-    def _on_submit_maneuver_input(self):
-        maneuver_details = self.maneuver_input_field.text()
-        self.maneuver_input_submitted_signal.emit(maneuver_details)
-        self.maneuver_input_field.clear()
-
-    def _on_submit_attacker_melee(self):
-        results = self.attacker_melee_input.text()
-        self.attacker_melee_results_submitted.emit(results)
-
-    def _on_submit_defender_saves(self):
-        results = self.defender_save_input.text()
-        self.defender_save_results_submitted.emit(results)
-
     def _on_eighth_face_add_ability(self):
         ability_text = self.eighth_face_input_field.text()
         if ability_text:
@@ -212,6 +161,14 @@ class MainGameplayView(QWidget):
         print(f"MainGameplayView: Continue button clicked. Current phase: {self.game_engine.current_phase}")
         self.continue_to_next_phase_signal.emit()
         
+    def _handle_action_selected(self, action_type: str):
+        if action_type == "MELEE":
+            self.melee_action_selected_signal.emit()
+        elif action_type == "MISSILE":
+            self.missile_action_selected_signal.emit()
+        elif action_type == "MAGIC":
+            self.magic_action_selected_signal.emit()
+
 
     @Slot()
     def update_ui(self):
@@ -221,21 +178,18 @@ class MainGameplayView(QWidget):
         # Update Player Army Summaries
         for i in reversed(range(self.player_armies_info_layout.count())):
             widget = self.player_armies_info_layout.itemAt(i).widget()
-            if widget: widget.deleteLater()
+            if widget: 
+                widget.deleteLater()
         
         # Assuming game_engine.get_all_player_summary_data() returns a list of dicts:
         # [{'name': 'P1', 'captured_terrains': 0, 'terrains_to_win': 2, 
         #   'armies': [{'name': 'Home', 'points': 10, 'location': 'Highland'}, ...]}, ...]
         all_players_data = self.game_engine.get_all_player_summary_data() # You'll need to implement this in GameEngine
         for player_data in all_players_data:
-            summary_html = f"<b>{player_data.get('name', 'N/A')}'s Army:</b><ul style='margin-left:0px; padding-left:5px; list-style-position:inside;'>"
-            summary_html += f"<li>Captured Terrains: {player_data.get('captured_terrains', 0)}/{player_data.get('terrains_to_win', 2)}</li>"
-            for army in player_data.get('armies', []):
-                summary_html += f"<li>{army.get('name', 'N/A')}: {army.get('points', 0)}pts (at {army.get('location', 'N/A')})</li>"
-            summary_html += "</ul>" # Removed <hr/> for cleaner list item separation if desired, or keep if you like the line.
-            player_summary_label = QLabel(summary_html)
-            player_summary_label.setWordWrap(True)
-            self.player_armies_info_layout.addWidget(player_summary_label)
+            player_name = player_data.get("name", "Unknown Player")
+            summary_widget = PlayerSummaryWidget(player_name) # Pass initial name
+            summary_widget.update_summary(player_data) # Update with full data
+            self.player_armies_info_layout.addWidget(summary_widget)
         if not all_players_data:
              self.player_armies_info_layout.addWidget(QLabel("No player data available."))
 
@@ -262,15 +216,9 @@ class MainGameplayView(QWidget):
         current_action_step = self.game_engine.current_action_step
 
         # Hide all dynamic action widgets by default
-        self.maneuver_yes_button.hide()
-        self.maneuver_no_button.hide()
-        self.maneuver_input_label.hide()
-        self.maneuver_input_field.hide()
-        self.submit_maneuver_button.hide()
-        self.melee_action_button.hide()
-        self.missile_action_button.hide()
-        self.magic_action_button.hide()
-        self.melee_inputs_layout_widget.hide() # Hide the whole group
+        self.maneuver_input_widget.hide()
+        self.action_choice_widget.hide()
+        self.melee_action_widget.hide() # Hide the MeleeActionWidget
         self.dragon_attack_prompt_label.hide()
         self.dragon_attack_continue_button.hide()
         
@@ -285,35 +233,18 @@ class MainGameplayView(QWidget):
 
         # Show relevant widgets based on current game step
         if current_march_step == "DECIDE_MANEUVER":
-            self.maneuver_yes_button.show()
-            self.maneuver_no_button.show()
+            self.maneuver_input_widget.show()
+            self.maneuver_input_widget.reset_to_decision() # Ensure it's showing Yes/No
         elif current_march_step == "AWAITING_MANEUVER_INPUT":
-            self.maneuver_input_label.show()
-            self.maneuver_input_field.show()
-            self.maneuver_input_field.clear()
-            self.submit_maneuver_button.show()
+            self.maneuver_input_widget.show() # The widget itself handles showing the input field
         elif current_march_step == "SELECT_ACTION":
-            self.melee_action_button.show()
-            self.missile_action_button.show()
-            self.magic_action_button.show()
+            self.action_choice_widget.show()
         elif current_action_step == "AWAITING_ATTACKER_MELEE_ROLL":
-            self.melee_inputs_layout_widget.show()
-            self.attacker_melee_label.show()
-            self.attacker_melee_input.show()
-            self.attacker_melee_input.clear()
-            self.submit_attacker_melee_button.show()
-            self.defender_save_label.hide() # Hide defender parts
-            self.defender_save_input.hide()
-            self.submit_defender_save_button.hide()
+            self.melee_action_widget.show()
+            self.melee_action_widget.show_attacker_input()
         elif current_action_step == "AWAITING_DEFENDER_SAVES":
-            self.melee_inputs_layout_widget.show()
-            self.attacker_melee_label.hide() # Hide attacker parts
-            self.attacker_melee_input.hide()
-            self.submit_attacker_melee_button.hide()
-            self.defender_save_label.show()
-            self.defender_save_input.show()
-            self.defender_save_input.clear()
-            self.submit_defender_save_button.show()
+            self.melee_action_widget.show()
+            self.melee_action_widget.show_defender_input()
         elif not current_march_step and not current_action_step: # General phase prompts
             if current_phase == "DRAGON_ATTACK":
                 self.dragon_attack_prompt_label.show()
@@ -323,4 +254,4 @@ class MainGameplayView(QWidget):
 
         # Update Help Text
         help_key = current_action_step or current_march_step or current_phase
-        self.help_text_edit.setHtml(self.help_model.get_main_gameplay_help(help_key))
+        self.help_panel.set_help_text(self.help_model.get_main_gameplay_help(help_key))

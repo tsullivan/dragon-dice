@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont # Added for QFont
 
 from models.help_text_model import HelpTextModel
+from components.help_panel_widget import HelpPanelWidget # Import the new component
 
 class FrontierSelectionView(QWidget):
     """
@@ -95,14 +96,9 @@ class FrontierSelectionView(QWidget):
         middle_section_layout.addWidget(selections_widget, 1) # Selections take some space
 
         # Right Side: Help Panel
-        help_panel_group = QGroupBox("Info (Help Panel)")
-        help_panel_layout = QVBoxLayout(help_panel_group)
-        self.help_text_edit = QTextEdit()
-        self.help_text_edit.setReadOnly(True)
-        self.help_text_edit.setStyleSheet("ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }")
+        self.help_panel = HelpPanelWidget("Info (Help Panel)") # Use the new component
         self._set_frontier_help_text()
-        help_panel_layout.addWidget(self.help_text_edit)
-        middle_section_layout.addWidget(help_panel_group, 1) # Help panel takes some space
+        middle_section_layout.addWidget(self.help_panel, 1) # Help panel takes some space
 
         main_layout.addLayout(middle_section_layout)
         main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
@@ -126,7 +122,7 @@ class FrontierSelectionView(QWidget):
         self.setLayout(main_layout)
 
     def _set_frontier_help_text(self):
-        self.help_text_edit.setHtml(self.help_model.get_frontier_selection_help())
+        self.help_panel.set_help_text(self.help_model.get_frontier_selection_help())
 
     def _on_submit(self):
         selected_player_button = self.first_player_button_group.checkedButton()
@@ -143,4 +139,3 @@ class FrontierSelectionView(QWidget):
         selected_terrain_type = selected_frontier_button.property("terrain_type")
 
         self.frontier_data_submitted.emit(selected_player_name, selected_terrain_type)
-
