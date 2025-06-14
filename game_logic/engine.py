@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, Slot
 import uuid # For generating unique effect IDs
 from typing import Optional # Import Optional
 import constants
@@ -29,13 +29,14 @@ class GameEngine(QObject):
 
         # Instantiate managers
         self.turn_manager = TurnManager(self.player_names, self.first_player_name, parent=self)
-        self.action_resolver = ActionResolver(parent=self)
         self.effect_manager = EffectManager(parent=self)
         self.game_state_manager = GameStateManager(player_setup_data, frontier_terrain, distance_rolls, parent=self)
+        self.action_resolver = ActionResolver(self.game_state_manager, self.effect_manager, parent=self)
 
         # Connect signals from managers to GameEngine signals or slots
         self.turn_manager.current_player_changed.connect(self.current_player_changed.emit)
         self.turn_manager.current_phase_changed.connect(self.current_phase_changed.emit) # Assuming TurnManager will emit display string
+        self.action_resolver.next_action_step_determined.connect(self._set_next_action_step) # Connect new signal
         self.game_state_manager.game_state_changed.connect(self.game_state_updated.emit) # If game state changes, emit general update
         self.effect_manager.effects_changed.connect(self.game_state_updated.emit) # If effects change, game state is updated
 
@@ -155,62 +156,24 @@ class GameEngine(QObject):
             return
         print(f"Player {self.get_current_player_name()} (Attacker) submitted melee results: {results}")
 
-        # TODO: 1. Identify Attacking Army and its units/items from self.player_setup_data and current game state.
-        # TODO: 2. Identify Defending Army and its units/items.
-        # TODO: 3. Parse 'results' string into a list of icons/SAIs rolled by the attacker.
-        #          Example: results_list = self._parse_dice_string(results)
-        
-        # TODO: 4. Perform Dice Roll Resolution for the attacker.
-        #          attacker_calculated_results = self._resolve_dice_roll(
-        #              army_units=attacker_army_units, # List of unit objects/dicts
-        #              rolled_icons=results_list,
-        #              roll_type="MELEE",
-        #              acting_player=self.get_current_player_name()
-        #          )
-        #          This would involve:
-        #              - Applying SAIs that modify the roll or have immediate effects.
-        #              - Counting normal melee icons.
-        #              - Converting ID icons to melee results (depends on unit).
-        #              - Applying modifiers from active effects, spells, terrain.
-        #              - Storing final melee damage, and any SAIs to be applied to defender's save roll.
-
-        # For now, let's assume attacker_calculated_results is a dict:
-        # attacker_calculated_results = {"melee_damage": 5, "sais_for_defender": ["SomeSAI"]}
-
-        parsed_results = self._parse_dice_string(results, roll_type="MELEE")
+        parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MELEE")
         if not parsed_results:
-            print("Error: Could not parse attacker melee results.")
+            print("GameEngine: Error: Could not parse attacker melee results via ActionResolver.")
             # Optionally, do not advance state or provide UI feedback
             return
-        print(f"Parsed attacker melee: {parsed_results}")
-        # self.pending_attacker_results = attacker_calculated_results # Store for defender's turn
+        print(f"GameEngine: Parsed attacker melee via ActionResolver: {parsed_results}")
 
-        # Delegate to ActionResolver (conceptual)
-        # self.action_resolver.resolve_melee_attack(attacker_army, defender_army, results)
-        # ActionResolver would then emit signals or update state that GameEngine reacts to.
-
-        self.turn_manager.current_action_step = constants.ACTION_STEP_AWAITING_DEFENDER_SAVES
+        # ActionResolver processes the roll and will emit `next_action_step_determined`
+        # which is connected to self._set_next_action_step
+        attacker_outcome = self.action_resolver.process_attacker_melee_roll(
+            attacking_player_name=self.get_current_player_name(),
+            parsed_dice_results=parsed_results
+        )
+        print(f"GameEngine: Attacker melee outcome from ActionResolver: {attacker_outcome}")
+        # The next step is now set by the signal from ActionResolver.
+        # self.turn_manager.current_action_step = constants.ACTION_STEP_AWAITING_DEFENDER_SAVES # This is now handled by _set_next_action_step
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
-
-    def _parse_dice_string(self, dice_string: str, roll_type: str) -> list:
-        """
-        Helper to parse a string like '3 melee, 1 sai:bullseye, 2 id' into a structured list.
-        Returns an empty list if parsing fails.
-        """
-        # Very basic placeholder parser. This needs to be robust.
-        # Example: "2m, 1s:doubler, 3id"
-        # TODO: Implement robust parsing (regex, string splitting, error handling)
-        # For now, just a conceptual print.
-        print(f"Attempting to parse '{dice_string}' for roll type '{roll_type}'")
-        parsed_list = []
-        parts = dice_string.lower().split(',')
-        for part in parts:
-            part = part.strip()
-            # This is highly simplified and needs proper logic for numbers, icon names, and SAI names.
-            if "melee" in part or "m" in part: # Example
-                parsed_list.append({"type": constants.ICON_MELEE, "count": int(part.split(' ')[0]) if part.split(' ')[0].isdigit() else 1})
-        return parsed_list
 
     # def _resolve_dice_roll(self, army_units: list, rolled_icons: list, roll_type: str, acting_player: str, opponent_player: str = None) -> dict:
     #     """Core dice roll resolution logic."""
@@ -229,7 +192,7 @@ class GameEngine(QObject):
         # TODO: 1. Identify Defending Army and its units/items.
         # TODO: 2. Identify Attacking Army (from self.pending_attacker_results or game state).
         # TODO: 3. Parse 'results' string for defender's save roll.
-        parsed_save_results = self._parse_dice_string(results, roll_type="SAVE")
+        parsed_save_results = self.action_resolver.parse_dice_string(results, roll_type="SAVE")
         if not parsed_save_results:
             print("Error: Could not parse defender save results.")
             # Optionally, do not advance state or provide UI feedback
@@ -271,6 +234,12 @@ class GameEngine(QObject):
         print(f"Melee action in {self.current_phase} complete.")
         self.turn_manager.current_action_step = ""
         self.advance_phase() # Or advance march step if within a march
+
+    @Slot(str)
+    def _set_next_action_step(self, next_step: str):
+        """Slot to update the current action step in TurnManager."""
+        print(f"GameEngine: Setting next action step to: {next_step}")
+        self.turn_manager.current_action_step = next_step
 
     def _resolve_spell_effect(self, spell_name: str, caster_player_name: str, target_identifier: str, target_type: str, affected_player_name: Optional[str] = None):
         """Placeholder for resolving spell effects and adding active effects."""

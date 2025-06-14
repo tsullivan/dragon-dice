@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal
 import uuid
-from typing import Optional
+from typing import Optional, Dict, Any
 
 class EffectManager(QObject):
     """Manages active effects in the game, their durations, and application."""
@@ -39,4 +39,24 @@ class EffectManager(QObject):
         # TODO: Implement formatting for display
         return [f"Effect: {effect['description']} on {effect['target_identifier']}" for effect in self.active_effects]
 
-    # TODO: Add methods to query for active modifiers on a given target (army, unit, terrain).
+    def get_active_modifiers(self, target_player_name: str, target_army_identifier: Optional[str], action_type: str) -> Dict[str, Any]:
+        """
+        Queries for active modifiers affecting a target for a specific action type.
+        Returns a dictionary of modifiers, e.g., {"melee_bonus": 1, "halve_results": True}.
+        """
+        modifiers = {"melee_bonus": 0, "missile_bonus": 0, "magic_bonus": 0, "save_bonus": 0, "halve_results": False, "double_results": False}
+        # TODO: Implement more sophisticated effect checking based on target_type, target_identifier, and effect properties.
+        # This is a simplified example.
+        for effect in self.active_effects:
+            # Check if the effect applies to the current player/army and action
+            if effect.get("affected_player_name") == target_player_name: # Basic check
+                if "melee results -3" in effect.get("description", "").lower() and action_type == "MELEE":
+                    modifiers["melee_bonus"] -= 3
+                elif "all results halved" in effect.get("description", "").lower(): # General halving
+                    modifiers["halve_results"] = True
+                elif "melee results halved" in effect.get("description", "").lower() and action_type == "MELEE":
+                    modifiers["halve_results"] = True
+                # Add more specific effect checks here
+
+        print(f"EffectManager: Modifiers for {target_player_name} ({action_type}): {modifiers}")
+        return modifiers

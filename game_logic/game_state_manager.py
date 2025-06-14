@@ -1,5 +1,6 @@
 from PySide6.QtCore import QObject, Signal
 from typing import List, Dict, Any, Optional
+import constants
 
 class GameStateManager(QObject):
     """
@@ -20,8 +21,15 @@ class GameStateManager(QObject):
         # "Player 1": {
         #     "name": "Player 1",
         #     "home_terrain_name": "Highland",
+        #     "active_army_type": "home", # Tracks which army is currently acting in a march
         #     "armies": {
-        #         "home": {"name": "Home Guard", "points_value": 10, "units": [], "location": "Highland"},
+        #         "home": {
+        #             "name": "Home Guard", "points_value": 10, "location": "Highland",
+        #             "units": [
+        #                 {"id": "unit1", "name": "Goblin Infantry", "health": 1, "max_health": 1, "abilities": {"id_results": {constants.ICON_MELEE: 1}}},
+        #                 {"id": "unit2", "name": "Orc Archer", "health": 2, "max_health": 2, "abilities": {"id_results": {constants.ICON_MISSILE: 1}}}
+        #             ]
+        #         },
         #         "campaign": {"name": "Vanguard", "points_value": 10, "units": [], "location": "Frontier"},
         #         "horde": {"name": "Raiders", "points_value": 4, "units": [], "location": "OpponentHome"}
         #     },
@@ -49,6 +57,7 @@ class GameStateManager(QObject):
             self.players[player_name] = {
                 "name": player_name,
                 "home_terrain_name": p_data["home_terrain"],
+                "active_army_type": "home", # Default active army, can be changed by maneuver/action selection
                 "armies": {}, # Will be populated below
                 "captured_terrains_count": 0,
                 "dead_unit_area": [],
@@ -70,9 +79,10 @@ class GameStateManager(QObject):
                 self.players[player_name]["armies"][army_type_key] = {
                     "name": army_details["name"],
                     "points_value": army_details["points"],
-                    "units": [], # TODO: Populate with actual units later
+                    "units": self._populate_initial_units(army_details["points"], army_type_key), # Populate placeholder units
                     "location": location
                 }
+
 
         # Initialize terrains
         self.terrains[frontier_terrain_name] = {
@@ -89,6 +99,24 @@ class GameStateManager(QObject):
         print(f"GameStateManager: Initialized Players: {list(self.players.keys())}")
         print(f"GameStateManager: Initialized Terrains: {self.terrains}")
         self.game_state_changed.emit()
+
+    def _populate_initial_units(self, army_points: int, army_type: str) -> List[Dict[str, Any]]:
+        """
+        Creates a list of placeholder units based on army points.
+        This is a very basic placeholder. Real implementation needs dice/unit data.
+        """
+        units = []
+        # Example: 1 unit per 2 points, very simplified
+        num_units = army_points // 2
+        for i in range(num_units):
+            unit_name = f"{army_type.title()} Unit {i+1}"
+            units.append({
+                "id": f"{army_type.lower()}_unit_{i+1}",
+                "name": unit_name,
+                "health": 1, "max_health": 1, # Placeholder health
+                "abilities": {"id_results": {constants.ICON_MELEE: 1}} # Placeholder ability
+            })
+        return units
 
     # TODO: Add methods to:
     # - Get and update unit health
@@ -114,3 +142,18 @@ class GameStateManager(QObject):
     def get_player_home_terrain_name(self, player_name: str) -> Optional[str]:
         player = self.get_player_data(player_name)
         return player.get("home_terrain_name") if player else None
+
+    def get_active_army_units(self, player_name: str) -> List[Dict[str, Any]]:
+        """
+        Returns the list of units for the currently active army of the specified player.
+        The "active" army is determined by game flow (e.g., which army marched).
+        This is a simplification; a more robust system would track the selected army.
+        """
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return []
+        
+        # TODO: Determine active army more dynamically (e.g., based on current march phase or selected army)
+        # For now, assume 'home' army is active if nothing else is specified.
+        active_army_type = player_data.get("active_army_type", "home") # Fallback to home
+        return player_data.get("armies", {}).get(active_army_type, {}).get("units", [])
