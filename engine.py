@@ -1,4 +1,5 @@
 from PySide6.QtCore import QObject, Signal
+import uuid # For generating unique effect IDs
 
 TURN_PHASES = [
     "EXPIRE_EFFECTS",
@@ -40,6 +41,7 @@ class GameEngine(QObject):
         self.current_phase_idx = 0 # Start with EXPIRE_EFFECTS
         self.current_phase = TURN_PHASES[self.current_phase_idx]
         self.current_march_step = "" # Will be set when entering a march phase
+        self.active_effects = [] # To store active effects
         self.current_action_step = "" # For sub-steps within Melee, Missile, Magic
 
         self._initialize_turn_for_current_player()
@@ -63,8 +65,7 @@ class GameEngine(QObject):
             self.current_march_step = MARCH_STEPS[0] # DECIDE_MANEUVER
         elif self.current_phase == "EXPIRE_EFFECTS":
             # Example: Auto-advancing phase
-            print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
-            # In a real scenario, process effects then advance.
+            self._process_expire_effects_phase() # Process and then advance
             self.advance_phase() 
         elif self.current_phase == "EIGHTH_FACE":
             # TODO: Implement logic for eighth face effects
@@ -202,3 +203,61 @@ class GameEngine(QObject):
             {"name": current_player_info.get("home_terrain", "N/A"), "type": "Home", "details": f"{current_player_info.get('name')}'s Home"},
             # Add opponent's home terrain if applicable and identifiable
         ]
+
+    def _generate_unique_effect_id(self):
+        return str(uuid.uuid4())
+
+    def add_active_effect(self, description: str, source: str, target_type: str, target_identifier: str,
+                          duration_type: str, duration_value: int,
+                          caster_player_name: str, affected_player_name: str = None):
+        """
+        Adds a new active effect to the game.
+        duration_type examples: "NEXT_TURN_CASTER", "NEXT_TURN_TARGET", "ROUNDS"
+        """
+        effect = {
+            "id": self._generate_unique_effect_id(),
+            "description": description,
+            "source": source,
+            "target_type": target_type,         # e.g., "ARMY", "PLAYER", "TERRAIN", "UNIT"
+            "target_identifier": target_identifier, # e.g., "Player 1 Home Army", "Player 2", "Frontier Terrain", "Unit ID X"
+            "duration_type": duration_type,
+            "duration_value": duration_value,   # e.g., 1 for "next turn", or number of rounds
+            "caster_player_name": caster_player_name,
+            "affected_player_name": affected_player_name or caster_player_name
+        }
+        self.active_effects.append(effect)
+        print(f"Effect added: {description} on {target_identifier} for {duration_value} {duration_type}")
+        self.game_state_updated.emit()
+
+    def _process_expire_effects_phase(self):
+        """Processes and removes expired effects."""
+        current_player_name = self.get_current_player_name()
+        effects_to_remove = []
+
+        for effect in self.active_effects:
+            expired = False
+            if effect["duration_type"] == "NEXT_TURN_CASTER" and effect["caster_player_name"] == current_player_name:
+                # This assumes the effect was meant to last until the start of this specific player's next turn.
+                # A more robust way might be to decrement a turn counter or use a specific turn number.
+                # For simplicity, if it's their turn and it's a "next turn" effect, it expires.
+                expired = True
+            elif effect["duration_type"] == "NEXT_TURN_TARGET" and effect["affected_player_name"] == current_player_name:
+                expired = True
+            elif effect["duration_type"] == "ROUNDS":
+                effect["duration_value"] -= 1
+                if effect["duration_value"] <= 0:
+                    expired = True
+            
+            if expired:
+                effects_to_remove.append(effect)
+        
+        for expired_effect in effects_to_remove:
+            self.active_effects.remove(expired_effect)
+            print(f"Effect expired: {expired_effect['description']} on {expired_effect['target_identifier']}")
+
+        if effects_to_remove:
+            self.game_state_updated.emit()
+
+    def get_displayable_active_effects(self) -> list[str]:
+        """Returns a list of strings representing active effects for UI display."""
+        return [f"[{effect['target_type']}: {effect['target_identifier']}] {effect['description']} ({effect['duration_value']} {effect['duration_type']}) - by {effect['caster_player_name']}" for effect in self.active_effects]
