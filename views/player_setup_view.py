@@ -2,6 +2,8 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                                QPushButton, QSpacerItem, QSizePolicy, QLineEdit, QGroupBox, QGridLayout, QTextEdit)
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QPalette, QColor
+import random
+import os
 
 from components.carousel import CarouselInputWidget
 from models.help_text_model import HelpTextModel
@@ -35,6 +37,8 @@ class PlayerSetupView(QWidget):
         self.required_dragons = required_dragons
         self.help_model = HelpTextModel()
         self.current_player_index = current_player_index
+
+        self.preselected_names = self._load_preselected_names()
 
         self.player_data = {} # To store data for the current player
         self.setWindowTitle(f"Player {self.current_player_index + 1} Setup")
@@ -71,9 +75,16 @@ class PlayerSetupView(QWidget):
         # Row 0: Player Name
         player_name_label = QLabel("Player Name:")
         self.player_name_input = QLineEdit()
+        self.player_name_input.setMinimumWidth(200) # Give it some base width
         self.player_name_input.setPlaceholderText(f"Player {self.current_player_index + 1} Name")
+        self.random_player_name_button = QPushButton("🎲")
+        self.random_player_name_button.setToolTip("Set a random player name")
+        self.random_player_name_button.clicked.connect(self._set_random_player_name)
+        player_name_layout = QHBoxLayout()
+        player_name_layout.addWidget(self.player_name_input, 1) # QLineEdit takes expanding space
+        player_name_layout.addWidget(self.random_player_name_button)
         inputs_grid_layout.addWidget(player_name_label, 0, 0)
-        inputs_grid_layout.addWidget(self.player_name_input, 0, 1, 1, 4) # Span 4 columns for input
+        inputs_grid_layout.addLayout(player_name_layout, 0, 1, 1, 4)
 
         # Row 1: Home Terrain
         home_terrain_label = QLabel("Home Terrain:")
@@ -94,6 +105,7 @@ class PlayerSetupView(QWidget):
         self.army_labels = {} # To store labels for show/hide
         self.army_name_widget_labels = {}
         self.army_points_widget_labels = {}
+        self.random_army_name_buttons = {}
 
         army_points_allowed = list(range(0, self.point_value + 1))
 
@@ -105,10 +117,19 @@ class PlayerSetupView(QWidget):
 
             name_widget_label = QLabel("Name:")
             self.army_name_widget_labels[army_type] = name_widget_label
-            name_input = QLineEdit(army_type) # Default name
+            name_input = QLineEdit(army_type)
+            name_input.setMinimumWidth(150) # Give it some base width
             self.army_name_inputs[army_type] = name_input
+
+            random_button = QPushButton("🎲")
+            random_button.setToolTip(f"Set a random name for {army_type} Army")
+            random_button.clicked.connect(lambda checked, le=name_input: self._set_random_army_name_for_input(le))
+            self.random_army_name_buttons[army_type] = random_button
+            army_name_field_layout = QHBoxLayout()
+            army_name_field_layout.addWidget(name_input, 1)
+            army_name_field_layout.addWidget(random_button)
             inputs_grid_layout.addWidget(name_widget_label, row, 1, alignment=Qt.AlignmentFlag.AlignRight)
-            inputs_grid_layout.addWidget(name_input, row, 2)
+            inputs_grid_layout.addLayout(army_name_field_layout, row, 2)
 
             points_widget_label = QLabel("Points:")
             self.army_points_widget_labels[army_type] = points_widget_label
@@ -165,6 +186,45 @@ class PlayerSetupView(QWidget):
             self.army_points_carousels[army_type].valueChanged.connect(self._validate_and_update_button_state)
 
         self.update_for_player(self.current_player_index) # Initial setup for player 1
+
+    def _load_preselected_names(self):
+        names_by_category = {"Player": [], "Army": []}
+        current_category = None
+        try:
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            names_file_path = os.path.join(project_root, "names.txt")
+            with open(names_file_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if line.startswith("[") and line.endswith("]"):
+                        category = line[1:-1]
+                        if category in names_by_category:
+                            current_category = category
+                        else:
+                            current_category = None # Unknown category
+                            print(f"Warning: Unknown category '{category}' in names.txt.")
+                    elif current_category:
+                        names_by_category[current_category].append(line)
+            
+            if not names_by_category["Player"] and not names_by_category["Army"]:
+                print("Warning: names.txt does not contain valid [Player] or [Army] names.")
+            elif not names_by_category["Player"]:
+                print("Warning: No names found under [Player] category in names.txt.")
+            elif not names_by_category["Army"]:
+                print("Warning: No names found under [Army] category in names.txt.")
+        except FileNotFoundError:
+            print(f"Warning: names.txt not found at {names_file_path}. Random name feature will be limited.")
+        return names_by_category
+
+    def _set_random_player_name(self):
+        if self.preselected_names.get("Player"):
+            self.player_name_input.setText(random.choice(self.preselected_names["Player"]))
+
+    def _set_random_army_name_for_input(self, line_edit_widget: QLineEdit):
+        if self.preselected_names.get("Army"):
+            line_edit_widget.setText(random.choice(self.preselected_names["Army"]))
 
     def _handle_next_action(self):
         if not self._validate_inputs():
@@ -286,6 +346,7 @@ class PlayerSetupView(QWidget):
         self.army_points_widget_labels["Horde"].setVisible(show_horde)
         self.army_points_carousels["Horde"].setVisible(show_horde)
         if show_horde:
+            self.random_army_name_buttons["Horde"].setVisible(show_horde)
             self.army_name_inputs["Horde"].setText("Horde")
             self.army_points_carousels["Horde"].setValue(0)
 
