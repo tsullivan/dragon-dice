@@ -7,11 +7,14 @@ import random
 import os
 from typing import Optional # Import Optional
 
-from components.carousel import CarouselInputWidget # Re-add CarouselInputWidget
-from components.army_setup_widget import ArmySetupWidget # Import the new component
-from components.player_identity_widget import PlayerIdentityWidget # Import the new component
-from components.help_panel_widget import HelpPanelWidget # Import the new component
+from components.carousel import CarouselInputWidget
+from components.army_setup_widget import ArmySetupWidget
+from components.player_identity_widget import PlayerIdentityWidget
+from components.help_panel_widget import HelpPanelWidget
+from views.unit_selection_dialog import UnitSelectionDialog # Import the dialog
 from models.help_text_model import HelpTextModel
+from models.unit_roster_model import UnitRosterModel # Import UnitRosterModel
+from models.unit_model import UnitModel # Import UnitModel
 from constants import TERRAIN_DATA # For default terrain options
 
 class PlayerSetupView(QWidget):
@@ -42,13 +45,16 @@ class PlayerSetupView(QWidget):
             self.all_terrain_options = self.terrain_display_options # Assume it's already a list of names
             
         self.required_dragons = required_dragons
+        self.unit_roster = UnitRosterModel() # Instantiate the roster
         self.help_model = HelpTextModel()
         self.current_player_index = current_player_index
 
         self.max_points_per_army = self.point_value // 2
         self.preselected_names = self._load_preselected_names()
 
-        self.player_data = {} # To store data for the current player
+        self.player_data: dict = {} # To store data for the current player
+        # self.army_points_combos: dict[str, QComboBox] = {} # Removed
+        self.army_units_data: dict[str, list[dict]] = {} # {army_type: list of unit dicts}
         self.setWindowTitle(f"Player {self.current_player_index + 1} Setup")
 
         main_layout = QVBoxLayout(self)
@@ -103,25 +109,34 @@ class PlayerSetupView(QWidget):
         army_types = ["Home", "Campaign", "Horde"]
         self.army_setup_widgets = {} # To store ArmySetupWidget instances
         self.army_labels = {} # To store labels for show/hide
+        self.army_manage_buttons: dict[str, QPushButton] = {} # {army_type: QPushButton}
+        self.army_units_summary_labels: dict[str, QLabel] = {} # {army_type: QLabel}
 
-        army_points_allowed = list(range(0, self.max_points_per_army + 1))
+        # army_points_allowed = list(range(0, self.max_points_per_army + 1)) # No longer needed here
 
         for i, army_type in enumerate(army_types):
             row = 1 + i # Start army setups from the next row after player identity
             army_label = QLabel(f"{army_type} Army:") # External label for the army type
+            army_key = army_type.lower()
             self.army_labels[army_type] = army_label
-            inputs_grid_layout.addWidget(army_label, row, 0)
-            
-            army_widget = ArmySetupWidget(army_type, army_points_allowed)
-            self.army_setup_widgets[army_type] = army_widget
-            inputs_grid_layout.addWidget(army_widget, row, 1) # ArmySetupWidget in the second column
+            inputs_grid_layout.addWidget(army_label, row, 0, Qt.AlignmentFlag.AlignTop) # Align label to top
 
+            # Manage Units Button
+            manage_button = QPushButton("Manage Units")
+            manage_button.clicked.connect(lambda checked, at=army_type: self._open_unit_selection_dialog(at))
+            self.army_manage_buttons[army_type] = manage_button
+            inputs_grid_layout.addWidget(manage_button, row, 1) # Button in second column
+
+            # Units Summary Label
+            units_summary_label = QLabel("Units: 0 (0 pts)")
+            self.army_units_summary_labels[army_type] = units_summary_label
+            inputs_grid_layout.addWidget(units_summary_label, row, 2, Qt.AlignmentFlag.AlignVCenter) # Summary in third column
         # Set column stretch factors for better spacing
         inputs_grid_layout.setColumnStretch(0, 0) # Column for labels like "Home Army:"
         inputs_grid_layout.setColumnStretch(1, 1) # Column for PlayerIdentityWidget fields and ArmySetupWidgets
 
         self.inputs_group = inputs_group # Assign to instance variable after local use
-        middle_section_layout.addLayout(left_side_layout) # Add the left_side_layout to the middle_section
+        middle_section_layout.addLayout(left_side_layout, 1) # Add the left_side_layout to the middle_section with stretch
 
         # Right Side (Help Panel)
         self.help_panel = HelpPanelWidget("Help") # Use the new component
@@ -156,10 +171,10 @@ class PlayerSetupView(QWidget):
         self.player_identity_widget.name_changed.connect(self._validate_and_update_button_state)
         self.player_identity_widget.home_terrain_changed.connect(self._validate_and_update_button_state)
         self.player_identity_widget.frontier_proposal_changed.connect(self._validate_and_update_button_state)
-        for army_type in army_types:
-            self.army_setup_widgets[army_type].name_changed.connect(self._validate_and_update_button_state)
-            self.army_setup_widgets[army_type].points_changed.connect(self._validate_and_update_button_state)
+        # No points combo boxes to connect anymore for validation trigger,
+        # unit selection will trigger validation.
 
+        self._set_player_setup_help_text() # Set initial help text
         self.update_for_player(self.current_player_index, self.initial_player_data) # Pass initial data
 
     def _load_preselected_names(self):
@@ -198,14 +213,12 @@ class PlayerSetupView(QWidget):
             self.player_identity_widget.set_name(random.choice(self.preselected_names["Player"]))
 
     def _set_random_army_name_for_input(self, line_edit_widget: QLineEdit):
-        if self.preselected_names.get("Army"):
-            line_edit_widget.setText(random.choice(self.preselected_names["Army"]))
+        pass # Army name input removed, this method is no longer needed for armies
 
     def _randomize_all_names(self):
+        # Only randomize player name now
         self._set_random_player_name() # This now calls set_name on player_identity_widget
-        for army_type, army_widget in self.army_setup_widgets.items():
-            if army_widget.isVisible(): # Only randomize visible army names
-                self._set_random_army_name_for_input(army_widget.name_input) # Access internal QLineEdit
+        # Army names are removed from setup, no army names to randomize here.
 
 
     def _handle_next_action(self):
@@ -224,11 +237,17 @@ class PlayerSetupView(QWidget):
             "armies": {}
         }
         for army_type, army_widget in self.army_setup_widgets.items():
-            if army_type == "Horde" and self.num_players <= 1: # Skip Horde for 1 player
+            army_key = army_type.lower()
+            if army_key == "horde" and self.num_players <= 1: # Skip Horde for 1 player
                 continue
-            army_name = army_widget.get_name()
-            army_points = army_widget.get_points()
-            player_data["armies"][army_type.lower()] = {"name": army_name, "points": army_points} # Use lowercase for dict key consistency
+            # Points are now derived from units
+            army_units = self.army_units_data.get(army_key, [])
+            army_allocated_points = sum(u.get("points_cost", 0) for u in army_units)
+            player_data["armies"][army_key] = {
+                "name": army_type, # Army name is now just the type
+                "allocated_points": army_allocated_points, # This is the sum of unit costs
+                "units": self.army_units_data.get(army_key, []) # Get units from stored data
+            }
 
         self.player_data_finalized.emit(self.current_player_index, player_data)
         self.current_player_index += 1
@@ -248,31 +267,30 @@ class PlayerSetupView(QWidget):
         if not player_name:
             self._set_status_message("Player Name cannot be empty.", "red")
             return False
-
+        
+        # Validate points allocation
         total_allocated_points = 0
-        armies_to_validate = ["Home", "Campaign"]
+        armies_to_check = ["Home", "Campaign"]
         if self.num_players > 1:
-            armies_to_validate.append("Horde")
+            armies_to_check.append("Horde")
 
-        for army_type_key in armies_to_validate: # army_type_key is "Home", "Campaign", "Horde"
-            army_widget = self.army_setup_widgets[army_type_key]
-            army_name = army_widget.get_name()
-            if not army_name:
-                self._set_status_message(f"{army_type_key} Army Name cannot be empty.", "red")
-                return False
-            army_points = army_widget.get_points()
-            if army_points is None: # Should not happen if combo is populated
-                self._set_status_message(f"Invalid points for {army_type_key} Army.", "red")
-                return False
+        for army_type in armies_to_check:
+            army_key = army_type.lower()
+            army_points = sum(u.get("points_cost", 0) for u in self.army_units_data.get(army_key, []))
             total_allocated_points += army_points
 
         if total_allocated_points != self.point_value:
             self._set_status_message(f"Total points ({total_allocated_points}) must equal game limit ({self.point_value}).", "red")
             return False
-
-        for army_type_key in armies_to_validate:
-            army_points = self.army_setup_widgets[army_type_key].get_points()
-            if army_points == 0: # Or some other minimum if defined
+            
+            # Validate units vs points allocated
+            units_data = self.army_units_data.get(army_key, [])
+            points_used_by_units = sum(u.get("points_cost", 0) for u in units_data)
+            if points_used_by_units > self.max_points_per_army: # Check against max_points_per_army
+                 self._set_status_message(f"{army_type} Army units ({points_used_by_units} pts) exceed individual army limit ({self.max_points_per_army}).", "red")
+                 return False
+            if points_used_by_units > 0 and not units_data: # This case should be prevented by unit selection
+                 self._set_status_message(f"{army_type} Army has points but no units (this shouldn't happen).", "red")
                  pass # For now, allow 0 points if total is met.
         
         # If all checks pass
@@ -301,6 +319,34 @@ class PlayerSetupView(QWidget):
         is_valid = self._validate_inputs() # This will also set the status message
         self.next_button.setEnabled(is_valid)
 
+    @Slot(str, int)
+    def _handle_army_points_changed(self, army_type: str, points: int): # No longer used
+        pass
+
+    def _open_unit_selection_dialog(self, army_type: str):
+        army_key = army_type.lower()
+        # The dialog needs the MAX points this army can have, not its current points.
+        # The dialog itself will sum up selected units and check against this max.
+        max_allowed_for_this_army = self.max_points_per_army
+        current_units = [UnitModel.from_dict(u_data) for u_data in self.army_units_data.get(army_key, [])]
+
+        dialog = UnitSelectionDialog(army_type, max_allowed_for_this_army, self.unit_roster, current_units, self)
+        dialog.units_selected_signal.connect(lambda units: self._handle_units_selected(army_type, units))
+        dialog.exec() # Show as modal
+
+    @Slot(str, list)
+    def _handle_units_selected(self, army_type: str, selected_units: list[UnitModel]):
+        army_key = army_type.lower()
+        self.army_units_data[army_key] = [unit.to_dict() for unit in selected_units]
+        self._update_specific_army_summary_label(army_type)
+        self._validate_and_update_button_state() # Re-validate units vs points
+
+    def _update_specific_army_summary_label(self, army_type: str):
+        army_key = army_type.lower()
+        units_in_army = self.army_units_data.get(army_key, [])
+        points_used = sum(unit.get("points_cost", 0) for unit in units_in_army) # Use units_in_army and .get() for safety
+        self.army_units_summary_labels[army_type].setText(f"Units: {len(units_in_army)} ({points_used} pts)")
+
     def update_for_player(self, player_index, player_data_to_load: Optional[dict] = None):
         self.current_player_index = player_index
         player_display_num = self.current_player_index + 1
@@ -315,22 +361,28 @@ class PlayerSetupView(QWidget):
 
             armies_data = player_data_to_load.get("armies", {})
             for army_key, details in armies_data.items(): # army_key is 'home', 'campaign', 'horde'
-                army_type_title_case = army_key.title() 
-                if army_type_title_case in self.army_setup_widgets:
-                    self.army_setup_widgets[army_type_title_case].set_name(details.get("name", army_type_title_case))
-                    self.army_setup_widgets[army_type_title_case].set_points(details.get("points", 0))
+                army_type_title_case = army_key.title()
+                if army_type_title_case in self.army_labels: # Check if this army type exists
+                    # No points combo to set anymore
+
+                    # Load units if present
+                    units_data = details.get("units", [])
+                    self.army_units_data[army_key] = units_data
+                    self._update_specific_army_summary_label(army_type_title_case)
+
         else: # No data to load, set defaults
             self.player_identity_widget.clear_inputs() # Resets name placeholder and terrain carousels
             self.player_identity_widget.set_player_display_number(player_display_num) # Ensure placeholder is correct
 
-            self.army_setup_widgets["Home"].set_name("Home")
-            self.army_setup_widgets["Home"].set_points(0)
-            self.army_setup_widgets["Campaign"].set_name("Campaign")
-            self.army_setup_widgets["Campaign"].set_points(0)
+            # Set default points to 0 and clear units for all armies
+            for army_type in ["Home", "Campaign", "Horde"]:
+                if army_type in self.army_labels: # Check if this army type exists
+                    army_key = army_type.lower()
+                    self.army_units_data[army_key] = [] # Clear units
+                    self._update_specific_army_summary_label(army_type) # Update summary to 0 units, 0 pts
 
             if self.num_players > 1:
-                self.army_setup_widgets["Horde"].set_name("Horde")
-                self.army_setup_widgets["Horde"].set_points(0)
+                pass # Visibility handled below
         self._update_horde_visibility()
 
         # Perform initial validation which will set messages and button state
@@ -346,5 +398,7 @@ class PlayerSetupView(QWidget):
     def _update_horde_visibility(self):
         show_horde = self.num_players > 1
         self.army_labels["Horde"].setVisible(show_horde)
-        if "Horde" in self.army_setup_widgets: # Check if widget exists
-            self.army_setup_widgets["Horde"].setVisible(show_horde)
+        if "Horde" in self.army_manage_buttons: # Check if widgets exist
+            # self.army_points_combos["Horde"].setVisible(show_horde) # Removed
+            self.army_manage_buttons["Horde"].setVisible(show_horde)
+            self.army_units_summary_labels["Horde"].setVisible(show_horde)
