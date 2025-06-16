@@ -26,7 +26,7 @@ class PlayerSetupView(QWidget):
     """
     # Emits (player_index, player_data_dict)
     player_data_finalized = Signal(int, dict)
-    back_signal = Signal()
+    back_signal = Signal(int) # Emit the current player index
 
     def __init__(self, num_players: int,
                  point_value: int,
@@ -174,7 +174,7 @@ class PlayerSetupView(QWidget):
         navigation_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.back_button = QPushButton("Back")
-        self.back_button.clicked.connect(self.back_signal.emit)
+        self.back_button.clicked.connect(lambda: self.back_signal.emit(self.current_player_index))
         navigation_layout.addWidget(self.back_button)
 
         self.next_button = QPushButton("Next Player")
@@ -412,8 +412,8 @@ class PlayerSetupView(QWidget):
                 army_widget = self.army_setup_widgets[army_type]
                 army_widget.load_units_from_dicts([]) # Clear units
                 army_widget._update_units_summary()
-                self._update_specific_army_detailed_units_label(army_widget.army_type_name)
                 self.army_units_data[army_widget.army_type_name.lower()] = []
+                self._update_specific_army_detailed_units_label(army_widget.army_type_name) # Update after clearing the cache
 
             if self.num_players > 1:
                 pass # Visibility handled below
