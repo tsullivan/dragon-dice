@@ -3,6 +3,8 @@ from typing import Optional
 from game_logic.engine import GameEngine # Import the new GameEngine
 
 from .terrain_model import Terrain
+from .army_model import ArmyModel # Import ArmyModel
+from .unit_model import UnitModel # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
 from constants import TERRAIN_DATA # Import raw terrain data
 class AppDataModel(QObject):
     """
@@ -54,6 +56,10 @@ class AppDataModel(QObject):
         self.point_value_changed.emit(value)
 
     def add_player_setup_data(self, player_data):
+        # PlayerSetupView will now send player_data where 'armies' is a dict of
+        # army_type -> ArmyModel.to_dict()
+        # For GameStateManager, we might want to pass these as ArmyModel instances
+        # or ensure GameStateManager can reconstruct them from dicts.
         self._player_setup_data_list.append(player_data)
         self.player_setup_data_added.emit(player_data)
         if self._num_players is not None and len(self._player_setup_data_list) == self._num_players:

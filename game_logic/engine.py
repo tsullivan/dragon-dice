@@ -169,9 +169,8 @@ class GameEngine(QObject):
             attacking_player_name=self.get_current_player_name(),
             parsed_dice_results=parsed_results
         )
+        self.pending_attacker_outcome = attacker_outcome # Store attacker's outcome
         print(f"GameEngine: Attacker melee outcome from ActionResolver: {attacker_outcome}")
-        # The next step is now set by the signal from ActionResolver.
-        # self.turn_manager.current_action_step = constants.ACTION_STEP_AWAITING_DEFENDER_SAVES # This is now handled by _set_next_action_step
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
@@ -189,51 +188,38 @@ class GameEngine(QObject):
             return
         print(f"Player {self.get_current_player_name()}'s Opponent (Defender) submitted save results: {results}")
 
-        # TODO: 1. Identify Defending Army and its units/items.
-        # TODO: 2. Identify Attacking Army (from self.pending_attacker_results or game state).
-        # TODO: 3. Parse 'results' string for defender's save roll.
         parsed_save_results = self.action_resolver.parse_dice_string(results, roll_type="SAVE")
         if not parsed_save_results:
             print("Error: Could not parse defender save results.")
-            # Optionally, do not advance state or provide UI feedback
             return
         print(f"Parsed defender saves: {parsed_save_results}")
 
-        #          defender_rolled_icons = self._parse_dice_string(results)
+        if not hasattr(self, 'pending_attacker_outcome') or not self.pending_attacker_outcome:
+            print("Error: No pending attacker outcome to resolve defender saves against.")
+            # Potentially reset state or log error
+            return
 
-        # TODO: 4. Perform Dice Roll Resolution for the defender's saves.
-        #          defender_calculated_saves = self._resolve_dice_roll(
-        #              army_units=defender_army_units,
-        #              rolled_icons=defender_rolled_icons,
-        #              roll_type="SAVE",
-        #              acting_player=opponent_player_name, # Need to get opponent name
-        #              # Pass attacker's SAIs that affect saves: self.pending_attacker_results.get("sais_for_defender")
-        #          )
-        #          This would involve:
-        #              - Applying attacker's SAIs that affect saves.
-        #              - Applying defender's SAIs that generate saves.
-        #              - Counting normal save icons.
-        #              - Converting ID icons to save results.
-        #              - Applying modifiers.
+        # TODO: Determine defending_player_name. This is complex as it depends on target.
+        # For now, assume it's an opponent if more than one player.
+        # This needs a robust way to identify the target of the attack.
+        defending_player_name = "Opponent_Placeholder" # This needs to be correctly identified
 
-        # TODO: 5. Calculate final damage:
-        #          final_damage = self.pending_attacker_results.get("melee_damage", 0) - defender_calculated_saves.get("saves", 0)
-        #          final_damage = max(0, final_damage) # Damage cannot be negative
+        defender_outcome = self.action_resolver.process_defender_save_roll(
+            defending_player_name=defending_player_name, # Needs to be correctly identified
+            parsed_save_dice=parsed_save_results,
+            attacker_outcome=self.pending_attacker_outcome
+        )
+        print(f"GameEngine: Defender save outcome from ActionResolver: {defender_outcome}")
+        del self.pending_attacker_outcome # Clear pending outcome
 
-        # TODO: 6. Apply damage to defending units (update health, move to DUA if killed).
-        #          self._apply_damage_to_army(defender_army_identifier, final_damage)
-
-        # TODO: 7. Check for counter-attack (Rulebook pg. 12).
-        #          If counter-attack:
-        #              self.current_action_step = "AWAITING_MELEE_COUNTER_ATTACK_ROLL"
-        #              # Swap roles for the next submission.
-        #          Else:
-        #              print(f"Melee action in {self.current_phase} complete.")
-        #              self.current_action_step = ""
-
-        print(f"Melee action in {self.current_phase} complete.")
-        self.turn_manager.current_action_step = ""
-        self.advance_phase() # Or advance march step if within a march
+        # The next step (counter-attack or end action) is set by ActionResolver's signal.
+        # If the next_action_step is "", it means the action is complete.
+        if not self.turn_manager.current_action_step: # Check if ActionResolver cleared the step
+            print(f"Melee action in {self.current_phase} complete.")
+            self.advance_phase() # Or advance march step if within a march
+        else:
+            self.current_phase_changed.emit(self.get_current_phase_display()) # Update UI for counter-attack step
+            self.game_state_updated.emit()
 
     @Slot(str)
     def _set_next_action_step(self, next_step: str):

@@ -2,6 +2,8 @@ from PySide6.QtCore import QObject, Signal
 from typing import List, Dict, Any, Optional
 import constants
 
+from models.army_model import ArmyModel # For type hinting and potential reconstruction
+from models.unit_model import UnitModel # For type hinting and potential reconstruction
 class GameStateManager(QObject):
     """
     Manages the dynamic state of the game during gameplay.
@@ -78,11 +80,11 @@ class GameStateManager(QObject):
                 
                 self.players[player_name]["armies"][army_type_key] = {
                     "name": army_details["name"],
-                    "points_value": army_details["points"],
-                    "units": self._populate_initial_units(army_details["points"], army_type_key), # Populate placeholder units
+                    "points_value": army_details.get("allocated_points", army_details.get("points", 0)), # Adapt to new structure
+                    # Units will now come directly from the army_details if it's a rich structure
+                    "units": [UnitModel.from_dict(u_data).to_dict() for u_data in army_details.get("units", [])],
                     "location": location
                 }
-
 
         # Initialize terrains
         self.terrains[frontier_terrain_name] = {
@@ -100,24 +102,6 @@ class GameStateManager(QObject):
         print(f"GameStateManager: Initialized Terrains: {self.terrains}")
         self.game_state_changed.emit()
 
-    def _populate_initial_units(self, army_points: int, army_type: str) -> List[Dict[str, Any]]:
-        """
-        Creates a list of placeholder units based on army points.
-        This is a very basic placeholder. Real implementation needs dice/unit data.
-        """
-        units = []
-        # Example: 1 unit per 2 points, very simplified
-        num_units = army_points // 2
-        for i in range(num_units):
-            unit_name = f"{army_type.title()} Unit {i+1}"
-            units.append({
-                "id": f"{army_type.lower()}_unit_{i+1}",
-                "name": unit_name,
-                "health": 1, "max_health": 1, # Placeholder health
-                "abilities": {"id_results": {constants.ICON_MELEE: 1}} # Placeholder ability
-            })
-        return units
-
     # TODO: Add methods to:
     # - Get and update unit health
     # - Move units between armies, DUA, BUA, Reserve
@@ -126,6 +110,51 @@ class GameStateManager(QObject):
     # - Get army compositions for a specific location
     # - Manage summoning pool
     # - Check victory conditions (captured terrains)
+
+    def apply_damage_to_units(self, player_name: str, army_identifier: str, damage_amount: int):
+        """
+        Applies damage to units in a specific army.
+        This is a placeholder and needs actual unit selection/damage distribution logic.
+        """
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            print(f"GameStateManager: Player {player_name} not found for applying damage.")
+            return
+
+        # TODO: The army_identifier needs to be more specific, e.g., "home", "campaign", or a unique ID.
+        # For now, let's assume army_identifier refers to the 'active_army_type' if it's generic,
+        # or we need a way to map it to the correct army key ('home', 'campaign', 'horde').
+        # This is a simplification.
+        target_army_key = player_data.get("active_army_type", "home") # Fallback, needs improvement
+        if army_identifier != "Placeholder_Defending_Army_ID" and army_identifier in player_data.get("armies", {}):
+            target_army_key = army_identifier
+
+        army = player_data.get("armies", {}).get(target_army_key)
+        if not army:
+            print(f"GameStateManager: Army '{target_army_key}' for player {player_name} not found.")
+            return
+
+        print(f"GameStateManager: Applying {damage_amount} damage to {player_name}'s {army.get('name', target_army_key)} army.")
+
+        remaining_damage = damage_amount
+        units_affected = False
+        for unit in list(army["units"]): # Iterate over a copy in case we remove items
+            if remaining_damage <= 0:
+                break
+            
+            damage_to_unit = min(remaining_damage, unit["health"])
+            unit["health"] -= damage_to_unit
+            remaining_damage -= damage_to_unit
+            units_affected = True
+            print(f"GameStateManager: Unit {unit['name']} took {damage_to_unit} damage, health now {unit['health']}.")
+
+            if unit["health"] <= 0:
+                print(f"GameStateManager: Unit {unit['name']} defeated.")
+                army["units"].remove(unit)
+                player_data.setdefault("dead_unit_area", []).append(unit)
+        
+        if units_affected:
+            self.game_state_changed.emit()
 
     def get_player_data(self, player_name: str) -> Optional[Dict[str, Any]]:
         return self.players.get(player_name)

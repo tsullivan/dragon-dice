@@ -104,6 +104,93 @@ class ActionResolver(QObject):
         self.next_action_step_determined.emit(constants.ACTION_STEP_AWAITING_DEFENDER_SAVES)
         return calculated_results
 
+    def process_defender_save_roll(self, defending_player_name: str, parsed_save_dice: list, attacker_outcome: dict) -> dict:
+        """
+        Processes the defender's save roll.
+        Queries game state for defender's units, abilities, and active effects.
+        Applies attacker's SAIs (e.g., Bullseye).
+        Calculates successful saves and final damage.
+        Returns a dictionary with results, e.g., {"damage_taken": N, "counter_attack_possible": False}
+        """
+        print(f"ActionResolver: Processing defender save roll for {defending_player_name} with {parsed_save_dice}. Attacker outcome: {attacker_outcome}")
+
+        defending_units = self.game_state_manager.get_active_army_units(defending_player_name)
+        if not defending_units:
+            print(f"ActionResolver: No active units found for defender {defending_player_name}.")
+            # If no defending units, all hits from attacker likely apply directly.
+            # This needs careful consideration based on rules (e.g., if army was wiped out by a previous effect).
+            final_damage = attacker_outcome.get("hits", 0)
+            # TODO: Instruct GameStateManager to record this damage if applicable (e.g. vs terrain if no units)
+            self.next_action_step_determined.emit("") # End of action, advance phase
+            return {"damage_taken": final_damage, "saves_made": 0, "counter_attack_possible": False}
+
+        print(f"ActionResolver: Defending units: {[unit.get('name') for unit in defending_units]}")
+
+        successful_saves = 0
+        sais_from_attacker = attacker_outcome.get("sais_for_defender", [])
+        attacker_hits = attacker_outcome.get("hits", 0)
+
+        # TODO: 1. Apply SAIs from attacker that affect saves (e.g., Bullseye negates ID saves).
+        # Example: If Bullseye is present, ID icons rolled by the defender might be ignored.
+        bullseye_active = constants.SAI_BULLSEYE in sais_from_attacker
+        if bullseye_active:
+            print("ActionResolver: Attacker Bullseye is active, affecting defender saves.")
+
+        # TODO: 2. Convert ID icons in parsed_save_dice to actual save results based on defending_units abilities.
+        converted_id_saves = 0
+        units_that_used_id = set() # To ensure a unit's ID is used only once per roll
+        id_icons_to_convert = sum(item.get("count", 0) for item in parsed_save_dice if item.get("type") == constants.ICON_ID)
+
+        for _ in range(id_icons_to_convert):
+             # If Bullseye is active, ID icons might not convert to saves (rule dependent)
+             if bullseye_active:
+                 print("ActionResolver: Bullseye prevents ID conversion to saves.")
+                 break # Skip ID conversion if Bullseye active (simplified rule)
+
+             for unit in defending_units:
+                 if unit["id"] not in units_that_used_id:
+                     id_ability = unit.get("abilities", {}).get("id_results", {})
+                     if constants.ICON_SAVE in id_ability: # Check if unit's ID produces saves
+                         converted_id_saves += id_ability[constants.ICON_SAVE]
+                         units_that_used_id.add(unit["id"])
+                         print(f"ActionResolver: Unit {unit['name']} used ID for {id_ability[constants.ICON_SAVE]} save.")
+                         break # Move to the next ID icon to be converted
+        successful_saves += converted_id_saves
+
+        # TODO: 3. Apply SAIs from parsed_save_dice that generate saves or modify save results.
+        # Example: SAI_SHIELD might add saves.
+
+        # TODO: 4. Get relevant active effects from self.effect_manager for the defender/defending army and apply them.
+        # For now, assume target_army_identifier can be derived or is not strictly needed for defender's own buffs/debuffs.
+        active_mods = self.effect_manager.get_active_modifiers(defending_player_name, None, "SAVE")
+        successful_saves += active_mods.get("save_bonus", 0)
+        if active_mods.get("halve_results"): # Effects can halve saves too
+             successful_saves = successful_saves // 2
+        if active_mods.get("double_results"): # Effects can double saves
+             successful_saves = successful_saves * 2
+
+        # Placeholder for direct save icons
+        for item in parsed_save_dice:
+            if item.get("type") == constants.ICON_SAVE:
+                successful_saves += item.get("count", 0)
+
+        # --- Calculate final damage ---
+        final_damage = max(0, attacker_hits - successful_saves)
+        print(f"ActionResolver: Attacker Hits: {attacker_hits}, Successful Saves: {successful_saves}, Final Damage: {final_damage}")
+
+        # --- Apply Damage ---
+        # TODO: Determine the specific army identifier being attacked.
+        self.game_state_manager.apply_damage_to_units(defending_player_name, "Placeholder_Defending_Army_ID", final_damage)
+
+        # TODO: 6. Determine if a counter-attack is possible (Rulebook pg. 12).
+        counter_attack_possible = False # Placeholder
+
+        if counter_attack_possible:
+            self.next_action_step_determined.emit(constants.ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL) # Placeholder constant
+        else:
+            self.next_action_step_determined.emit("") # Empty string signifies end of this action, advance phase/march
+        return {"damage_taken": final_damage, "saves_made": successful_saves, "counter_attack_possible": counter_attack_possible}
+
     def parse_dice_string(self, dice_string: str, roll_type: str) -> list:
         """
         Helper to parse a string like '3 melee, 1 sai:bullseye, 2 id' into a structured list.
