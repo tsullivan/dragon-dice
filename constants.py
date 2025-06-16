@@ -24,6 +24,17 @@ TERRAIN_DATA = [
     ("Wasteland", [ELEMENT_COLORS["Air"], ELEMENT_COLORS["Fire"]]),
 ]
 
+# Terrain Icons (Unicode placeholders)
+TERRAIN_ICONS = {
+    "Coastland": "🌊", # Water Wave
+    "Deadland": "💀", # Skull
+    "Flatland": "↔️", # Left-Right Arrow (representing open space)
+    "Highland": "⛰️", # Mountain
+    "Swampland": "🐸", # Frog (or some other swampy icon)
+    "Feyland": "✨", # Sparkles
+    "Wasteland": "🏜️", # Desert
+}
+
 # Game Phases
 PHASE_EXPIRE_EFFECTS = "EXPIRE_EFFECTS"
 PHASE_EIGHTH_FACE = "EIGHTH_FACE"

@@ -289,10 +289,12 @@ class GameEngine(QObject):
         for terrain_name, terrain_data in all_terrains_state.items():
             controller = terrain_data.get('controller', 'None')
             details = f"Face {terrain_data.get('face', constants.DEFAULT_NA_VALUE)}"
+            icon = constants.TERRAIN_ICONS.get(terrain_name, "❓") # Get icon, default to question mark
             if controller and controller != 'None':
                 details += f", Controlled by: {controller}"
             
             relevant_terrains_info.append({
+                "icon": icon,
                 "name": terrain_name,
                 "type": terrain_data.get("type", constants.DEFAULT_UNKNOWN_VALUE),
                 "details": details

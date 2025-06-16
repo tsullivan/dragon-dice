@@ -206,12 +206,12 @@ class MainGameplayView(QWidget):
         self.current_player_terrains_group.setTitle(f"{current_player_name}'s Turn")
 
         terrains_html = "<ul style='margin-left:0px; padding-left:5px; list-style-position:inside;'>"
-        # Assuming game_engine.get_relevant_terrains_info() returns:
-        # [{'name': 'Flatland', 'type': 'Frontier', 'details': 'Face 3'}, 
-        #  {'name': 'Highland', 'type': 'Home', 'details': 'Player 1 Home'}, ...]
+        # Example item from game_engine.get_relevant_terrains_info():
+        # {'icon': '⛰️', 'name': 'Highland', 'type': 'Home', 'details': 'Face 1, Controlled by: Player 1'}
+
         relevant_terrains = self.game_engine.get_relevant_terrains_info() # Implement in GameEngine
         for terrain in relevant_terrains:
-            terrains_html += f"<li>{terrain.get('name', 'N/A')} ({terrain.get('type', 'N/A')})</li>"
+            terrains_html += f"<li>{terrain.get('icon', '')} {terrain.get('name', 'N/A')} ({terrain.get('type', 'N/A')}) - {terrain.get('details', '')}</li>"
         terrains_html += "</ul>"
         self.terrains_list_label.setHtml(terrains_html)
         if not relevant_terrains:
