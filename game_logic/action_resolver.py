@@ -180,7 +180,7 @@ class ActionResolver(QObject):
 
         # --- Apply Damage ---
         # TODO: Determine the specific army identifier being attacked.
-        self.game_state_manager.apply_damage_to_units(defending_player_name, "Placeholder_Defending_Army_ID", final_damage)
+        self.game_state_manager.apply_damage_to_units(defending_player_name, constants.PLACEHOLDER_DEFENDING_ARMY_ID, final_damage)
 
         # TODO: 6. Determine if a counter-attack is possible (Rulebook pg. 12).
         counter_attack_possible = False # Placeholder

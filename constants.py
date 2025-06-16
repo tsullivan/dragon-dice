@@ -1,7 +1,6 @@
 # Shared constants for the PySide6 application
 
 
-
 # Elements and Colors (Rulebook pg. 5)
 ELEMENT_COLORS = {
     "Death": "Black",
@@ -9,8 +8,8 @@ ELEMENT_COLORS = {
     "Water": "Green",
     "Fire": "Red",
     "Earth": "Yellow",
-    "Ivory": "Ivory", # Lack of any elements
-    "White": "White"  # Presence of all elements
+    "Ivory": "Ivory",  # Lack of any elements
+    "White": "White",  # Presence of all elements
 }
 
 # Terrain Definitions (Name, List of Colors from ELEMENT_COLORS values)
@@ -41,7 +40,7 @@ TURN_PHASES = [
     PHASE_SPECIES_ABILITIES,
     PHASE_FIRST_MARCH,
     PHASE_SECOND_MARCH,
-    PHASE_RESERVES
+    PHASE_RESERVES,
 ]
 
 # March Steps
@@ -52,7 +51,7 @@ MARCH_STEP_SELECT_ACTION = "SELECT_ACTION"
 MARCH_STEPS = [
     MARCH_STEP_DECIDE_MANEUVER,
     MARCH_STEP_AWAITING_MANEUVER_INPUT,
-    MARCH_STEP_SELECT_ACTION
+    MARCH_STEP_SELECT_ACTION,
 ]
 
 # Action Types
@@ -63,9 +62,11 @@ ACTION_MAGIC = "MAGIC"
 # Action Steps (Sub-steps within an action)
 ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL = "AWAITING_ATTACKER_MELEE_ROLL"
 ACTION_STEP_AWAITING_DEFENDER_SAVES = "AWAITING_DEFENDER_SAVES"
-ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL = "AWAITING_MELEE_COUNTER_ATTACK_ROLL" # Placeholder
-ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL = "AWAITING_ATTACKER_MISSILE_ROLL" # Example
-ACTION_STEP_AWAITING_MAGIC_ROLL = "AWAITING_MAGIC_ROLL" # Example
+ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL = (
+    "AWAITING_MELEE_COUNTER_ATTACK_ROLL"  # Placeholder
+)
+ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL = "AWAITING_ATTACKER_MISSILE_ROLL"  # Example
+ACTION_STEP_AWAITING_MAGIC_ROLL = "AWAITING_MAGIC_ROLL"  # Example
 
 # Dice Icon Types
 ICON_MELEE = "MELEE"
@@ -74,11 +75,13 @@ ICON_MAGIC = "MAGIC"
 ICON_SAVE = "SAVE"
 ICON_ID = "ID"
 ICON_SAI = "SAI"
-ICON_MANEUVER = "MANEUVER" # Standard maneuver icon
+ICON_MANEUVER = "MANEUVER"  # Standard maneuver icon
 ICON_DRAGON_ATTACK_CLAW = "DRAGON_CLAW"
 ICON_DRAGON_ATTACK_BITE = "DRAGON_BITE"
 ICON_DRAGON_ATTACK_TAIL = "DRAGON_TAIL"
-ICON_DRAGON_BREATH = "DRAGON_BREATH" # Generic, specific type (fire, ice) might be an attribute
+ICON_DRAGON_BREATH = (
+    "DRAGON_BREATH"  # Generic, specific type (fire, ice) might be an attribute
+)
 
 # Special Action Icons (SAIs) - Name constants
 # These would be keys in a more detailed definition dictionary.
@@ -86,5 +89,51 @@ SAI_BULLSEYE = "BULLSEYE"
 SAI_DOUBLER = "DOUBLER"
 SAI_TRIPLER = "TRIPLER"
 SAI_RECRUIT = "RECRUIT"
-SAI_MAGIC_BOLT = "MAGIC_BOLT" # Example
+SAI_MAGIC_BOLT = "MAGIC_BOLT"  # Example
 # ... add all known SAIs
+
+# Dragon Dice Types (examples, expand as needed)
+DRAGON_TYPE_RED = "Red Dragon"
+DRAGON_TYPE_BLUE = "Blue Dragon"
+DRAGON_TYPE_GREEN = "Green Dragon"
+DRAGON_TYPE_BLACK = "Black Dragon"
+DRAGON_TYPE_GOLD = "Gold Dragon"
+DRAGON_TYPE_UNDEAD = "Undead Dragon"
+DRAGON_TYPE_SWAMP = "Swamp Dragon"
+DRAGON_TYPE_IVORY = "Ivory Dragon"
+
+AVAILABLE_DRAGON_TYPES = [
+    DRAGON_TYPE_RED,
+    DRAGON_TYPE_BLUE,
+    DRAGON_TYPE_GREEN,
+    DRAGON_TYPE_BLACK,
+    DRAGON_TYPE_GOLD,
+    DRAGON_TYPE_UNDEAD,
+    DRAGON_TYPE_SWAMP,
+    DRAGON_TYPE_IVORY,
+]
+
+# UI Text
+NO_UNITS_SELECTED_TEXT = "No units selected."
+MANAGE_UNITS_BUTTON_TEXT = "Manage Units"
+DEFAULT_ARMY_UNITS_SUMMARY = "Units: 0 (0 pts)"
+
+# Army Types - Display Names (also used for internal logic consistency)
+ARMY_TYPE_HOME = "Home"
+ARMY_TYPE_CAMPAIGN = "Campaign"
+ARMY_TYPE_HORDE = "Horde"
+ARMY_TYPES_ALL = [ARMY_TYPE_HOME, ARMY_TYPE_CAMPAIGN, ARMY_TYPE_HORDE]
+
+# Placeholder Identifiers
+PLACEHOLDER_DEFENDING_ARMY_ID = "Placeholder_Defending_Army_ID"
+PLACEHOLDER_OPPONENT_NAME = "Opponent_Placeholder"
+
+# Effect System Strings
+EFFECT_TARGET_TERRAIN = "TERRAIN"
+EFFECT_TARGET_ARMY = "ARMY"
+EFFECT_DURATION_NEXT_TURN_CASTER = "NEXT_TURN_CASTER"
+EFFECT_DURATION_NEXT_TURN_TARGET = "NEXT_TURN_TARGET"
+
+# Default/Fallback UI Strings
+DEFAULT_UNKNOWN_VALUE = "Unknown"
+DEFAULT_NA_VALUE = "N/A"

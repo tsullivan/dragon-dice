@@ -202,7 +202,7 @@ class GameEngine(QObject):
         # TODO: Determine defending_player_name. This is complex as it depends on target.
         # For now, assume it's an opponent if more than one player.
         # This needs a robust way to identify the target of the attack.
-        defending_player_name = "Opponent_Placeholder" # This needs to be correctly identified
+        defending_player_name = constants.PLACEHOLDER_OPPONENT_NAME # This needs to be correctly identified
 
         defender_outcome = self.action_resolver.process_defender_save_roll(
             defending_player_name=defending_player_name, # Needs to be correctly identified
@@ -234,9 +234,9 @@ class GameEngine(QObject):
             self.effect_manager.add_effect(
                 description="Melee results -3 for armies at this terrain",
                 source="Spell: Blizzard",
-                target_type="TERRAIN",
+                target_type=constants.EFFECT_TARGET_TERRAIN,
                 target_identifier=target_identifier, # e.g., "Frontier Terrain"
-                duration_type="NEXT_TURN_CASTER", 
+                duration_type=constants.EFFECT_DURATION_NEXT_TURN_CASTER,
                 duration_value=1, # Duration until caster's next turn
                 caster_player_name=caster_player_name
             )
@@ -264,7 +264,7 @@ class GameEngine(QObject):
                 army_list.append({
                     "name": army_data.get("name", army_key.title()),
                     "points": army_data.get("points_value", 0), # Ensure key matches GameStateManager
-                    "location": army_data.get("location", "Unknown")
+                    "location": army_data.get("location", constants.DEFAULT_UNKNOWN_VALUE)
                 })
 
             summaries.append({
@@ -288,13 +288,13 @@ class GameEngine(QObject):
         # Later, this could be filtered based on current player's army locations or game rules.
         for terrain_name, terrain_data in all_terrains_state.items():
             controller = terrain_data.get('controller', 'None')
-            details = f"Face {terrain_data.get('face', 'N/A')}"
+            details = f"Face {terrain_data.get('face', constants.DEFAULT_NA_VALUE)}"
             if controller and controller != 'None':
                 details += f", Controlled by: {controller}"
             
             relevant_terrains_info.append({
                 "name": terrain_name,
-                "type": terrain_data.get("type", "Unknown"),
+                "type": terrain_data.get("type", constants.DEFAULT_UNKNOWN_VALUE),
                 "details": details
             })
         return relevant_terrains_info
@@ -306,9 +306,9 @@ class GameEngine(QObject):
             self.effect_manager.add_effect(
                 description="All results halved",
                 source="SAI: Frost Breath",
-                target_type="ARMY",
+                target_type=constants.EFFECT_TARGET_ARMY,
                 target_identifier=target_army_identifier, # e.g., "Player 2 Home Army"
-                duration_type="NEXT_TURN_CASTER", # "your next turn" refers to the player whose unit rolled the SAI
+                duration_type=constants.EFFECT_DURATION_NEXT_TURN_CASTER, # "your next turn" refers to the player whose unit rolled the SAI
                 duration_value=1,
                 caster_player_name=rolling_player_name,
                 affected_player_name=target_army_player_name
@@ -321,9 +321,9 @@ class GameEngine(QObject):
             self.effect_manager.add_effect(
                 description="Melee results halved",
                 source="Dragon Breath: Air",
-                target_type="ARMY",
+                target_type=constants.EFFECT_TARGET_ARMY,
                 target_identifier=target_army_identifier,
-                duration_type="NEXT_TURN_TARGET", # "its next turn" refers to the target army's player.
+                duration_type=constants.EFFECT_DURATION_NEXT_TURN_TARGET, # "its next turn" refers to the target army's player.
                 duration_value=1,
                 caster_player_name=attacking_dragon_controller, # Player who controls the attacking dragon
                 affected_player_name=target_army_player_name

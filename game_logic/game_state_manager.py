@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 import constants
 
 from models.army_model import ArmyModel # For type hinting and potential reconstruction
+from models.die_model import DieModel # Import DieModel
 from models.unit_model import UnitModel # For type hinting and potential reconstruction
 class GameStateManager(QObject):
     """
@@ -37,6 +38,7 @@ class GameStateManager(QObject):
         #     },
         #     "captured_terrains_count": 0,
         #     "dead_unit_area": [],
+        #     "selected_dragons": ["Red Dragon", "Blue Dragon"], # New player-level field
         #     "buried_unit_area": [],
         #     "reserve_pool": [] # Units available to be brought into reserves
         # }
@@ -61,6 +63,7 @@ class GameStateManager(QObject):
                 "home_terrain_name": p_data["home_terrain"],
                 "active_army_type": "home", # Default active army, can be changed by maneuver/action selection
                 "armies": {}, # Will be populated below
+                "selected_dragons": p_data.get("selected_dragons", []), # Store selected dragons
                 "captured_terrains_count": 0,
                 "dead_unit_area": [],
                 "buried_unit_area": [],
@@ -77,7 +80,8 @@ class GameStateManager(QObject):
                     # Horde location is more complex, depends on opponent. Placeholder for now.
                     # For simplicity, we might just mark it as "Horde" and resolve during gameplay.
                     location = "Horde Staging" # Needs actual opponent home terrain later
-                
+                # dragon_dice_description = army_details.get("dragon_dice_description", "") # Removed
+                # parsed_dice = self._parse_dragon_dice_description(dragon_dice_description) # Removed
                 self.players[player_name]["armies"][army_type_key] = {
                     "name": army_details["name"],
                     "points_value": army_details.get("allocated_points", army_details.get("points", 0)), # Adapt to new structure
@@ -101,6 +105,8 @@ class GameStateManager(QObject):
         print(f"GameStateManager: Initialized Players: {list(self.players.keys())}")
         print(f"GameStateManager: Initialized Terrains: {self.terrains}")
         self.game_state_changed.emit()
+
+    # _parse_dragon_dice_description is removed as we are now getting structured dragon selections.
 
     # TODO: Add methods to:
     # - Get and update unit health
