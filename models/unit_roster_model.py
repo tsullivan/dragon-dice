@@ -8,28 +8,20 @@ import os
 class UnitRosterModel:
     """
     Holds definitions for all available unit types in the game.
-    In a real app, this might load from a JSON/YAML file or database.
     """
     def __init__(self):
         self._unit_definitions: Dict[str, Dict[str, Any]] = {}
         self._load_default_units()
 
     def _load_default_units(self):
-        # Determine the path to the JSON file relative to this script
-        # Assumes unit_definitions.json is in a 'data' subdirectory at the project root
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         json_file_path = os.path.join(project_root, "data", "unit_definitions.json")
 
         try:
             with open(json_file_path, 'r') as f:
-                units_by_species_data = json.load(f) # This is now a dictionary
-            
+                units_by_species_data = json.load(f)
             for species_name, units_in_species_list in units_by_species_data.items():
                 for unit_data in units_in_species_list:
-                    # Map string ability keys/values to constants if necessary
-                    # For example, if abilities.id_results uses string keys like "MELEE"
-                    # and you want to use constants.ICON_MELEE, you'd do the mapping here.
-                    # For SAIs, map string names to constants.SAI_X.
                     self.add_unit_definition(
                         unit_type_id=unit_data["unit_type_id"],
                         display_name=unit_data["display_name"],
@@ -47,7 +39,7 @@ class UnitRosterModel:
         if unit_type_id in self._unit_definitions:
             print(f"Warning: Unit type '{unit_type_id}' already defined. Overwriting.")
         self._unit_definitions[unit_type_id] = {
-            "id": unit_type_id, # Store id for convenience
+            "id": unit_type_id,
             "display_name": display_name,
             "species": species,
             "max_health": max_health,
@@ -63,11 +55,10 @@ class UnitRosterModel:
     def get_available_unit_types_by_species(self) -> Dict[str, List[Dict[str, Any]]]:
         """Returns a dict of unit types grouped by species."""
         units_by_species: Dict[str, List[Dict[str, Any]]] = {}
-        for unit_id, data in self._unit_definitions.items():
-            species = data.get("species", "Unknown") # Default to "Unknown" if species not defined
+        for _unit_id, data in self._unit_definitions.items():
+            species = data.get("species", "Unknown")
             if species not in units_by_species:
                 units_by_species[species] = []
-            # Pass the whole unit definition dict for flexibility
             units_by_species[species].append(data)
         return units_by_species
 
@@ -85,19 +76,16 @@ class UnitRosterModel:
     def _map_abilities_to_constants(self, abilities_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Maps string representations of icons/SAIs in abilities data to their constant values.
-        This is a placeholder and needs to be implemented based on your JSON structure.
         """
-        mapped_abilities = abilities_data.copy() # Start with a copy
+        mapped_abilities = abilities_data.copy()
 
-        # Example for id_results:
         if "id_results" in mapped_abilities and isinstance(mapped_abilities["id_results"], dict):
             new_id_results = {}
             for key_str, value in mapped_abilities["id_results"].items():
-                constant_key = getattr(constants, f"ICON_{key_str.upper()}", key_str) # Attempt to find ICON_MELEE from "MELEE"
+                constant_key = getattr(constants, f"ICON_{key_str.upper()}", key_str)
                 new_id_results[constant_key] = value
             mapped_abilities["id_results"] = new_id_results
 
-        # Example for sais list:
         if "sais" in mapped_abilities and isinstance(mapped_abilities["sais"], list):
             mapped_abilities["sais"] = [getattr(constants, f"SAI_{sai_str.upper()}", sai_str) for sai_str in mapped_abilities["sais"]]
 

@@ -4,13 +4,13 @@ import constants
 
 class UnitModel:
     def __init__(self, unit_id: str, name: str, unit_type: str, health: int, max_health: int,
-                 abilities: Dict[str, Any], points_cost: int):
-        self.unit_id = unit_id # Unique instance ID, e.g., player1_home_goblin_1
-        self.name = name # Could be specific like "Gragnok" or generic "Goblin Spearman"
-        self.unit_type = unit_type # The general type of unit, e.g., "goblin_spearman" (roster key)
+                 abilities: Dict[str, Any], points_cost: int): # No change, good comment
+        self.unit_id = unit_id
+        self.name = name
+        self.unit_type = unit_type
         self.health = health
         self.max_health = max_health
-        self.abilities = abilities # e.g., {"id_results": {constants.ICON_MELEE: 1}, "sais": [constants.SAI_RECRUIT]}
+        self.abilities = abilities
         self.points_cost = points_cost
 
     def __repr__(self):
@@ -30,11 +30,11 @@ class UnitModel:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'UnitModel':
         return cls(
-            unit_id=data.get("unit_id", "unknown_id"),  # Provide default string
-            name=data.get("name", "Unknown Unit"),     # Provide default string
-            unit_type=data.get("unit_type", "unknown_type"), # Provide default string
-            health=data.get("health", 0),              # Provide default int
-            max_health=data.get("max_health", 0),          # Provide default int
+            unit_id=data.get("unit_id", "unknown_id"),
+            name=data.get("name", "Unknown Unit"),
+            unit_type=data.get("unit_type", "unknown_type"),
+            health=data.get("health", 0),
+            max_health=data.get("max_health", 0),
             abilities=data.get("abilities", {}),
-            points_cost=data.get("points_cost", 0)     # Provide default int
+            points_cost=data.get("points_cost", 0)
         )

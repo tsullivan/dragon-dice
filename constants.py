@@ -1,7 +1,6 @@
 # Shared constants for the PySide6 application
 
 
-# Elements and Colors (Rulebook pg. 5)
 ELEMENT_COLORS = {
     "Death": "Black",
     "Air": "Blue",
@@ -13,7 +12,6 @@ ELEMENT_COLORS = {
 }
 
 # Terrain Definitions (Name, List of Colors from ELEMENT_COLORS values)
-# Rulebook pg. 5
 TERRAIN_DATA = [
     ("Coastland", [ELEMENT_COLORS["Air"], ELEMENT_COLORS["Water"]]),
     ("Deadland", [ELEMENT_COLORS["Death"]]),
@@ -24,7 +22,6 @@ TERRAIN_DATA = [
     ("Wasteland", [ELEMENT_COLORS["Air"], ELEMENT_COLORS["Fire"]]),
 ]
 
-# Terrain Icons (Unicode placeholders)
 TERRAIN_ICONS = {
     "Coastland": "🌊", # Water Wave
     "Deadland": "💀", # Skull
@@ -74,10 +71,10 @@ ACTION_MAGIC = "MAGIC"
 ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL = "AWAITING_ATTACKER_MELEE_ROLL"
 ACTION_STEP_AWAITING_DEFENDER_SAVES = "AWAITING_DEFENDER_SAVES"
 ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL = (
-    "AWAITING_MELEE_COUNTER_ATTACK_ROLL"  # Placeholder
+    "AWAITING_MELEE_COUNTER_ATTACK_ROLL"
 )
-ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL = "AWAITING_ATTACKER_MISSILE_ROLL"  # Example
-ACTION_STEP_AWAITING_MAGIC_ROLL = "AWAITING_MAGIC_ROLL"  # Example
+ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL = "AWAITING_ATTACKER_MISSILE_ROLL"
+ACTION_STEP_AWAITING_MAGIC_ROLL = "AWAITING_MAGIC_ROLL"
 
 # Dice Icon Types
 ICON_MELEE = "MELEE"
@@ -91,19 +88,16 @@ ICON_DRAGON_ATTACK_CLAW = "DRAGON_CLAW"
 ICON_DRAGON_ATTACK_BITE = "DRAGON_BITE"
 ICON_DRAGON_ATTACK_TAIL = "DRAGON_TAIL"
 ICON_DRAGON_BREATH = (
-    "DRAGON_BREATH"  # Generic, specific type (fire, ice) might be an attribute
+    "DRAGON_BREATH"
 )
 
 # Special Action Icons (SAIs) - Name constants
-# These would be keys in a more detailed definition dictionary.
 SAI_BULLSEYE = "BULLSEYE"
 SAI_DOUBLER = "DOUBLER"
 SAI_TRIPLER = "TRIPLER"
 SAI_RECRUIT = "RECRUIT"
-SAI_MAGIC_BOLT = "MAGIC_BOLT"  # Example
-# ... add all known SAIs
+SAI_MAGIC_BOLT = "MAGIC_BOLT"
 
-# Dragon Dice Types (examples, expand as needed)
 DRAGON_TYPE_RED = "Red Dragon"
 DRAGON_TYPE_BLUE = "Blue Dragon"
 DRAGON_TYPE_GREEN = "Green Dragon"
@@ -129,7 +123,6 @@ NO_UNITS_SELECTED_TEXT = "No units selected."
 MANAGE_UNITS_BUTTON_TEXT = "Manage Units"
 DEFAULT_ARMY_UNITS_SUMMARY = "Units: 0 (0 pts)"
 
-# Army Types - Display Names (also used for internal logic consistency)
 ARMY_TYPE_HOME = "Home"
 ARMY_TYPE_CAMPAIGN = "Campaign"
 ARMY_TYPE_HORDE = "Horde"

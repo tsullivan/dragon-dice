@@ -1,13 +1,13 @@
 from PySide6.QtCore import QObject, Signal, QMetaObject
 from typing import Optional
-from game_logic.engine import GameEngine  # Import the new GameEngine
+from game_logic.engine import GameEngine
 
 from .terrain_model import Terrain
-from .army_model import ArmyModel  # Import ArmyModel
+from .army_model import ArmyModel
 from .unit_model import (
     UnitModel,
 )  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
-from constants import TERRAIN_DATA  # Import raw terrain data
+from constants import TERRAIN_DATA
 
 
 class AppDataModel(QObject):
@@ -18,11 +18,11 @@ class AppDataModel(QObject):
 
     num_players_changed = Signal(int)
     point_value_changed = Signal(int)
-    player_setup_data_added = Signal(dict)  # Emits the data of the player just added
+    player_setup_data_added = Signal(dict)
     all_player_setups_complete = Signal()
-    frontier_set = Signal(str, str)  # Emits (first_player_name, frontier_terrain)
-    all_distance_rolls_submitted = Signal(list)  # Emits list of (player_name, distance)
-    game_engine_initialized = Signal(GameEngine)  # Emits the engine instance
+    frontier_set = Signal(str, str)
+    all_distance_rolls_submitted = Signal(list)
+    game_engine_initialized = Signal(GameEngine)
 
     def __init__(self):
         super().__init__()

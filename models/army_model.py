@@ -3,12 +3,12 @@ from typing import List, Dict, Any
 from .unit_model import UnitModel
 
 class ArmyModel:
-    def __init__(self, name: str, army_type: str, allocated_points: int, location: str = ""): # army_type: "home", "campaign", "horde"
+    def __init__(self, name: str, army_type: str, allocated_points: int, location: str = ""):
         self.name = name
-        self.army_type = army_type # e.g., "home", "campaign", "horde"
+        self.army_type = army_type
         self.allocated_points = allocated_points
         self.units: List[UnitModel] = []
-        self.location = location # Will be set by GameStateManager during game init
+        self.location = location
 
     def add_unit(self, unit: UnitModel) -> bool:
         if self.current_points_total() + unit.points_cost <= self.allocated_points:
@@ -32,7 +32,7 @@ class ArmyModel:
             "army_type": self.army_type,
             "allocated_points": self.allocated_points,
             "units": [unit.to_dict() for unit in self.units],
-            "location": self.location # Location might be empty during setup
+            "location": self.location
         }
 
     @classmethod

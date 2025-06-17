@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, Slot
 
 from models.help_text_model import HelpTextModel
-from components.help_panel_widget import HelpPanelWidget  # Import the new component
+from components.help_panel_widget import HelpPanelWidget
 
 
 class WelcomeView(QWidget):
@@ -23,7 +23,6 @@ class WelcomeView(QWidget):
     Allows selection of number of players and point value.
     """
 
-    # Define signals for interactions
     proceed_signal = Signal()
     player_count_selected_signal = Signal(int)  # Emits the selected player count (int)
     point_value_selected_signal = Signal(int)  # Emits the selected point value (int)
@@ -49,7 +48,7 @@ class WelcomeView(QWidget):
         middle_section_layout = QHBoxLayout()
 
         # Left Side (Selections)
-        selections_group = QGroupBox()  # Using QGroupBox to visually group selections
+        selections_group = QGroupBox()
         selections_layout = QVBoxLayout(selections_group)
 
         # Player Count Selection
@@ -60,13 +59,11 @@ class WelcomeView(QWidget):
         for count in player_counts:
             radio_button = QRadioButton(str(count))
             self.player_count_button_group.addButton(
-                radio_button, count
-            )  # Use count as the ID
+                radio_button, count)
             player_count_hbox.addWidget(radio_button)
-            if count == 2:  # Default selection
+            if count == 2:
                 radio_button.setChecked(True)
         player_count_group.setLayout(player_count_hbox)
-        # Connect to the signal that emits an integer ID
         self.player_count_button_group.idClicked.connect(
             self.player_count_selected_signal.emit
         )
@@ -80,13 +77,11 @@ class WelcomeView(QWidget):
         for pv in point_values:
             radio_button = QRadioButton(str(pv))
             self.point_value_button_group.addButton(
-                radio_button, pv
-            )  # Use pv as the ID
+                radio_button, pv)
             point_value_hbox.addWidget(radio_button)
-            if pv == 30:  # Default selection (or choose another)
+            if pv == 30:
                 radio_button.setChecked(True)
         point_value_group.setLayout(point_value_hbox)
-        # Connect to the signal that emits an integer ID
         self.point_value_button_group.idClicked.connect(
             self.point_value_selected_signal.emit
         )
@@ -95,9 +90,9 @@ class WelcomeView(QWidget):
         middle_section_layout.addWidget(selections_group)
 
         # Right Side (Info Panel)
-        self.help_panel = HelpPanelWidget("Info (Help Panel)")  # Use the new component
+        self.help_panel = HelpPanelWidget("Info (Help Panel)")
         self._set_welcome_help_text()
-        middle_section_layout.addWidget(self.help_panel, 1)  # Add stretch factor
+        middle_section_layout.addWidget(self.help_panel, 1)
 
         main_layout.addLayout(middle_section_layout)
         main_layout.addSpacerItem(
@@ -113,7 +108,6 @@ class WelcomeView(QWidget):
 
         self.setLayout(main_layout)
 
-        # Emit initial default selections after layout is set up
         self.emit_current_selections()
 
     def emit_current_selections(self):
@@ -123,8 +117,8 @@ class WelcomeView(QWidget):
             self.player_count_selected_signal.emit(
                 self.player_count_button_group.id(selected_player_button)
             )
-        else:  # Default if somehow none are checked (should be handled by default check)
-            if self.player_count_button_group.buttons():  # Ensure buttons exist
+        else:
+            if self.player_count_button_group.buttons():
                 self.player_count_selected_signal.emit(
                     self.player_count_button_group.id(
                         self.player_count_button_group.buttons()[0]
@@ -136,8 +130,8 @@ class WelcomeView(QWidget):
             self.point_value_selected_signal.emit(
                 self.point_value_button_group.id(selected_point_button)
             )
-        else:  # Default
-            if self.point_value_button_group.buttons():  # Ensure buttons exist
+        else:
+            if self.point_value_button_group.buttons():
                 self.point_value_selected_signal.emit(
                     self.point_value_button_group.id(
                         self.point_value_button_group.buttons()[0]

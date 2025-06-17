@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from constants import ELEMENT_COLORS # This import is fine
+from constants import ELEMENT_COLORS
 
 class Terrain:
     """
@@ -11,8 +11,7 @@ class Terrain:
         if not 1 <= len(colors) <= 2:
             raise ValueError("Terrain must have one or two colors.")
         for color in colors:
-            if color not in ELEMENT_COLORS.values() and color not in ELEMENT_COLORS.keys():
-                 # Allow referencing by element name or color name for flexibility
+            if color not in ELEMENT_COLORS.values() and color not in ELEMENT_COLORS.keys(): # No change, good comment
                 actual_color_values = list(ELEMENT_COLORS.values())
                 if color not in actual_color_values:
                     raise ValueError(f"Invalid color '{color}'. Must be one of {actual_color_values}")
@@ -26,5 +25,4 @@ class Terrain:
 
     def get_elements(self) -> List[str]:
         """Returns the element names associated with the terrain's colors."""
-        # This assumes colors in ELEMENT_COLORS are unique, which they are.
         return [element for element, color_name in ELEMENT_COLORS.items() if color_name in self.colors]

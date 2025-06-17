@@ -12,7 +12,7 @@ from views.welcome_view import WelcomeView
 from views.player_setup_view import PlayerSetupView
 from views.frontier_selection_view import FrontierSelectionView
 from views.distance_rolls_view import DistanceRollsView
-from views.main_gameplay_view import MainGameplayView  # Keep this import
+from views.main_gameplay_view import MainGameplayView
 from controllers.gameplay_controller import GameplayController
 from models.app_data_model import AppDataModel
 
@@ -23,21 +23,19 @@ class MainWindow(QMainWindow):
     It will manage and display different views (screens).
     """
 
-    view_switched_and_ready = Signal()  # Custom signal
+    view_switched_and_ready = Signal()
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Dragon Dice Companion (PySide6)")
-        self.setGeometry(100, 100, 1280, 720)  # x, y, width, height
+        self.setGeometry(100, 100, 1280, 720)
         self.data_model = AppDataModel()
-        self.current_controller = None  # To hold the active controller
+        self.current_controller = None
         self.player_setup_view_instance: PlayerSetupView | None = None
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
-        self.central_widget_layout = QVBoxLayout(
-            self.central_widget
-        )  # Renamed variable
+        self.central_widget_layout = QVBoxLayout(self.central_widget)
 
         self._current_view = None
         self.show_welcome_view()  # Start with the welcome screen
@@ -56,20 +54,14 @@ class MainWindow(QMainWindow):
     def switch_view(self, new_view_widget):
         """Removes the current view and adds the new one."""
         if self._current_view:
-            # If you have a controller associated with the old view,
-            # you might want to clean it up or delete it here too.
-            # self.current_controller = None
-            self._current_view.hide()  # Explicitly hide the old view
+            self._current_view.hide()
             self.central_widget_layout.removeWidget(self._current_view)
             self._current_view.deleteLater()
             if self._current_view == self.player_setup_view_instance:
-                self.player_setup_view_instance = (
-                    None  # Clear instance if it was the one removed
-                )
-            self._current_view = None  # Clear the reference
+                self.player_setup_view_instance = None
+            self._current_view = None
         self._current_view = new_view_widget
         self.central_widget_layout.addWidget(self._current_view)
-        # Ensure the layout update and potential deletion are processed
         QApplication.processEvents()
         self.view_switched_and_ready.emit()
 
@@ -82,9 +74,8 @@ class MainWindow(QMainWindow):
         welcome_widget.point_value_selected_signal.connect(
             self.data_model.set_point_value
         )
-        # Initialize with default values from WelcomeView's comboboxes
-        welcome_widget.emit_current_selections()  # Ensure initial values are set
-        if self.player_setup_view_instance:  # Ensure cleanup if returning to welcome
+        welcome_widget.emit_current_selections()
+        if self.player_setup_view_instance:
             self.player_setup_view_instance = None
         self.switch_view(welcome_widget)
 
@@ -93,8 +84,6 @@ class MainWindow(QMainWindow):
             print(
                 "Error: Number of players or point value not set before proceeding to player setup."
             )
-            # Optionally, show an error message to the user or default to something
-            # For now, let's prevent moving forward if data isn't set.
             return
 
         terrain_options = self.data_model.get_terrain_display_options()
@@ -110,7 +99,7 @@ class MainWindow(QMainWindow):
                 point_value=self.data_model._point_value,
                 terrain_display_options=terrain_options,
                 required_dragons=required_dragons,
-                current_player_index=0,  # Start with player 0
+                current_player_index=0,
                 initial_player_data=initial_data_for_player_1,
             )
             self.player_setup_view_instance.player_data_finalized.connect(
@@ -120,8 +109,6 @@ class MainWindow(QMainWindow):
                 self.handle_player_setup_back
             )
         else:
-            # This case should ideally be handled by player_setup_view_instance being None
-            # if we came from WelcomeView. If it exists, update it.
             self.player_setup_view_instance.update_for_player(
                 0, initial_data_for_player_1
             )
@@ -141,7 +128,6 @@ class MainWindow(QMainWindow):
                 self.player_setup_view_instance.update_for_player(
                     next_player_index, data_for_next_player
                 )
-        # Else, all_player_setups_complete signal (connected in __init__) will trigger show_frontier_selection_view
 
     def handle_player_setup_back(self, emitted_player_index: int):
         if emitted_player_index > 0:  # Coming from Player 2 (index 1) or higher
@@ -152,7 +138,6 @@ class MainWindow(QMainWindow):
                 self.player_setup_view_instance.update_for_player(
                     previous_player_index, player_data_to_load
                 )
-                # Process events to ensure UI updates are rendered
                 QApplication.processEvents()
         else:  # Coming from Player 1 (index 0)
             self.show_welcome_view()
@@ -162,13 +147,12 @@ class MainWindow(QMainWindow):
         player_names = self.data_model.get_player_names()
         proposed_terrains = (
             self.data_model.get_proposed_frontier_terrains()
-        )  # New method in AppDataModel
+        )
 
         if not player_names or not proposed_terrains:
             print(
                 "Error: No player names or proposed terrains available for frontier selection."
             )
-            # Handle error, maybe go back to welcome or show an error message
             return
         frontier_view = FrontierSelectionView(
             player_names=player_names, proposed_frontier_terrains=proposed_terrains
@@ -186,11 +170,9 @@ class MainWindow(QMainWindow):
         """Navigates back to the setup screen of the last configured player."""
         if self.data_model._num_players is not None and self.data_model._num_players > 0:
             last_player_idx = self.data_model._num_players - 1
-            # Ensure current_setup_player_index in model reflects this target
             self.data_model.current_setup_player_index = last_player_idx
 
-            # Re-use logic to show/update PlayerSetupView for a specific index
-            if self.data_model._point_value is None: # Should not happen if we were at frontier
+            if self.data_model._point_value is None:
                 self.show_welcome_view()
                 return
 
@@ -213,7 +195,7 @@ class MainWindow(QMainWindow):
                 self.player_setup_view_instance.update_for_player(last_player_idx, player_data_to_load)
             self.switch_view(self.player_setup_view_instance)
         else:
-            self.show_welcome_view() # Fallback if num_players is not set
+            self.show_welcome_view()
 
     def show_distance_rolls_view(self):
         print(
@@ -234,7 +216,6 @@ class MainWindow(QMainWindow):
     def show_main_gameplay_view(self, game_engine_instance):
         if not game_engine_instance:
             print("Error: GameEngine instance not provided to show_main_gameplay_view.")
-            # Potentially show an error view or go back
             return
         print(
             f"Game engine initialized. Transitioning to Main Gameplay View for player: {game_engine_instance.get_current_player_name()}"
@@ -242,7 +223,7 @@ class MainWindow(QMainWindow):
 
         self.current_controller = GameplayController(
             game_engine_instance
-        )  # Store as current_controller
+        )
         gameplay_view = MainGameplayView(game_engine_instance)
         gameplay_view.maneuver_decision_signal.connect(
             self.current_controller.handle_maneuver_decision
