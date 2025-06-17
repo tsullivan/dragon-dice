@@ -71,16 +71,13 @@ class MainWindow(QMainWindow):
         welcome_widget.player_count_selected_signal.connect(
             self.data_model.set_num_players
         )
-        welcome_widget.point_value_selected_signal.connect(
-            self.data_model.set_point_value
-        )
         welcome_widget.emit_current_selections()
         if self.player_setup_view_instance:
             self.player_setup_view_instance = None
         self.switch_view(welcome_widget)
 
     def show_player_setup_view(self):
-        if self.data_model._num_players is None or self.data_model._point_value is None:
+        if self.data_model._num_players is None: # _point_value check removed
             print(
                 "Error: Number of players or point value not set before proceeding to player setup."
             )
@@ -96,7 +93,6 @@ class MainWindow(QMainWindow):
         if not self.player_setup_view_instance:
             self.player_setup_view_instance = PlayerSetupView(
                 num_players=self.data_model._num_players,
-                point_value=self.data_model._point_value,
                 terrain_display_options=terrain_options,
                 required_dragons=required_dragons,
                 current_player_index=0,
@@ -172,7 +168,7 @@ class MainWindow(QMainWindow):
             last_player_idx = self.data_model._num_players - 1
             self.data_model.current_setup_player_index = last_player_idx
 
-            if self.data_model._point_value is None:
+            if self.data_model._num_players is None: # Check num_players instead of point_value
                 self.show_welcome_view()
                 return
 
@@ -183,7 +179,6 @@ class MainWindow(QMainWindow):
             if not self.player_setup_view_instance:
                 self.player_setup_view_instance = PlayerSetupView(
                     num_players=self.data_model._num_players,
-                    point_value=self.data_model._point_value,
                     terrain_display_options=terrain_options,
                     required_dragons=required_dragons,
                     current_player_index=last_player_idx,

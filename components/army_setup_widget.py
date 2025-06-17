@@ -18,12 +18,10 @@ class ArmySetupWidget(QWidget):
     # Signal to emit the list of UnitModel instances (as dicts) for this army
     units_updated_signal = Signal(str, list) # Emit army_type_name and list of units (as dicts)
 
-    def __init__(self, army_type_name: str, max_points_for_army: int,
-                 unit_roster: Optional[UnitRosterModel] = None, parent=None):
+    def __init__(self, army_type_name: str, unit_roster: Optional[UnitRosterModel] = None, parent=None):
         super().__init__(parent)
         self.army_type_name = army_type_name
-        self.max_points_for_army = max_points_for_army # Max points this specific army can have
-        self.unit_roster = unit_roster # Store the roster
+        self.unit_roster = unit_roster
         self.current_units: List[UnitModel] = [] # Store UnitModel instances for this army
 
         # Layout: Button on the left, summary on the right
@@ -62,9 +60,6 @@ class ArmySetupWidget(QWidget):
         # No QLineEdit for name in this widget anymore.
         pass
 
-    def get_points(self) -> Optional[int]:
-        return sum(u.points_cost for u in self.current_units)
-
     def set_points(self, points: int):
         # Points are now derived from units, so this method is not for setting a target.
         # It could be used to clear units if points were externally set to 0, but
@@ -74,8 +69,7 @@ class ArmySetupWidget(QWidget):
     def _open_unit_selection_dialog(self):
         if not self.unit_roster:
             return
-        # Pass the max_points_for_army constraint to the dialog
-        dialog = UnitSelectionDialog(self.army_type_name, self.max_points_for_army, self.unit_roster, self.current_units, self)
+        dialog = UnitSelectionDialog(self.army_type_name, self.unit_roster, self.current_units, self)
         dialog.units_selected_signal.connect(self._handle_units_selected_from_dialog)
         dialog.exec()
 
@@ -95,5 +89,4 @@ class ArmySetupWidget(QWidget):
         self.current_units = [UnitModel.from_dict(u_data) for u_data in unit_dicts]
 
     def _update_units_summary(self):
-        points_used = sum(u.points_cost for u in self.current_units)
-        self.units_summary_label.setText(f"Units: {len(self.current_units)} ({points_used} pts)")
+        self.units_summary_label.setText(f"Units: {len(self.current_units)}")

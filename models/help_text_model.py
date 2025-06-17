@@ -14,17 +14,16 @@ This application will help you track game state, turns, and phases, but all dice
 <p><b>UI Elements:</b></p>
 <ul>
     <li><b>Select Number of Players:</b> Choose how many people are playing (currently 2-4).</li>
-    <li><b>Select Army Point Value:</b> Choose the total points each player will use to build their armies. Common starting values are 15 or 24 points. The rules suggest 15, 24, 30, 36, or 60 points.</li>
     <li><b>Proceed to Player Setup:</b> Click this button to continue to the next step after making your selections.</li>
 </ul>
 <p><b>Current Phase: Initial Game Setup</b></p>
 <p>You are at the very beginning of setting up your Dragon Dice game. The choices made here will determine the number of players and the scale of the armies involved.</p>
 """
 
-    def get_player_setup_help(self, player_num: int, num_players: int, point_value: int) -> str:
+    def get_player_setup_help(self, player_num: int, num_players: int) -> str:
         horde_army_help = ""
         if num_players > 1:
-            horde_army_help = "<li><b>Horde Army Name/Points:</b> Name your army that will start at an opponent's Home Terrain and allocate points. This army must have at least one unit.</li>"
+            horde_army_help = "<li><b>Horde Army:</b> This army will start at an opponent's Home Terrain. It must have at least one unit.</li>"
 
         return f"""
 <b>Player {player_num} Setup</b>
@@ -33,17 +32,11 @@ This application will help you track game state, turns, and phases, but all dice
 <ul>
     <li><b>Player Name:</b> Enter your name.</li>
     <li><b>Home Terrain:</b> Select the type of terrain where your main army (Home Army) will start.</li>
-    <li><b>Home Army Name/Points:</b> Name your army that starts at your Home Terrain and allocate points to it. This army must have at least one unit.</li>
-    <li><b>Campaign Army Name/Points:</b> Name your army that will start at the Frontier Terrain and allocate points. This army must have at least one unit.</li>
+    <li><b>Home Army:</b> This army starts at your Home Terrain. It must have at least one unit.</li>
+    <li><b>Campaign Army:</b> This army will start at the Frontier Terrain. It must have at least one unit.</li>
     {horde_army_help}
     <li><b>Propose Frontier Terrain:</b> Each player suggests a terrain type. One of these will be chosen as the central Frontier Terrain for the game.</li>
     <li><b>Next Player/Start Game Button:</b> Click to finalize this player's setup and move to the next player, or to proceed if all players are set up.</li>
-</ul>
-<p><b>Point Allocation Rules (refer to rulebook page 4 & 8):</b></p>
-<ul>
-    <li>The total points for all your armies (Home, Campaign, Horde) cannot exceed the game's selected Army Point Value ({point_value} points).</li>
-    <li>No single army (Home, Campaign, or Horde) can have more than half (rounded down) of the total Army Point Value. For this game, that is {point_value // 2} points per army.</li>
-    <li>Each army must contain at least one unit.</li>
 </ul>
 <p>Enter your details and click the button at the bottom to proceed.</p>
 """

@@ -14,11 +14,10 @@ class UnitSelectionDialog(QDialog):
     """
     units_selected_signal = Signal(list)
 
-    def __init__(self, army_name: str, allocated_points: int, unit_roster: UnitRosterModel,
+    def __init__(self, army_name: str, unit_roster: UnitRosterModel,
                  current_units: Optional[List[UnitModel]] = None, parent=None):
         super().__init__(parent)
         self.army_name = army_name
-        self.allocated_points = allocated_points
         self.unit_roster = unit_roster
         self.selected_units: List[UnitModel] = list(current_units) if current_units else []
 
@@ -26,10 +25,6 @@ class UnitSelectionDialog(QDialog):
         self.setMinimumSize(700, 500)
 
         layout = QVBoxLayout(self)
-
-        self.points_label = QLabel()
-        self._update_points_label()
-        layout.addWidget(self.points_label)
         main_area_layout = QHBoxLayout()
 
         # Available Units (Tabs with Tables)
@@ -61,39 +56,34 @@ class UnitSelectionDialog(QDialog):
             tab_layout.setContentsMargins(5,5,5,5)
 
             table = QTableWidget()
-            table.setColumnCount(2)
-            table.setHorizontalHeaderLabels(["Unit Name", "Cost (pts)"])
+            table.setColumnCount(2) # Name, Class Type
+            table.setHorizontalHeaderLabels(["Unit Name", "Class Type"])
             table.setRowCount(len(units_in_species))
             table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             table.verticalHeader().setVisible(False)
             table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-            table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+            table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Class Type
 
             for row_idx, unit_type_info in enumerate(units_in_species):
                 name_item = QTableWidgetItem(unit_type_info["display_name"])
-                cost_item = QTableWidgetItem(str(unit_type_info["points_cost"]))
-                cost_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                class_type_item = QTableWidgetItem(unit_type_info.get("unit_class_type", "N/A"))
                 name_item.setData(Qt.ItemDataRole.UserRole, unit_type_info)
 
                 table.setItem(row_idx, 0, name_item)
-                table.setItem(row_idx, 1, cost_item)
+                table.setItem(row_idx, 1, class_type_item)
             table.cellClicked.connect(self._table_cell_clicked)
             tab_layout.addWidget(table)
             self.available_units_tabs.addTab(tab_content_widget, species)
 
-    def _update_points_label(self):
-        current_total = sum(unit.points_cost for unit in self.selected_units)
-        self.points_label.setText(f"Points Used: {current_total} / {self.allocated_points}")
-
     def _populate_selected_units_list(self):
         self.selected_units_list.clear()
         for unit in self.selected_units:
-            item_text = f"{unit.name} ({unit.points_cost} pts) - Type: {unit.unit_type}"
+            # item_text = f"{unit.name} ({unit.points_cost} pts) - Type: {unit.unit_type}" # points_cost removed
+            item_text = f"{unit.name} - Type: {unit.unit_type}"
             item = QListWidgetItem(item_text)
             item.setData(Qt.ItemDataRole.UserRole, unit.unit_id)
             self.selected_units_list.addItem(item)
-        self._update_points_label()
 
     @Slot(int, int)
     def _table_cell_clicked(self, row: int, column: int):
@@ -109,14 +99,7 @@ class UnitSelectionDialog(QDialog):
         if not unit_type_info: return
 
         unit_type_id = unit_type_info["id"]
-        unit_cost = unit_type_info["points_cost"]
         unit_display_name = unit_type_info["display_name"]
-
-        current_total_points = sum(u.points_cost for u in self.selected_units)
-        if current_total_points + unit_cost > self.allocated_points:
-            print(f"Cannot add {unit_display_name}: Exceeds army point limit.")
-            return
-        
         instance_count = sum(1 for u in self.selected_units if u.unit_type == unit_type_id)
         instance_id = f"{self.army_name.lower().replace(' ', '_')}_{unit_type_id}_{instance_count + 1}"
         new_unit = self.unit_roster.create_unit_instance(unit_type_id, instance_id)

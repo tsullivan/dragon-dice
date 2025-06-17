@@ -46,7 +46,6 @@ class PlayerSetupView(QWidget):
     def __init__(
         self,
         num_players: int,
-        point_value: int,
         terrain_display_options: list,  # List of tuples (name, colors)
         required_dragons: int, # No change, good comment
         initial_player_data: Optional[dict] = None,
@@ -56,7 +55,6 @@ class PlayerSetupView(QWidget):
         super().__init__(parent)
         self.num_players = num_players
         self.initial_player_data = initial_player_data
-        self.point_value = point_value
         self.terrain_display_options = terrain_display_options
         if self.terrain_display_options and isinstance(
             self.terrain_display_options[0], tuple
@@ -72,7 +70,6 @@ class PlayerSetupView(QWidget):
         self.help_model = HelpTextModel()
         self.current_player_index = current_player_index
 
-        self.max_points_per_army = self.point_value // 2
         self.preselected_names = self._load_preselected_names()
 
         self.player_data: dict = {}  # To store data for the current player
@@ -112,7 +109,7 @@ class PlayerSetupView(QWidget):
 
         # Informational text for required dragons
         self.dragon_info_label = QLabel(
-            f"Reminder: You must bring {self.required_dragons} dragon(s) to this game (1 per 24 points or part thereof)."
+            f"Reminder: You must bring {self.required_dragons} dragon(s) to this game."
         )
         dragon_font = self.dragon_info_label.font() # No change, good comment
         dragon_font.setPointSize(dragon_font.pointSize() - 2)
@@ -187,9 +184,7 @@ class PlayerSetupView(QWidget):
                 army_label, current_army_main_row, 0, Qt.AlignmentFlag.AlignTop
             )
 
-            army_widget = ArmySetupWidget(
-                army_type, self.max_points_per_army, self.unit_roster
-            )
+            army_widget = ArmySetupWidget(army_type, self.unit_roster) # max_points_per_army removed
             self.army_setup_widgets[army_type] = army_widget
             self.inputs_grid_layout.addWidget(army_widget, current_army_main_row, 1, 1, 2)
 
@@ -327,11 +322,9 @@ class PlayerSetupView(QWidget):
             if army_key == "horde" and self.num_players <= 1:
                 continue
             current_army_widget = self.army_setup_widgets[army_type]
-            army_allocated_points = current_army_widget.get_points()
             army_units_data = current_army_widget.get_current_units_as_dicts()
             player_data["armies"][army_key] = {
                 "name": army_type,
-                "allocated_points": army_allocated_points,
                 "units": army_units_data,
             }
         self.player_data_finalized.emit(self.current_player_index, player_data)
@@ -351,43 +344,12 @@ class PlayerSetupView(QWidget):
             self._set_status_message("Player Name cannot be empty.", "red")
             return False
 
-        # Validate points allocation
-        total_allocated_points = 0
-        armies_to_check = [constants.ARMY_TYPE_HOME, constants.ARMY_TYPE_CAMPAIGN]
-        if self.num_players > 1:
-            armies_to_check.append(constants.ARMY_TYPE_HORDE)
+        # Points validation removed.
+        # Consider other validation if needed, e.g., at least one unit per army if armies are mandatory.
+        # For now, only player name is validated.
+        # Dragon selection validation (ensuring all required dragons are chosen and are unique if needed)
+        # could be added here.
 
-        for army_type in armies_to_check:
-            army_key = army_type.lower()
-            army_widget = self.army_setup_widgets[army_type]
-            army_points = army_widget.get_points()
-            if army_points is None:
-                army_points = 0
-            total_allocated_points += army_points
-
-            points_used_by_units = army_widget.get_points()
-            if points_used_by_units is None:
-                points_used_by_units = 0
-            if points_used_by_units > self.max_points_per_army:
-                self._set_status_message(
-                    f"{army_type} Army units ({points_used_by_units} pts) exceed individual army limit ({self.max_points_per_army}).",
-                    "red",
-                )
-                return False
-            if army_points > 0 and not army_widget.current_units:
-                self._set_status_message(
-                    f"{army_type} Army has points ({army_points}) but no units. Please add units or set points to 0 via unit management.",
-                    "red",
-                )
-                # This state (points > 0 but no units) should ideally be prevented by how UnitSelectionDialog works
-                # or how ArmySetupWidget clears units if points are reduced.
-
-        if total_allocated_points != self.point_value:
-            self._set_status_message(
-                f"Total points ({total_allocated_points}) must equal game limit ({self.point_value}).",
-                "red",
-            )
-            return False
 
         is_valid_so_far = True
         if not player_name:
@@ -403,7 +365,7 @@ class PlayerSetupView(QWidget):
         player_num_for_display = self.current_player_index + 1
         self.help_panel.set_help_text(
             self.help_model.get_player_setup_help(
-                player_num_for_display, self.num_players, self.point_value
+                player_num_for_display, self.num_players
             )
         )
 

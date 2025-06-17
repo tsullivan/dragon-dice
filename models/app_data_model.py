@@ -17,7 +17,6 @@ class AppDataModel(QObject):
     """
 
     num_players_changed = Signal(int)
-    point_value_changed = Signal(int)
     player_setup_data_added = Signal(dict)
     all_player_setups_complete = Signal()
     frontier_set = Signal(str, str)
@@ -27,7 +26,6 @@ class AppDataModel(QObject):
     def __init__(self):
         super().__init__()
         self._num_players = None
-        self._point_value = None
         self._player_setup_data_list: list[dict] = (
             []
         )  # Will be initialized based on num_players
@@ -58,10 +56,6 @@ class AppDataModel(QObject):
         self._player_setup_data_list = [{} for _ in range(count)]
         self.current_setup_player_index = 0  # Reset to player 1
         self.num_players_changed.emit(count)
-
-    def set_point_value(self, value):
-        self._point_value = value
-        self.point_value_changed.emit(value)
 
     def add_player_setup_data(self, player_index: int, player_data: dict):
         """Stores setup data for a specific player index."""
@@ -103,10 +97,9 @@ class AppDataModel(QObject):
         return self._terrain_display_options
 
     def get_required_dragon_count(self) -> int:
-        if self._point_value is None:
-            return 0
-        # Rule: 1 dragon per 24 points or part thereof
-        return (self._point_value + 23) // 24  # Integer division, ceiling
+        # Point value removed, returning a fixed default.
+        # This logic might need to be revisited based on new game balance rules.
+        return 1 # Default to 1 dragon, or adjust as per new rules.
 
     def get_proposed_frontier_terrains(self):
         """Returns a list of tuples (player_name, proposed_terrain_type)"""

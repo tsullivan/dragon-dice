@@ -25,7 +25,6 @@ class WelcomeView(QWidget):
 
     proceed_signal = Signal()
     player_count_selected_signal = Signal(int)  # Emits the selected player count (int)
-    point_value_selected_signal = Signal(int)  # Emits the selected point value (int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -69,24 +68,6 @@ class WelcomeView(QWidget):
         )
         selections_layout.addWidget(player_count_group)
 
-        # Point Value Selection
-        point_value_group = QGroupBox("Select Army Point Value:")
-        point_value_hbox = QHBoxLayout()
-        self.point_value_button_group = QButtonGroup(self)
-        point_values = [15, 24, 30, 36, 60]
-        for pv in point_values:
-            radio_button = QRadioButton(str(pv))
-            self.point_value_button_group.addButton(
-                radio_button, pv)
-            point_value_hbox.addWidget(radio_button)
-            if pv == 30:
-                radio_button.setChecked(True)
-        point_value_group.setLayout(point_value_hbox)
-        self.point_value_button_group.idClicked.connect(
-            self.point_value_selected_signal.emit
-        )
-        selections_layout.addWidget(point_value_group)
-
         middle_section_layout.addWidget(selections_group)
 
         # Right Side (Info Panel)
@@ -122,19 +103,6 @@ class WelcomeView(QWidget):
                 self.player_count_selected_signal.emit(
                     self.player_count_button_group.id(
                         self.player_count_button_group.buttons()[0]
-                    )
-                )
-
-        selected_point_button = self.point_value_button_group.checkedButton()
-        if selected_point_button:
-            self.point_value_selected_signal.emit(
-                self.point_value_button_group.id(selected_point_button)
-            )
-        else:
-            if self.point_value_button_group.buttons():
-                self.point_value_selected_signal.emit(
-                    self.point_value_button_group.id(
-                        self.point_value_button_group.buttons()[0]
                     )
                 )
 

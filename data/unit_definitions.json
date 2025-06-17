@@ -1,17 +1,17 @@
 {
-  "Goblins": [
+  "Goblin": [
     {
       "unit_type_id": "goblin_spearman",
       "display_name": "Goblin Spearman",
       "max_health": 1,
-      "points_cost": 1,
+      "unit_class_type": "Light Melee",
       "abilities": {"id_results": {"MELEE": 1, "SAVE": 1}}
     },
     {
       "unit_type_id": "goblin_archer",
       "display_name": "Goblin Archer",
       "max_health": 1,
-      "points_cost": 1,
+      "unit_class_type": "Missile",
       "abilities": {"id_results": {"MISSILE": 1}}
     }
   ],
@@ -20,87 +20,87 @@
       "unit_type_id": "orc_archer",
       "display_name": "Orc Archer",
       "max_health": 2,
-      "points_cost": 2,
+      "unit_class_type": "Missile",
       "abilities": {"id_results": {"MISSILE": 1}}
     },
     {
       "unit_type_id": "feral_wolf",
       "display_name": "Feral Wolf",
       "max_health": 1,
-      "points_cost": 1,
+      "unit_class_type": "Light Melee",
       "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
     }
   ],
-  "Coral Elves": [
+  "Coral Elf": [
     {
       "unit_type_id": "elf_mage",
       "display_name": "Elf Mage",
       "max_health": 1,
-      "points_cost": 3,
+      "unit_class_type": "Magic",
       "abilities": {"id_results": {"MAGIC": 1}, "sais": ["MAGIC_BOLT"]}
     },
     {
       "unit_type_id": "coral_elf_guardian",
       "display_name": "Coral Elf Guardian",
       "max_health": 2,
-      "points_cost": 3,
+      "unit_class_type": "Heavy Melee",
       "abilities": {"id_results": {"SAVE": 2, "MELEE": 1}}
     }
   ],
-  "Dwarves": [
+  "Dwarf": [
     {
       "unit_type_id": "dwarf_warrior",
       "display_name": "Dwarf Warrior",
       "max_health": 2,
-      "points_cost": 2,
+      "unit_class_type": "Heavy Melee",
       "abilities": {"id_results": {"MELEE": 2}}
     },
     {
       "unit_type_id": "dwarf_axeman",
       "display_name": "Dwarf Axeman",
       "max_health": 2,
-      "points_cost": 2,
+      "unit_class_type": "Heavy Melee",
       "abilities": {"id_results": {"MELEE": 2}}
     }
   ],
-  "Firewalkers": [
+  "Firewalker": [
     {
       "unit_type_id": "firewalker_initiate",
       "display_name": "Firewalker Initiate",
       "max_health": 1,
-      "points_cost": 3,
+      "unit_class_type": "Magic",
       "abilities": {"id_results": {"MAGIC": 1}, "sais": ["MAGIC_BOLT"]}
     },
     {
       "unit_type_id": "firewalker_shaman",
       "display_name": "Firewalker Shaman",
       "max_health": 2,
-      "points_cost": 4,
+      "unit_class_type": "Magic",
       "abilities": {"id_results": {"MAGIC": 2}, "sais": ["MAGIC_BOLT"]}
     }
   ],
-  "Frostwings": [
+  "Frostwing": [
     {
       "unit_type_id": "frostwing_hatchling",
       "display_name": "Frostwing Hatchling",
       "max_health": 2,
-      "points_cost": 3,
+      "unit_class_type": "Magic",
       "abilities": {"id_results": {"MELEE": 1, "MAGIC": 1}, "sais": []}
     },
     {
       "unit_type_id": "frostwing_adult",
       "display_name": "Frostwing Adult",
       "max_health": 3,
-      "points_cost": 5,
+      "unit_class_type": "Magic",
       "abilities": {"id_results": {"MELEE": 2, "MAGIC": 1}, "sais": ["BULLSEYE"]}
     }
   ],
-  "Swamp Stalkers": [
+  "Swamp Stalker": [
     {
       "unit_type_id": "swamp_stalker_hunter",
       "display_name": "Swamp Stalker Hunter",
       "max_health": 1,
-      "points_cost": 2,
+      "unit_class_type": "Missile",
       "abilities": {"id_results": {"MISSILE": 2}, "sais": []}
     }
   ],
@@ -109,7 +109,7 @@
       "unit_type_id": "treefolk_sapling",
       "display_name": "Treefolk Sapling",
       "max_health": 3,
-      "points_cost": 2,
+      "unit_class_type": "Heavy Melee",
       "abilities": {"id_results": {"SAVE": 2}}
     }
   ],
@@ -118,34 +118,167 @@
       "unit_type_id": "undead_skeleton",
       "display_name": "Undead Skeleton",
       "max_health": 1,
-      "points_cost": 1,
+      "unit_class_type": "Skirmisher",
       "abilities": {"id_results": {"MELEE": 1}, "sais": ["RECRUIT"]}
     }
   ],
-  "Amazons": [
+  "Amazon": [
     {
       "unit_type_id": "amazon_warrior",
-      "display_name": "Amazon Warrior",
+      "display_name": "Warrior",
       "max_health": 2,
-      "points_cost": 2,
-      "abilities": {"id_results": {"MELEE": 1, "MISSILE": 1}}
+      "unit_class_type": "Heavy Melee",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_soldier",
+      "display_name": "Soldier",
+      "max_health": 1,
+      "unit_class_type": "Heavy Melee",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_war_chief",
+      "display_name": "War Chief",
+      "max_health": 3,
+      "unit_class_type": "Heavy Melee",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_centaur",
+      "display_name": "Centaur",
+      "max_health": 4,
+      "unit_class_type": "Monster",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_runner",
+      "display_name": "Runner",
+      "max_health": 1,
+      "unit_class_type": "Light Melee",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_envoy",
+      "display_name": "Envoy",
+      "max_health": 2,
+      "unit_class_type": "Light Melee",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_harbinger",
+      "display_name": "Harbinger",
+      "max_health": 3,
+      "unit_class_type": "Light Melee",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_chimera",
+      "display_name": "Chimera",
+      "max_health": 4,
+      "unit_class_type": "Monster",
+      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_charioteer",
+      "display_name": "Charioteer",
+      "max_health": 1,
+      "unit_class_type": "Cavalry",
+      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_battle_rider",
+      "display_name": "Battle Rider",
+      "max_health": 2,
+      "unit_class_type": "Cavalry",
+      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_war_driver",
+      "display_name": "War Driver",
+      "max_health": 3,
+      "unit_class_type": "Cavalry",
+      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_hydra",
+      "display_name": "Hydra",
+      "max_health": 4,
+      "unit_class_type": "Monster",
+      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_darter",
+      "display_name": "Darter",
+      "max_health": 1,
+      "unit_class_type": "Missile",
+      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_javelineer",
+      "display_name": "Javelineer",
+      "max_health": 2,
+      "unit_class_type": "Missile",
+      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_spearer",
+      "display_name": "Spearer",
+      "max_health": 3,
+      "unit_class_type": "Missile",
+      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_medusa",
+      "display_name": "Medusa",
+      "max_health": 4,
+      "unit_class_type": "Monster",
+      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_seer",
+      "display_name": "Seer",
+      "max_health": 1,
+      "unit_class_type": "Magic",
+      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_visionary",
+      "display_name": "Visionary",
+      "max_health": 2,
+      "unit_class_type": "Magic",
+      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_oracle",
+      "display_name": "Oracle",
+      "max_health": 3,
+      "unit_class_type": "Magic",
+      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+    },
+    {
+      "unit_type_id": "amazon_nightmare",
+      "display_name": "Nightmare",
+      "max_health": 4,
+      "unit_class_type": "Monster",
+      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
     }
   ],
-  "Lava Elves": [
+  "Lava Elf": [
     {
       "unit_type_id": "lava_elf_scout",
       "display_name": "Lava Elf Scout",
       "max_health": 1,
-      "points_cost": 2,
+      "unit_class_type": "Light Melee",
       "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
     }
   ],
-  "Scalders": [
+  "Scalder": [
     {
       "unit_type_id": "scalders_berserker",
       "display_name": "Scalders Berserker",
       "max_health": 1,
-      "points_cost": 2,
+      "unit_class_type": "Light Melee",
       "abilities": {"id_results": {"MELEE": 3}}
     }
   ]

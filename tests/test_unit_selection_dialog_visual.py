@@ -38,9 +38,8 @@ def unit_roster():
 def test_unit_selection_dialog_empty(qtbot, unit_roster):
     """Captures a screenshot of the UnitSelectionDialog in its initial empty state."""
     army_name = "Test Home Army"
-    allocated_points = 10
-
-    dialog = UnitSelectionDialog(army_name, allocated_points, unit_roster)
+    # allocated_points = 10 # This value is no longer used by the dialog itself
+    dialog = UnitSelectionDialog(army_name, unit_roster, current_units=None)
     capture_widget_screenshot(qtbot, dialog, "UnitSelectionDialog_Empty")
     # Test passes if no exceptions and screenshot is saved.
     # Dialog is modal, so we don't need to explicitly close it for screenshot.
@@ -48,7 +47,6 @@ def test_unit_selection_dialog_empty(qtbot, unit_roster):
 def test_unit_selection_dialog_with_preselected_units(qtbot, unit_roster):
     """Captures a screenshot of the UnitSelectionDialog with some units already selected."""
     army_name = "Test Campaign Army"
-    allocated_points = 15
 
     # Create some units to pre-select
     unit1 = unit_roster.create_unit_instance("goblin_spearman", "camp_gob_1")
@@ -59,5 +57,5 @@ def test_unit_selection_dialog_with_preselected_units(qtbot, unit_roster):
     if unit2:
         current_units.append(unit2)
 
-    dialog = UnitSelectionDialog(army_name, allocated_points, unit_roster, current_units=current_units)
+    dialog = UnitSelectionDialog(army_name, unit_roster, current_units=current_units)
     capture_widget_screenshot(qtbot, dialog, "UnitSelectionDialog_WithUnits")

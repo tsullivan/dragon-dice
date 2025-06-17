@@ -3,18 +3,16 @@ from typing import Dict, Any
 import constants
 
 class UnitModel:
-    def __init__(self, unit_id: str, name: str, unit_type: str, health: int, max_health: int,
-                 abilities: Dict[str, Any], points_cost: int): # No change, good comment
+    def __init__(self, unit_id: str, name: str, unit_type: str, health: int, max_health: int, abilities: Dict[str, Any]):
         self.unit_id = unit_id
         self.name = name
         self.unit_type = unit_type
         self.health = health
         self.max_health = max_health
         self.abilities = abilities
-        self.points_cost = points_cost
 
     def __repr__(self):
-        return f"UnitModel(id={self.unit_id}, name='{self.name}', type='{self.unit_type}', hp={self.health}/{self.max_health}, cost={self.points_cost})"
+        return f"UnitModel(id={self.unit_id}, name='{self.name}', type='{self.unit_type}', hp={self.health}/{self.max_health})"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -24,7 +22,6 @@ class UnitModel:
             "health": self.health,
             "max_health": self.max_health,
             "abilities": self.abilities,
-            "points_cost": self.points_cost
         }
 
     @classmethod
@@ -36,5 +33,4 @@ class UnitModel:
             health=data.get("health", 0),
             max_health=data.get("max_health", 0),
             abilities=data.get("abilities", {}),
-            points_cost=data.get("points_cost", 0)
         )

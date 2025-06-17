@@ -46,13 +46,11 @@ def test_player_setup_view_direct_render(qtbot): # Use qtbot fixture
 
     # Mock data for PlayerSetupView
     mock_num_players = 2
-    mock_point_value = 10
     # TERRAIN_DATA is imported from constants.py, which AppDataModel uses
     mock_terrain_options = TERRAIN_DATA
     mock_required_dragons = 2 # As per AppDataModel.get_required_dragon_count()
 
     player_setup_view = PlayerSetupView(num_players=mock_num_players,
-                                        point_value=mock_point_value,
                                         terrain_display_options=mock_terrain_options,
                                         required_dragons=mock_required_dragons)
 
