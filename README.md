@@ -94,3 +94,9 @@ python main_app.py
 ```
 
 This will launch the Qt window and start the application, beginning with the Welcome Screen.
+
+### Running the unit tests
+
+```bash
+python -m pytest
+```

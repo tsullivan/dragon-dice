@@ -48,6 +48,22 @@ class UnitSelectionDialog(QDialog):
 
         self._populate_selected_units_list()
 
+    def _sort_units_for_display(self, units_list):
+        """
+        Sort units by health points (descending), then class type (ascending), then unit name (ascending).
+        
+        Args:
+            units_list: List of unit dictionaries to sort
+            
+        Returns:
+            List of sorted unit dictionaries
+        """
+        return sorted(units_list, key=lambda unit: (
+            -unit.get("max_health", 0),  # Health points descending (negative for reverse)
+            unit.get("unit_class_type", "N/A"),  # Class type ascending
+            unit.get("display_name", "")  # Unit name ascending
+        ))
+
     def _populate_available_units_tabs(self):
         units_by_species = self.unit_roster.get_available_unit_types_by_species()
         for species, units_in_species in sorted(units_by_species.items()):
@@ -56,22 +72,28 @@ class UnitSelectionDialog(QDialog):
             tab_layout.setContentsMargins(5,5,5,5)
 
             table = QTableWidget()
-            table.setColumnCount(2) # Name, Class Type
-            table.setHorizontalHeaderLabels(["Unit Name", "Class Type"])
+            table.setColumnCount(3) # Name, Class Type, Health Points
+            table.setHorizontalHeaderLabels(["Unit Name", "Class Type", "Health Points"])
             table.setRowCount(len(units_in_species))
             table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             table.verticalHeader().setVisible(False)
             table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
             table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Class Type
+            table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Health Points
 
-            for row_idx, unit_type_info in enumerate(units_in_species):
+            # Sort units using the dedicated sorting method
+            sorted_units = self._sort_units_for_display(units_in_species)
+            
+            for row_idx, unit_type_info in enumerate(sorted_units):
                 name_item = QTableWidgetItem(unit_type_info["display_name"])
                 class_type_item = QTableWidgetItem(unit_type_info.get("unit_class_type", "N/A"))
+                health_item = QTableWidgetItem(str(unit_type_info.get("max_health", 0)))
                 name_item.setData(Qt.ItemDataRole.UserRole, unit_type_info)
 
                 table.setItem(row_idx, 0, name_item)
                 table.setItem(row_idx, 1, class_type_item)
+                table.setItem(row_idx, 2, health_item)
             table.cellClicked.connect(self._table_cell_clicked)
             tab_layout.addWidget(table)
             self.available_units_tabs.addTab(tab_content_widget, species)

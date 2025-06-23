@@ -2,38 +2,30 @@
 from typing import List, Dict, Any, Optional
 import constants
 from .unit_model import UnitModel
-import json
-import os
+from config.resource_manager import ResourceManager
 
 class UnitRosterModel:
     """
     Holds definitions for all available unit types in the game.
     """
-    def __init__(self):
+    def __init__(self, resource_manager: Optional[ResourceManager] = None):
         self._unit_definitions: Dict[str, Dict[str, Any]] = {}
+        self.resource_manager = resource_manager or ResourceManager()
         self._load_default_units()
 
     def _load_default_units(self):
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        json_file_path = os.path.join(project_root, "data", "unit_definitions.json")
-
-        try:
-            with open(json_file_path, 'r') as f:
-                units_by_species_data = json.load(f)
-            for species_name, units_in_species_list in units_by_species_data.items():
-                for unit_data in units_in_species_list:
-                    self.add_unit_definition(
-                        unit_type_id=unit_data["unit_type_id"],
-                        display_name=unit_data["display_name"],
-                        species=species_name, # Species is now the key from the JSON object
-                        max_health=unit_data["max_health"],
-                        abilities=self._map_abilities_to_constants(unit_data.get("abilities", {})),
-                        unit_class_type=unit_data.get("unit_class_type", "Unknown") # Add this line
-                    )
-        except FileNotFoundError:
-            print(f"ERROR: Unit definitions file not found at {json_file_path}. No units will be loaded.")
-        except json.JSONDecodeError:
-            print(f"ERROR: Could not decode JSON from {json_file_path}. Check its format.")
+        units_by_species_data = self.resource_manager.load_unit_definitions()
+        
+        for species_name, units_in_species_list in units_by_species_data.items():
+            for unit_data in units_in_species_list:
+                self.add_unit_definition(
+                    unit_type_id=unit_data["unit_type_id"],
+                    display_name=unit_data["display_name"],
+                    species=species_name, # Species is now the key from the JSON object
+                    max_health=unit_data["max_health"],
+                    abilities=self._map_abilities_to_constants(unit_data.get("abilities", {})),
+                    unit_class_type=unit_data.get("unit_class_type", "Unknown") # Add this line
+                )
 
     def add_unit_definition(self, unit_type_id: str, display_name: str, species: str, max_health: int, abilities: Dict[str, Any], unit_class_type: str):
         if unit_type_id in self._unit_definitions:

@@ -16,7 +16,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QPalette, QColor
 import random
-import os
 from typing import Optional  # Import Optional
 
 from components.army_setup_widget import ArmySetupWidget
@@ -30,6 +29,7 @@ from views.unit_selection_dialog import UnitSelectionDialog
 from models.help_text_model import HelpTextModel
 from models.unit_roster_model import UnitRosterModel
 from models.unit_model import UnitModel
+from config.resource_manager import ResourceManager
 import constants
 
 
@@ -66,11 +66,12 @@ class PlayerSetupView(QWidget):
             self.all_terrain_options = self.terrain_display_options
 
         self.required_dragons = required_dragons # No change, good comment
-        self.unit_roster = UnitRosterModel()
+        self.resource_manager = ResourceManager()
+        self.unit_roster = UnitRosterModel(self.resource_manager)
         self.help_model = HelpTextModel()
         self.current_player_index = current_player_index
 
-        self.preselected_names = self._load_preselected_names()
+        self.preselected_names = self.resource_manager.load_names()
 
         self.player_data: dict = {}  # To store data for the current player
         self.army_units_data: dict[str, list[dict]] = (
@@ -250,42 +251,6 @@ class PlayerSetupView(QWidget):
         self._set_player_setup_help_text()
         self.update_for_player(self.current_player_index, self.initial_player_data)
 
-    def _load_preselected_names(self):
-        names_by_category = {"Player": [], "Army": []}
-        current_category = None
-        try:
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            names_file_path = os.path.join(project_root, "names.txt")
-            with open(names_file_path, "r") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if line.startswith("[") and line.endswith("]"):
-                        category = line[1:-1]
-                        if category in names_by_category:
-                            current_category = category
-                        else:
-                            current_category = None
-                            print(
-                                f"Warning: Unknown category '{category}' in names.txt."
-                            )
-                    elif current_category:
-                        names_by_category[current_category].append(line)
-
-            if not names_by_category["Player"] and not names_by_category["Army"]:
-                print(
-                    "Warning: names.txt does not contain valid [Player] or [Army] names."
-                )
-            elif not names_by_category["Player"]:
-                print("Warning: No names found under [Player] category in names.txt.")
-            elif not names_by_category["Army"]:
-                print("Warning: No names found under [Army] category in names.txt.")
-        except FileNotFoundError:
-            print(
-                f"Warning: names.txt not found at {names_file_path}. Random name feature will be limited."
-            )
-        return names_by_category
 
     def _set_random_player_name(self):
         if self.preselected_names.get("Player"):
