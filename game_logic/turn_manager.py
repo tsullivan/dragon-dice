@@ -14,10 +14,12 @@ class TurnManager(QObject):
         self.num_players = len(player_names)
         self.current_player_idx = self.player_names.index(first_player_name) if first_player_name in self.player_names else 0
         
-        self.current_phase_idx = 0
-        self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
+        # Start with First March phase for the very first turn of the game
+        self.current_phase_idx = constants.TURN_PHASES.index(constants.PHASE_FIRST_MARCH)
+        self.current_phase = constants.PHASE_FIRST_MARCH
         self.current_march_step = ""
         self.current_action_step = "" # For sub-steps within Melee, Missile, Magic
+        self.is_first_turn_of_game = True  # Track if this is the very first turn
         
         # self.initialize_turn() # Initial call might be better handled by GameEngine after all managers are set up
 
@@ -31,11 +33,18 @@ class TurnManager(QObject):
 
     def initialize_turn(self):
         """Resets phase and steps for the current player's turn."""
-        self.current_phase_idx = 0
-        self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
+        if self.is_first_turn_of_game:
+            # Keep the First March phase for the first turn
+            self.is_first_turn_of_game = False
+            print(f"TurnManager: Starting FIRST TURN with First March for {self.player_names[self.current_player_idx]}")
+        else:
+            # Regular turn initialization starts with first phase
+            self.current_phase_idx = 0
+            self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
+            print(f"TurnManager: Initializing turn for {self.player_names[self.current_player_idx]}. Phase: {self.current_phase}")
+        
         self.current_march_step = ""
         self.current_action_step = ""
-        print(f"TurnManager: Initializing turn for {self.player_names[self.current_player_idx]}. Phase: {self.current_phase}")
         self.current_player_changed.emit(self.player_names[self.current_player_idx])
         self.current_phase_changed.emit(self._get_current_phase_display_string())
 

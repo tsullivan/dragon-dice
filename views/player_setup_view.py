@@ -102,13 +102,6 @@ class PlayerSetupView(QWidget):
         font.setBold(True)
         self.title_label.setFont(font)
         title_layout.addWidget(self.title_label, alignment=Qt.AlignmentFlag.AlignCenter)
-
-        self.global_randomize_button = QPushButton("🎲")
-        self.global_randomize_button.setToolTip("Randomize all names")
-        self.global_randomize_button.clicked.connect(self._randomize_all_names)
-        title_layout.addWidget(
-            self.global_randomize_button, alignment=Qt.AlignmentFlag.AlignBaseline
-        )
         title_layout.addStretch(1)
         main_layout.addLayout(title_layout)
 
@@ -142,11 +135,25 @@ class PlayerSetupView(QWidget):
             self.current_player_index + 1
         )
 
-        # Player Name
+        # Player Name with inline dice button
         self.inputs_grid_layout.addWidget(QLabel("Player Name:"), 0, 0)
-        self.inputs_grid_layout.addWidget(
-            self.player_identity_widget.player_name_input, 0, 1, 1, 2
-        )
+        
+        # Create horizontal layout for player name input and dice button
+        player_name_layout = QHBoxLayout()
+        player_name_layout.addWidget(self.player_identity_widget.player_name_input)
+        
+        # Small inline dice button
+        self.global_randomize_button = QPushButton("🎲")
+        self.global_randomize_button.setToolTip("Randomize player name")
+        self.global_randomize_button.clicked.connect(self._set_random_player_name)
+        self.global_randomize_button.setFixedSize(30, 30)  # Small square button
+        self.global_randomize_button.setStyleSheet("font-size: 12px;")  # Smaller emoji
+        player_name_layout.addWidget(self.global_randomize_button)
+        
+        # Add the horizontal layout to the grid
+        player_name_widget = QWidget()
+        player_name_widget.setLayout(player_name_layout)
+        self.inputs_grid_layout.addWidget(player_name_widget, 0, 1, 1, 2)
 
         # Terrain Selections Widget
         self.terrain_selection_widget = TerrainSelectionWidget(self.all_terrain_options)
@@ -255,10 +262,15 @@ class PlayerSetupView(QWidget):
 
 
     def _set_random_player_name(self):
+        # Combine Player and Army names for more variety
+        all_names = []
         if self.preselected_names.get("Player"):
-            self.player_identity_widget.set_name(
-                random.choice(self.preselected_names["Player"])
-            )
+            all_names.extend(self.preselected_names["Player"])
+        if self.preselected_names.get("Army"):
+            all_names.extend(self.preselected_names["Army"])
+        
+        if all_names:
+            self.player_identity_widget.set_name(random.choice(all_names))
 
     def _set_random_army_name_for_input(self, line_edit_widget: QLineEdit):
         pass

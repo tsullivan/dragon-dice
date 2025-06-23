@@ -139,7 +139,10 @@ class MainGameplayView(QWidget):
 
         self.setLayout(main_layout)
 
+        # Connect to game engine signals
         self.game_engine.game_state_updated.connect(self.update_ui)
+        self.game_engine.current_phase_changed.connect(self.update_ui)
+        self.game_engine.current_player_changed.connect(self.update_ui)
 
         self.update_ui() # Initial call
 
@@ -166,7 +169,9 @@ class MainGameplayView(QWidget):
     @Slot()
     def update_ui(self):
         # Update Phase Title
-        self.phase_title_label.setText(f"Phase: {self.game_engine.get_current_phase_display()}")
+        current_phase_display = self.game_engine.get_current_phase_display()
+        phase_text = f"Phase: {current_phase_display}"
+        self.phase_title_label.setText(phase_text)
 
         # Update Player Army Summaries
         for i in reversed(range(self.player_armies_info_layout.count())):
@@ -237,5 +242,13 @@ class MainGameplayView(QWidget):
                 self.dragon_attack_prompt_label.show()
                 self.dragon_attack_continue_button.show()
 
-        help_key = current_action_step or current_march_step or current_phase
+        # Special handling for first turn
+        if (current_phase == constants.PHASE_FIRST_MARCH and 
+            hasattr(self.game_engine, '_is_very_first_turn') and 
+            self.game_engine._is_very_first_turn and 
+            not current_march_step):
+            help_key = constants.PHASE_FIRST_MARCH
+        else:
+            help_key = current_action_step or current_march_step or current_phase
+        
         self.help_panel.set_help_text(self.help_model.get_main_gameplay_help(help_key))

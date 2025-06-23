@@ -32,6 +32,7 @@ class GameEngine(QObject):
         self._current_march_step = ""
         self._current_action_step = ""
         self._current_player_name = first_player_name
+        self._is_very_first_turn = True  # Track if this is the very first turn of the game
 
         # Instantiate managers
         self.turn_manager = TurnManager(self.player_names, self.first_player_name, parent=self)
@@ -52,6 +53,12 @@ class GameEngine(QObject):
 
     def _initialize_turn_for_current_player(self):
         self.turn_manager.initialize_turn()
+        
+        # Sync cached state from turn manager
+        self._current_phase = self.turn_manager.current_phase
+        self._current_march_step = self.turn_manager.current_march_step
+        self._current_action_step = self.turn_manager.current_action_step
+        
         self._handle_phase_entry()
         # current_player_changed and current_phase_changed will be emitted by TurnManager or after _handle_phase_entry
         # self.current_player_changed.emit(self.get_current_player_name())
@@ -111,6 +118,12 @@ class GameEngine(QObject):
         return self._current_player_name
 
     def get_current_phase_display(self):
+        # Special handling for the very first turn
+        if (self._current_phase == constants.PHASE_FIRST_MARCH and 
+            self._is_very_first_turn and 
+            self._current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER):
+            return "🎮 Game Start: First March Phase"
+        
         phase_display = self._current_phase.replace('_', ' ').title()
         if self._current_march_step:
             phase_display += f" - {self._current_march_step.replace('_', ' ').title()}"
@@ -121,6 +134,11 @@ class GameEngine(QObject):
     def decide_maneuver(self, wants_to_maneuver: bool):
         """Request maneuver decision processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} decided maneuver: {wants_to_maneuver}")
+        
+        # Mark that the first turn interaction has begun
+        if self._is_very_first_turn:
+            self._is_very_first_turn = False
+            
         # TODO: Emit signal to TurnManager to handle decision
         # For now, update state directly until signal system is fully implemented
         if wants_to_maneuver:

@@ -1,6 +1,8 @@
 from PySide6.QtCore import QObject, Signal, QMetaObject
-from typing import Optional
-from game_logic.engine import GameEngine
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from game_logic.engine import GameEngine
 
 from .terrain_model import Terrain
 from .army_model import ArmyModel
@@ -22,7 +24,7 @@ class AppDataModel(QObject):
     all_player_setups_complete = Signal()
     frontier_set = Signal(str, str)
     all_distance_rolls_submitted = Signal(list)
-    game_engine_initialized = Signal(GameEngine)
+    game_engine_initialized = Signal(object)  # Signal will carry GameEngine instance
 
     def __init__(self):
         super().__init__()
@@ -34,7 +36,7 @@ class AppDataModel(QObject):
         self._first_player_name = None
         self._frontier_terrain = None
         self._distance_rolls = []  # List of tuples: (player_name, distance)
-        self._game_engine: Optional[GameEngine] = None
+        self._game_engine: Optional["GameEngine"] = None
         self._all_terrains: list[Terrain] = []
         self.current_setup_player_index: int = 0  # Track current player being set up
         self._terrain_display_options: list[str] = []
@@ -148,6 +150,9 @@ class AppDataModel(QObject):
             )
             return None
 
+        # Import GameEngine here to avoid circular import
+        from game_logic.engine import GameEngine
+        
         self._game_engine = GameEngine(
             self._player_setup_data_list,
             self._first_player_name,

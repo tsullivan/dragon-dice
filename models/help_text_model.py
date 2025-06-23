@@ -91,10 +91,24 @@ If an 8 is rolled, roll again. If a 7 is rolled, turn the die down to 6. All ter
 </ul>
 """
         phase_explanation_map = {
+            "FIRST_MARCH": """
+<p><b>🎮 Game Start: First March Phase</b></p>
+<p><strong>Welcome to Dragon Dice gameplay!</strong> The game begins with your First March phase.</p>
+<p><b>Army Selection:</b> Choose one of your three armies for this march:</p>
+<ul>
+    <li><b>Home Army:</b> Located at your Home Terrain</li>
+    <li><b>Campaign Army:</b> Located at the Frontier Terrain</li>
+    <li><b>Horde Army:</b> Located at an opponent's Home Terrain</li>
+</ul>
+<p><b>What happens next:</b> Your selected army may maneuver (change terrain distance) and/or take an action (Melee, Missile, or Magic) based on the terrain's current face.</p>
+<p><b>Strategy tip:</b> Consider which army is best positioned to advance your objectives or capture terrain.</p>
+""",
             "DECIDE_MANEUVER": """
 <p><b>Current Step: Decide Maneuver (within First/Second March)</b></p>
-<p>The current player decides if their active army will attempt to maneuver. Maneuvering changes the distance on the terrain die where the army is located. If an opponent is at the same terrain, they may oppose the maneuver. (Rulebook pg. 11)</p>
-<p><b>Actions:</b> Click 'Maneuver: Yes' to attempt a maneuver, or 'Maneuver: No' to skip the maneuver step and proceed to selecting an action (if applicable).</p>
+<p>Choose one of your armies for this march phase. The selected army will attempt to maneuver and/or take an action.</p>
+<p><b>Army Selection:</b> You should choose which army (Home, Campaign, or Horde) will be active for this march. Consider which army is best positioned for your strategy.</p>
+<p><b>Maneuver Decision:</b> Decide if your selected army will attempt to maneuver. Maneuvering changes the distance on the terrain die where the army is located. If an opponent is at the same terrain, they may oppose the maneuver. (Rulebook pg. 11)</p>
+<p><b>Actions:</b> Click 'Maneuver: Yes' to attempt a maneuver, or 'Maneuver: No' to skip the maneuver step and proceed to selecting an action.</p>
 """,
             "AWAITING_MANEUVER_INPUT": """
 <p><b>Current Step: Awaiting Maneuver Input (within First/Second March)</b></p>

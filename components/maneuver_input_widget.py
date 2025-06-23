@@ -23,11 +23,11 @@ class ManeuverInputWidget(QWidget):
         decision_layout = QHBoxLayout(self._decision_widget)
         decision_layout.setContentsMargins(0,0,0,0)
 
-        self._maneuver_yes_button = QPushButton("Maneuver: Yes")
+        self._maneuver_yes_button = QPushButton("Choose Army & Maneuver: Yes")
         self._maneuver_yes_button.clicked.connect(self._on_maneuver_yes)
         decision_layout.addWidget(self._maneuver_yes_button)
 
-        self._maneuver_no_button = QPushButton("Maneuver: No")
+        self._maneuver_no_button = QPushButton("Choose Army & Maneuver: No")
         self._maneuver_no_button.clicked.connect(self._on_maneuver_no)
         decision_layout.addWidget(self._maneuver_no_button)
 
@@ -38,11 +38,11 @@ class ManeuverInputWidget(QWidget):
         input_layout = QHBoxLayout(self._input_widget)
         input_layout.setContentsMargins(0,0,0,0)
 
-        self._maneuver_input_label = QLabel("Enter Maneuver Details:")
+        self._maneuver_input_label = QLabel("Enter Army & Maneuver Details:")
         input_layout.addWidget(self._maneuver_input_label)
 
         self._maneuver_input_field = QLineEdit()
-        self._maneuver_input_field.setPlaceholderText("e.g., 'Flyers to hex 123'")
+        self._maneuver_input_field.setPlaceholderText("e.g., 'Home Army: Flyers to hex 123' or 'Campaign Army: Unopposed maneuver'")
         input_layout.addWidget(self._maneuver_input_field, 1) # Input field takes more space
 
         self._submit_maneuver_button = QPushButton("Submit Maneuver")
