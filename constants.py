@@ -1,8 +1,20 @@
 # Shared constants for the PySide6 application
 
-# Force Size Options (Health Points)
-FORCE_SIZE_OPTIONS = [18, 24, 36, 60]
+# Force Size Options (Points) - Official Dragon Dice v4.01d Rules
+FORCE_SIZE_OPTIONS = [15, 24, 30, 36, 60]
 DEFAULT_FORCE_SIZE = 24
+
+# Dragon Requirements: 1 dragon per 24 points (or part thereof)
+POINTS_PER_DRAGON = 24
+
+def calculate_required_dragons(force_size_points: int) -> int:
+    """Calculate required dragons based on force size points.
+    
+    Official rules: 1 dragon per 24 points (or part thereof)
+    Examples: 15 pts = 1 dragon, 24 pts = 1 dragon, 30 pts = 2 dragons, 60 pts = 3 dragons
+    """
+    import math
+    return math.ceil(force_size_points / POINTS_PER_DRAGON)
 
 ELEMENT_COLORS = {
     "Death": "Black",

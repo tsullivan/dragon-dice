@@ -75,7 +75,9 @@ class WelcomeView(QWidget):
         force_size_hbox = QHBoxLayout()
         self.force_size_button_group = QButtonGroup(self)
         for size in constants.FORCE_SIZE_OPTIONS:
-            radio_button = QRadioButton(f"{size} HP")
+            # Calculate required dragons for display
+            required_dragons = constants.calculate_required_dragons(size)
+            radio_button = QRadioButton(f"{size} pts ({required_dragons} dragon{'s' if required_dragons > 1 else ''})")
             self.force_size_button_group.addButton(
                 radio_button, size)
             force_size_hbox.addWidget(radio_button)

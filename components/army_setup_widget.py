@@ -89,4 +89,6 @@ class ArmySetupWidget(QWidget):
         self.current_units = [UnitModel.from_dict(u_data) for u_data in unit_dicts]
 
     def _update_units_summary(self):
-        self.units_summary_label.setText(f"Units: {len(self.current_units)}")
+        unit_count = len(self.current_units)
+        total_points = sum(unit.max_health for unit in self.current_units)
+        self.units_summary_label.setText(f"Units: {unit_count} ({total_points} pts)")

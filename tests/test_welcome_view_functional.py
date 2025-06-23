@@ -28,7 +28,7 @@ class TestWelcomeViewFunctional:
         # Check that exactly one button is selected and it's the default
         checked_buttons = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()]
         assert len(checked_buttons) == 1
-        assert f"{constants.DEFAULT_FORCE_SIZE} HP" in checked_buttons[0].text()
+        assert f"{constants.DEFAULT_FORCE_SIZE} pts" in checked_buttons[0].text()
 
     def test_all_force_size_options_available(self, qtbot):
         """Test that all expected force size options are available."""
@@ -39,9 +39,9 @@ class TestWelcomeViewFunctional:
         button_texts = [button.text() for button in welcome_view.force_size_button_group.buttons()]
         
         # Verify all expected options are present
-        expected_options = [f"{size} HP" for size in constants.FORCE_SIZE_OPTIONS]
-        for expected_option in expected_options:
-            assert expected_option in button_texts
+        for size in constants.FORCE_SIZE_OPTIONS:
+            found_option = any(f"{size} pts" in text for text in button_texts)
+            assert found_option, f"Force size {size} pts not found in: {button_texts}"
 
     def test_all_player_count_options_available(self, qtbot):
         """Test that all expected player count options are available."""
@@ -90,14 +90,14 @@ class TestWelcomeViewFunctional:
         welcome_view.show()
         qtbot.waitExposed(welcome_view)
         
-        # Find the 36 HP button and click it
+        # Find the 36 pts button and click it
         target_button = None
         for button in welcome_view.force_size_button_group.buttons():
-            if "36 HP" in button.text():
+            if "36 pts" in button.text():
                 target_button = button
                 break
         
-        assert target_button is not None, "Could not find 36 HP button"
+        assert target_button is not None, "Could not find 36 pts button"
         
         # Simulate user click
         qtbot.mouseClick(target_button, Qt.LeftButton)
@@ -188,7 +188,7 @@ class TestWelcomeViewFunctional:
         # Change force size to 60
         force_button = None
         for button in welcome_view.force_size_button_group.buttons():
-            if "60 HP" in button.text():
+            if "60 pts" in button.text():
                 force_button = button
                 break
         assert force_button is not None

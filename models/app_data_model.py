@@ -7,7 +7,7 @@ from .army_model import ArmyModel
 from .unit_model import (
     UnitModel,
 )  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
-from constants import TERRAIN_DATA, DEFAULT_FORCE_SIZE
+from constants import TERRAIN_DATA, DEFAULT_FORCE_SIZE, calculate_required_dragons
 
 
 class AppDataModel(QObject):
@@ -108,9 +108,11 @@ class AppDataModel(QObject):
         return self._terrain_display_options
 
     def get_required_dragon_count(self) -> int:
-        # Point value removed, returning a fixed default.
-        # This logic might need to be revisited based on new game balance rules.
-        return 1 # Default to 1 dragon, or adjust as per new rules.
+        """Calculate required dragons based on current force size.
+        
+        Official Dragon Dice rules: 1 dragon per 24 points (or part thereof)
+        """
+        return calculate_required_dragons(self._force_size)
 
     def get_proposed_frontier_terrains(self):
         """Returns a list of tuples (player_name, proposed_terrain_type)"""

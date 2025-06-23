@@ -88,6 +88,7 @@ class MainWindow(QMainWindow):
 
         terrain_options = self.data_model.get_terrain_display_options()
         required_dragons = self.data_model.get_required_dragon_count()
+        force_size = self.data_model.get_force_size()
 
         # Player 1 setup (index 0)
         self.data_model.current_setup_player_index = 0
@@ -98,6 +99,7 @@ class MainWindow(QMainWindow):
                 num_players=self.data_model._num_players,
                 terrain_display_options=terrain_options,
                 required_dragons=required_dragons,
+                force_size=force_size,
                 current_player_index=0,
                 initial_player_data=initial_data_for_player_1,
             )
@@ -177,6 +179,7 @@ class MainWindow(QMainWindow):
 
             terrain_options = self.data_model.get_terrain_display_options()
             required_dragons = self.data_model.get_required_dragon_count()
+            force_size = self.data_model.get_force_size()
             player_data_to_load = self.data_model.get_player_data(last_player_idx)
 
             if not self.player_setup_view_instance:
@@ -184,6 +187,7 @@ class MainWindow(QMainWindow):
                     num_players=self.data_model._num_players,
                     terrain_display_options=terrain_options,
                     required_dragons=required_dragons,
+                    force_size=force_size,
                     current_player_index=last_player_idx,
                     initial_player_data=player_data_to_load,
                 )

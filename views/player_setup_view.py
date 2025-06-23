@@ -49,6 +49,7 @@ class PlayerSetupView(QWidget):
         num_players: int,
         terrain_display_options: list,  # List of tuples (name, colors)
         required_dragons: int, # No change, good comment
+        force_size: int,  # Total force size in points for army validation
         initial_player_data: Optional[dict] = None,
         parent=None,
         current_player_index: int = 0,
@@ -67,6 +68,8 @@ class PlayerSetupView(QWidget):
             self.all_terrain_options = self.terrain_display_options
 
         self.required_dragons = required_dragons # No change, good comment
+        self.force_size = force_size  # Store total force size for army validation
+        self.max_points_per_army = force_size // 2  # Official rules: max 50% per army (rounded down)
         self.resource_manager = ResourceManager()
         self.unit_roster = UnitRosterModel(self.resource_manager)
         self.help_model = HelpTextModel()
@@ -308,28 +311,54 @@ class PlayerSetupView(QWidget):
             self._set_status_message("Player Name cannot be empty.", "red")
             return False
 
-        # Points validation removed.
-        # Consider other validation if needed, e.g., at least one unit per army if armies are mandatory.
-        # For now, only player name is validated.
-        # Dragon selection validation (ensuring all required dragons are chosen and are unique if needed)
-        # could be added here.
+        # Official Dragon Dice army assembly validation
+        # Rule 1: Each army must have at least 1 unit
+        # Rule 2: No army can exceed 50% of total force points (rounded down)
+        # Rule 3: Total army points must equal selected force size
+        
+        total_force_points = 0
+        
+        for army_type in constants.ARMY_TYPES_ALL:
+            # Skip horde army for single player games
+            if army_type.lower() == "horde" and self.num_players <= 1:
+                continue
+                
+            army_widget = self.army_setup_widgets[army_type]
+            current_units = army_widget.current_units
+            
+            # Rule 1: Minimum 1 unit per army
+            if len(current_units) == 0:
+                self._set_status_message(f"{army_type} Army must have at least 1 unit.", "red")
+                return False
+            
+            # Rule 2: Army cannot exceed 50% of total force points
+            army_points = sum(unit.max_health for unit in current_units)
+            if army_points > self.max_points_per_army:
+                self._set_status_message(
+                    f"{army_type} Army ({army_points} pts) exceeds maximum {self.max_points_per_army} pts (50% of {self.force_size} pts).", 
+                    "red"
+                )
+                return False
+            
+            total_force_points += army_points
 
+        # Rule 3: Total force points must equal selected force size
+        if total_force_points != self.force_size:
+            self._set_status_message(
+                f"Total army points ({total_force_points} pts) must equal selected force size ({self.force_size} pts).", 
+                "red"
+            )
+            return False
 
-        is_valid_so_far = True
-        if not player_name:
-            is_valid_so_far = False
-
-        if is_valid_so_far:
-            self._set_status_message("", "black")
-            return True
-
-        return False
+        # All validation passed
+        self._set_status_message("", "black")
+        return True
 
     def _set_player_setup_help_text(self):
         player_num_for_display = self.current_player_index + 1
         self.help_panel.set_help_text(
             self.help_model.get_player_setup_help(
-                player_num_for_display, self.num_players
+                player_num_for_display, self.num_players, self.force_size
             )
         )
 

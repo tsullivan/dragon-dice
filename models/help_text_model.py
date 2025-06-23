@@ -20,25 +20,34 @@ This application will help you track game state, turns, and phases, but all dice
 <p>You are at the very beginning of setting up your Dragon Dice game. The choices made here will determine the number of players and the scale of the armies involved.</p>
 """
 
-    def get_player_setup_help(self, player_num: int, num_players: int) -> str:
+    def get_player_setup_help(self, player_num: int, num_players: int, force_size: int = 24) -> str:
         horde_army_help = ""
         if num_players > 1:
             horde_army_help = "<li><b>Horde Army:</b> This army will start at an opponent's Home Terrain. It must have at least one unit.</li>"
+        
+        max_points_per_army = force_size // 2
 
         return f"""
 <b>Player {player_num} Setup</b>
-<p>In this phase, Player {player_num} will secretly assemble their forces.</p>
+<p>In this phase, Player {player_num} will secretly assemble their forces using {force_size} points total.</p>
+<p><b>Army Assembly Rules:</b></p>
+<ul>
+    <li><b>Total Force Size:</b> All armies combined must use exactly {force_size} points</li>
+    <li><b>Army Size Limit:</b> No single army can exceed {max_points_per_army} points (50% of total force)</li>
+    <li><b>Minimum Units:</b> Each army must contain at least one unit</li>
+    <li><b>Unit Cost:</b> Each unit's point cost equals its health value</li>
+</ul>
 <p><b>UI Elements:</b></p>
 <ul>
     <li><b>Player Name:</b> Enter your name.</li>
     <li><b>Home Terrain:</b> Select the type of terrain where your main army (Home Army) will start.</li>
-    <li><b>Home Army:</b> This army starts at your Home Terrain. It must have at least one unit.</li>
-    <li><b>Campaign Army:</b> This army will start at the Frontier Terrain. It must have at least one unit.</li>
+    <li><b>Home Army:</b> This army starts at your Home Terrain. Maximum {max_points_per_army} points.</li>
+    <li><b>Campaign Army:</b> This army will start at the Frontier Terrain. Maximum {max_points_per_army} points.</li>
     {horde_army_help}
     <li><b>Propose Frontier Terrain:</b> Each player suggests a terrain type. One of these will be chosen as the central Frontier Terrain for the game.</li>
     <li><b>Next Player/Start Game Button:</b> Click to finalize this player's setup and move to the next player, or to proceed if all players are set up.</li>
 </ul>
-<p>Enter your details and click the button at the bottom to proceed.</p>
+<p>Click "Manage Units" for each army to select units. The status bar will show validation errors if army requirements are not met.</p>
 """
 
     def get_frontier_selection_help(self) -> str:

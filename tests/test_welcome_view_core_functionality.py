@@ -44,8 +44,13 @@ class TestWelcomeViewCoreFunctionality:
         button_texts = [btn.text() for btn in welcome_view.force_size_button_group.buttons()]
         
         for expected_size in constants.FORCE_SIZE_OPTIONS:
-            expected_text = f"{expected_size} HP"
-            assert expected_text in button_texts, f"Missing force size option: {expected_text}"
+            # Check that the button contains the points value and dragon info
+            found_button = False
+            for button_text in button_texts:
+                if f"{expected_size} pts" in button_text and "dragon" in button_text:
+                    found_button = True
+                    break
+            assert found_button, f"Missing force size option with {expected_size} pts"
 
     def test_default_selections_are_correct(self, qtbot):
         """Test that default selections are as expected."""
@@ -60,7 +65,7 @@ class TestWelcomeViewCoreFunctionality:
         # Check force size default (should be DEFAULT_FORCE_SIZE)
         force_checked = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()]
         assert len(force_checked) == 1
-        assert f"{constants.DEFAULT_FORCE_SIZE} HP" in force_checked[0].text()
+        assert f"{constants.DEFAULT_FORCE_SIZE} pts" in force_checked[0].text()
 
     def test_signals_are_defined(self, qtbot):
         """Test that required signals are defined."""
@@ -143,7 +148,7 @@ class TestWelcomeViewCoreFunctionality:
                     target_button = button
                     break
             
-            assert target_button is not None, f"Could not find button for {expected_size} HP"
+            assert target_button is not None, f"Could not find button for {expected_size} pts"
             
             # Set it as checked (simulates user selection)
             target_button.setChecked(True)
@@ -170,14 +175,15 @@ class TestWelcomeViewCoreFunctionality:
         # Test 2: User can see all force size options
         force_options = [btn.text() for btn in welcome_view.force_size_button_group.buttons()]
         for size in constants.FORCE_SIZE_OPTIONS:
-            assert f"{size} HP" in force_options
+            found_option = any(f"{size} pts" in option for option in force_options)
+            assert found_option, f"Force size {size} pts not found in options: {force_options}"
         
         # Test 3: User has sensible defaults
         default_player_count = [btn for btn in welcome_view.player_count_button_group.buttons() if btn.isChecked()][0]
         assert default_player_count.text() == "2"
         
         default_force_size = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()][0]
-        assert f"{constants.DEFAULT_FORCE_SIZE} HP" in default_force_size.text()
+        assert f"{constants.DEFAULT_FORCE_SIZE} pts" in default_force_size.text()
         
         # Test 4: User can change selections
         # Change to 4 players
@@ -190,7 +196,7 @@ class TestWelcomeViewCoreFunctionality:
         four_player_button.setChecked(True)
         assert four_player_button.isChecked()
         
-        # Change to 60 HP
+        # Change to 60 pts
         sixty_hp_button = None
         for button in welcome_view.force_size_button_group.buttons():
             if welcome_view.force_size_button_group.id(button) == 60:
