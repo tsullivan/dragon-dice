@@ -4,12 +4,12 @@ This document outlines the architectural direction, domains of code, and file st
 
 ## 1. Project Overview
 
-This project is a standalone desktop application that serves as a **digital companion app** or **game tracker** for the physical tabletop game, **Dragon Dice®**. Its purpose is not to simulate the game, but rather to manage the complex game state, track turns and phases, and guide players through the rules. All dice rolling and army management is performed by the players in the physical world, and the results are entered into this application.
+This project is a **digital companion app** (or game tracker) for the physical tabletop game **Dragon Dice®**. It's a standalone desktop application designed to help manage game state, track turns and phases, and guide players through rules. It does not simulate the game; all dice rolling and physical army management are done by players, with results entered into this app.
 
 ### Technology Stack
 
-*   **Python:** A versatile, high-level programming language used for the entire application logic.
-*   **PySide6 (Qt for Python):** A set of Python bindings for the Qt cross-platform C++ framework. It is used for creating the graphical user interface (GUI), managing windows, widgets, and event handling.
+- **Python:** A versatile, high-level programming language used for the entire application logic.
+- **PySide6 (Qt for Python):** A set of Python bindings for the Qt cross-platform C++ framework. It is used for creating the graphical user interface (GUI), managing windows, widgets, and event handling.
 
 ## 2. Architectural Direction
 
@@ -23,48 +23,17 @@ The application is fundamentally **reactive**. It does not run on a self-contain
 
 To manage complexity, the codebase is divided into several distinct domains, each with a clear responsibility, generally following a Model-View-Controller (MVC) or Model-View-ViewModel (MVVM) inspired pattern.
 
-| Domain                       | Responsibility                                                                                                                        | Key Files/Modules              |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| **1. Application Core**    | Initializes the Qt application, manages the main window, and the application's lifecycle.                                               | `main_app.py`, `main_window.py` |
-| **2. Views (UI Screens)**  | Individual screens or UI components that the user interacts with. They display data and emit signals based on user actions.             | `views/` (e.g., `welcome_view.py`, `player_setup_view.py`) |
-| **3. Controllers**         | Mediate between Views and the Model/Engine. They handle user input logic from views and update the model or trigger engine actions.     | `controllers/` (e.g., `gameplay_controller.py`) |
-| **4. Game Logic & Engine** | The "Rules Lawyer." Enforces game rules, manages game state transitions, and processes player actions.                                  | `engine.py`                    |
-| **5. Data Model (App State)** | The "Shared State." Holds application-wide data (like number of players, point values) and game setup data. Emits signals on change. | `app_data_model.py`            |
-| **6. Shared Constants**    | Defines constants used across the application (e.g., terrain types).                                                                  | `constants.py`                 |
+| Domain                     | Responsibility                                                                                                                          | Key Files/Modules                                           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **1. Application Core**    | Initializes the Qt application, manages the main window, and the application's lifecycle.                                               | `main_app.py`, `main_window.py`                             |
+| **2. Views (UI Screens)**  | Individual screens or UI components that the user interacts with. They display data and emit signals based on user actions.             | `views/` (e.g., `welcome_view.py`)                          |
+| **3. Controllers**         | Mediate between Views and the Model/Engine. They handle user input logic from views and update the model or trigger engine actions.     | `controllers/` (e.g., `gameplay_controller.py`)             |
+| **4. Game Logic & Engine** | The "Rules Lawyer." Enforces game rules, manages game state transitions, and processes player actions.                                  | `game_logic/engine.py` |
+| **5. Data Models**         | Hold application-wide data (like player choices, game settings) and specific data structures (like help text). Emits signals on change. | `models/` (e.g., `app_data_model.py`, `help_text_model.py`) |
+| **6. Shared Constants**    | Defines constants used across the application (e.g., terrain types).                                                                    | `constants.py`                                              |
+| **7. UI Components**       | Reusable custom UI widgets used across different views.                                                                                 | `components/` (e.g., `carousel.py`)                         |
 
-## 3. File Structure
-
-The file structure is organized to reflect these domains.
-
-```
-.
-├── main_app.py               # Domain 1: Application entry point, QApplication setup.
-├── main_window.py            # Domain 1: Main QMainWindow, manages view switching.
-├── app_data_model.py         # Domain 5: Shared application state and setup data.
-├── engine.py                 # Domain 4: Core game logic and state machine.
-├── constants.py              # Domain 6: Shared application constants.
-├── views/                    # Domain 2: Contains all UI screen widgets.
-│   ├── __init__.py
-│   ├── welcome_view.py
-│   ├── player_setup_view.py
-│   └── ... (other views)
-├── controllers/              # Domain 3: Contains controller classes.
-│   ├── __init__.py
-│   └── gameplay_controller.py
-└── requirements.txt          # Lists project dependencies (e.g., PySide6).
-```
-
-### Key File Descriptions
-
-*   **`main_app.py`**: The entry point of the application. It initializes the `QApplication` and the `MainWindow`.
-*   **`main_window.py`**: Defines the main application window (`QMainWindow`). It is responsible for managing and switching between different views (screens) and may instantiate controllers.
-*   **`app_data_model.py`**: Holds shared application state, such as player setup choices, and the `GameEngine` instance once initialized. It uses Qt's signals and slots to notify other parts of the application about data changes.
-*   **`engine.py`**: Contains the core game logic, rules enforcement, and state machine for the game's progression.
-*   **`views/` directory**: Each `.py` file in this directory typically defines a `QWidget` representing a specific screen or major UI component (e.g., `WelcomeView`, `PlayerSetupView`). These views are responsible for displaying information and emitting signals upon user interaction.
-*   **`controllers/` directory**: Contains classes that act as intermediaries between views and the model/engine. They handle logic triggered by view signals and update the `AppDataModel` or `GameEngine`.
-*   **`constants.py`**: Stores global constants used throughout the application.
-
-## 4. Operating the Project
+## 3. Operating the Project
 
 This section provides instructions on how to set up and run the application.
 
@@ -78,7 +47,7 @@ Before running the application, ensure you have **Python** installed on your sys
 2.  **(Optional but Recommended)** Create a virtual environment:
     ```bash
     python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    source venv/bin/activate  # On Windows, use venv\Scripts\activate
     ```
 3.  **Install** the required packages from the `requirements.txt` file:
     ```bash
@@ -88,6 +57,7 @@ Before running the application, ensure you have **Python** installed on your sys
 ### Running the Application
 
 To run the game, execute the `main_app.py` script from the project's root directory:
+
 ```bash
 python main_app.py
 ```

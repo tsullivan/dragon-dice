@@ -1,0 +1,219 @@
+[Player]
+Gandalf
+Aragorn
+Legolas
+Gimli
+Frodo
+DragonSlayer
+ShadowWalker
+StoneHeart
+FireBlade
+Elara
+Kael
+Seraphina
+Roric
+The Wanderer
+Moonwhisper
+Ironhand
+Stormcaller
+Sunstrider
+Malakor
+Dread Lord Vorlag
+Nightshade
+The Betrayer
+Seraphiel
+Brother Theron
+Lightbringer
+The Justicar
+Colonel Sanders
+Ronald McDice
+Wendy's Warriors
+The Burger King
+Kernel Panic
+Root User
+Syntax Sorcerer
+The Glitch
+Sid Vicious
+Johnny Rotten
+Rancid Ripper
+Anarchy Ace
+The Integrator
+Professor Pi
+Vector Victor
+Logarithm Larry
+The Alpha Wolf
+King Cobra
+The Grizzly
+Eagle Eye
+Bigfoot
+Nessie
+The Mothman
+Chupacabra
+Jersey Devil
+Kraken Lord
+Yeti Commander
+Skunk Ape
+Zeus
+Odin
+Ra
+Athena
+Thor
+Isis
+Apollo
+Freya
+Anubis
+Persephone
+Loki
+Hades
+Poseidon
+Artemis
+Horus
+Sun Wukong
+Nezha
+Chang'e
+Hou Yi
+Nuwa
+Fuxi
+Pangu
+Jade Emperor
+Guanyin
+Yanluo Wang
+Zhurong
+Gonggong
+Erlang Shen
+Ao Guang (Dragon King)
+Bai Suzhen
+Xiwangmu (Queen Mother of the West)
+Shennong
+Huangdi (Yellow Emperor)
+Leigong (God of Thunder)
+Dianmu (Goddess of Lightning)
+Orion
+Cassiopeia
+Andromeda
+Sirius
+Betelgeuse
+Nova
+Pulsar
+Quasar
+Comet Tail
+Aries
+Taurus
+Gemini Sage
+Cancer Crab
+Leo the Lion
+Virgo Maiden
+Libra Scales
+Scorpio Sting
+Sagittarius Archer
+Capricorn Goat
+Aquarius Water-Bearer
+Pisces Fish
+Cinderella
+Prince Charming
+Snow White
+The Big Bad Wolf
+Little Red Riding Hood
+Rumpelstiltskin
+Hansel
+Gretel
+The Fairy Godmother
+Puss in Boots
+Sleeping Beauty (Aurora)
+Maleficent
+Goldilocks
+The Huntsman
+Baba Yaga
+
+[Army]
+The Crimson Fury
+Guardians of Old
+Keepers of the Flame
+Night's Vigil
+Mountain's Echo
+River's Might
+The Unseen Hand
+Dragon's Hoard
+Serpent's Coil
+Wolfpack Raiders
+Eagle's Eyrie
+The Stoneborne
+Children of the Forest
+Desert Wind Corsairs
+The Shadow Legion
+Cult of the Serpent
+Blighted Vanguard
+Gravebound Host
+The Celestial Host
+Order of the Sacred Flame
+Knights of the Dawn
+The Righteous Few
+The Fry Force
+Nugget Nation
+The Drive-Thru Horde
+The Greasy Grunts
+The Yes-Anders
+Zip Zap Zop Brigade
+The Haroldians
+Short Form Phalanx
+The Byte Brigade
+Cyber Sentinels
+The Algorithm Alphas
+Firewall Phalanx
+The Misfit Militia
+Rebel Rousers
+Three Chord Thugs
+The Safety Pins
+The Axiom Annihilators
+Boolean Brigade
+The Algorithm Avengers
+Calculus Crew
+The Raptor Pack
+Lion's Pride Legion
+The Rhino Charge
+Serpent Swarm
+Sasquatch Squad
+Loch Ness Lurkers
+Mothman's Messengers
+The Chupacabra Cult
+Devil's Den Denizens
+Kraken's Crew
+Yeti Clan
+The Skunk Ape Skirmishers
+Olympian Phalanx
+Einherjar Cohort
+Sphinx's Sentinels
+Valkyrie Vanguard
+Minotaur Maze-Guard
+Gorgon's Gaze
+Centaur Cavalry
+Griffin Riders
+Phoenix Legion
+Terracotta Warriors
+The Jade Palace Guard
+Dragon's Breath Battalion
+Qilin Cavalry
+Fenghuang Flight
+The Eight Immortals' Brigade
+Celestial Bureaucracy Corps
+Underworld Enforcers
+Kunlun Mountain Sentinels
+Yellow River Wardens
+The Star Clusters
+Nebula Navigators
+Black Hole Brigade
+The Zodiac Zealots
+Planetary Patrol
+Asteroid Armada
+Cosmic Cavalry
+Galaxy Guardians
+The Seven Dwarves Brigade
+Glass Slipper Sentinels
+Enchanted Forest Phalanx
+The Gingerbread Guard
+Wolfsbane Warriors
+Beanstalk Giants
+Neverland Lost Boys
+The Candy House Cohort
+Sleeping Curse Sentries
+Once Upon a Time Troopers

@@ -1,62 +1,110 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QHBoxLayout
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QGroupBox,
+    QRadioButton,
+    QButtonGroup,
+    QSizePolicy,
+    QSpacerItem,
+    QTextEdit,
+)
+from PySide6.QtCore import Qt, Signal, Slot
+
+from models.help_text_model import HelpTextModel
+from components.help_panel_widget import HelpPanelWidget
+
 
 class WelcomeView(QWidget):
     """
     The Welcome Screen view.
     Allows selection of number of players and point value.
     """
-    # Define signals for interactions
+
     proceed_signal = Signal()
-    player_count_selected_signal = Signal(int)
-    point_value_selected_signal = Signal(int)
+    player_count_selected_signal = Signal(int)  # Emits the selected player count (int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.help_model = HelpTextModel()
+        self.setWindowTitle("Welcome Screen")
 
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout = QVBoxLayout(self)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        # Welcome Title
         title_label = QLabel("Welcome to Dragon Dice Companion (PySide6)")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # Consider using QFont for styling
-        layout.addWidget(title_label)
         font = title_label.font()
-        font.setPointSize(24) # Example: Make title larger
+        font.setPointSize(24)
+        font.setBold(True)
         title_label.setFont(font)
+        main_layout.addWidget(title_label)
 
-        # Player count selection
-        self.player_count_combo = QComboBox()
-        self.player_counts = {"2 Players": 2, "3 Players": 3, "4 Players": 4}
-        self.player_count_combo.addItems(list(self.player_counts.keys()))
-        self.player_count_combo.currentIndexChanged.connect(self._on_player_count_changed)
-        layout.addWidget(QLabel("Select Number of Players:"))
-        layout.addWidget(self.player_count_combo)
+        # Middle Section (Selections and Info Panel)
+        middle_section_layout = QHBoxLayout()
 
-        # Point value selection
-        self.point_value_combo = QComboBox()
-        self.point_values = {"100 Points": 100, "150 Points": 150, "200 Points": 200}
-        self.point_value_combo.addItems(list(self.point_values.keys()))
-        self.point_value_combo.currentIndexChanged.connect(self._on_point_value_changed)
-        layout.addWidget(QLabel("Select Army Point Value:"))
-        layout.addWidget(self.point_value_combo)
+        # Left Side (Selections)
+        selections_group = QGroupBox()
+        selections_layout = QVBoxLayout(selections_group)
 
-        proceed_button = QPushButton("Proceed to Player Setup")
-        proceed_button.clicked.connect(self.proceed_signal.emit) # Emit the signal
-        layout.addWidget(proceed_button, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(layout)
+        # Player Count Selection
+        player_count_group = QGroupBox("Select Number of Players:")
+        player_count_hbox = QHBoxLayout()
+        self.player_count_button_group = QButtonGroup(self)
+        player_counts = [2, 3, 4]
+        for count in player_counts:
+            radio_button = QRadioButton(str(count))
+            self.player_count_button_group.addButton(
+                radio_button, count)
+            player_count_hbox.addWidget(radio_button)
+            if count == 2:
+                radio_button.setChecked(True)
+        player_count_group.setLayout(player_count_hbox)
+        self.player_count_button_group.idClicked.connect(
+            self.player_count_selected_signal.emit
+        )
+        selections_layout.addWidget(player_count_group)
 
-    def _on_player_count_changed(self, index):
-        selected_text = self.player_count_combo.itemText(index)
-        self.player_count_selected_signal.emit(self.player_counts[selected_text])
+        middle_section_layout.addWidget(selections_group)
 
-    def _on_point_value_changed(self, index):
-        selected_text = self.point_value_combo.itemText(index)
-        self.point_value_selected_signal.emit(self.point_values[selected_text])
+        # Right Side (Info Panel)
+        self.help_panel = HelpPanelWidget("Info (Help Panel)")
+        self._set_welcome_help_text()
+        middle_section_layout.addWidget(self.help_panel, 1)
+
+        main_layout.addLayout(middle_section_layout)
+        main_layout.addSpacerItem(
+            QSpacerItem(
+                20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+            )
+        )
+
+        # Proceed Button
+        self.proceed_button = QPushButton("Proceed to Player Setup")
+        self.proceed_button.clicked.connect(self.proceed_signal.emit)
+        main_layout.addWidget(self.proceed_button, 0, Qt.AlignmentFlag.AlignCenter)
+
+        self.setLayout(main_layout)
+
+        self.emit_current_selections()
 
     def emit_current_selections(self):
-        """Emits the currently selected values. Useful for initialization."""
-        current_player_text = self.player_count_combo.currentText()
-        self.player_count_selected_signal.emit(self.player_counts[current_player_text])
-        current_point_text = self.point_value_combo.currentText()
-        self.point_value_selected_signal.emit(self.point_values[current_point_text])
+        """Emits the currently selected values for player count and point value."""
+        selected_player_button = self.player_count_button_group.checkedButton()
+        if selected_player_button:
+            self.player_count_selected_signal.emit(
+                self.player_count_button_group.id(selected_player_button)
+            )
+        else:
+            if self.player_count_button_group.buttons():
+                self.player_count_selected_signal.emit(
+                    self.player_count_button_group.id(
+                        self.player_count_button_group.buttons()[0]
+                    )
+                )
+
+    def _set_welcome_help_text(self):
+        self.help_panel.set_help_text(self.help_model.get_welcome_help())
