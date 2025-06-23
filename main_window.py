@@ -71,6 +71,9 @@ class MainWindow(QMainWindow):
         welcome_widget.player_count_selected_signal.connect(
             self.data_model.set_num_players
         )
+        welcome_widget.force_size_selected_signal.connect(
+            self.data_model.set_force_size
+        )
         welcome_widget.emit_current_selections()
         if self.player_setup_view_instance:
             self.player_setup_view_instance = None

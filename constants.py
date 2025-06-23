@@ -1,5 +1,8 @@
 # Shared constants for the PySide6 application
 
+# Force Size Options (Health Points)
+FORCE_SIZE_OPTIONS = [18, 24, 36, 60]
+DEFAULT_FORCE_SIZE = 24
 
 ELEMENT_COLORS = {
     "Death": "Black",

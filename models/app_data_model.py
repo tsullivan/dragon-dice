@@ -7,7 +7,7 @@ from .army_model import ArmyModel
 from .unit_model import (
     UnitModel,
 )  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
-from constants import TERRAIN_DATA
+from constants import TERRAIN_DATA, DEFAULT_FORCE_SIZE
 
 
 class AppDataModel(QObject):
@@ -17,6 +17,7 @@ class AppDataModel(QObject):
     """
 
     num_players_changed = Signal(int)
+    force_size_changed = Signal(int)
     player_setup_data_added = Signal(dict)
     all_player_setups_complete = Signal()
     frontier_set = Signal(str, str)
@@ -26,6 +27,7 @@ class AppDataModel(QObject):
     def __init__(self):
         super().__init__()
         self._num_players = None
+        self._force_size = DEFAULT_FORCE_SIZE
         self._player_setup_data_list: list[dict] = (
             []
         )  # Will be initialized based on num_players
@@ -56,6 +58,15 @@ class AppDataModel(QObject):
         self._player_setup_data_list = [{} for _ in range(count)]
         self.current_setup_player_index = 0  # Reset to player 1
         self.num_players_changed.emit(count)
+
+    def set_force_size(self, size: int):
+        """Set the total force size for the game."""
+        self._force_size = size
+        self.force_size_changed.emit(size)
+
+    def get_force_size(self) -> int:
+        """Get the current force size setting."""
+        return self._force_size
 
     def add_player_setup_data(self, player_index: int, player_data: dict):
         """Stores setup data for a specific player index."""

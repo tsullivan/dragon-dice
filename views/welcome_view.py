@@ -15,6 +15,7 @@ from PySide6.QtCore import Qt, Signal, Slot
 
 from models.help_text_model import HelpTextModel
 from components.help_panel_widget import HelpPanelWidget
+import constants
 
 
 class WelcomeView(QWidget):
@@ -25,6 +26,7 @@ class WelcomeView(QWidget):
 
     proceed_signal = Signal()
     player_count_selected_signal = Signal(int)  # Emits the selected player count (int)
+    force_size_selected_signal = Signal(int)  # Emits the selected force size (int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -68,6 +70,23 @@ class WelcomeView(QWidget):
         )
         selections_layout.addWidget(player_count_group)
 
+        # Force Size Selection
+        force_size_group = QGroupBox("Select Total Force Size:")
+        force_size_hbox = QHBoxLayout()
+        self.force_size_button_group = QButtonGroup(self)
+        for size in constants.FORCE_SIZE_OPTIONS:
+            radio_button = QRadioButton(f"{size} HP")
+            self.force_size_button_group.addButton(
+                radio_button, size)
+            force_size_hbox.addWidget(radio_button)
+            if size == constants.DEFAULT_FORCE_SIZE:
+                radio_button.setChecked(True)
+        force_size_group.setLayout(force_size_hbox)
+        self.force_size_button_group.idClicked.connect(
+            self.force_size_selected_signal.emit
+        )
+        selections_layout.addWidget(force_size_group)
+
         middle_section_layout.addWidget(selections_group)
 
         # Right Side (Info Panel)
@@ -92,7 +111,8 @@ class WelcomeView(QWidget):
         self.emit_current_selections()
 
     def emit_current_selections(self):
-        """Emits the currently selected values for player count and point value."""
+        """Emits the currently selected values for player count and force size."""
+        # Emit player count
         selected_player_button = self.player_count_button_group.checkedButton()
         if selected_player_button:
             self.player_count_selected_signal.emit(
@@ -104,6 +124,18 @@ class WelcomeView(QWidget):
                     self.player_count_button_group.id(
                         self.player_count_button_group.buttons()[0]
                     )
+                )
+        
+        # Emit force size
+        selected_force_button = self.force_size_button_group.checkedButton()
+        if selected_force_button:
+            self.force_size_selected_signal.emit(
+                self.force_size_button_group.id(selected_force_button)
+            )
+        else:
+            if self.force_size_button_group.buttons():
+                self.force_size_selected_signal.emit(
+                    constants.DEFAULT_FORCE_SIZE
                 )
 
     def _set_welcome_help_text(self):
