@@ -20,6 +20,7 @@ from typing import Optional  # Import Optional
 
 from components.army_setup_widget import ArmySetupWidget
 from components.carousel import CarouselInputWidget
+from components.dragon_selection_widget import DragonSelectionWidget
 from components.player_identity_widget import PlayerIdentityWidget
 from components.terrain_selection_widget import (
     TerrainSelectionWidget,
@@ -152,20 +153,18 @@ class PlayerSetupView(QWidget):
         dragon_selection_group = QGroupBox(
             f"Select Your {self.required_dragons} Dragon(s)"
         )
-        dragon_selection_layout = QGridLayout(
-            dragon_selection_group
-        )  # Use QGridLayout for labels and carousels
-        self.dragon_selection_carousels = []
+        dragon_selection_layout = QHBoxLayout(dragon_selection_group)
+        dragon_selection_layout.setSpacing(10)
+        
+        self.dragon_selection_widgets = []
         for i in range(self.required_dragons):
-            dragon_label = QLabel(f"Dragon {i+1}:")
-            dragon_carousel = CarouselInputWidget(constants.AVAILABLE_DRAGON_TYPES)
-            self.dragon_selection_carousels.append(dragon_carousel)
-            dragon_carousel.valueChanged.connect(
+            dragon_widget = DragonSelectionWidget(dragon_number=i+1)
+            self.dragon_selection_widgets.append(dragon_widget)
+            dragon_widget.valueChanged.connect(
                 self._validate_and_update_button_state
             )
-            dragon_selection_layout.addWidget(dragon_label, i, 0)
-            dragon_selection_layout.addWidget(dragon_carousel, i, 1)
-        dragon_selection_layout.setColumnStretch(1, 1)
+            dragon_selection_layout.addWidget(dragon_widget)
+            
         self.inputs_grid_layout.addWidget(dragon_selection_group, 2, 0, 1, 3)
 
         # Army Setups
@@ -278,7 +277,7 @@ class PlayerSetupView(QWidget):
             "home_terrain": home_terrain_val,
             "frontier_terrain_proposal": frontier_proposal_val,
             "selected_dragons": [
-                carousel.value() for carousel in self.dragon_selection_carousels
+                widget.value() for widget in self.dragon_selection_widgets
             ],
             "armies": {},
         }
@@ -384,11 +383,21 @@ class PlayerSetupView(QWidget):
             )
 
             selected_dragons_data = player_data_to_load.get("selected_dragons", [])
-            for i, carousel in enumerate(self.dragon_selection_carousels):
+            for i, widget in enumerate(self.dragon_selection_widgets):
                 if i < len(selected_dragons_data):
-                    carousel.setValue(selected_dragons_data[i]) # No change, good comment
-                elif constants.AVAILABLE_DRAGON_TYPES:
-                    carousel.setValue(constants.AVAILABLE_DRAGON_TYPES[0])
+                    dragon_data = selected_dragons_data[i]
+                    # Handle both old format (string) and new format (dict)
+                    if isinstance(dragon_data, dict):
+                        widget.setValue(dragon_data)
+                    else:
+                        # Convert old string format to new dict format
+                        widget.setValue({
+                            "dragon_type": dragon_data,
+                            "die_type": constants.DRAGON_DIE_TYPE_DRAGON
+                        })
+                else:
+                    # Set default values
+                    widget.clear()
 
             armies_data = player_data_to_load.get("armies", {})
             for army_key, details in armies_data.items():
@@ -412,9 +421,8 @@ class PlayerSetupView(QWidget):
             self.terrain_selection_widget.clear_selections()
             self.player_identity_widget.set_player_display_number(player_display_num)
 
-            for carousel in self.dragon_selection_carousels:
-                if constants.AVAILABLE_DRAGON_TYPES:
-                    carousel.setValue(constants.AVAILABLE_DRAGON_TYPES[0])
+            for widget in self.dragon_selection_widgets:
+                widget.clear()
 
             for army_type in constants.ARMY_TYPES_ALL:
                 army_widget = self.army_setup_widgets[army_type]
