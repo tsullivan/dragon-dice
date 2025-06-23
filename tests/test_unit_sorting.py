@@ -27,7 +27,7 @@ def test_unit_sorting():
         # Use the dialog's sorting method
         sorted_units = dialog._sort_units_for_display(amazon_units)
         
-        print("\nSorted Amazon units (Health DESC, Class ASC, Name ASC):")
+        print("\nSorted Amazon units (Health ASC, Class ASC, Name ASC):")
         for i, unit in enumerate(sorted_units):
             health = unit.get("max_health", 0)
             class_type = unit.get("unit_class_type", "N/A")
@@ -42,8 +42,8 @@ def test_unit_sorting():
             current_health = current.get("max_health", 0)
             next_health = next_unit.get("max_health", 0)
             
-            # Health should be descending (current >= next)
-            assert current_health >= next_health, f"Health sorting violation at position {i}: {current_health} < {next_health}"
+            # Health should be ascending (current <= next)
+            assert current_health <= next_health, f"Health sorting violation at position {i}: {current_health} > {next_health}"
             
             # If health is the same, check class type
             if current_health == next_health:

@@ -50,7 +50,7 @@ class UnitSelectionDialog(QDialog):
 
     def _sort_units_for_display(self, units_list):
         """
-        Sort units by health points (descending), then class type (ascending), then unit name (ascending).
+        Sort units by health points (ascending), then class type (ascending), then unit name (ascending).
         
         Args:
             units_list: List of unit dictionaries to sort
@@ -59,7 +59,7 @@ class UnitSelectionDialog(QDialog):
             List of sorted unit dictionaries
         """
         return sorted(units_list, key=lambda unit: (
-            -unit.get("max_health", 0),  # Health points descending (negative for reverse)
+            unit.get("max_health", 0),  # Health points ascending
             unit.get("unit_class_type", "N/A"),  # Class type ascending
             unit.get("display_name", "")  # Unit name ascending
         ))
