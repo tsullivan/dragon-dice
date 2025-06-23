@@ -33,7 +33,38 @@ To manage complexity, the codebase is divided into several distinct domains, eac
 | **6. Shared Constants**    | Defines constants used across the application (e.g., terrain types).                                                                    | `constants.py`                                              |
 | **7. UI Components**       | Reusable custom UI widgets used across different views.                                                                                 | `components/` (e.g., `carousel.py`)                         |
 
-## 3. Operating the Project
+## 3. File Structure
+
+The file structure is organized to reflect these domains:
+
+```
+.
+├── controllers/                   # Domain 3: Contains controller classes
+│   └── gameplay_controller.py
+├── game_logic/                    # Domain 4: Core game logic and rules
+│   ├── action_resolver.py
+│   ├── effect_manager.py
+│   ├── engine.py
+│   ├── game_state_manager.py
+│   └── turn_manager.py
+├── models/                        # Domain 5: Data models and structures
+│   ├── app_data_model.py
+│   ├── army_model.py
+│   ├── die_model.py
+│   ├── help_text_model.py
+│   ├── terrain_model.py
+│   ├── unit_model.py
+│   └── unit_roster_model.py
+└── views/                         # Domain 2: Contains all UI screen widgets
+    ├── welcome_view.py
+    ├── player_setup_view.py
+    ├── main_gameplay_view.py
+    ├── distance_rolls_view.py
+    ├── frontier_selection_view.py
+    └── unit_selection_dialog.py
+```
+
+## 4. Operating the Project
 
 This section provides instructions on how to set up and run the application.
 

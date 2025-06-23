@@ -26,6 +26,12 @@ class GameEngine(QObject):
         self.first_player_name = first_player_name
         self.frontier_terrain = frontier_terrain
         self.distance_rolls = distance_rolls # List of (player_name, distance)
+        
+        # Initialize state cache to avoid direct manager access
+        self._current_phase = ""
+        self._current_march_step = ""
+        self._current_action_step = ""
+        self._current_player_name = first_player_name
 
         # Instantiate managers
         self.turn_manager = TurnManager(self.player_names, self.first_player_name, parent=self)
@@ -54,95 +60,96 @@ class GameEngine(QObject):
 
     def _handle_phase_entry(self):
         """Logic to execute when entering a new phase."""
-        # TurnManager.advance_phase() already resets march_step and action_step.
-        # This method now focuses on setting the *initial* step for certain phases.
-
-        current_phase = self.turn_manager.current_phase
+        current_phase = self._current_phase
 
         if current_phase == constants.PHASE_FIRST_MARCH or current_phase == constants.PHASE_SECOND_MARCH:
-            self.turn_manager.current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
+            # TODO: Request march step initialization through signal
+            # For now, update cached state directly
+            self._current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
         elif current_phase == constants.PHASE_EXPIRE_EFFECTS:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
-            # Perform effect expirations
+            # Request effect expiration processing
             self.effect_manager.process_effect_expirations(self.get_current_player_name())
-            self.advance_phase() # GameEngine still controls advancing for now
-        elif self.current_phase == constants.PHASE_EIGHTH_FACE:
-            # TODO: Implement logic for eighth face effects
-            print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
-            # This phase will wait for a "Continue" click from the UI
-        elif self.current_phase == constants.PHASE_DRAGON_ATTACK:
-            # TODO: Implement logic for dragon attacks. This will likely involve new action_steps.
-            print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
-            # This phase will wait for a "Continue" click or specific interactions
+            self.advance_phase()
+        elif current_phase == constants.PHASE_EIGHTH_FACE:
+            print(f"Phase: {current_phase} for {self.get_current_player_name()}")
+        elif current_phase == constants.PHASE_DRAGON_ATTACK:
+            print(f"Phase: {current_phase} for {self.get_current_player_name()}")
         else:
-            # For other phases like SPECIES_ABILITIES, RESERVES,
-            # they might have their own internal steps or auto-advance.
-            # For now, let's assume they might also auto-advance or wait for a "continue"
-            # These phases will wait for a "Continue" click from the UI, which calls
-            # game_engine.advance_phase() via the controller.
-            print(f"Phase: {self.current_phase} for {self.get_current_player_name()}")
+            print(f"Phase: {current_phase} for {self.get_current_player_name()}")
 
-    # Properties to access TurnManager's state for convenience
+    # Properties using cached state instead of direct manager access
     @property
     def current_phase(self):
-        return self.turn_manager.current_phase
+        return self._current_phase
 
     @property
     def current_march_step(self):
-        return self.turn_manager.current_march_step
+        return self._current_march_step
 
     @property
     def current_action_step(self):
-        return self.turn_manager.current_action_step
+        return self._current_action_step
 
     def advance_phase(self):
-        self.turn_manager.advance_phase() # Assumes TurnManager now handles internal state and emits signals
-        # After TurnManager advances, GameEngine needs to handle the entry into the new phase.
+        """Request phase advancement. TurnManager will emit signals to update state."""
+        # TODO: Replace direct call with signal emission
+        # For now, use direct calls until signal system is fully implemented
+        self.turn_manager.advance_phase()
         self._handle_phase_entry()
-        # Emit signals to ensure UI updates after phase entry logic.
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
     def advance_player(self):
-        self.turn_manager.advance_player() # TurnManager will update its current_player_idx and emit
+        """Request player advancement. TurnManager will emit signals to update state."""
+        # TODO: Replace direct call with signal emission
+        # For now, use direct calls until signal system is fully implemented
+        self.turn_manager.advance_player()
         self._initialize_turn_for_current_player()
 
     def get_current_player_name(self):
-        return self.turn_manager.player_names[self.turn_manager.current_player_idx]
+        return self._current_player_name
 
     def get_current_phase_display(self):
-        phase_display = self.turn_manager.current_phase.replace('_', ' ').title()
-        if self.turn_manager.current_march_step:
-            phase_display += f" - {self.turn_manager.current_march_step.replace('_', ' ').title()}"
-        if self.turn_manager.current_action_step:
-            phase_display += f" - {self.turn_manager.current_action_step.replace('_', ' ').title()}"
+        phase_display = self._current_phase.replace('_', ' ').title()
+        if self._current_march_step:
+            phase_display += f" - {self._current_march_step.replace('_', ' ').title()}"
+        if self._current_action_step:
+            phase_display += f" - {self._current_action_step.replace('_', ' ').title()}"
         return phase_display
 
     def decide_maneuver(self, wants_to_maneuver: bool):
+        """Request maneuver decision processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} decided maneuver: {wants_to_maneuver}")
+        # TODO: Emit signal to TurnManager to handle decision
+        # For now, update state directly until signal system is fully implemented
         if wants_to_maneuver:
-            self.turn_manager.current_march_step = constants.MARCH_STEPS[constants.MARCH_STEPS.index(constants.MARCH_STEP_AWAITING_MANEUVER_INPUT)]
+            self._current_march_step = constants.MARCH_STEP_AWAITING_MANEUVER_INPUT
         else:
-            self.turn_manager.current_march_step = constants.MARCH_STEPS[constants.MARCH_STEPS.index(constants.MARCH_STEP_SELECT_ACTION)]
+            self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
     def submit_maneuver_input(self, details: str):
+        """Request maneuver input processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} submitted maneuver details: {details}")
-        # TODO: Process details if necessary (e.g., if it's a dice roll string)
-        self.turn_manager.current_march_step = constants.MARCH_STEPS[constants.MARCH_STEPS.index(constants.MARCH_STEP_SELECT_ACTION)]
+        # TODO: Emit signal to TurnManager to handle input
+        # For now, update state directly until signal system is fully implemented
+        self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
     def select_action(self, action_type: str):
-        """Handles selection of Melee, Missile, or Magic action."""
+        """Request action selection processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} selected action: {action_type}")
+        # TODO: Emit signal to TurnManager to handle action selection
+        # For now, update state directly until signal system is fully implemented
         if action_type == constants.ACTION_MELEE:
-            self.turn_manager.current_action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
+            self._current_action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
         elif action_type == constants.ACTION_MISSILE:
-            self.turn_manager.current_action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
+            self._current_action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
         elif action_type == constants.ACTION_MAGIC:
-            self.turn_manager.current_action_step = constants.ACTION_STEP_AWAITING_MAGIC_ROLL
+            self._current_action_step = constants.ACTION_STEP_AWAITING_MAGIC_ROLL
         else:
             print(f"Unknown action type: {action_type}")
             return
@@ -150,26 +157,25 @@ class GameEngine(QObject):
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
     def submit_attacker_melee_results(self, results: str):
-        """Handles submission of attacker's melee roll results."""
-        if self.turn_manager.current_action_step != constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
+        """Request processing of attacker's melee roll results."""
+        if self._current_action_step != constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
             print("Error: Not expecting attacker melee results now.")
             return
         print(f"Player {self.get_current_player_name()} (Attacker) submitted melee results: {results}")
 
+        # TODO: Replace direct calls with signals to ActionResolver
+        # For now, use direct calls until signal system is fully implemented
         parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MELEE")
         if not parsed_results:
             print("GameEngine: Error: Could not parse attacker melee results via ActionResolver.")
-            # Optionally, do not advance state or provide UI feedback
             return
         print(f"GameEngine: Parsed attacker melee via ActionResolver: {parsed_results}")
 
-        # ActionResolver processes the roll and will emit `next_action_step_determined`
-        # which is connected to self._set_next_action_step
         attacker_outcome = self.action_resolver.process_attacker_melee_roll(
             attacking_player_name=self.get_current_player_name(),
             parsed_dice_results=parsed_results
         )
-        self.pending_attacker_outcome = attacker_outcome # Store attacker's outcome
+        self.pending_attacker_outcome = attacker_outcome
         print(f"GameEngine: Attacker melee outcome from ActionResolver: {attacker_outcome}")
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
@@ -182,12 +188,14 @@ class GameEngine(QObject):
     #     return {"melee_damage": 0, "missile_damage": 0, "saves": 0, "magic_points": 0, "sais_triggered": []}
 
     def submit_defender_save_results(self, results: str):
-        """Handles submission of defender's save roll results."""
-        if self.turn_manager.current_action_step != constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
+        """Request processing of defender's save roll results."""
+        if self._current_action_step != constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
             print("Error: Not expecting defender save results now.")
             return
         print(f"Player {self.get_current_player_name()}'s Opponent (Defender) submitted save results: {results}")
 
+        # TODO: Replace direct calls with signals to ActionResolver
+        # For now, use direct calls until signal system is fully implemented
         parsed_save_results = self.action_resolver.parse_dice_string(results, roll_type="SAVE")
         if not parsed_save_results:
             print("Error: Could not parse defender save results.")
@@ -196,36 +204,31 @@ class GameEngine(QObject):
 
         if not hasattr(self, 'pending_attacker_outcome') or not self.pending_attacker_outcome:
             print("Error: No pending attacker outcome to resolve defender saves against.")
-            # Potentially reset state or log error
             return
 
-        # TODO: Determine defending_player_name. This is complex as it depends on target.
-        # For now, assume it's an opponent if more than one player.
-        # This needs a robust way to identify the target of the attack.
-        defending_player_name = constants.PLACEHOLDER_OPPONENT_NAME # This needs to be correctly identified
+        defending_player_name = constants.PLACEHOLDER_OPPONENT_NAME
 
         defender_outcome = self.action_resolver.process_defender_save_roll(
-            defending_player_name=defending_player_name, # Needs to be correctly identified
+            defending_player_name=defending_player_name,
             parsed_save_dice=parsed_save_results,
             attacker_outcome=self.pending_attacker_outcome
         )
         print(f"GameEngine: Defender save outcome from ActionResolver: {defender_outcome}")
-        del self.pending_attacker_outcome # Clear pending outcome
+        del self.pending_attacker_outcome
 
-        # The next step (counter-attack or end action) is set by ActionResolver's signal.
-        # If the next_action_step is "", it means the action is complete.
-        if not self.turn_manager.current_action_step: # Check if ActionResolver cleared the step
+        # Check if action is complete using cached state
+        if not self._current_action_step:
             print(f"Melee action in {self.current_phase} complete.")
-            self.advance_phase() # Or advance march step if within a march
+            self.advance_phase()
         else:
-            self.current_phase_changed.emit(self.get_current_phase_display()) # Update UI for counter-attack step
+            self.current_phase_changed.emit(self.get_current_phase_display())
             self.game_state_updated.emit()
 
     @Slot(str)
     def _set_next_action_step(self, next_step: str):
-        """Slot to update the current action step in TurnManager."""
+        """Slot to update the current action step via cached state."""
         print(f"GameEngine: Setting next action step to: {next_step}")
-        self.turn_manager.current_action_step = next_step
+        self._current_action_step = next_step
 
     def _resolve_spell_effect(self, spell_name: str, caster_player_name: str, target_identifier: str, target_type: str, affected_player_name: Optional[str] = None):
         """Placeholder for resolving spell effects and adding active effects."""
