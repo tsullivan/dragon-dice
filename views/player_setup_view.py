@@ -305,10 +305,12 @@ class PlayerSetupView(QWidget):
         self.status_label.setPalette(palette)
 
     def _validate_inputs(self) -> bool:
+        validation_errors = []
+        
+        # Check player name
         player_name = self.player_identity_widget.get_name()
         if not player_name:
-            self._set_status_message("Player Name cannot be empty.", "red")
-            return False
+            validation_errors.append("Player Name cannot be empty")
 
         # Official Dragon Dice army assembly validation
         # Rule 1: Each army must have at least 1 unit
@@ -331,20 +333,14 @@ class PlayerSetupView(QWidget):
 
             # Rule 1: Minimum 1 unit per army
             if len(current_units) == 0:
-                self._set_status_message(
-                    f"{army_type} Army must have at least 1 unit.", "red"
-                )
-                return False
+                validation_errors.append(f"{army_type} Army must have at least 1 unit")
 
             # Rule 2: Army cannot exceed 50% of total force points
             army_points = sum(unit.max_health for unit in current_units)
             if army_points > self.max_points_per_army:
-                self._set_status_message(
-                    f"{army_type} Army ({army_points} pts) exceeds maximum {
-                        self.max_points_per_army} pts (50% of {self.force_size} pts).",
-                    "red",
+                validation_errors.append(
+                    f"{army_type} Army ({army_points} pts) exceeds maximum {self.max_points_per_army} pts (50% of {self.force_size} pts)"
                 )
-                return False
 
             # Count magic unit points for Rule 3
             for unit in current_units:
@@ -356,27 +352,27 @@ class PlayerSetupView(QWidget):
 
         # Rule 3: Magic units cannot exceed 50% of total force points
         if total_magic_points > max_magic_points:
-            self._set_status_message(
-                f"Magic units ({total_magic_points} pts) exceed maximum {
-                    max_magic_points} pts (50% of {self.force_size} pts).",
-                "red",
+            validation_errors.append(
+                f"Magic units ({total_magic_points} pts) exceed maximum {max_magic_points} pts (50% of {self.force_size} pts)"
             )
-            return False
 
         # Rule 4: Total force points must equal selected force size
         if total_force_points != self.force_size:
-            self._set_status_message(
-                f"Total army points ({total_force_points} pts) must equal selected force size ({
-                    self.force_size} pts).",
-                "red",
+            validation_errors.append(
+                f"Total army points ({total_force_points} pts) must equal selected force size ({self.force_size} pts)"
             )
+
+        # Display validation results
+        if validation_errors:
+            # Create bulleted list of errors
+            error_message = "• " + "\n• ".join(validation_errors)
+            self._set_status_message(error_message, "red")
             return False
 
         # All validation passed - show helpful reminder
         if total_force_points == 0:
             self._set_status_message(
-                f"Build armies totaling exactly {
-                                     self.force_size} points.",
+                f"Build armies totaling exactly {self.force_size} points.",
                 "blue",
             )
         else:
