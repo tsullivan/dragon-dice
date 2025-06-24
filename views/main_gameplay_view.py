@@ -23,6 +23,7 @@ from components.maneuver_input_widget import ManeuverInputWidget
 from components.action_choice_widget import ActionChoiceWidget
 from components.tabbed_view_widget import TabbedViewWidget
 from components.active_effects_widget import ActiveEffectsWidget
+from views.maneuver_dialog import ManeuverDialog
 import constants
 
 
@@ -44,6 +45,11 @@ class MainGameplayView(QWidget):
         super().__init__(parent)
         self.game_engine = game_engine
         self.help_model = HelpTextModel()
+        
+        # Track phase completion to control continue button
+        self.phase_actions_completed = False
+        self.current_phase_requirements_met = False
+        
         self.setWindowTitle("Dragon Dice - Gameplay")
 
         main_layout = QVBoxLayout(self)
@@ -122,10 +128,7 @@ class MainGameplayView(QWidget):
         # Maneuver Input Widget
         self.maneuver_input_widget = ManeuverInputWidget()
         self.maneuver_input_widget.maneuver_decision_made.connect(
-            self.maneuver_decision_signal.emit
-        )
-        self.maneuver_input_widget.maneuver_details_submitted.connect(
-            self.maneuver_input_submitted_signal.emit
+            self._handle_maneuver_decision
         )
         self.dynamic_actions_layout.addWidget(self.maneuver_input_widget)
 
@@ -169,6 +172,7 @@ class MainGameplayView(QWidget):
         # 3. Continue Button
         self.continue_button = QPushButton("Continue to Next Phase")
         self.continue_button.setMaximumWidth(220)  # Limit button width
+        self.continue_button.setEnabled(False)  # Disabled by default until phase actions are completed
         self.continue_button.clicked.connect(self._on_continue_clicked)
         main_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
 
@@ -194,6 +198,127 @@ class MainGameplayView(QWidget):
               self.game_engine.current_phase}"
         )
         self.continue_to_next_phase_signal.emit()
+    
+    def _handle_maneuver_decision(self, wants_to_maneuver: bool):
+        """Handle maneuver decision - show dialog if yes, proceed if no."""
+        if wants_to_maneuver:
+            self._show_maneuver_dialog()
+        else:
+            # Player chose not to maneuver, emit signal and mark actions completed
+            self.maneuver_decision_signal.emit(False)
+            self.phase_actions_completed = True
+            self._update_continue_button_state()
+    
+    def _show_maneuver_dialog(self):
+        """Show the maneuver dialog for proper maneuver flow."""
+        try:
+            # Get available armies for current player
+            current_player = self.game_engine.get_current_player_name()
+            all_players_data = self.game_engine.get_all_players_data()
+            terrain_data = self.game_engine.get_all_terrain_data()
+            
+            # Get current player's armies
+            player_data = all_players_data.get(current_player, {})
+            available_armies = []
+            
+            for army_type, army_data in player_data.get("armies", {}).items():
+                army_info = {
+                    "name": army_data.get("name", f"{army_type.title()} Army"),
+                    "army_type": army_type,
+                    "location": army_data.get("location", "Unknown"),
+                    "units": army_data.get("units", []),
+                    "unique_id": army_data.get("unique_id", f"{current_player}_{army_type}")
+                }
+                available_armies.append(army_info)
+            
+            if not available_armies:
+                print("No armies available for maneuver")
+                return
+            
+            # Create and show maneuver dialog
+            dialog = ManeuverDialog(
+                current_player_name=current_player,
+                available_armies=available_armies,
+                all_players_data=all_players_data,
+                terrain_data=terrain_data,
+                parent=self
+            )
+            
+            dialog.maneuver_completed.connect(self._handle_maneuver_completed)
+            dialog.maneuver_cancelled.connect(self._handle_maneuver_cancelled)
+            
+            dialog.exec()
+            
+        except Exception as e:
+            print(f"Error showing maneuver dialog: {e}")
+            # Fallback to simple decision
+            self.maneuver_decision_signal.emit(True)
+    
+    def _handle_maneuver_completed(self, maneuver_result: dict):
+        """Handle completed maneuver from dialog."""
+        print(f"Maneuver completed: {maneuver_result}")
+        
+        # Emit the maneuver decision signal
+        self.maneuver_decision_signal.emit(True)
+        
+        # If there are details to submit, emit them
+        if maneuver_result.get("success"):
+            army_name = maneuver_result.get("army", {}).get("name", "Unknown Army")
+            location = maneuver_result.get("location", "Unknown")
+            result_text = f"{army_name} maneuvered at {location}"
+            self.maneuver_input_submitted_signal.emit(result_text)
+        
+        # Mark actions as completed
+        self.phase_actions_completed = True
+        self._update_continue_button_state()
+    
+    def _handle_maneuver_cancelled(self):
+        """Handle cancelled maneuver from dialog."""
+        print("Maneuver cancelled")
+        # Reset the maneuver widget to decision state
+        self.maneuver_input_widget.reset_to_decision()
+    
+    def _update_continue_button_state(self):
+        """Update the continue button state based on current phase requirements."""
+        current_phase = self.game_engine.current_phase
+        current_march_step = self.game_engine.current_march_step
+        current_action_step = self.game_engine.current_action_step
+        
+        # Determine if continue button should be enabled
+        should_enable = False
+        
+        if current_phase in [constants.PHASE_FIRST_MARCH, constants.PHASE_SECOND_MARCH]:
+            # March phases require either maneuver decision or action completion
+            if current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
+                should_enable = False  # Must make maneuver decision first
+            elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
+                should_enable = False  # Must select an action first
+            elif current_action_step:
+                should_enable = self.phase_actions_completed
+            else:
+                should_enable = self.phase_actions_completed
+        elif current_phase == constants.PHASE_EIGHTH_FACE:
+            # Can always continue from eighth face (optional actions)
+            should_enable = True
+        elif current_phase == constants.PHASE_DRAGON_ATTACK:
+            # Can always continue from dragon attack
+            should_enable = True
+        else:
+            # Other phases can be continued
+            should_enable = True
+        
+        self.continue_button.setEnabled(should_enable)
+        
+        # Update button text based on state
+        if should_enable:
+            self.continue_button.setText("Continue to Next Phase")
+        else:
+            if current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
+                self.continue_button.setText("Make Maneuver Decision First")
+            elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
+                self.continue_button.setText("Select an Action First")
+            else:
+                self.continue_button.setText("Complete Required Actions")
 
     def _handle_action_selected(self, action_type: str):
         if action_type == constants.ACTION_MELEE:
@@ -202,9 +327,24 @@ class MainGameplayView(QWidget):
             self.missile_action_selected_signal.emit()
         elif action_type == constants.ACTION_MAGIC:  # Use constant
             self.magic_action_selected_signal.emit()
+        
+        # Mark that an action has been selected
+        self.phase_actions_completed = True
+        self._update_continue_button_state()
 
     @Slot()
     def update_ui(self):
+        # Check if phase changed to reset completion state
+        current_phase = self.game_engine.current_phase
+        current_march_step = self.game_engine.current_march_step
+        
+        # Reset phase actions completed when entering a new phase or step
+        if not hasattr(self, '_last_phase_state'):
+            self._last_phase_state = (current_phase, current_march_step)
+        elif self._last_phase_state != (current_phase, current_march_step):
+            self.phase_actions_completed = False
+            self._last_phase_state = (current_phase, current_march_step)
+        
         # Update Phase Title
         current_phase_display = self.game_engine.get_current_phase_display()
         phase_text = f"Phase: {current_phase_display}"
@@ -295,3 +435,6 @@ class MainGameplayView(QWidget):
         self.tabbed_widget.set_help_text(
             self.help_model.get_main_gameplay_help(help_key)
         )
+        
+        # Update continue button state based on current phase requirements
+        self._update_continue_button_state()
