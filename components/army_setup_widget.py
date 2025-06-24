@@ -12,6 +12,7 @@ from typing import List, Optional
 from models.unit_roster_model import UnitRosterModel  # For type hinting
 from models.unit_model import UnitModel  # For type hinting
 from views.unit_selection_dialog import UnitSelectionDialog
+from components.army_die_face_summary_widget import ArmyDieFaceSummaryWidget
 import constants  # Import constants
 
 
@@ -42,10 +43,10 @@ class ArmySetupWidget(QWidget):
             []
         )  # Store UnitModel instances for this army
 
-        # Layout: Button on the left, summary on the right
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(5)  # Minimal spacing
+        # Main horizontal layout: Button on the left, summary info on the right
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(5)
 
         self.manage_units_button = QPushButton(constants.MANAGE_UNITS_BUTTON_TEXT)
         self.manage_units_button.setMaximumWidth(180)  # Limit button width
@@ -54,11 +55,22 @@ class ArmySetupWidget(QWidget):
         else:
             self.manage_units_button.setEnabled(False)
             self.manage_units_button.setToolTip("Unit roster not available.")
-        layout.addWidget(self.manage_units_button)
+        main_layout.addWidget(self.manage_units_button)
+
+        # Right side: Vertical layout for summary text and die face summary
+        right_side_layout = QVBoxLayout()
+        right_side_layout.setContentsMargins(0, 0, 0, 0)
+        right_side_layout.setSpacing(2)
+
         self.units_summary_label = QLabel(constants.DEFAULT_ARMY_UNITS_SUMMARY)
-        layout.addWidget(
-            self.units_summary_label, 1, Qt.AlignmentFlag.AlignCenter
-        )  # Add stretch to summary
+        self.units_summary_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        right_side_layout.addWidget(self.units_summary_label)
+
+        # Die face summary widget
+        self.die_face_summary = ArmyDieFaceSummaryWidget()
+        right_side_layout.addWidget(self.die_face_summary)
+
+        main_layout.addLayout(right_side_layout, 1)  # Give stretch to right side
 
         self._update_units_summary()
 
@@ -117,3 +129,9 @@ class ArmySetupWidget(QWidget):
         unit_count = len(self.current_units)
         total_points = sum(unit.max_health for unit in self.current_units)
         self.units_summary_label.setText(f"Units: {unit_count} ({total_points} pts)")
+        
+        # Update die face summary
+        if self.unit_roster:
+            self.die_face_summary.set_units_and_roster(self.current_units, self.unit_roster)
+        else:
+            self.die_face_summary.clear()

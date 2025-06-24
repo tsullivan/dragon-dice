@@ -4,141 +4,121 @@
       "unit_type_id": "goblin_thug",
       "display_name": "Thug",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "goblin_cutthroat",
       "display_name": "Cutthroat",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "goblin_marauder",
       "display_name": "Marauder",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "goblin_cannibal",
       "display_name": "Cannibal",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "goblin_mugger",
       "display_name": "Mugger",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "goblin_ambusher",
       "display_name": "Ambusher",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "goblin_filcher",
       "display_name": "Filcher",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "goblin_death_naga",
       "display_name": "Death Naga",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "goblin_wardog_rider",
       "display_name": "Wardog Rider",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "goblin_wolf_rider",
       "display_name": "Wolf Rider",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "goblin_leopard_rider",
       "display_name": "Leopard Rider",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "goblin_harpy",
       "display_name": "Harpy",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "goblin_pelter",
       "display_name": "Pelter",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "goblin_slingman",
       "display_name": "Slingman",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "goblin_deadeye",
       "display_name": "Deadeye",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "goblin_shambler",
       "display_name": "Shambler",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "goblin_trickster",
       "display_name": "Trickster",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "goblin_hedge_wizard",
       "display_name": "Hedge Wizard",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "goblin_death_mage",
       "display_name": "Death Mage",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "goblin_troll",
       "display_name": "Troll",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Feral": [
@@ -146,141 +126,121 @@
       "unit_type_id": "feral_lynx_folk",
       "display_name": "Lynx-Folk",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "feral_leopard_folk",
       "display_name": "Leopard-Folk",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "feral_tiger_folk",
       "display_name": "Tiger-Folk",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "feral_bear_folk",
       "display_name": "Bear-Folk",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "feral_hound_folk",
       "display_name": "Hound-Folk",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "feral_fox_folk",
       "display_name": "Fox-Folk",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "feral_wolf_folk",
       "display_name": "Wolf-Folk",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "feral_elephant_folk",
       "display_name": "Elephant-Folk",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "feral_antelope_folk",
       "display_name": "Antelope-Folk",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "feral_horse_folk",
       "display_name": "Horse-Folk",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "feral_buffalo_folk",
       "display_name": "Buffalo-Folk",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "feral_lion_folk",
       "display_name": "Lion-Folk",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "feral_falcon_folk",
       "display_name": "Falcon-Folk",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "feral_hawk_folk",
       "display_name": "Hawk-Folk",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "feral_vulture_folk",
       "display_name": "Vulture-Folk",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "feral_owl_folk",
       "display_name": "Owl-Folk",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "feral_weasel_folk",
       "display_name": "Weasel-Folk",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "feral_badger_folk",
       "display_name": "Badger-Folk",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "feral_wolverine_folk",
       "display_name": "Wolverine-Folk",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "feral_rhino_folk",
       "display_name": "Rhino-Folk",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Coral Elf": [
@@ -288,141 +248,121 @@
       "unit_type_id": "coral_elf_fighter",
       "display_name": "Fighter",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "coral_elf_trooper",
       "display_name": "Trooper",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "coral_elf_protector",
       "display_name": "Protector",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "coral_elf_coral_giant",
       "display_name": "Coral Giant",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "coral_elf_guard",
       "display_name": "Guard",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "coral_elf_courier",
       "display_name": "Courier",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "coral_elf_herald",
       "display_name": "Herald",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "coral_elf_gryphon",
       "display_name": "Gryphon",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "coral_elf_horseman",
       "display_name": "Horseman",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "coral_elf_knight",
       "display_name": "Knight",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "coral_elf_eagle_knight",
       "display_name": "Eagle Knight",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "coral_elf_leviathan",
       "display_name": "Leviathan",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "coral_elf_bowman",
       "display_name": "Bowman",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "coral_elf_archer",
       "display_name": "Archer",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "coral_elf_sharpshooter",
       "display_name": "Sharpshooter",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "coral_elf_sprite_swarm",
       "display_name": "Sprite Swarm",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "coral_elf_evoker",
       "display_name": "Evoker",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "coral_elf_conjurer",
       "display_name": "Conjurer",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "coral_elf_enchanter",
       "display_name": "Enchanter",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "coral_elf_tako",
       "display_name": "Tako",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Dwarf": [
@@ -430,141 +370,121 @@
       "unit_type_id": "dwarf_footman",
       "display_name": "Footman",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "dwarf_sergeant",
       "display_name": "Sergeant",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "dwarf_warlord",
       "display_name": "Warlord",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "dwarf_androsphinx",
       "display_name": "Androsphinx",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "dwarf_sentry",
       "display_name": "Sentry",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "dwarf_patroller",
       "display_name": "Patroller",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "dwarf_skirmisher",
       "display_name": "Skirmisher",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "dwarf_behemoth",
       "display_name": "Behemoth",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "dwarf_pony_rider",
       "display_name": "Pony Rider",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "dwarf_lizard_rider",
       "display_name": "Lizard Rider",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "dwarf_mammoth_rider",
       "display_name": "Mammoth Rider",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "dwarf_gargoyle",
       "display_name": "Gargoyle",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "dwarf_crossbowman",
       "display_name": "Crossbowman",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "dwarf_marksman",
       "display_name": "Marksman",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "dwarf_crack_shot",
       "display_name": "Crack-Shot",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "dwarf_roc",
       "display_name": "Roc",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "dwarf_theurgist",
       "display_name": "Theurgist",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "dwarf_thaumaturgist",
       "display_name": "Thaumaturgist",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "dwarf_wizard",
       "display_name": "Wizard",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "dwarf_umber_hulk",
       "display_name": "Umber Hulk",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Firewalker": [
@@ -572,141 +492,121 @@
       "unit_type_id": "firewalker_guardian",
       "display_name": "Guardian",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "firewalker_watcher",
       "display_name": "Watcher",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "firewalker_sentinel",
       "display_name": "Sentinel",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "firewalker_fireshadow",
       "display_name": "Fireshadow",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "firewalker_explorer",
       "display_name": "Explorer",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "firewalker_adventurer",
       "display_name": "Adventurer",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "firewalker_expeditioner",
       "display_name": "Expeditioner",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "firewalker_genie",
       "display_name": "Genie",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "firewalker_shadowchaser",
       "display_name": "Shadowchaser",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "firewalker_nightsbane",
       "display_name": "Nightsbane",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "firewalker_daybringer",
       "display_name": "Daybringer",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "firewalker_gorgon",
       "display_name": "Gorgon",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "firewalker_firestarter",
       "display_name": "Firestarter",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "firewalker_firemaster",
       "display_name": "Firemaster",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "firewalker_firestormer",
       "display_name": "Firestormer",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "firewalker_phoenix",
       "display_name": "Phoenix",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "firewalker_sunburst",
       "display_name": "Sunburst",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "firewalker_sunflare",
       "display_name": "Sunflare",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "firewalker_ashbringer",
       "display_name": "Ashbringer",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "firewalker_salamander",
       "display_name": "Salamander",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Frostwing": [
@@ -714,141 +614,121 @@
       "unit_type_id": "frostwing_advocate",
       "display_name": "Advocate",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "frostwing_defender",
       "display_name": "Defender",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "frostwing_vindicator",
       "display_name": "Vindicator",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "frostwing_cryohydra",
       "display_name": "Cryohydra",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "frostwing_hound_master",
       "display_name": "Hound Master",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "frostwing_wolf_master",
       "display_name": "Wolf Master",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "frostwing_bear_master",
       "display_name": "Bear Master",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "frostwing_frost_ogre",
       "display_name": "Frost Ogre",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "frostwing_attacker",
       "display_name": "Attacker",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "frostwing_assaulter",
       "display_name": "Assaulter",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "frostwing_assailer",
       "display_name": "Assailer",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "frostwing_remorhaz",
       "display_name": "Remorhaz",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "frostwing_destroyer",
       "display_name": "Destroyer",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "frostwing_dispatcher",
       "display_name": "Dispatcher",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "frostwing_devastator",
       "display_name": "Devastator",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "frostwing_wolf_pack",
       "display_name": "Wolf Pack",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "frostwing_apprentice",
       "display_name": "Apprentice",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "frostwing_magus",
       "display_name": "Magus",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "frostwing_magi",
       "display_name": "Magi",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "frostwing_yeti",
       "display_name": "Yeti",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Swamp Stalker": [
@@ -856,141 +736,121 @@
       "unit_type_id": "swamp_stalker_warmonger",
       "display_name": "Warmonger",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "swamp_stalker_ravager",
       "display_name": "Ravager",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "swamp_stalker_annihilator",
       "display_name": "Annihilator",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "swamp_stalker_crocosaur",
       "display_name": "Crocosaur",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "swamp_stalker_striker",
       "display_name": "Striker",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "swamp_stalker_raider",
       "display_name": "Raider",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "swamp_stalker_invader",
       "display_name": "Invader",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "swamp_stalker_mudman",
       "display_name": "Mudman",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "swamp_stalker_bog_runner",
       "display_name": "Bog Runner",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "swamp_stalker_marsh_swimmer",
       "display_name": "Marsh Swimmer",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "swamp_stalker_wave_rider",
       "display_name": "Wave Rider",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "swamp_stalker_ormyrr",
       "display_name": "Ormyrr",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "swamp_stalker_sprayer",
       "display_name": "Sprayer",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "swamp_stalker_stormer",
       "display_name": "Stormer",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "swamp_stalker_deluger",
       "display_name": "Deluger",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "swamp_stalker_swamp_beast",
       "display_name": "Swamp Beast",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "swamp_stalker_bog_adept",
       "display_name": "Bog Adept",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "swamp_stalker_marsh_mage",
       "display_name": "Marsh Mage",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "swamp_stalker_swamp_wizard",
       "display_name": "Swamp Wizard",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "swamp_stalker_swamp_giant",
       "display_name": "Swamp Giant",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Treefolk": [
@@ -998,141 +858,121 @@
       "unit_type_id": "treefolk_oakling",
       "display_name": "Oakling",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "treefolk_oak",
       "display_name": "Oak",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "treefolk_oak_lord",
       "display_name": "Oak Lord",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "treefolk_darktree",
       "display_name": "Darktree",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "treefolk_willowling",
       "display_name": "Willowling",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "treefolk_willow",
       "display_name": "Willow",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "treefolk_willow_noble",
       "display_name": "Willow Noble",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "treefolk_redwood",
       "display_name": "Redwood",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "treefolk_nymph",
       "display_name": "Nymph",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "treefolk_naiad",
       "display_name": "Naiad",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "treefolk_lady_nereid",
       "display_name": "Lady Nereid",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "treefolk_satyr",
       "display_name": "Satyr",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "treefolk_pineling",
       "display_name": "Pineling",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "treefolk_pine",
       "display_name": "Pine",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "treefolk_pine_prince",
       "display_name": "Pine Prince",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "treefolk_strangle_vine",
       "display_name": "Strangle Vine",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "treefolk_hamadryad",
       "display_name": "Hamadryad",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "treefolk_dryad",
       "display_name": "Dryad",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "treefolk_eldar_dryad",
       "display_name": "Eldar Dryad",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "treefolk_unicorn",
       "display_name": "Unicorn",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Undead": [
@@ -1140,141 +980,121 @@
       "unit_type_id": "undead_zombie",
       "display_name": "Zombie",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "undead_wight",
       "display_name": "Wight",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "undead_mummy",
       "display_name": "Mummy",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "undead_carrion_crawler",
       "display_name": "Carrion Crawler",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "undead_skeleton",
       "display_name": "Skeleton",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "undead_revenant",
       "display_name": "Revenant",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "undead_death_knight",
       "display_name": "Death Knight",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "undead_dracolich",
       "display_name": "Dracolich",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "undead_wraith",
       "display_name": "Wraith",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "undead_spectre",
       "display_name": "Spectre",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "undead_ghost",
       "display_name": "Ghost",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "undead_fenhound",
       "display_name": "Fenhound",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "undead_ghoul",
       "display_name": "Ghoul",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "undead_ghast",
       "display_name": "Ghast",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "undead_vampire",
       "display_name": "Vampire",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "undead_minor_death",
       "display_name": "Minor Death",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "undead_apparition",
       "display_name": "Apparition",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "undead_heucuva",
       "display_name": "Heucuva",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "undead_lich",
       "display_name": "Lich",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "undead_skeletal_steed",
       "display_name": "Skeletal Steed",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Amazon": [
@@ -1282,141 +1102,121 @@
       "unit_type_id": "amazon_warrior",
       "display_name": "Warrior",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "amazon_soldier",
       "display_name": "Soldier",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "amazon_war_chief",
       "display_name": "War Chief",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "amazon_centaur",
       "display_name": "Centaur",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "amazon_runner",
       "display_name": "Runner",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "amazon_envoy",
       "display_name": "Envoy",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "amazon_harbinger",
       "display_name": "Harbinger",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "amazon_chimera",
       "display_name": "Chimera",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}, "sais": []}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "amazon_charioteer",
       "display_name": "Charioteer",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "amazon_battle_rider",
       "display_name": "Battle Rider",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "amazon_war_driver",
       "display_name": "War Driver",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "amazon_hydra",
       "display_name": "Hydra",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}, "sais": []}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "amazon_darter",
       "display_name": "Darter",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "amazon_javelineer",
       "display_name": "Javelineer",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "amazon_spearer",
       "display_name": "Spearer",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "amazon_medusa",
       "display_name": "Medusa",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}, "sais": []}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "amazon_seer",
       "display_name": "Seer",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "amazon_visionary",
       "display_name": "Visionary",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "amazon_oracle",
       "display_name": "Oracle",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "amazon_nightmare",
       "display_name": "Nightmare",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}, "sais": []}
+      "unit_class_type": "Monster"
     }
   ],
   "Lava Elf": [
@@ -1424,141 +1224,121 @@
       "unit_type_id": "lava_elf_bladesman",
       "display_name": "Bladesman",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "lava_elf_duelist",
       "display_name": "Duelist",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "lava_elf_conqueror",
       "display_name": "Conqueror",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "lava_elf_beholder",
       "display_name": "Beholder",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "lava_elf_scout",
       "display_name": "Scout",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "lava_elf_spy",
       "display_name": "Spy",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "lava_elf_infiltrator",
       "display_name": "Infiltrator",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "lava_elf_drider",
       "display_name": "Drider",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "lava_elf_spider_rider",
       "display_name": "Spider Rider",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "lava_elf_scorpion_knight",
       "display_name": "Scorpion Knight",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "lava_elf_wyvern_rider",
       "display_name": "Wyvern Rider",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "lava_elf_hell_hound",
       "display_name": "Hell Hound",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "lava_elf_fusilier",
       "display_name": "Fusilier",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "lava_elf_dead_shot",
       "display_name": "Dead-Shot",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "lava_elf_assassin",
       "display_name": "Assassin",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "lava_elf_lurker_in_the_deep",
       "display_name": "Lurker in the Deep",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "lava_elf_adept",
       "display_name": "Adept",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "lava_elf_warlock",
       "display_name": "Warlock",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "lava_elf_necromancer",
       "display_name": "Necromancer",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "lava_elf_rakshasa",
       "display_name": "Rakshasa",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ],
   "Scalder": [
@@ -1566,141 +1346,121 @@
       "unit_type_id": "scalder_singeman",
       "display_name": "Singeman",
       "max_health": 1,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "scalder_scorcher",
       "display_name": "Scorcher",
       "max_health": 2,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "scalder_searer",
       "display_name": "Searer",
       "max_health": 3,
-      "unit_class_type": "Heavy Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Heavy Melee"
     },
     {
       "unit_type_id": "scalder_ettercap",
       "display_name": "Ettercap",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "scalder_kindler",
       "display_name": "Kindler",
       "max_health": 1,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "scalder_igniter",
       "display_name": "Igniter",
       "max_health": 2,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "scalder_charkin",
       "display_name": "Charkin",
       "max_health": 3,
-      "unit_class_type": "Light Melee",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Light Melee"
     },
     {
       "unit_type_id": "scalder_quickling",
       "display_name": "Quickling",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "scalder_dragonne_tender",
       "display_name": "Dragonne Tender",
       "max_health": 1,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "scalder_dragonne_rider",
       "display_name": "Dragonne Rider",
       "max_health": 2,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "scalder_dragonne_knight",
       "display_name": "Dragonne Knight",
       "max_health": 3,
-      "unit_class_type": "Cavalry",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Cavalry"
     },
     {
       "unit_type_id": "scalder_unseelie_faerie",
       "display_name": "Unseelie Faerie",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MELEE": 1, "MANEUVER": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "scalder_glower",
       "display_name": "Glower",
       "max_health": 1,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "scalder_burner",
       "display_name": "Burner",
       "max_health": 2,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "scalder_blazer",
       "display_name": "Blazer",
       "max_health": 3,
-      "unit_class_type": "Missile",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Missile"
     },
     {
       "unit_type_id": "scalder_web_bird",
       "display_name": "Web Bird",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MISSILE": 1}}
+      "unit_class_type": "Monster"
     },
     {
       "unit_type_id": "scalder_sparker",
       "display_name": "Sparker",
       "max_health": 1,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "scalder_smolderer",
       "display_name": "Smolderer",
       "max_health": 2,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "scalder_inferno",
       "display_name": "Inferno",
       "max_health": 3,
-      "unit_class_type": "Magic",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Magic"
     },
     {
       "unit_type_id": "scalder_will_o_wisp",
       "display_name": "Will o' Wisp",
       "max_health": 4,
-      "unit_class_type": "Monster",
-      "abilities": {"id_results": {"MAGIC": 1}}
+      "unit_class_type": "Monster"
     }
   ]
 }

@@ -20,6 +20,7 @@ from typing import List, Dict, Any, Optional
 
 from models.unit_roster_model import UnitRosterModel
 from models.unit_model import UnitModel
+from components.die_face_display_widget import DieFaceDisplayWidget
 
 
 class UnitSelectionDialog(QDialog):
@@ -55,6 +56,10 @@ class UnitSelectionDialog(QDialog):
         # Give more space to tabs
         main_area_layout.addWidget(self.available_units_tabs, 2)
 
+        # Right side layout with selected units and die face display
+        right_side_layout = QVBoxLayout()
+        
+        # Selected units section
         selected_units_group = QVBoxLayout()
         selected_units_group.addWidget(QLabel("Units in Army:"))
         self.selected_units_table = QTableWidget()
@@ -71,8 +76,17 @@ class UnitSelectionDialog(QDialog):
         self.selected_units_table.doubleClicked.connect(
             self._remove_selected_unit_from_table
         )
+        self.selected_units_table.selectionModel().selectionChanged.connect(
+            self._on_selected_unit_changed
+        )
         selected_units_group.addWidget(self.selected_units_table)
-        main_area_layout.addLayout(selected_units_group, 1)
+        right_side_layout.addLayout(selected_units_group)
+        
+        # Die face display section
+        self.die_face_widget = DieFaceDisplayWidget()
+        right_side_layout.addWidget(self.die_face_widget)
+        
+        main_area_layout.addLayout(right_side_layout, 1)
 
         layout.addLayout(main_area_layout)
 
@@ -136,6 +150,9 @@ class UnitSelectionDialog(QDialog):
                 table.setItem(row_idx, 1, class_type_item)
                 table.setItem(row_idx, 2, health_item)
             table.cellClicked.connect(self._table_cell_clicked)
+            table.selectionModel().selectionChanged.connect(
+                lambda selected, deselected, t=table: self._on_available_unit_selected(t)
+            )
             tab_layout.addWidget(table)
             self.available_units_tabs.addTab(tab_content_widget, species)
 
@@ -205,6 +222,37 @@ class UnitSelectionDialog(QDialog):
 
     def get_selected_units(self) -> List[UnitModel]:
         return self.selected_units
+
+    def _on_available_unit_selected(self, table: QTableWidget):
+        """Handle selection of a unit in the available units table."""
+        current_row = table.currentRow()
+        if current_row >= 0:
+            name_item = table.item(current_row, 0)
+            if name_item:
+                unit_type_info = name_item.data(Qt.ItemDataRole.UserRole)
+                if unit_type_info:
+                    # Get die face data from unit definition
+                    die_faces = unit_type_info.get("die_faces", {})
+                    self.die_face_widget.set_die_faces(die_faces)
+                    return
+        
+        # Clear die face display if no valid selection
+        self.die_face_widget.clear()
+
+    def _on_selected_unit_changed(self):
+        """Handle selection change in the selected units table."""
+        current_row = self.selected_units_table.currentRow()
+        if current_row >= 0 and current_row < len(self.selected_units):
+            selected_unit = self.selected_units[current_row]
+            # Get unit definition from unit roster
+            unit_def = self.unit_roster.get_unit_definition(selected_unit.unit_type)
+            if unit_def:
+                die_faces = unit_def.get("die_faces", {})
+                self.die_face_widget.set_die_faces(die_faces)
+                return
+        
+        # Clear die face display if no valid selection
+        self.die_face_widget.clear()
 
     def accept(self):
         self.units_selected_signal.emit(self.get_selected_units())
