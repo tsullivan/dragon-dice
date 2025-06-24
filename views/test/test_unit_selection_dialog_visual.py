@@ -3,7 +3,7 @@ import pytest
 from views.unit_selection_dialog import UnitSelectionDialog
 from models.unit_roster_model import UnitRosterModel
 from models.unit_model import UnitModel
-from tests.utils.visual_test_helpers import capture_widget_screenshot
+from test_utils.visual_test_helpers import capture_widget_screenshot
 import constants
 
 

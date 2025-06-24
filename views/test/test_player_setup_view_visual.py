@@ -4,7 +4,7 @@ import pytest
 # Adjust this import if your project structure is different or main_window.py is elsewhere
 # from main_window import MainWindow # No longer needed for this direct view test
 from views.player_setup_view import PlayerSetupView
-from tests.utils.visual_test_helpers import capture_widget_screenshot
+from test_utils.visual_test_helpers import capture_widget_screenshot
 from constants import TERRAIN_DATA  # For mock terrain options
 
 
