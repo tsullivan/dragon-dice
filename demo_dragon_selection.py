@@ -105,7 +105,7 @@ def main():
     print("• Data is stored as {'dragon_type': '...', 'die_type': '...'}")
     print("• Backward compatibility with old string-only format")
     print("\nConstants added:")
-    print(f"• DRAGON_DIE_TYPE_DRAGON = '{constants.DRAGON_DIE_TYPE_DRAGON}'")
+    print(f"• DRAGON_DIE_TYPE_DRAGON = '{constants.DRAGON_DIE_TYPE_DRAKE}'")
     print(f"• DRAGON_DIE_TYPE_WYRM = '{constants.DRAGON_DIE_TYPE_WYRM}'")
     print(f"• AVAILABLE_DRAGON_DIE_TYPES = {constants.AVAILABLE_DRAGON_DIE_TYPES}")
     

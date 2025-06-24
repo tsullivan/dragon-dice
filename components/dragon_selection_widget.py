@@ -18,7 +18,7 @@ class DragonSelectionWidget(QWidget):
         
         # Initialize with default values
         self._current_dragon_type = constants.AVAILABLE_DRAGON_TYPES[0]
-        self._current_die_type = constants.DRAGON_DIE_TYPE_DRAGON
+        self._current_die_type = constants.DRAGON_DIE_TYPE_DRAKE
         
         self._setup_ui()
         self._connect_signals()
@@ -108,7 +108,7 @@ class DragonSelectionWidget(QWidget):
     def clear(self):
         """Reset to default values."""
         self._current_dragon_type = constants.AVAILABLE_DRAGON_TYPES[0]
-        self._current_die_type = constants.DRAGON_DIE_TYPE_DRAGON
+        self._current_die_type = constants.DRAGON_DIE_TYPE_DRAKE
         self.dragon_type_carousel.setValue(self._current_dragon_type)
         self.die_type_carousel.setValue(self._current_die_type)
         self._emit_current_value()

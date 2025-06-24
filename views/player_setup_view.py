@@ -447,7 +447,7 @@ class PlayerSetupView(QWidget):
                         # Convert old string format to new dict format
                         widget.setValue({
                             "dragon_type": dragon_data,
-                            "die_type": constants.DRAGON_DIE_TYPE_DRAGON
+                            "die_type": constants.DRAGON_DIE_TYPE_DRAKE
                         })
                 else:
                     # Set default values

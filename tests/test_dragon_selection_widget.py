@@ -20,7 +20,7 @@ class TestDragonSelectionWidget:
         # Check default values
         value = widget.value()
         assert value["dragon_type"] == constants.AVAILABLE_DRAGON_TYPES[0]
-        assert value["die_type"] == constants.DRAGON_DIE_TYPE_DRAGON
+        assert value["die_type"] == constants.DRAGON_DIE_TYPE_DRAKE
         
     def test_dragon_type_selection(self, qtbot):
         """Test that dragon type can be changed."""
@@ -35,7 +35,7 @@ class TestDragonSelectionWidget:
         
         value = widget.value()
         assert value["dragon_type"] == "Blue Dragon"
-        assert value["die_type"] == "Dragon"
+        assert value["die_type"] == "Drake"
         
     def test_wyrm_selection(self, qtbot):
         """Test that wyrm can be selected."""
@@ -58,7 +58,7 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
         
         # Test default
-        assert "Red Dragon (Dragon)" in widget.get_display_text()
+        assert "Red Dragon (Drake)" in widget.get_display_text()
         
         # Test after change
         widget.setValue({
@@ -82,7 +82,7 @@ class TestDragonSelectionWidget:
         widget.clear()
         value = widget.value()
         assert value["dragon_type"] == constants.AVAILABLE_DRAGON_TYPES[0]
-        assert value["die_type"] == constants.DRAGON_DIE_TYPE_DRAGON
+        assert value["die_type"] == constants.DRAGON_DIE_TYPE_DRAKE
         
     def test_signal_emission(self, qtbot):
         """Test that valueChanged signal is emitted properly."""
@@ -113,11 +113,11 @@ def test_dragon_constants():
     
     # Test die types exist
     assert len(constants.AVAILABLE_DRAGON_DIE_TYPES) == 2
-    assert constants.DRAGON_DIE_TYPE_DRAGON in constants.AVAILABLE_DRAGON_DIE_TYPES
+    assert constants.DRAGON_DIE_TYPE_DRAKE in constants.AVAILABLE_DRAGON_DIE_TYPES
     assert constants.DRAGON_DIE_TYPE_WYRM in constants.AVAILABLE_DRAGON_DIE_TYPES
     
     # Test specific values
-    assert constants.DRAGON_DIE_TYPE_DRAGON == "Dragon"
+    assert constants.DRAGON_DIE_TYPE_DRAKE == "Drake"
     assert constants.DRAGON_DIE_TYPE_WYRM == "Wyrm"
 
 
