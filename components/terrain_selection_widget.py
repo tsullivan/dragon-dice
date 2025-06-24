@@ -17,8 +17,6 @@ class TerrainSelectionWidget(QWidget):
         self.all_terrain_options = all_terrain_options
 
         layout = QGridLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0) # Tight layout
-        layout.setSpacing(0) # Minimal spacing within this widget
 
         # Home Terrain Selection
         self.home_terrain_label = QLabel("Home Terrain:")
@@ -33,8 +31,6 @@ class TerrainSelectionWidget(QWidget):
         self.frontier_proposal_carousel.valueChanged.connect(self.frontier_proposal_changed.emit)
         layout.addWidget(self.frontier_proposal_label, 1, 0)
         layout.addWidget(self.frontier_proposal_carousel, 1, 1)
-
-        layout.setColumnStretch(1, 1) # Allow carousels to take available space
 
     def get_home_terrain(self) -> Optional[str]:
         return self.home_terrain_carousel.value()

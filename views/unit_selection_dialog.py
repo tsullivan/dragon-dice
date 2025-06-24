@@ -40,11 +40,6 @@ class UnitSelectionDialog(QDialog):
         self.selected_units_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.selected_units_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.selected_units_table.doubleClicked.connect(self._remove_selected_unit_from_table)
-        # Auto-resize columns to content
-        header = self.selected_units_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) 
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
         selected_units_group.addWidget(self.selected_units_table)
         main_area_layout.addLayout(selected_units_group, 1)
 
@@ -87,9 +82,6 @@ class UnitSelectionDialog(QDialog):
             table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             table.verticalHeader().setVisible(False)
-            table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-            table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Class Type
-            table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Health Points
 
             # Sort units using the dedicated sorting method
             sorted_units = self._sort_units_for_display(units_in_species)

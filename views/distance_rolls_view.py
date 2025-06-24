@@ -73,7 +73,6 @@ class DistanceRollsView(QWidget):
             self.roll_inputs[player_name] = roll_combo_box
 
         inputs_v_layout.addWidget(distance_rolls_group)
-        inputs_v_layout.addStretch(1)
 
         # Add inputs to Game tab
         self.tabbed_widget.add_game_content(inputs_widget)

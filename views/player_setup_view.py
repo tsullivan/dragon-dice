@@ -94,7 +94,6 @@ class PlayerSetupView(QWidget):
 
         # Title and Global Randomize Button
         title_layout = QHBoxLayout()
-        title_layout.addStretch(1)
         self.title_label = QLabel(f"Player {self.current_player_index + 1} Setup")
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         font = self.title_label.font()
@@ -102,7 +101,6 @@ class PlayerSetupView(QWidget):
         font.setBold(True)
         self.title_label.setFont(font)
         title_layout.addWidget(self.title_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        title_layout.addStretch(1)
         main_layout.addLayout(title_layout)
 
 
@@ -149,7 +147,7 @@ class PlayerSetupView(QWidget):
         self.terrain_selection_widget = TerrainSelectionWidget(self.all_terrain_options)
         self.inputs_grid_layout.addWidget(self.terrain_selection_widget, 1, 0, 1, 3)
 
-        # Dragon Selection Section (New)
+        # Dragon Selection Section
         dragon_selection_group = QGroupBox(
             f"Select Your {self.required_dragons} Dragon(s)"
         )
@@ -192,9 +190,6 @@ class PlayerSetupView(QWidget):
             detailed_units_label.setWordWrap(True)
             self.army_detailed_units_labels[army_type] = detailed_units_label
             self.inputs_grid_layout.addWidget(detailed_units_label, current_army_main_row + 1, 1, 1, 2)
-        self.inputs_grid_layout.setColumnStretch(0, 0)
-        self.inputs_grid_layout.setColumnStretch(1, 1)
-        self.inputs_grid_layout.setColumnStretch(2, 1)
 
         self.inputs_group = inputs_group
         

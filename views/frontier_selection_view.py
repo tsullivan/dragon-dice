@@ -84,11 +84,10 @@ class FrontierSelectionView(QWidget):
             terrain_buttons_internal_v_layout.addWidget(no_terrains_label)
         frontier_terrain_v_layout.addLayout(terrain_buttons_internal_v_layout)
         selections_v_layout.addWidget(frontier_terrain_group)
-        selections_v_layout.addStretch(1)
 
         # Add selections to Game tab
         self.tabbed_widget.add_game_content(selections_widget)
-        
+
         # Set help content for Help tab
         self._set_frontier_help_text()
         
