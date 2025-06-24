@@ -83,6 +83,7 @@ class MainGameplayView(QWidget):
         self.terrains_list_label = QTextEdit()
         self.terrains_list_label.setReadOnly(True)
         self.terrains_list_label.setPlaceholderText("Relevant terrains...")
+        self.terrains_list_label.setMaximumHeight(120)  # Limit height to prevent excessive stretching
         self.terrains_list_label.setStyleSheet(
             "ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; }"
         )
@@ -105,6 +106,7 @@ class MainGameplayView(QWidget):
         phase_actions_v_layout.addWidget(self.eighth_face_description_label)
         eighth_face_input_h_layout = QHBoxLayout()
         self.eighth_face_input_field = QLineEdit()
+        self.eighth_face_input_field.setMaximumWidth(300)  # Prevent stretching across full width
         self.eighth_face_input_field.setPlaceholderText(
             "Describe ability resolution..."
         )

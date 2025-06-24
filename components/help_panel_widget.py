@@ -16,6 +16,8 @@ class HelpPanelWidget(QGroupBox):
 
         self.help_text_edit = QTextEdit()
         self.help_text_edit.setReadOnly(True)
+        self.help_text_edit.setMaximumWidth(400)  # Prevent excessive horizontal stretching
+        self.help_text_edit.setMaximumHeight(300)  # Limit vertical size to reasonable height
         # Apply common stylesheet for list formatting
         self.help_text_edit.setStyleSheet(
             "ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; } li { margin-bottom: 3px; }"

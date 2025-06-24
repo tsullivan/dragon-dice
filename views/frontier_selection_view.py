@@ -65,6 +65,7 @@ class FrontierSelectionView(QWidget):
             for i, name in enumerate(self.player_names):
                 button = QPushButton(name)
                 button.setCheckable(True)
+                button.setMaximumWidth(150)  # Prevent excessive stretching
                 self.first_player_button_group.addButton(button, i)
                 first_player_buttons_h_layout.addWidget(button)
             if self.first_player_button_group.buttons():
@@ -89,6 +90,7 @@ class FrontierSelectionView(QWidget):
                 button_text = f"{terrain_type} - Proposed by {player_name}"
                 button = QPushButton(button_text)
                 button.setCheckable(True)
+                button.setMaximumWidth(300)  # Prevent excessive stretching
                 button.setProperty("terrain_type", terrain_type)
                 self.frontier_terrain_button_group.addButton(button, i)
                 terrain_buttons_internal_v_layout.addWidget(button)

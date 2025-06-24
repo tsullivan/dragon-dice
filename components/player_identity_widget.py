@@ -16,6 +16,7 @@ class PlayerIdentityWidget(QWidget):
 
         # Player Name
         self.player_name_input = QLineEdit()
+        self.player_name_input.setMaximumWidth(250)  # Prevent excessive stretching
         self.player_name_input.setPlaceholderText(
             f"Enter Player {player_display_number_for_placeholder}'s Name"
         )

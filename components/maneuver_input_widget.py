@@ -53,12 +53,11 @@ class ManeuverInputWidget(QWidget):
         input_layout.addWidget(self._maneuver_input_label)
 
         self._maneuver_input_field = QLineEdit()
+        self._maneuver_input_field.setMaximumWidth(400)  # Prevent excessive stretching
         self._maneuver_input_field.setPlaceholderText(
             "e.g., 'Home Army: Flyers to hex 123' or 'Campaign Army: Unopposed maneuver'"
         )
-        input_layout.addWidget(
-            self._maneuver_input_field, 1
-        )  # Input field takes more space
+        input_layout.addWidget(self._maneuver_input_field)  # Remove stretch factor
 
         self._submit_maneuver_button = QPushButton("Submit Maneuver")
         self._submit_maneuver_button.setMaximumWidth(180)  # Limit button width

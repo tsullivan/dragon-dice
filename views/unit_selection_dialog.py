@@ -52,6 +52,7 @@ class UnitSelectionDialog(QDialog):
 
         # Available Units (Tabs with Tables)
         self.available_units_tabs = QTabWidget()
+        self.available_units_tabs.setMaximumWidth(500)  # Prevent excessive horizontal stretching
         self._populate_available_units_tabs()
         # Give more space to tabs
         main_area_layout.addWidget(self.available_units_tabs, 2)
@@ -63,6 +64,7 @@ class UnitSelectionDialog(QDialog):
         selected_units_group = QVBoxLayout()
         selected_units_group.addWidget(QLabel("Units in Army:"))
         self.selected_units_table = QTableWidget()
+        self.selected_units_table.setMaximumWidth(350)  # Prevent excessive horizontal stretching
         self.selected_units_table.setColumnCount(3)
         self.selected_units_table.setHorizontalHeaderLabels(
             ["Unit Name", "Class Type", "Health Points"]
