@@ -1,8 +1,19 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QHBoxLayout, QSpacerItem, QSizePolicy, QLineEdit, QGridLayout,
-                               QTextEdit, QGroupBox)
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QHBoxLayout,
+    QSpacerItem,
+    QSizePolicy,
+    QLineEdit,
+    QGridLayout,
+    QTextEdit,
+    QGroupBox,
+)
 from PySide6.QtCore import Qt, Slot, Signal
 from PySide6.QtGui import QFont  # Added for QFont usage
+
 # No change, good comment
 from game_logic.engine import GameEngine
 from models.help_text_model import HelpTextModel
@@ -19,6 +30,7 @@ class MainGameplayView(QWidget):
     """
     The main view for displaying game state and player actions during gameplay.
     """
+
     maneuver_decision_signal = Signal(bool)
     maneuver_input_submitted_signal = Signal(str)
     melee_action_selected_signal = Signal()
@@ -36,7 +48,8 @@ class MainGameplayView(QWidget):
 
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(
-            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter
+        )
 
         # 1. Phase Title
         self.phase_title_label = QLabel("Phase: Initializing...")
@@ -59,23 +72,23 @@ class MainGameplayView(QWidget):
         top_main_content_h_layout = QHBoxLayout()
 
         self.player_armies_info_group = QGroupBox("Player Summaries")
-        self.player_armies_info_layout = QVBoxLayout(
-            self.player_armies_info_group)
+        self.player_armies_info_layout = QVBoxLayout(self.player_armies_info_group)
         top_main_content_h_layout.addWidget(self.player_armies_info_group, 1)
 
         self.current_player_terrains_group = QGroupBox("Player X's Turn")
         current_player_terrains_v_layout = QVBoxLayout(
-            self.current_player_terrains_group)
+            self.current_player_terrains_group
+        )
 
         self.terrains_list_label = QTextEdit()
         self.terrains_list_label.setReadOnly(True)
         self.terrains_list_label.setPlaceholderText("Relevant terrains...")
         self.terrains_list_label.setStyleSheet(
-            "ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; }")
+            "ul { margin-left: 0px; padding-left: 5px; list-style-position: inside; }"
+        )
         current_player_terrains_v_layout.addWidget(self.terrains_list_label)
 
-        top_main_content_h_layout.addWidget(
-            self.current_player_terrains_group, 1)
+        top_main_content_h_layout.addWidget(self.current_player_terrains_group, 1)
         main_content_v_layout.addLayout(top_main_content_h_layout)
 
         # 2.1.1.c Active Effects Display
@@ -87,16 +100,17 @@ class MainGameplayView(QWidget):
         phase_actions_v_layout = QVBoxLayout(self.phase_actions_group)
 
         self.eighth_face_description_label = QLabel(
-            "Eighth Face Phase: Resolve any eighth face abilities")
+            "Eighth Face Phase: Resolve any eighth face abilities"
+        )
         phase_actions_v_layout.addWidget(self.eighth_face_description_label)
         eighth_face_input_h_layout = QHBoxLayout()
         self.eighth_face_input_field = QLineEdit()
         self.eighth_face_input_field.setPlaceholderText(
-            "Describe ability resolution...")
+            "Describe ability resolution..."
+        )
         self.eighth_face_add_button = QPushButton("Add ability")
         self.eighth_face_add_button.setMaximumWidth(120)  # Limit button width
-        self.eighth_face_add_button.clicked.connect(
-            self._on_eighth_face_add_ability)
+        self.eighth_face_add_button.clicked.connect(self._on_eighth_face_add_ability)
         eighth_face_input_h_layout.addWidget(self.eighth_face_input_field)
         eighth_face_input_h_layout.addWidget(self.eighth_face_add_button)
         phase_actions_v_layout.addLayout(eighth_face_input_h_layout)
@@ -106,38 +120,40 @@ class MainGameplayView(QWidget):
         # Maneuver Input Widget
         self.maneuver_input_widget = ManeuverInputWidget()
         self.maneuver_input_widget.maneuver_decision_made.connect(
-            self.maneuver_decision_signal.emit)
+            self.maneuver_decision_signal.emit
+        )
         self.maneuver_input_widget.maneuver_details_submitted.connect(
-            self.maneuver_input_submitted_signal.emit)
+            self.maneuver_input_submitted_signal.emit
+        )
         self.dynamic_actions_layout.addWidget(self.maneuver_input_widget)
 
         # Action Choice Layout
         self.action_choice_widget = ActionChoiceWidget()
-        self.action_choice_widget.action_selected.connect(
-            self._handle_action_selected)
+        self.action_choice_widget.action_selected.connect(self._handle_action_selected)
         self.dynamic_actions_layout.addWidget(self.action_choice_widget)
         self.action_choice_widget.hide()
 
         # Melee Action Input Layout
         self.melee_action_widget = MeleeActionWidget()
         self.melee_action_widget.attacker_results_submitted.connect(
-            self.attacker_melee_results_submitted.emit)
+            self.attacker_melee_results_submitted.emit
+        )
         self.melee_action_widget.defender_results_submitted.connect(
-            self.defender_save_results_submitted.emit)
+            self.defender_save_results_submitted.emit
+        )
         self.dynamic_actions_layout.addWidget(self.melee_action_widget)
         self.melee_action_widget.hide()
 
         self.dragon_attack_prompt_label = QLabel(
-            "<b>Dragon Attack Phase:</b> Resolve dragon attacks.")
-        self.dragon_attack_continue_button = QPushButton(
-            "Continue Past Dragon Attacks")
-        self.dragon_attack_continue_button.setMaximumWidth(
-            250)  # Limit button width
+            "<b>Dragon Attack Phase:</b> Resolve dragon attacks."
+        )
+        self.dragon_attack_continue_button = QPushButton("Continue Past Dragon Attacks")
+        self.dragon_attack_continue_button.setMaximumWidth(250)  # Limit button width
         self.dragon_attack_continue_button.clicked.connect(
-            lambda: self.game_engine.advance_phase())
+            lambda: self.game_engine.advance_phase()
+        )
         self.dynamic_actions_layout.addWidget(self.dragon_attack_prompt_label)
-        self.dynamic_actions_layout.addWidget(
-            self.dragon_attack_continue_button)
+        self.dynamic_actions_layout.addWidget(self.dragon_attack_continue_button)
 
         phase_actions_v_layout.addLayout(self.dynamic_actions_layout)
 
@@ -152,8 +168,7 @@ class MainGameplayView(QWidget):
         self.continue_button = QPushButton("Continue to Next Phase")
         self.continue_button.setMaximumWidth(220)  # Limit button width
         self.continue_button.clicked.connect(self._on_continue_clicked)
-        main_layout.addWidget(self.continue_button, 0,
-                              Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(main_layout)
 
@@ -172,8 +187,10 @@ class MainGameplayView(QWidget):
             self.eighth_face_input_field.clear()
 
     def _on_continue_clicked(self):
-        print(f"MainGameplayView: Continue button clicked. Current phase: {
-              self.game_engine.current_phase}")
+        print(
+            f"MainGameplayView: Continue button clicked. Current phase: {
+              self.game_engine.current_phase}"
+        )
         self.continue_to_next_phase_signal.emit()
 
     def _handle_action_selected(self, action_type: str):
@@ -205,12 +222,12 @@ class MainGameplayView(QWidget):
             self.player_armies_info_layout.addWidget(summary_widget)
         if not all_players_data:
             self.player_armies_info_layout.addWidget(
-                QLabel("No player data available."))
+                QLabel("No player data available.")
+            )
 
         # Update Current Player and Terrains
         current_player_name = self.game_engine.get_current_player_name()
-        self.current_player_terrains_group.setTitle(
-            f"{current_player_name}'s Turn")
+        self.current_player_terrains_group.setTitle(f"{current_player_name}'s Turn")
 
         terrains_html = "<ul style='margin-left:0px; padding-left:5px; list-style-position:inside;'>"
 
@@ -237,7 +254,7 @@ class MainGameplayView(QWidget):
         self.dragon_attack_prompt_label.hide()
         self.dragon_attack_continue_button.hide()
 
-        is_eighth_face_phase = (current_phase == constants.PHASE_EIGHTH_FACE)
+        is_eighth_face_phase = current_phase == constants.PHASE_EIGHTH_FACE
         self.eighth_face_description_label.setVisible(is_eighth_face_phase)
         self.eighth_face_input_field.setVisible(is_eighth_face_phase)
         self.eighth_face_add_button.setVisible(is_eighth_face_phase)
@@ -263,13 +280,16 @@ class MainGameplayView(QWidget):
                 self.dragon_attack_continue_button.show()
 
         # Special handling for first turn
-        if (current_phase == constants.PHASE_FIRST_MARCH and
-            hasattr(self.game_engine, '_is_very_first_turn') and
-            self.game_engine._is_very_first_turn and
-                not current_march_step):
+        if (
+            current_phase == constants.PHASE_FIRST_MARCH
+            and hasattr(self.game_engine, "_is_very_first_turn")
+            and self.game_engine._is_very_first_turn
+            and not current_march_step
+        ):
             help_key = constants.PHASE_FIRST_MARCH
         else:
             help_key = current_action_step or current_march_step or current_phase
 
         self.tabbed_widget.set_help_text(
-            self.help_model.get_main_gameplay_help(help_key))
+            self.help_model.get_main_gameplay_help(help_key)
+        )

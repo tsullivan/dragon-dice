@@ -5,6 +5,6 @@ from .tabbed_view_widget import TabbedViewWidget
 from .help_panel_widget import HelpPanelWidget
 
 __all__ = [
-    'TabbedViewWidget',
-    'HelpPanelWidget',
+    "TabbedViewWidget",
+    "HelpPanelWidget",
 ]

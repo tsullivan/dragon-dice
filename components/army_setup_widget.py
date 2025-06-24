@@ -1,33 +1,51 @@
 # components/army_setup_widget.py
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                               QPushButton) # Removed QComboBox
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+)  # Removed QComboBox
 from PySide6.QtCore import Qt, Signal, Slot
 from typing import List, Optional
 
-from models.unit_roster_model import UnitRosterModel # For type hinting
-from models.unit_model import UnitModel # For type hinting
+from models.unit_roster_model import UnitRosterModel  # For type hinting
+from models.unit_model import UnitModel  # For type hinting
 from views.unit_selection_dialog import UnitSelectionDialog
-import constants # Import constants
+import constants  # Import constants
+
 
 class ArmySetupWidget(QWidget):
     """
     A widget for setting up a single army (points and units). The name is implicit by its type.
     """
-    name_changed = Signal(str) # This signal is no longer actively used by this widget for its own name
+
+    name_changed = Signal(
+        str
+    )  # This signal is no longer actively used by this widget for its own name
     # points_changed = Signal(str, int) # No longer needed as points are derived from units
     # Signal to emit the list of UnitModel instances (as dicts) for this army
-    units_updated_signal = Signal(str, list) # Emit army_type_name and list of units (as dicts)
+    units_updated_signal = Signal(
+        str, list
+    )  # Emit army_type_name and list of units (as dicts)
 
-    def __init__(self, army_type_name: str, unit_roster: Optional[UnitRosterModel] = None, parent=None):
+    def __init__(
+        self,
+        army_type_name: str,
+        unit_roster: Optional[UnitRosterModel] = None,
+        parent=None,
+    ):
         super().__init__(parent)
         self.army_type_name = army_type_name
         self.unit_roster = unit_roster
-        self.current_units: List[UnitModel] = [] # Store UnitModel instances for this army
+        self.current_units: List[UnitModel] = (
+            []
+        )  # Store UnitModel instances for this army
 
         # Layout: Button on the left, summary on the right
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(0,0,0,0)
-        layout.setSpacing(5) # Minimal spacing
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(5)  # Minimal spacing
 
         self.manage_units_button = QPushButton(constants.MANAGE_UNITS_BUTTON_TEXT)
         self.manage_units_button.setMaximumWidth(180)  # Limit button width
@@ -38,7 +56,9 @@ class ArmySetupWidget(QWidget):
             self.manage_units_button.setToolTip("Unit roster not available.")
         layout.addWidget(self.manage_units_button)
         self.units_summary_label = QLabel(constants.DEFAULT_ARMY_UNITS_SUMMARY)
-        layout.addWidget(self.units_summary_label, 1, Qt.AlignmentFlag.AlignCenter) # Add stretch to summary
+        layout.addWidget(
+            self.units_summary_label, 1, Qt.AlignmentFlag.AlignCenter
+        )  # Add stretch to summary
 
         self._update_units_summary()
 
@@ -48,8 +68,8 @@ class ArmySetupWidget(QWidget):
         # self.name_changed.emit(self.name_input.text())
         pass
 
-    @Slot(int) # Slot for the internal QComboBox's currentIndexChanged signal
-    def _emit_points_changed_slot(self, index: int): # No longer used
+    @Slot(int)  # Slot for the internal QComboBox's currentIndexChanged signal
+    def _emit_points_changed_slot(self, index: int):  # No longer used
         pass
 
     def get_name(self) -> str:
@@ -70,7 +90,9 @@ class ArmySetupWidget(QWidget):
     def _open_unit_selection_dialog(self):
         if not self.unit_roster:
             return
-        dialog = UnitSelectionDialog(self.army_type_name, self.unit_roster, self.current_units, self)
+        dialog = UnitSelectionDialog(
+            self.army_type_name, self.unit_roster, self.current_units, self
+        )
         dialog.units_selected_signal.connect(self._handle_units_selected_from_dialog)
         dialog.exec()
 
@@ -81,7 +103,9 @@ class ArmySetupWidget(QWidget):
         """
         self.current_units = selected_units
         self._update_units_summary()
-        self.units_updated_signal.emit(self.army_type_name.lower(), self.get_current_units_as_dicts())
+        self.units_updated_signal.emit(
+            self.army_type_name.lower(), self.get_current_units_as_dicts()
+        )
 
     def get_current_units_as_dicts(self) -> List[dict]:
         return [unit.to_dict() for unit in self.current_units]

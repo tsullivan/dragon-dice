@@ -3,21 +3,25 @@ from PySide6.QtCore import Qt
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from PySide6.QtWidgets import QWidget # For type hinting parent
+    from PySide6.QtWidgets import QWidget  # For type hinting parent
+
 
 class ActiveEffectsWidget(QGroupBox):
     """
     A widget to display a list of active effects in the game.
     """
-    def __init__(self, title: str = "Active Effects", parent: Optional['QWidget'] = None):
+
+    def __init__(
+        self, title: str = "Active Effects", parent: Optional["QWidget"] = None
+    ):
         super().__init__(title, parent)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(5, 15, 5, 5) # Margins inside the group box
+        layout.setContentsMargins(5, 15, 5, 5)  # Margins inside the group box
 
         self.effects_list_widget = QListWidget()
-        self.effects_list_widget.setWordWrap(True) # Allow text to wrap
-        
+        self.effects_list_widget.setWordWrap(True)  # Allow text to wrap
+
         layout.addWidget(self.effects_list_widget)
         self.setLayout(layout)
 

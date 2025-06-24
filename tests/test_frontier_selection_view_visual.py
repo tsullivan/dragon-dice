@@ -3,12 +3,16 @@ import pytest
 from views.frontier_selection_view import FrontierSelectionView
 from tests.utils.visual_test_helpers import capture_widget_screenshot
 
+
 def test_frontier_selection_view_render(qtbot):
     """Captures a PNG of the FrontierSelectionView with mock data."""
     mock_player_names = ["Gandalf", "Saruman"]
     mock_proposed_terrains = [
         ("Gandalf", "Highland (Green, Brown)"),
-        ("Saruman", "Swamp (DarkGreen, Black)")
+        ("Saruman", "Swamp (DarkGreen, Black)"),
     ]
-    frontier_view = FrontierSelectionView(player_names=mock_player_names, proposed_frontier_terrains=mock_proposed_terrains)
+    frontier_view = FrontierSelectionView(
+        player_names=mock_player_names,
+        proposed_frontier_terrains=mock_proposed_terrains,
+    )
     capture_widget_screenshot(qtbot, frontier_view, "FrontierSelectionView_initial")

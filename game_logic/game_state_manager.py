@@ -2,24 +2,37 @@ from PySide6.QtCore import QObject, Signal
 from typing import List, Dict, Any, Optional
 import constants
 
-from models.army_model import ArmyModel # For type hinting and potential reconstruction
-from models.die_model import DieModel # Import DieModel
-from models.unit_model import UnitModel # For type hinting and potential reconstruction
+# For type hinting and potential reconstruction
+from models.army_model import ArmyModel
+from models.die_model import DieModel  # Import DieModel
+
+# For type hinting and potential reconstruction
+from models.unit_model import UnitModel
+
+
 class GameStateManager(QObject):
     """
     Manages the dynamic state of the game during gameplay.
     This includes army compositions, unit health, terrain control, etc.
     """
-    game_state_changed = Signal() # Emitted when any significant part of the game state changes
 
-    def __init__(self, initial_player_setup_data: List[Dict[str, Any]],
-                 frontier_terrain: str, distance_rolls: List[tuple[str, int]],
-                 parent: Optional[QObject] = None):
+    game_state_changed = (
+        Signal()
+    )  # Emitted when any significant part of the game state changes
+
+    def __init__(
+        self,
+        initial_player_setup_data: List[Dict[str, Any]],
+        frontier_terrain: str,
+        distance_rolls: List[tuple[str, int]],
+        parent: Optional[QObject] = None,
+    ):
         super().__init__(parent)
-        self.initial_player_setup_data = initial_player_setup_data # Keep original setup for reference
+        # Keep original setup for reference
+        self.initial_player_setup_data = initial_player_setup_data
 
         # Dynamic game state
-        self.players: Dict[str, Dict[str, Any]] = {} # Keyed by player name
+        self.players: Dict[str, Dict[str, Any]] = {}  # Keyed by player name
         # Example player entry:
         # "Player 1": {
         #     "name": "Player 1",
@@ -43,15 +56,21 @@ class GameStateManager(QObject):
         #     "reserve_pool": [] # Units available to be brought into reserves
         # }
 
-        self.terrains: Dict[str, Dict[str, Any]] = {} # Keyed by terrain name
+        self.terrains: Dict[str, Dict[str, Any]] = {}  # Keyed by terrain name
         # Example terrain entry:
         # "Frontier Name": {"name": "Frontier Name", "type": "Frontier", "face": 3, "controller": None, "armies_present": ["P1_Campaign", "P2_Campaign"]}
         # "Player 1 Home": {"name": "Player 1 Home", "type": "Home", "face": 1, "controller": "Player 1", "armies_present": ["P1_Home"]}
 
-        self._initialize_state(initial_player_setup_data, frontier_terrain, distance_rolls)
+        self._initialize_state(
+            initial_player_setup_data, frontier_terrain, distance_rolls
+        )
 
-    def _initialize_state(self, initial_player_setup_data: List[Dict[str, Any]],
-                          frontier_terrain_name: str, distance_rolls: List[tuple[str, int]]):
+    def _initialize_state(
+        self,
+        initial_player_setup_data: List[Dict[str, Any]],
+        frontier_terrain_name: str,
+        distance_rolls: List[tuple[str, int]],
+    ):
         """Initializes the game state from the setup data."""
         print("GameStateManager: Initializing state...")
 
@@ -61,16 +80,19 @@ class GameStateManager(QObject):
             self.players[player_name] = {
                 "name": player_name,
                 "home_terrain_name": p_data["home_terrain"],
-                "active_army_type": "home", # Default active army, can be changed by maneuver/action selection
-                "armies": {}, # Will be populated below
-                "selected_dragons": p_data.get("selected_dragons", []), # Store selected dragons
+                # Default active army, can be changed by maneuver/action selection
+                "active_army_type": "home",
+                "armies": {},  # Will be populated below
+                # Store selected dragons
+                "selected_dragons": p_data.get("selected_dragons", []),
                 "captured_terrains_count": 0,
                 "dead_unit_area": [],
                 "buried_unit_area": [],
-                "reserve_pool": [] # TODO: Populate with actual units based on point value later
+                "reserve_pool": [],  # TODO: Populate with actual units based on point value later
             }
             # Initialize armies for the player
-            for army_type_key, army_details in p_data.get("armies", {}).items(): # 'home', 'campaign', 'horde'
+            # 'home', 'campaign', 'horde'
+            for army_type_key, army_details in p_data.get("armies", {}).items():
                 location = ""
                 if army_type_key == "home":
                     location = p_data["home_terrain"]
@@ -79,30 +101,46 @@ class GameStateManager(QObject):
                 elif army_type_key == "horde":
                     # Horde location is more complex, depends on opponent. Placeholder for now.
                     # For simplicity, we might just mark it as "Horde" and resolve during gameplay.
-                    location = "Horde Staging" # Needs actual opponent home terrain later
+                    location = (
+                        "Horde Staging"  # Needs actual opponent home terrain later
+                    )
                 # dragon_dice_description = army_details.get("dragon_dice_description", "") # Removed
                 # parsed_dice = self._parse_dragon_dice_description(dragon_dice_description) # Removed
                 self.players[player_name]["armies"][army_type_key] = {
                     "name": army_details["name"],
-                    "points_value": army_details.get("allocated_points", army_details.get("points", 0)), # Adapt to new structure
-                    # Units will now come directly from the army_details if it's a rich structure
-                    "units": [UnitModel.from_dict(u_data).to_dict() for u_data in army_details.get("units", [])],
-                    "location": location
+                    "points_value": army_details.get(
+                        "allocated_points", army_details.get("points", 0)
+                    ),
+                    "units": [
+                        UnitModel.from_dict(u_data).to_dict()
+                        for u_data in army_details.get("units", [])
+                    ],
+                    "location": location,
                 }
 
         # Initialize terrains
         self.terrains[frontier_terrain_name] = {
-            "name": frontier_terrain_name, "type": "Frontier", "face": 1, # Default face, will be updated by distance roll if applicable
-            "controller": None, "armies_present": []
+            # Default face, will be updated by distance roll if applicable
+            "name": frontier_terrain_name,
+            "type": "Frontier",
+            "face": 1,
+            "controller": None,
+            "armies_present": [],
         }
         for roll_data in distance_rolls:
             player_name, distance = roll_data
             player_home_terrain = self.players[player_name]["home_terrain_name"]
             self.terrains[player_home_terrain] = {
-                "name": player_home_terrain, "type": "Home", "face": distance,
-                "controller": player_name, "armies_present": []
+                "name": player_home_terrain,
+                "type": "Home",
+                "face": distance,
+                "controller": player_name,
+                "armies_present": [],
             }
-        print(f"GameStateManager: Initialized Players: {list(self.players.keys())}")
+        print(
+            f"GameStateManager: Initialized Players: {
+              list(self.players.keys())}"
+        )
         print(f"GameStateManager: Initialized Terrains: {self.terrains}")
         self.game_state_changed.emit()
 
@@ -117,48 +155,68 @@ class GameStateManager(QObject):
     # - Manage summoning pool
     # - Check victory conditions (captured terrains)
 
-    def apply_damage_to_units(self, player_name: str, army_identifier: str, damage_amount: int):
+    def apply_damage_to_units(
+        self, player_name: str, army_identifier: str, damage_amount: int
+    ):
         """
         Applies damage to units in a specific army.
         This is a placeholder and needs actual unit selection/damage distribution logic.
         """
         player_data = self.get_player_data(player_name)
         if not player_data:
-            print(f"GameStateManager: Player {player_name} not found for applying damage.")
+            print(
+                f"GameStateManager: Player {
+                  player_name} not found for applying damage."
+            )
             return
 
         # TODO: The army_identifier needs to be more specific, e.g., "home", "campaign", or a unique ID.
         # For now, let's assume army_identifier refers to the 'active_army_type' if it's generic,
         # or we need a way to map it to the correct army key ('home', 'campaign', 'horde').
         # This is a simplification.
-        target_army_key = player_data.get("active_army_type", "home") # Fallback, needs improvement
-        if army_identifier != "Placeholder_Defending_Army_ID" and army_identifier in player_data.get("armies", {}):
+        target_army_key = player_data.get(
+            "active_army_type", "home"
+        )  # Fallback, needs improvement
+        if (
+            army_identifier != "Placeholder_Defending_Army_ID"
+            and army_identifier in player_data.get("armies", {})
+        ):
             target_army_key = army_identifier
 
         army = player_data.get("armies", {}).get(target_army_key)
         if not army:
-            print(f"GameStateManager: Army '{target_army_key}' for player {player_name} not found.")
+            print(
+                f"GameStateManager: Army '{
+                  target_army_key}' for player {player_name} not found."
+            )
             return
 
-        print(f"GameStateManager: Applying {damage_amount} damage to {player_name}'s {army.get('name', target_army_key)} army.")
+        print(
+            f"GameStateManager: Applying {damage_amount} damage to {
+              player_name}'s {army.get('name', target_army_key)} army."
+        )
 
         remaining_damage = damage_amount
         units_affected = False
-        for unit in list(army["units"]): # Iterate over a copy in case we remove items
+        # Iterate over a copy in case we remove items
+        for unit in list(army["units"]):
             if remaining_damage <= 0:
                 break
-            
+
             damage_to_unit = min(remaining_damage, unit["health"])
             unit["health"] -= damage_to_unit
             remaining_damage -= damage_to_unit
             units_affected = True
-            print(f"GameStateManager: Unit {unit['name']} took {damage_to_unit} damage, health now {unit['health']}.")
+            print(
+                f"GameStateManager: Unit {unit['name']} took {
+                  damage_to_unit} damage, health now {unit['health']}."
+            )
 
             if unit["health"] <= 0:
                 print(f"GameStateManager: Unit {unit['name']} defeated.")
                 army["units"].remove(unit)
                 player_data.setdefault("dead_unit_area", []).append(unit)
-        
+
         if units_affected:
             self.game_state_changed.emit()
 
@@ -187,8 +245,10 @@ class GameStateManager(QObject):
         player_data = self.get_player_data(player_name)
         if not player_data:
             return []
-        
+
         # TODO: Determine active army more dynamically (e.g., based on current march phase or selected army)
         # For now, assume 'home' army is active if nothing else is specified.
-        active_army_type = player_data.get("active_army_type", "home") # Fallback to home
+        active_army_type = player_data.get(
+            "active_army_type", "home"
+        )  # Fallback to home
         return player_data.get("armies", {}).get(active_army_type, {}).get("units", [])

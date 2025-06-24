@@ -1,12 +1,21 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QPushButton, QGroupBox)
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QGroupBox,
+)
 from PySide6.QtCore import Qt, Signal
 from typing import Optional
+
 
 class MeleeActionWidget(QWidget):
     """
     A widget for handling melee action inputs, including attacker rolls and defender saves.
     """
+
     attacker_results_submitted = Signal(str)
     defender_results_submitted = Signal(str)
 
@@ -14,7 +23,7 @@ class MeleeActionWidget(QWidget):
         super().__init__(parent)
 
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(0,0,0,0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
 
         # Attacker Section
         self.attacker_group = QGroupBox("Attacker")
@@ -25,8 +34,10 @@ class MeleeActionWidget(QWidget):
         self.attacker_melee_input.setPlaceholderText("e.g., '5 hits, 2 SAIs'")
         self.submit_attacker_melee_button = QPushButton("Submit Attacker Melee")
         self.submit_attacker_melee_button.setMaximumWidth(200)  # Limit button width
-        self.submit_attacker_melee_button.clicked.connect(self._on_submit_attacker_melee)
-        
+        self.submit_attacker_melee_button.clicked.connect(
+            self._on_submit_attacker_melee
+        )
+
         attacker_layout.addWidget(self.attacker_melee_label)
         attacker_layout.addWidget(self.attacker_melee_input)
         attacker_layout.addWidget(self.submit_attacker_melee_button)

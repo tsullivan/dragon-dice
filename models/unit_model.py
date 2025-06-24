@@ -2,8 +2,17 @@
 from typing import Dict, Any
 import constants
 
+
 class UnitModel:
-    def __init__(self, unit_id: str, name: str, unit_type: str, health: int, max_health: int, abilities: Dict[str, Any]):
+    def __init__(
+        self,
+        unit_id: str,
+        name: str,
+        unit_type: str,
+        health: int,
+        max_health: int,
+        abilities: Dict[str, Any],
+    ):
         self.unit_id = unit_id
         self.name = name
         self.unit_type = unit_type
@@ -25,7 +34,7 @@ class UnitModel:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'UnitModel':
+    def from_dict(cls, data: Dict[str, Any]) -> "UnitModel":
         return cls(
             unit_id=data.get("unit_id", "unknown_id"),
             name=data.get("name", "Unknown Unit"),

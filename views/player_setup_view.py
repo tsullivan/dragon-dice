@@ -24,7 +24,7 @@ from components.dragon_selection_widget import DragonSelectionWidget
 from components.player_identity_widget import PlayerIdentityWidget
 from components.terrain_selection_widget import (
     TerrainSelectionWidget,
-)  # Import new widget
+)
 from components.tabbed_view_widget import TabbedViewWidget
 from views.unit_selection_dialog import UnitSelectionDialog
 from models.help_text_model import HelpTextModel
@@ -48,7 +48,7 @@ class PlayerSetupView(QWidget):
         self,
         num_players: int,
         terrain_display_options: list,  # List of tuples (name, colors)
-        required_dragons: int, # No change, good comment
+        required_dragons: int,  # No change, good comment
         force_size: int,  # Total force size in points for army validation
         initial_player_data: Optional[dict] = None,
         parent=None,
@@ -67,9 +67,10 @@ class PlayerSetupView(QWidget):
         else:
             self.all_terrain_options = self.terrain_display_options
 
-        self.required_dragons = required_dragons # No change, good comment
+        self.required_dragons = required_dragons  # No change, good comment
         self.force_size = force_size  # Store total force size for army validation
-        self.max_points_per_army = force_size // 2  # Official rules: max 50% per army (rounded down)
+        # Official rules: max 50% per army (rounded down)
+        self.max_points_per_army = force_size // 2
         self.resource_manager = ResourceManager()
         self.unit_roster = UnitRosterModel(self.resource_manager)
         self.help_model = HelpTextModel()
@@ -103,16 +104,13 @@ class PlayerSetupView(QWidget):
         title_layout.addWidget(self.title_label, alignment=Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(title_layout)
 
-
         # Tabbed Interface (Game and Help)
         self.tabbed_widget = TabbedViewWidget()
 
         # Game Tab Content (Player Setup Form)
         game_content_layout = QVBoxLayout()
 
-        inputs_group = QGroupBox(
-            f"Setup for Player {self.current_player_index + 1}"
-        )
+        inputs_group = QGroupBox(f"Setup for Player {self.current_player_index + 1}")
         self.inputs_grid_layout = QGridLayout(inputs_group)
         self.inputs_grid_layout.setContentsMargins(10, 10, 10, 10)
         self.inputs_grid_layout.setSpacing(5)
@@ -125,11 +123,11 @@ class PlayerSetupView(QWidget):
 
         # Player Name with inline dice button
         self.inputs_grid_layout.addWidget(QLabel("Player Name:"), 0, 0)
-        
+
         # Create horizontal layout for player name input and dice button
         player_name_layout = QHBoxLayout()
         player_name_layout.addWidget(self.player_identity_widget.player_name_input)
-        
+
         # Small inline dice button
         self.global_randomize_button = QPushButton("🎲")
         self.global_randomize_button.setToolTip("Randomize player name")
@@ -137,7 +135,7 @@ class PlayerSetupView(QWidget):
         self.global_randomize_button.setFixedSize(30, 30)  # Small square button
         self.global_randomize_button.setStyleSheet("font-size: 12px;")  # Smaller emoji
         player_name_layout.addWidget(self.global_randomize_button)
-        
+
         # Add the horizontal layout to the grid
         player_name_widget = QWidget()
         player_name_widget.setLayout(player_name_layout)
@@ -153,22 +151,19 @@ class PlayerSetupView(QWidget):
         )
         dragon_selection_layout = QHBoxLayout(dragon_selection_group)
         dragon_selection_layout.setSpacing(10)
-        
+
         self.dragon_selection_widgets = []
         for i in range(self.required_dragons):
-            dragon_widget = DragonSelectionWidget(dragon_number=i+1)
+            dragon_widget = DragonSelectionWidget(dragon_number=i + 1)
             self.dragon_selection_widgets.append(dragon_widget)
-            dragon_widget.valueChanged.connect(
-                self._validate_and_update_button_state
-            )
+            dragon_widget.valueChanged.connect(self._validate_and_update_button_state)
             dragon_selection_layout.addWidget(dragon_widget)
-            
+
         self.inputs_grid_layout.addWidget(dragon_selection_group, 2, 0, 1, 3)
 
         # Army Setups
         self.army_setup_widgets: dict[str, ArmySetupWidget] = {}
         self.army_labels = {}
-
 
         base_row_for_armies = 3
         for i, army_type in enumerate(constants.ARMY_TYPES_ALL):
@@ -182,23 +177,28 @@ class PlayerSetupView(QWidget):
                 army_label, current_army_main_row, 0, Qt.AlignmentFlag.AlignTop
             )
 
-            army_widget = ArmySetupWidget(army_type, self.unit_roster) # max_points_per_army removed
+            # max_points_per_army removed
+            army_widget = ArmySetupWidget(army_type, self.unit_roster)
             self.army_setup_widgets[army_type] = army_widget
-            self.inputs_grid_layout.addWidget(army_widget, current_army_main_row, 1, 1, 2)
+            self.inputs_grid_layout.addWidget(
+                army_widget, current_army_main_row, 1, 1, 2
+            )
 
             detailed_units_label = QLabel(constants.NO_UNITS_SELECTED_TEXT)
             detailed_units_label.setWordWrap(True)
             self.army_detailed_units_labels[army_type] = detailed_units_label
-            self.inputs_grid_layout.addWidget(detailed_units_label, current_army_main_row + 1, 1, 1, 2)
+            self.inputs_grid_layout.addWidget(
+                detailed_units_label, current_army_main_row + 1, 1, 1, 2
+            )
 
         self.inputs_group = inputs_group
-        
+
         # Add game content to tabbed widget
         self.tabbed_widget.add_game_layout(game_content_layout)
-        
+
         # Set help content for Help tab
         self._set_player_setup_help_text()
-        
+
         main_layout.addWidget(self.tabbed_widget)
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -248,7 +248,6 @@ class PlayerSetupView(QWidget):
         self._set_player_setup_help_text()
         self.update_for_player(self.current_player_index, self.initial_player_data)
 
-
     def _set_random_player_name(self):
         # Combine Player and Army names for more variety
         all_names = []
@@ -256,7 +255,7 @@ class PlayerSetupView(QWidget):
             all_names.extend(self.preselected_names["Player"])
         if self.preselected_names.get("Army"):
             all_names.extend(self.preselected_names["Army"])
-        
+
         if all_names:
             self.player_identity_widget.set_name(random.choice(all_names))
 
@@ -314,62 +313,72 @@ class PlayerSetupView(QWidget):
         # Official Dragon Dice army assembly validation
         # Rule 1: Each army must have at least 1 unit
         # Rule 2: No army can exceed 50% of total force points (rounded down)
-        # Rule 3: Magic units cannot exceed 25% of total force points (rounded down)
+        # Rule 3: Magic units cannot exceed 50% of total force points (rounded down)
         # Rule 4: Total army points must equal selected force size
-        
+
         total_force_points = 0
         total_magic_points = 0
-        max_magic_points = self.force_size // 4  # 25% of total force size (rounded down)
-        
+        # 50% of total force size (rounded down)
+        max_magic_points = self.force_size // 2
+
         for army_type in constants.ARMY_TYPES_ALL:
             # Skip horde army for single player games
             if army_type.lower() == "horde" and self.num_players <= 1:
                 continue
-                
+
             army_widget = self.army_setup_widgets[army_type]
             current_units = army_widget.current_units
-            
+
             # Rule 1: Minimum 1 unit per army
             if len(current_units) == 0:
-                self._set_status_message(f"{army_type} Army must have at least 1 unit.", "red")
+                self._set_status_message(
+                    f"{army_type} Army must have at least 1 unit.", "red"
+                )
                 return False
-            
+
             # Rule 2: Army cannot exceed 50% of total force points
             army_points = sum(unit.max_health for unit in current_units)
             if army_points > self.max_points_per_army:
                 self._set_status_message(
-                    f"{army_type} Army ({army_points} pts) exceeds maximum {self.max_points_per_army} pts (50% of {self.force_size} pts).", 
-                    "red"
+                    f"{army_type} Army ({army_points} pts) exceeds maximum {
+                        self.max_points_per_army} pts (50% of {self.force_size} pts).",
+                    "red",
                 )
                 return False
-            
+
             # Count magic unit points for Rule 3
             for unit in current_units:
                 unit_def = self.unit_roster.get_unit_definition(unit.unit_type)
                 if unit_def and unit_def.get("unit_class_type") == "Magic":
                     total_magic_points += unit.max_health
-            
+
             total_force_points += army_points
 
-        # Rule 3: Magic units cannot exceed 25% of total force points
+        # Rule 3: Magic units cannot exceed 50% of total force points
         if total_magic_points > max_magic_points:
             self._set_status_message(
-                f"Magic units ({total_magic_points} pts) exceed maximum {max_magic_points} pts (25% of {self.force_size} pts).", 
-                "red"
+                f"Magic units ({total_magic_points} pts) exceed maximum {
+                    max_magic_points} pts (50% of {self.force_size} pts).",
+                "red",
             )
             return False
 
         # Rule 4: Total force points must equal selected force size
         if total_force_points != self.force_size:
             self._set_status_message(
-                f"Total army points ({total_force_points} pts) must equal selected force size ({self.force_size} pts).", 
-                "red"
+                f"Total army points ({total_force_points} pts) must equal selected force size ({
+                    self.force_size} pts).",
+                "red",
             )
             return False
 
         # All validation passed - show helpful reminder
         if total_force_points == 0:
-            self._set_status_message(f"Build armies totaling exactly {self.force_size} points.", "blue")
+            self._set_status_message(
+                f"Build armies totaling exactly {
+                                     self.force_size} points.",
+                "blue",
+            )
         else:
             self._set_status_message("", "black")
         return True
@@ -400,7 +409,7 @@ class PlayerSetupView(QWidget):
         if army_type in self.army_setup_widgets:
             self.army_setup_widgets[army_type]._update_units_summary()
 
-    def _update_specific_army_detailed_units_label(self, army_type: str):  # New method
+    def _update_specific_army_detailed_units_label(self, army_type: str):
         army_key = army_type.lower()
         units_in_army = self.army_units_data.get(army_key, [])
         if units_in_army:
@@ -440,10 +449,12 @@ class PlayerSetupView(QWidget):
                         widget.setValue(dragon_data)
                     else:
                         # Convert old string format to new dict format
-                        widget.setValue({
-                            "dragon_type": dragon_data,
-                            "die_type": constants.DRAGON_DIE_TYPE_DRAKE
-                        })
+                        widget.setValue(
+                            {
+                                "dragon_type": dragon_data,
+                                "die_type": constants.DRAGON_DIE_TYPE_DRAKE,
+                            }
+                        )
                 else:
                     # Set default values
                     widget.clear()
@@ -453,13 +464,13 @@ class PlayerSetupView(QWidget):
                 army_type_title_case = army_key.title()
                 if army_type_title_case in self.army_setup_widgets:
                     army_widget = self.army_setup_widgets[army_type_title_case]
-                    
+
                     army_widget.load_units_from_dicts(details.get("units", []))
 
                     self.army_units_data[army_key] = (
                         army_widget.get_current_units_as_dicts()
                     )
-                    
+
                     army_widget._update_units_summary()
                     self._update_specific_army_detailed_units_label(
                         army_type_title_case
@@ -491,7 +502,8 @@ class PlayerSetupView(QWidget):
             self.next_button.setText("Finalize Setup & Start Game")
         else:
             self.next_button.setText(
-                f"Next Player ({self.current_player_index + 2}/{self.num_players})"
+                f"Next Player ({self.current_player_index +
+                                2}/{self.num_players})"
             )
 
     def _update_horde_visibility(self):

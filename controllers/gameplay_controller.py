@@ -1,6 +1,7 @@
 from PySide6.QtCore import QObject, Slot
 from game_logic.engine import GameEngine
-import constants # Import action constants
+import constants  # Import action constants
+
 
 class GameplayController(QObject):
     def __init__(self, game_engine: GameEngine, parent=None):

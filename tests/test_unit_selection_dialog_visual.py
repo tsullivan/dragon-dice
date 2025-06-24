@@ -6,10 +6,12 @@ from models.unit_model import UnitModel
 from tests.utils.visual_test_helpers import capture_widget_screenshot
 import constants
 
+
 @pytest.fixture
 def unit_roster():
     """Provides a UnitRosterModel instance."""
     return UnitRosterModel()
+
 
 def test_unit_selection_dialog_empty(qtbot, unit_roster):
     """Captures a screenshot of the UnitSelectionDialog in its initial empty state."""
@@ -19,6 +21,7 @@ def test_unit_selection_dialog_empty(qtbot, unit_roster):
     capture_widget_screenshot(qtbot, dialog, "UnitSelectionDialog_Empty")
     # Test passes if no exceptions and screenshot is saved.
     # Dialog is modal, so we don't need to explicitly close it for screenshot.
+
 
 def test_unit_selection_dialog_with_preselected_units(qtbot, unit_roster):
     """Captures a screenshot of the UnitSelectionDialog with some units already selected."""

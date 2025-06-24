@@ -7,14 +7,17 @@ DEFAULT_FORCE_SIZE = 24
 # Dragon Requirements: 1 dragon per 24 points (or part thereof)
 POINTS_PER_DRAGON = 24
 
+
 def calculate_required_dragons(force_size_points: int) -> int:
     """Calculate required dragons based on force size points.
-    
+
     Official rules: 1 dragon per 24 points (or part thereof)
     Examples: 15 pts = 1 dragon, 24 pts = 1 dragon, 30 pts = 2 dragons, 60 pts = 3 dragons
     """
     import math
+
     return math.ceil(force_size_points / POINTS_PER_DRAGON)
+
 
 ELEMENT_COLORS = {
     "Death": "Black",
@@ -38,13 +41,13 @@ TERRAIN_DATA = [
 ]
 
 TERRAIN_ICONS = {
-    "Coastland": "🌊", # Water Wave
-    "Deadland": "💀", # Skull
-    "Flatland": "↔️", # Left-Right Arrow (representing open space)
-    "Highland": "⛰️", # Mountain
-    "Swampland": "🐸", # Frog (or some other swampy icon)
-    "Feyland": "✨", # Sparkles
-    "Wasteland": "🏜️", # Desert
+    "Coastland": "🌊",  # Water Wave
+    "Deadland": "💀",  # Skull
+    "Flatland": "↔️",  # Left-Right Arrow (representing open space)
+    "Highland": "⛰️",  # Mountain
+    "Swampland": "🐸",  # Frog (or some other swampy icon)
+    "Feyland": "✨",  # Sparkles
+    "Wasteland": "🏜️",  # Desert
 }
 
 # Game Phases
@@ -85,9 +88,7 @@ ACTION_MAGIC = "MAGIC"
 # Action Steps (Sub-steps within an action)
 ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL = "AWAITING_ATTACKER_MELEE_ROLL"
 ACTION_STEP_AWAITING_DEFENDER_SAVES = "AWAITING_DEFENDER_SAVES"
-ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL = (
-    "AWAITING_MELEE_COUNTER_ATTACK_ROLL"
-)
+ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL = "AWAITING_MELEE_COUNTER_ATTACK_ROLL"
 ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL = "AWAITING_ATTACKER_MISSILE_ROLL"
 ACTION_STEP_AWAITING_MAGIC_ROLL = "AWAITING_MAGIC_ROLL"
 
@@ -102,9 +103,7 @@ ICON_MANEUVER = "MANEUVER"  # Standard maneuver icon
 ICON_DRAGON_ATTACK_CLAW = "DRAGON_CLAW"
 ICON_DRAGON_ATTACK_BITE = "DRAGON_BITE"
 ICON_DRAGON_ATTACK_TAIL = "DRAGON_TAIL"
-ICON_DRAGON_BREATH = (
-    "DRAGON_BREATH"
-)
+ICON_DRAGON_BREATH = "DRAGON_BREATH"
 
 # Special Action Icons (SAIs) - Name constants
 SAI_BULLSEYE = "BULLSEYE"

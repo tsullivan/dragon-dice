@@ -25,8 +25,10 @@ class WelcomeView(QWidget):
     """
 
     proceed_signal = Signal()
-    player_count_selected_signal = Signal(int)  # Emits the selected player count (int)
-    force_size_selected_signal = Signal(int)  # Emits the selected force size (int)
+    # Emits the selected player count (int)
+    player_count_selected_signal = Signal(int)
+    # Emits the selected force size (int)
+    force_size_selected_signal = Signal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -47,7 +49,7 @@ class WelcomeView(QWidget):
 
         # Tabbed Interface (Game and Help)
         self.tabbed_widget = TabbedViewWidget()
-        
+
         # Game Tab Content (Selections)
         selections_group = QGroupBox()
         selections_layout = QVBoxLayout(selections_group)
@@ -59,8 +61,7 @@ class WelcomeView(QWidget):
         player_counts = [2, 3, 4]
         for count in player_counts:
             radio_button = QRadioButton(str(count))
-            self.player_count_button_group.addButton(
-                radio_button, count)
+            self.player_count_button_group.addButton(radio_button, count)
             player_count_hbox.addWidget(radio_button)
             if count == 2:
                 radio_button.setChecked(True)
@@ -77,9 +78,11 @@ class WelcomeView(QWidget):
         for size in constants.FORCE_SIZE_OPTIONS:
             # Calculate required dragons for display
             required_dragons = constants.calculate_required_dragons(size)
-            radio_button = QRadioButton(f"{size} pts ({required_dragons} dragon{'s' if required_dragons > 1 else ''})")
-            self.force_size_button_group.addButton(
-                radio_button, size)
+            radio_button = QRadioButton(
+                f"{size} pts ({required_dragons} dragon{
+                                        's' if required_dragons > 1 else ''})"
+            )
+            self.force_size_button_group.addButton(radio_button, size)
             force_size_hbox.addWidget(radio_button)
             if size == constants.DEFAULT_FORCE_SIZE:
                 radio_button.setChecked(True)
@@ -91,10 +94,10 @@ class WelcomeView(QWidget):
 
         # Add selections to Game tab
         self.tabbed_widget.add_game_content(selections_group)
-        
+
         # Set help content for Help tab
         self._set_welcome_help_text()
-        
+
         main_layout.addWidget(self.tabbed_widget)
         main_layout.addSpacerItem(
             QSpacerItem(
@@ -127,7 +130,7 @@ class WelcomeView(QWidget):
                         self.player_count_button_group.buttons()[0]
                     )
                 )
-        
+
         # Emit force size
         selected_force_button = self.force_size_button_group.checkedButton()
         if selected_force_button:
@@ -136,9 +139,7 @@ class WelcomeView(QWidget):
             )
         else:
             if self.force_size_button_group.buttons():
-                self.force_size_selected_signal.emit(
-                    constants.DEFAULT_FORCE_SIZE
-                )
+                self.force_size_selected_signal.emit(constants.DEFAULT_FORCE_SIZE)
 
     def _set_welcome_help_text(self):
         self.tabbed_widget.set_help_text(self.help_model.get_welcome_help())

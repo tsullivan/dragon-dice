@@ -5,10 +5,12 @@ from typing import List, Optional
 
 from .carousel import CarouselInputWidget
 
+
 class TerrainSelectionWidget(QWidget):
     """
     A widget for selecting Home Terrain and Proposed Frontier Terrain.
     """
+
     home_terrain_changed = Signal(str)
     frontier_proposal_changed = Signal(str)
 
@@ -28,7 +30,9 @@ class TerrainSelectionWidget(QWidget):
         # Proposed Frontier Terrain Selection
         self.frontier_proposal_label = QLabel("Proposed Frontier Terrain:")
         self.frontier_proposal_carousel = CarouselInputWidget(self.all_terrain_options)
-        self.frontier_proposal_carousel.valueChanged.connect(self.frontier_proposal_changed.emit)
+        self.frontier_proposal_carousel.valueChanged.connect(
+            self.frontier_proposal_changed.emit
+        )
         layout.addWidget(self.frontier_proposal_label, 1, 0)
         layout.addWidget(self.frontier_proposal_carousel, 1, 1)
 

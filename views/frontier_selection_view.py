@@ -1,16 +1,28 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QSpacerItem, QSizePolicy, QHBoxLayout, QButtonGroup,
-                               QTextEdit, QGroupBox)
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QSpacerItem,
+    QSizePolicy,
+    QHBoxLayout,
+    QButtonGroup,
+    QTextEdit,
+    QGroupBox,
+)
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont # Added for QFont
+from PySide6.QtGui import QFont  # Added for QFont
+
 # No change, good comment
 from models.help_text_model import HelpTextModel
 from components.tabbed_view_widget import TabbedViewWidget
+
 
 class FrontierSelectionView(QWidget):
     """
     View for selecting the first player and the frontier terrain.
     """
+
     frontier_data_submitted = Signal(str, str)
     back_signal = Signal()
 
@@ -22,7 +34,9 @@ class FrontierSelectionView(QWidget):
         self.setWindowTitle("Determine Frontier and First Player")
 
         main_layout = QVBoxLayout(self)
-        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+        main_layout.setAlignment(
+            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter
+        )
 
         # Title
         title_label = QLabel("Determine Frontier and First Player")
@@ -39,7 +53,7 @@ class FrontierSelectionView(QWidget):
         # Game Tab Content (Selections)
         selections_widget = QWidget()
         selections_v_layout = QVBoxLayout(selections_widget)
-        selections_v_layout.setContentsMargins(0,0,0,0)
+        selections_v_layout.setContentsMargins(0, 0, 0, 0)
 
         # First Player Selection
         first_player_group = QGroupBox("Select First Player")
@@ -69,7 +83,9 @@ class FrontierSelectionView(QWidget):
         self.frontier_terrain_button_group = QButtonGroup(self)
         terrain_buttons_internal_v_layout = QVBoxLayout()
         if self.proposed_frontier_terrains:
-            for i, (player_name, terrain_type) in enumerate(self.proposed_frontier_terrains):
+            for i, (player_name, terrain_type) in enumerate(
+                self.proposed_frontier_terrains
+            ):
                 button_text = f"{terrain_type} - Proposed by {player_name}"
                 button = QPushButton(button_text)
                 button.setCheckable(True)
@@ -77,7 +93,9 @@ class FrontierSelectionView(QWidget):
                 self.frontier_terrain_button_group.addButton(button, i)
                 terrain_buttons_internal_v_layout.addWidget(button)
             if self.frontier_terrain_button_group.buttons():
-                self.frontier_terrain_button_group.buttons()[0].setChecked(True) # Default
+                self.frontier_terrain_button_group.buttons()[0].setChecked(
+                    True
+                )  # Default
         else:
             no_terrains_label = QLabel("No Frontier Terrains Proposed")
             no_terrains_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -90,10 +108,13 @@ class FrontierSelectionView(QWidget):
 
         # Set help content for Help tab
         self._set_frontier_help_text()
-        
-        main_layout.addWidget(self.tabbed_widget)
-        main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
+        main_layout.addWidget(self.tabbed_widget)
+        main_layout.addSpacerItem(
+            QSpacerItem(
+                20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+            )
+        )
 
         # Navigation Buttons (Bottom)
         navigation_layout = QHBoxLayout()
@@ -122,7 +143,9 @@ class FrontierSelectionView(QWidget):
         selected_frontier_button = self.frontier_terrain_button_group.checkedButton()
 
         if not selected_player_button or not selected_frontier_button:
-            print("Error: A selection for first player and frontier terrain must be made.")
+            print(
+                "Error: A selection for first player and frontier terrain must be made."
+            )
             return
 
         selected_player_name = selected_player_button.text()

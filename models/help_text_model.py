@@ -20,11 +20,13 @@ This application will help you track game state, turns, and phases, but all dice
 <p>You are at the very beginning of setting up your Dragon Dice game. The choices made here will determine the number of players and the scale of the armies involved.</p>
 """
 
-    def get_player_setup_help(self, player_num: int, num_players: int, force_size: int = 24) -> str:
+    def get_player_setup_help(
+        self, player_num: int, num_players: int, force_size: int = 24
+    ) -> str:
         horde_army_help = ""
         if num_players > 1:
             horde_army_help = "<li><b>Horde Army:</b> This army will start at an opponent's Home Terrain. It must have at least one unit.</li>"
-        
+
         max_points_per_army = force_size // 2
 
         return f"""
@@ -129,40 +131,41 @@ If an 8 is rolled, roll again. If a 7 is rolled, turn the die down to 6. All ter
 <p><b>Current Step: Defender Save Roll (within Melee Action)</b></p>
 <p>The defending army makes a save roll. Resolve SAIs, then subtract save results from the attacker's melee results to determine damage. (Rulebook pg. 12)</p>
 <p><b>Actions:</b> Enter the defender's save results and click 'Submit Defender Saves'.</p>
-"""
+""",
         }
         # Add explanations for other phases
-        phase_explanation_map.update({
-            "EXPIRE_EFFECTS": """
+        phase_explanation_map.update(
+            {
+                "EXPIRE_EFFECTS": """
 <p><b>Current Phase: Expire Effects</b></p>
 <p>Certain ongoing effects from spells or abilities may expire at the start of the turn. Check any active effects and resolve their expiration according to the rules. (Rulebook pg. 11)</p>
 <p><b>Actions:</b> After resolving, click 'Continue' (or similar button when implemented) to proceed to the next phase.</p>
 """,
-            "EIGHTH_FACE": """
+                "EIGHTH_FACE": """
 <p><b>Current Phase: Eighth Face</b></p>
 <p>If any terrain dice are showing their 8th face, the player controlling that terrain may use its special ability. (Rulebook pg. 11, pg. 6 for terrain effects)</p>
 <p><b>Actions:</b> Resolve any 8th face abilities. Click 'Continue' to proceed.</p>
 """,
-            "DRAGON_ATTACK": """
+                "DRAGON_ATTACK": """
 <p><b>Current Phase: Dragon Attack</b></p>
 <p>The current player may have their dragons attack. Dragons can attack other dragons or armies at the same terrain. (Rulebook pg. 11, pg. 17-18 for dragon combat)</p>
 <p><b>Actions:</b> Follow prompts for dragon attacks (selecting dragons, targets, rolling dice, resolving damage). Click 'Continue' when all dragon attacks are resolved.</p>
 """,
-            "SPECIES_ABILITIES": """
+                "SPECIES_ABILITIES": """
 <p><b>Current Phase: Species Abilities</b></p>
 <p>The current player may use certain special abilities of their units, often indicated by SAIs (Special Action Icons) or described in the species rules. (Rulebook pg. 11, pg. 21+ for species)</p>
 <p><b>Actions:</b> Announce and resolve any species abilities. Click 'Continue' to proceed.</p>
 """,
-            "RESERVES": """
+                "RESERVES": """
 <p><b>Current Phase: Reserves</b></p>
 <p>The current player may bring units from their Summoning Pool into their Reserve Area, or promote units already in Reserves. (Rulebook pg. 11, pg. 16 for reserves)</p>
 <p><b>Actions:</b> Manage your reserves. Click 'Continue' to end your turn.</p>
-"""
-        })
-
+""",
+            }
+        )
 
         phase_explanation = phase_explanation_map.get(
             current_step,
-            f"<p><b>Current Step: {current_step.replace('_', ' ').title()}</b></p><p>Follow the on-screen prompts and refer to the rulebook for detailed rules for this step.</p>"
+            f"<p><b>Current Step: {current_step.replace('_', ' ').title()}</b></p><p>Follow the on-screen prompts and refer to the rulebook for detailed rules for this step.</p>",
         )
         return f"<html><body>{ui_explanation}{phase_explanation}</body></html>"

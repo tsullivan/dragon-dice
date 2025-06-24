@@ -111,7 +111,7 @@ class AppDataModel(QObject):
 
     def get_required_dragon_count(self) -> int:
         """Calculate required dragons based on current force size.
-        
+
         Official Dragon Dice rules: 1 dragon per 24 points (or part thereof)
         """
         return calculate_required_dragons(self._force_size)
@@ -152,7 +152,7 @@ class AppDataModel(QObject):
 
         # Import GameEngine here to avoid circular import
         from game_logic.engine import GameEngine
-        
+
         self._game_engine = GameEngine(
             self._player_setup_data_list,
             self._first_player_name,

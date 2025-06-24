@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
         self.switch_view(welcome_widget)
 
     def show_player_setup_view(self):
-        if self.data_model._num_players is None: # _point_value check removed
+        if self.data_model._num_players is None:  # _point_value check removed
             print(
                 "Error: Number of players or point value not set before proceeding to player setup."
             )
@@ -146,9 +146,7 @@ class MainWindow(QMainWindow):
     def show_frontier_selection_view(self):
         print("All player setups complete. Transitioning to Frontier Selection...")
         player_names = self.data_model.get_player_names()
-        proposed_terrains = (
-            self.data_model.get_proposed_frontier_terrains()
-        )
+        proposed_terrains = self.data_model.get_proposed_frontier_terrains()
 
         if not player_names or not proposed_terrains:
             print(
@@ -169,11 +167,16 @@ class MainWindow(QMainWindow):
 
     def _go_back_to_last_player_setup(self):
         """Navigates back to the setup screen of the last configured player."""
-        if self.data_model._num_players is not None and self.data_model._num_players > 0:
+        if (
+            self.data_model._num_players is not None
+            and self.data_model._num_players > 0
+        ):
             last_player_idx = self.data_model._num_players - 1
             self.data_model.current_setup_player_index = last_player_idx
 
-            if self.data_model._num_players is None: # Check num_players instead of point_value
+            if (
+                self.data_model._num_players is None
+            ):  # Check num_players instead of point_value
                 self.show_welcome_view()
                 return
 
@@ -191,10 +194,16 @@ class MainWindow(QMainWindow):
                     current_player_index=last_player_idx,
                     initial_player_data=player_data_to_load,
                 )
-                self.player_setup_view_instance.player_data_finalized.connect(self.handle_player_data_finalized)
-                self.player_setup_view_instance.back_signal.connect(self.handle_player_setup_back)
+                self.player_setup_view_instance.player_data_finalized.connect(
+                    self.handle_player_data_finalized
+                )
+                self.player_setup_view_instance.back_signal.connect(
+                    self.handle_player_setup_back
+                )
             else:
-                self.player_setup_view_instance.update_for_player(last_player_idx, player_data_to_load)
+                self.player_setup_view_instance.update_for_player(
+                    last_player_idx, player_data_to_load
+                )
             self.switch_view(self.player_setup_view_instance)
         else:
             self.show_welcome_view()
@@ -223,9 +232,7 @@ class MainWindow(QMainWindow):
             f"Game engine initialized. Transitioning to Main Gameplay View for player: {game_engine_instance.get_current_player_name()}"
         )
 
-        self.current_controller = GameplayController(
-            game_engine_instance
-        )
+        self.current_controller = GameplayController(game_engine_instance)
         gameplay_view = MainGameplayView(game_engine_instance)
         gameplay_view.maneuver_decision_signal.connect(
             self.current_controller.handle_maneuver_decision
