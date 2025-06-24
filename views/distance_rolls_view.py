@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont # Added for QFont
 # No change, good comment
 from models.help_text_model import HelpTextModel
-from components.help_panel_widget import HelpPanelWidget
+from components.tabbed_view_widget import TabbedViewWidget
 
 class DistanceRollsView(QWidget):
     """
@@ -42,10 +42,10 @@ class DistanceRollsView(QWidget):
         frontier_info_label.setFont(font)
         main_layout.addWidget(frontier_info_label)
 
-        # Middle Section (Inputs on Left, Help on Right)
-        middle_section_layout = QHBoxLayout()
+        # Tabbed Interface (Game and Help)
+        self.tabbed_widget = TabbedViewWidget()
 
-        # Left Side: Distance Roll Inputs
+        # Game Tab Content (Distance Roll Inputs)
         inputs_widget = QWidget()
         inputs_v_layout = QVBoxLayout(inputs_widget)
         inputs_v_layout.setContentsMargins(0,0,0,0)
@@ -63,6 +63,8 @@ class DistanceRollsView(QWidget):
 
             label_text = f"{player_name} (Home: {home_terrain}):"
             roll_combo_box = QComboBox()
+            roll_combo_box.setSizePolicy(roll_combo_box.sizePolicy().horizontalPolicy(), roll_combo_box.sizePolicy().verticalPolicy())
+            roll_combo_box.setMaximumWidth(80)  # Limit width since it only shows numbers 1-6
             for val in distance_allowed_values:
                 roll_combo_box.addItem(str(val), val)
             if distance_allowed_values:
@@ -73,14 +75,13 @@ class DistanceRollsView(QWidget):
         inputs_v_layout.addWidget(distance_rolls_group)
         inputs_v_layout.addStretch(1)
 
-        middle_section_layout.addWidget(inputs_widget, 1)
-
-        # Right Side: Help Panel
-        self.help_panel = HelpPanelWidget("Info (Help Panel)")
+        # Add inputs to Game tab
+        self.tabbed_widget.add_game_content(inputs_widget)
+        
+        # Set help content for Help tab
         self._set_distance_rolls_help_text()
-        middle_section_layout.addWidget(self.help_panel, 1)
-
-        main_layout.addLayout(middle_section_layout)
+        
+        main_layout.addWidget(self.tabbed_widget)
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(self.status_label)
@@ -91,10 +92,12 @@ class DistanceRollsView(QWidget):
         navigation_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.back_button = QPushButton("Back")
+        self.back_button.setMaximumWidth(120)  # Limit button width
         self.back_button.clicked.connect(self.back_signal.emit)
         navigation_layout.addWidget(self.back_button)
 
         self.submit_button = QPushButton("Submit All Rolls")
+        self.submit_button.setMaximumWidth(180)  # Limit button width
         if not self.player_setup_data:
             self.submit_button.setEnabled(False)
         self.submit_button.clicked.connect(self._on_submit_rolls)
@@ -121,6 +124,6 @@ class DistanceRollsView(QWidget):
 
 
     def _set_distance_rolls_help_text(self):
-        self.help_panel.set_help_text(
+        self.tabbed_widget.set_help_text(
             self.help_model.get_distance_rolls_help(self.frontier_terrain)
         )

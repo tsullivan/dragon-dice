@@ -10,7 +10,7 @@ from components.player_summary_widget import PlayerSummaryWidget
 from components.melee_action_widget import MeleeActionWidget
 from components.maneuver_input_widget import ManeuverInputWidget
 from components.action_choice_widget import ActionChoiceWidget
-from components.help_panel_widget import HelpPanelWidget
+from components.tabbed_view_widget import TabbedViewWidget
 from components.active_effects_widget import ActiveEffectsWidget
 import constants
 
@@ -45,10 +45,10 @@ class MainGameplayView(QWidget):
         self.phase_title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(self.phase_title_label)
 
-        # 2. Middle Section (Main Content + Help Panel)
-        middle_section_layout = QHBoxLayout()
+        # 2. Tabbed Interface (Game and Help)
+        self.tabbed_widget = TabbedViewWidget()
 
-        # 2.1. Left Side: Main Gameplay Content
+        # Game Tab Content (Main Gameplay Content)
         main_content_widget = QWidget()
         main_content_v_layout = QVBoxLayout(main_content_widget)
         main_content_v_layout.setContentsMargins(0,0,0,0)
@@ -88,6 +88,7 @@ class MainGameplayView(QWidget):
         self.eighth_face_input_field = QLineEdit()
         self.eighth_face_input_field.setPlaceholderText("Describe ability resolution...")
         self.eighth_face_add_button = QPushButton("Add ability")
+        self.eighth_face_add_button.setMaximumWidth(120)  # Limit button width
         self.eighth_face_add_button.clicked.connect(self._on_eighth_face_add_ability)
         eighth_face_input_h_layout.addWidget(self.eighth_face_input_field)
         eighth_face_input_h_layout.addWidget(self.eighth_face_add_button)
@@ -116,6 +117,7 @@ class MainGameplayView(QWidget):
 
         self.dragon_attack_prompt_label = QLabel("<b>Dragon Attack Phase:</b> Resolve dragon attacks.")
         self.dragon_attack_continue_button = QPushButton("Continue Past Dragon Attacks")
+        self.dragon_attack_continue_button.setMaximumWidth(250)  # Limit button width
         self.dragon_attack_continue_button.clicked.connect(lambda: self.game_engine.advance_phase())
         self.dynamic_actions_layout.addWidget(self.dragon_attack_prompt_label)
         self.dynamic_actions_layout.addWidget(self.dragon_attack_continue_button)
@@ -124,16 +126,15 @@ class MainGameplayView(QWidget):
         phase_actions_v_layout.addStretch(1)
 
         main_content_v_layout.addWidget(self.phase_actions_group)
-        middle_section_layout.addWidget(main_content_widget, 3)
-
-        # 2.2. Right Side: Help Panel
-        self.help_panel = HelpPanelWidget("Info (Help Panel)") # Use the new component
-        middle_section_layout.addWidget(self.help_panel, 1)
-
-        main_layout.addLayout(middle_section_layout)
+        
+        # Add main content to Game tab
+        self.tabbed_widget.add_game_content(main_content_widget)
+        
+        main_layout.addWidget(self.tabbed_widget)
 
         # 3. Continue Button
         self.continue_button = QPushButton("Continue to Next Phase")
+        self.continue_button.setMaximumWidth(220)  # Limit button width
         self.continue_button.clicked.connect(self._on_continue_clicked)
         main_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
 
@@ -251,4 +252,4 @@ class MainGameplayView(QWidget):
         else:
             help_key = current_action_step or current_march_step or current_phase
         
-        self.help_panel.set_help_text(self.help_model.get_main_gameplay_help(help_key))
+        self.tabbed_widget.set_help_text(self.help_model.get_main_gameplay_help(help_key))

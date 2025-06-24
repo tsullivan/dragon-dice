@@ -25,7 +25,7 @@ from components.player_identity_widget import PlayerIdentityWidget
 from components.terrain_selection_widget import (
     TerrainSelectionWidget,
 )  # Import new widget
-from components.help_panel_widget import HelpPanelWidget # No change, good comment
+from components.tabbed_view_widget import TabbedViewWidget
 from views.unit_selection_dialog import UnitSelectionDialog
 from models.help_text_model import HelpTextModel
 from models.unit_roster_model import UnitRosterModel
@@ -105,9 +105,9 @@ class PlayerSetupView(QWidget):
         title_layout.addStretch(1)
         main_layout.addLayout(title_layout)
 
-        # Informational text for required dragons
+        # Informational text for force size requirement
         self.dragon_info_label = QLabel(
-            f"Reminder: You must bring {self.required_dragons} dragon(s) to this game."
+            f"Reminder: You must build armies totaling exactly {self.force_size} points. You also need {self.required_dragons} dragon(s) for this game."
         )
         dragon_font = self.dragon_info_label.font() # No change, good comment
         dragon_font.setPointSize(dragon_font.pointSize() - 2)
@@ -116,11 +116,11 @@ class PlayerSetupView(QWidget):
             self.dragon_info_label, alignment=Qt.AlignmentFlag.AlignCenter
         )
 
-        # Middle Section (Inputs and Help Panel)
-        middle_section_layout = QHBoxLayout()
+        # Tabbed Interface (Game and Help)
+        self.tabbed_widget = TabbedViewWidget()
 
-        # Left Side (Inputs Table)
-        left_side_layout = QVBoxLayout()
+        # Game Tab Content (Player Setup Form)
+        game_content_layout = QVBoxLayout()
 
         inputs_group = QGroupBox(
             f"Setup for Player {self.current_player_index + 1}"
@@ -128,7 +128,7 @@ class PlayerSetupView(QWidget):
         self.inputs_grid_layout = QGridLayout(inputs_group)
         self.inputs_grid_layout.setContentsMargins(10, 10, 10, 10)
         self.inputs_grid_layout.setSpacing(5)
-        left_side_layout.addWidget(inputs_group)
+        game_content_layout.addWidget(inputs_group)
 
         # Instantiate PlayerIdentityWidget to get its components
         self.player_identity_widget = PlayerIdentityWidget(
@@ -207,13 +207,14 @@ class PlayerSetupView(QWidget):
         self.inputs_grid_layout.setColumnStretch(2, 1)
 
         self.inputs_group = inputs_group
-        middle_section_layout.addLayout(left_side_layout, 1)
-
-        # Right Side (Help Panel)
-        self.help_panel = HelpPanelWidget("Help")
-        middle_section_layout.addWidget(self.help_panel, 1)
-
-        main_layout.addLayout(middle_section_layout)
+        
+        # Add game content to tabbed widget
+        self.tabbed_widget.add_game_layout(game_content_layout)
+        
+        # Set help content for Help tab
+        self._set_player_setup_help_text()
+        
+        main_layout.addWidget(self.tabbed_widget)
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(
@@ -230,12 +231,14 @@ class PlayerSetupView(QWidget):
         navigation_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.back_button = QPushButton("Back")
+        self.back_button.setMaximumWidth(120)  # Limit button width
         self.back_button.clicked.connect(
             lambda: self.back_signal.emit(self.current_player_index)
         )
         navigation_layout.addWidget(self.back_button)
 
         self.next_button = QPushButton("Next Player")
+        self.next_button.setMaximumWidth(200)  # Limit button width
         self.next_button.clicked.connect(self._handle_next_action)
         navigation_layout.addWidget(self.next_button)
 
@@ -368,7 +371,7 @@ class PlayerSetupView(QWidget):
 
     def _set_player_setup_help_text(self):
         player_num_for_display = self.current_player_index + 1
-        self.help_panel.set_help_text(
+        self.tabbed_widget.set_help_text(
             self.help_model.get_player_setup_help(
                 player_num_for_display, self.num_players, self.force_size
             )

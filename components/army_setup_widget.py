@@ -30,6 +30,7 @@ class ArmySetupWidget(QWidget):
         layout.setSpacing(5) # Minimal spacing
 
         self.manage_units_button = QPushButton(constants.MANAGE_UNITS_BUTTON_TEXT)
+        self.manage_units_button.setMaximumWidth(180)  # Limit button width
         if self.unit_roster:
             self.manage_units_button.clicked.connect(self._open_unit_selection_dialog)
         else:

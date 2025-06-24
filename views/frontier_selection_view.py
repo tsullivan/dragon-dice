@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont # Added for QFont
 # No change, good comment
 from models.help_text_model import HelpTextModel
-from components.help_panel_widget import HelpPanelWidget
+from components.tabbed_view_widget import TabbedViewWidget
 
 class FrontierSelectionView(QWidget):
     """
@@ -33,10 +33,10 @@ class FrontierSelectionView(QWidget):
         title_label.setFont(font)
         main_layout.addWidget(title_label)
 
-        # Middle Section (Selections on Left, Help on Right)
-        middle_section_layout = QHBoxLayout()
+        # Tabbed Interface (Game and Help)
+        self.tabbed_widget = TabbedViewWidget()
 
-        # Left Side: Selections
+        # Game Tab Content (Selections)
         selections_widget = QWidget()
         selections_v_layout = QVBoxLayout(selections_widget)
         selections_v_layout.setContentsMargins(0,0,0,0)
@@ -86,14 +86,13 @@ class FrontierSelectionView(QWidget):
         selections_v_layout.addWidget(frontier_terrain_group)
         selections_v_layout.addStretch(1)
 
-        middle_section_layout.addWidget(selections_widget, 1)
-
-        # Right Side: Help Panel
-        self.help_panel = HelpPanelWidget("Info (Help Panel)")
+        # Add selections to Game tab
+        self.tabbed_widget.add_game_content(selections_widget)
+        
+        # Set help content for Help tab
         self._set_frontier_help_text()
-        middle_section_layout.addWidget(self.help_panel, 1)
-
-        main_layout.addLayout(middle_section_layout)
+        
+        main_layout.addWidget(self.tabbed_widget)
         main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
 
@@ -102,10 +101,12 @@ class FrontierSelectionView(QWidget):
         navigation_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.back_button = QPushButton("Back")
+        self.back_button.setMaximumWidth(120)  # Limit button width
         self.back_button.clicked.connect(self.back_signal.emit)
         navigation_layout.addWidget(self.back_button)
 
         self.submit_button = QPushButton("Submit Selections")
+        self.submit_button.setMaximumWidth(180)  # Limit button width
         if not self.player_names or not self.proposed_frontier_terrains:
             self.submit_button.setEnabled(False)
         self.submit_button.clicked.connect(self._on_submit)
@@ -115,7 +116,7 @@ class FrontierSelectionView(QWidget):
         self.setLayout(main_layout)
 
     def _set_frontier_help_text(self):
-        self.help_panel.set_help_text(self.help_model.get_frontier_selection_help())
+        self.tabbed_widget.set_help_text(self.help_model.get_frontier_selection_help())
 
     def _on_submit(self):
         selected_player_button = self.first_player_button_group.checkedButton()

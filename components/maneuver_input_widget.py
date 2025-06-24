@@ -24,10 +24,12 @@ class ManeuverInputWidget(QWidget):
         decision_layout.setContentsMargins(0,0,0,0)
 
         self._maneuver_yes_button = QPushButton("Choose Army & Maneuver: Yes")
+        self._maneuver_yes_button.setMaximumWidth(250)  # Limit button width
         self._maneuver_yes_button.clicked.connect(self._on_maneuver_yes)
         decision_layout.addWidget(self._maneuver_yes_button)
 
         self._maneuver_no_button = QPushButton("Choose Army & Maneuver: No")
+        self._maneuver_no_button.setMaximumWidth(250)  # Limit button width
         self._maneuver_no_button.clicked.connect(self._on_maneuver_no)
         decision_layout.addWidget(self._maneuver_no_button)
 
@@ -46,6 +48,7 @@ class ManeuverInputWidget(QWidget):
         input_layout.addWidget(self._maneuver_input_field, 1) # Input field takes more space
 
         self._submit_maneuver_button = QPushButton("Submit Maneuver")
+        self._submit_maneuver_button.setMaximumWidth(180)  # Limit button width
         self._submit_maneuver_button.clicked.connect(self._on_submit_details)
         input_layout.addWidget(self._submit_maneuver_button)
         

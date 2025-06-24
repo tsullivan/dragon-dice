@@ -34,9 +34,18 @@ class UnitSelectionDialog(QDialog):
 
         selected_units_group = QVBoxLayout()
         selected_units_group.addWidget(QLabel("Units in Army:"))
-        self.selected_units_list = QListWidget()
-        self.selected_units_list.itemDoubleClicked.connect(self._remove_selected_unit)
-        selected_units_group.addWidget(self.selected_units_list)
+        self.selected_units_table = QTableWidget()
+        self.selected_units_table.setColumnCount(3)
+        self.selected_units_table.setHorizontalHeaderLabels(["Unit Name", "Class Type", "Health Points"])
+        self.selected_units_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.selected_units_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.selected_units_table.doubleClicked.connect(self._remove_selected_unit_from_table)
+        # Auto-resize columns to content
+        header = self.selected_units_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) 
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        selected_units_group.addWidget(self.selected_units_table)
         main_area_layout.addLayout(selected_units_group, 1)
 
         layout.addLayout(main_area_layout)
@@ -46,7 +55,7 @@ class UnitSelectionDialog(QDialog):
         self.button_box.rejected.connect(self.reject)
         layout.addWidget(self.button_box)
 
-        self._populate_selected_units_list()
+        self._populate_selected_units_table()
 
     def _sort_units_for_display(self, units_list):
         """
@@ -98,14 +107,21 @@ class UnitSelectionDialog(QDialog):
             tab_layout.addWidget(table)
             self.available_units_tabs.addTab(tab_content_widget, species)
 
-    def _populate_selected_units_list(self):
-        self.selected_units_list.clear()
-        for unit in self.selected_units:
-            # item_text = f"{unit.name} ({unit.points_cost} pts) - Type: {unit.unit_type}" # points_cost removed
-            item_text = f"{unit.name} - Type: {unit.unit_type}"
-            item = QListWidgetItem(item_text)
-            item.setData(Qt.ItemDataRole.UserRole, unit.unit_id)
-            self.selected_units_list.addItem(item)
+    def _populate_selected_units_table(self):
+        self.selected_units_table.setRowCount(len(self.selected_units))
+        for row, unit in enumerate(self.selected_units):
+            # Unit Name
+            name_item = QTableWidgetItem(unit.name)
+            name_item.setData(Qt.ItemDataRole.UserRole, unit.unit_id)
+            self.selected_units_table.setItem(row, 0, name_item)
+            
+            # Class Type
+            class_item = QTableWidgetItem(unit.unit_class_type)
+            self.selected_units_table.setItem(row, 1, class_item)
+            
+            # Health Points
+            health_item = QTableWidgetItem(str(unit.max_health))
+            self.selected_units_table.setItem(row, 2, health_item)
 
     @Slot(int, int)
     def _table_cell_clicked(self, row: int, column: int):
@@ -128,13 +144,15 @@ class UnitSelectionDialog(QDialog):
         if new_unit:
             self.selected_units.append(new_unit)
             print(f"Selected (added instance of): {new_unit.name}")
-        self._populate_selected_units_list()
+        self._populate_selected_units_table()
 
-    @Slot(QListWidgetItem)
-    def _remove_selected_unit(self, item: QListWidgetItem):
-        unit_id_to_remove = item.data(Qt.ItemDataRole.UserRole)
-        self.selected_units = [u for u in self.selected_units if u.unit_id != unit_id_to_remove]
-        self._populate_selected_units_list()
+    @Slot()
+    def _remove_selected_unit_from_table(self):
+        current_row = self.selected_units_table.currentRow()
+        if current_row >= 0 and current_row < len(self.selected_units):
+            unit_to_remove = self.selected_units[current_row]
+            self.selected_units = [u for u in self.selected_units if u.unit_id != unit_to_remove.unit_id]
+            self._populate_selected_units_table()
 
     def get_selected_units(self) -> List[UnitModel]:
         return self.selected_units

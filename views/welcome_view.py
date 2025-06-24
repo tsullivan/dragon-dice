@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, Slot
 
 from models.help_text_model import HelpTextModel
-from components.help_panel_widget import HelpPanelWidget
+from components.tabbed_view_widget import TabbedViewWidget
 import constants
 
 
@@ -45,10 +45,10 @@ class WelcomeView(QWidget):
         title_label.setFont(font)
         main_layout.addWidget(title_label)
 
-        # Middle Section (Selections and Info Panel)
-        middle_section_layout = QHBoxLayout()
-
-        # Left Side (Selections)
+        # Tabbed Interface (Game and Help)
+        self.tabbed_widget = TabbedViewWidget()
+        
+        # Game Tab Content (Selections)
         selections_group = QGroupBox()
         selections_layout = QVBoxLayout(selections_group)
 
@@ -89,14 +89,13 @@ class WelcomeView(QWidget):
         )
         selections_layout.addWidget(force_size_group)
 
-        middle_section_layout.addWidget(selections_group)
-
-        # Right Side (Info Panel)
-        self.help_panel = HelpPanelWidget("Info (Help Panel)")
+        # Add selections to Game tab
+        self.tabbed_widget.add_game_content(selections_group)
+        
+        # Set help content for Help tab
         self._set_welcome_help_text()
-        middle_section_layout.addWidget(self.help_panel, 1)
-
-        main_layout.addLayout(middle_section_layout)
+        
+        main_layout.addWidget(self.tabbed_widget)
         main_layout.addSpacerItem(
             QSpacerItem(
                 20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
@@ -105,6 +104,7 @@ class WelcomeView(QWidget):
 
         # Proceed Button
         self.proceed_button = QPushButton("Proceed to Player Setup")
+        self.proceed_button.setMaximumWidth(220)  # Limit button width
         self.proceed_button.clicked.connect(self.proceed_signal.emit)
         main_layout.addWidget(self.proceed_button, 0, Qt.AlignmentFlag.AlignCenter)
 
@@ -141,4 +141,4 @@ class WelcomeView(QWidget):
                 )
 
     def _set_welcome_help_text(self):
-        self.help_panel.set_help_text(self.help_model.get_welcome_help())
+        self.tabbed_widget.set_help_text(self.help_model.get_welcome_help())

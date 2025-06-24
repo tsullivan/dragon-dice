@@ -24,6 +24,7 @@ class MeleeActionWidget(QWidget):
         self.attacker_melee_input = QLineEdit()
         self.attacker_melee_input.setPlaceholderText("e.g., '5 hits, 2 SAIs'")
         self.submit_attacker_melee_button = QPushButton("Submit Attacker Melee")
+        self.submit_attacker_melee_button.setMaximumWidth(200)  # Limit button width
         self.submit_attacker_melee_button.clicked.connect(self._on_submit_attacker_melee)
         
         attacker_layout.addWidget(self.attacker_melee_label)
@@ -39,6 +40,7 @@ class MeleeActionWidget(QWidget):
         self.defender_save_input = QLineEdit()
         self.defender_save_input.setPlaceholderText("e.g., '3 saves'")
         self.submit_defender_save_button = QPushButton("Submit Defender Saves")
+        self.submit_defender_save_button.setMaximumWidth(200)  # Limit button width
         self.submit_defender_save_button.clicked.connect(self._on_submit_defender_saves)
 
         defender_layout.addWidget(self.defender_save_label)
