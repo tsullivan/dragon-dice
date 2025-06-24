@@ -24,6 +24,62 @@ class ActionResolver(QObject):
         super().__init__(parent)
         self.game_state_manager = game_state_manager
         self.effect_manager = effect_manager
+        
+        # Store context for determining target armies
+        self._current_combat_location = None
+        self._current_attacking_army = None
+        self._current_defending_army = None
+
+    def set_combat_context(self, location: str = None, attacking_army_id: str = None, defending_army_id: str = None):
+        """Set the context for combat to determine specific armies being involved."""
+        self._current_combat_location = location
+        self._current_attacking_army = attacking_army_id
+        self._current_defending_army = defending_army_id
+    
+    def determine_defending_army_identifier(self, defending_player_name: str, combat_location: str = None) -> str:
+        """
+        Determine the specific army identifier for the defending player.
+        Returns a specific army identifier instead of the placeholder.
+        """
+        # If we have explicit defending army context, use it
+        if self._current_defending_army:
+            return self._current_defending_army
+        
+        # If we have a combat location, find armies at that location
+        if combat_location or self._current_combat_location:
+            location = combat_location or self._current_combat_location
+            armies_at_location = self.game_state_manager.get_all_armies_at_location(defending_player_name, location)
+            
+            if len(armies_at_location) == 1:
+                # Only one army at location, that's the target
+                army_data = armies_at_location[0]
+                return army_data.get("unique_id", f"{defending_player_name}_{army_data['army_type']}")
+            elif len(armies_at_location) > 1:
+                # Multiple armies - prioritize by type (home > campaign > horde)
+                priority_order = ["home", "campaign", "horde"]
+                for army_type in priority_order:
+                    for army_data in armies_at_location:
+                        if army_data["army_type"] == army_type:
+                            return army_data.get("unique_id", f"{defending_player_name}_{army_type}")
+        
+        # Fallback to active army
+        active_army_type = self.game_state_manager.get_active_army_type(defending_player_name)
+        if active_army_type:
+            return self.game_state_manager.generate_army_identifier(defending_player_name, active_army_type)
+        
+        # Final fallback to home army
+        return self.game_state_manager.generate_army_identifier(defending_player_name, "home")
+    
+    def determine_attacking_army_identifier(self, attacking_player_name: str, combat_location: str = None) -> str:
+        """
+        Determine the specific army identifier for the attacking player.
+        """
+        # If we have explicit attacking army context, use it
+        if self._current_attacking_army:
+            return self._current_attacking_army
+        
+        # Use same logic as defending army determination
+        return self.determine_defending_army_identifier(attacking_player_name, combat_location)
 
     # This method might be too generic; specific methods per action type are better.
     def resolve_melee_attack(
@@ -298,11 +354,11 @@ class ActionResolver(QObject):
         )
 
         # --- Apply Damage ---
-        # Apply damage to the defending army
-        # TODO: Determine the specific army identifier being attacked (currently using placeholder)
+        # Apply damage to the defending army using specific army identifier
         if final_damage > 0:
+            defending_army_id = self.determine_defending_army_identifier(defending_player_name)
             self.game_state_manager.apply_damage_to_units(
-                defending_player_name, constants.PLACEHOLDER_DEFENDING_ARMY_ID, final_damage
+                defending_player_name, defending_army_id, final_damage
             )
             print(f"ActionResolver: Applied {final_damage} damage to {defending_player_name}'s army")
 
@@ -515,8 +571,9 @@ class ActionResolver(QObject):
         
         # Apply missile damage directly (no saves)
         if missile_hits > 0:
+            defending_army_id = self.determine_defending_army_identifier(defending_player_name)
             self.game_state_manager.apply_damage_to_units(
-                defending_player_name, constants.PLACEHOLDER_DEFENDING_ARMY_ID, missile_hits
+                defending_player_name, defending_army_id, missile_hits
             )
         
         self.action_resolved.emit({
@@ -605,8 +662,10 @@ class ActionResolver(QObject):
         
         # Apply counter-attack damage directly
         if counter_hits > 0:
+            # Counter-attack targets the original attacker's army
+            original_attacker_army_id = self.determine_attacking_army_identifier(original_attacker_name)
             self.game_state_manager.apply_damage_to_units(
-                original_attacker_name, constants.PLACEHOLDER_DEFENDING_ARMY_ID, counter_hits
+                original_attacker_name, original_attacker_army_id, counter_hits
             )
             print(f"ActionResolver: Counter-attack dealt {counter_hits} damage to {original_attacker_name}")
         

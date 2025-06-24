@@ -88,7 +88,8 @@ class GameStateManager(QObject):
                 "captured_terrains_count": 0,
                 "dead_unit_area": [],
                 "buried_unit_area": [],
-                "reserve_pool": [],  # TODO: Populate with actual units based on point value later
+                "reserve_pool": [],  # Available units not yet deployed (populated below)
+                "reserve_area": [],  # Active game location for tactical repositioning
             }
             # Initialize armies for the player
             # 'home', 'campaign', 'horde'
@@ -117,6 +118,9 @@ class GameStateManager(QObject):
                     ],
                     "location": location,
                 }
+            
+            # Populate reserve pool with available units based on point allocation
+            self._populate_reserve_pool(player_name, p_data)
 
         # Initialize terrains
         self.terrains[frontier_terrain_name] = {
@@ -137,6 +141,9 @@ class GameStateManager(QObject):
                 "controller": player_name,
                 "armies_present": [],
             }
+        # Add unique identifiers to all armies
+        self.update_army_identifiers_to_specific()
+        
         print(
             f"GameStateManager: Initialized Players: {
               list(self.players.keys())}"
@@ -144,18 +151,164 @@ class GameStateManager(QObject):
         print(f"GameStateManager: Initialized Terrains: {self.terrains}")
         self.game_state_changed.emit()
 
+    def _populate_reserve_pool(self, player_name: str, player_setup_data: Dict[str, Any]):
+        """
+        Populate the reserve pool with units available for summoning/reinforcement.
+        Based on Dragon Dice rules, this includes:
+        1. Units from the total force allocation not deployed to armies
+        2. Unassigned/excess units from force construction
+        3. Special units like dragons (handled separately in summoning pool)
+        """
+        player_data = self.players.get(player_name)
+        if not player_data:
+            return
+        
+        # Calculate total points allocated to armies
+        total_army_points = 0
+        for army_type, army_data in player_data.get("armies", {}).items():
+            total_army_points += army_data.get("points_value", 0)
+        
+        # Get force size from player setup data
+        force_size = player_setup_data.get("force_size", 0)
+        
+        # Calculate reserve pool allocation (remaining points)
+        reserve_points = max(0, force_size - total_army_points)
+        
+        print(f"GameStateManager: Player {player_name} - Force Size: {force_size}, "
+              f"Army Points: {total_army_points}, Reserve Points: {reserve_points}")
+        
+        # If there are reserve points, populate with available units
+        if reserve_points > 0:
+            # For now, create placeholder reserve units based on point allocation
+            # In a full implementation, this would draw from the unit roster
+            reserve_units = self._create_reserve_units(player_name, reserve_points)
+            player_data["reserve_pool"].extend(reserve_units)
+            
+        # Also add any explicitly defined reserve units from setup
+        if "reserve_units" in player_setup_data:
+            for unit_data in player_setup_data["reserve_units"]:
+                reserve_unit = UnitModel.from_dict(unit_data).to_dict()
+                player_data["reserve_pool"].append(reserve_unit)
+    
+    def _create_reserve_units(self, player_name: str, points_available: int) -> List[Dict[str, Any]]:
+        """
+        Create reserve units based on available points.
+        This is a simplified implementation - in practice, this would use
+        the unit roster to create appropriate units within the point limit.
+        """
+        reserve_units = []
+        remaining_points = points_available
+        
+        # Create simple reserve units (1-point units for now)
+        unit_count = 0
+        while remaining_points > 0 and unit_count < 10:  # Cap at 10 units
+            unit_count += 1
+            reserve_unit = {
+                "id": f"{player_name.lower().replace(' ', '_')}_reserve_{unit_count}",
+                "name": f"Reserve Unit {unit_count}",
+                "health": 1,
+                "max_health": 1,
+                "point_cost": 1,
+                "unit_type": "reserve_infantry",
+                "abilities": {
+                    "id_results": {
+                        constants.ICON_MELEE: 1,
+                        constants.ICON_SAVE: 1
+                    }
+                },
+                "location": "Reserve Pool"
+            }
+            reserve_units.append(reserve_unit)
+            remaining_points -= 1
+        
+        print(f"GameStateManager: Created {len(reserve_units)} reserve units for {player_name}")
+        return reserve_units
+
+    def generate_army_identifier(self, player_name: str, army_type: str) -> str:
+        """
+        Generate a specific army identifier combining player and army type.
+        Examples: "Player_1_home", "Player_2_campaign", "Gandalf_horde"
+        """
+        safe_player_name = player_name.replace(" ", "_").replace("'", "").lower()
+        return f"{safe_player_name}_{army_type}"
+    
+    def parse_army_identifier(self, army_identifier: str) -> tuple[Optional[str], Optional[str]]:
+        """
+        Parse an army identifier back into player name and army type.
+        Returns (player_name, army_type) or (None, None) if parsing fails.
+        """
+        # Handle legacy simple identifiers
+        if army_identifier in ["home", "campaign", "horde"]:
+            return None, army_identifier
+        
+        # Handle new specific identifiers
+        parts = army_identifier.split("_")
+        if len(parts) >= 2:
+            army_type = parts[-1]  # Last part is army type
+            player_part = "_".join(parts[:-1])  # Everything before last part
+            
+            # Find matching player by reconstructing their safe name
+            for player_name in self.players.keys():
+                safe_name = player_name.replace(" ", "_").replace("'", "").lower()
+                if safe_name == player_part:
+                    return player_name, army_type
+        
+        return None, None
+    
+    def get_army_by_identifier(self, army_identifier: str) -> tuple[Optional[str], Optional[Dict[str, Any]]]:
+        """
+        Get army data by identifier. Returns (player_name, army_data) or (None, None).
+        Supports both legacy ("home") and specific ("player_1_home") identifiers.
+        """
+        player_name, army_type = self.parse_army_identifier(army_identifier)
+        
+        if not army_type:
+            return None, None
+        
+        # If no specific player parsed, try to find by context or current player
+        if not player_name:
+            # For legacy identifiers, we need context - this is a limitation
+            # In practice, we'd need to track the current acting player
+            return None, None
+        
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return None, None
+        
+        army_data = player_data.get("armies", {}).get(army_type)
+        return player_name, army_data
+    
+    def update_army_identifiers_to_specific(self):
+        """
+        Update all army references to use specific identifiers.
+        This is for migrating from legacy "home" identifiers to "player_1_home" format.
+        """
+        for player_name, player_data in self.players.items():
+            armies = player_data.get("armies", {})
+            # Army keys are already specific (home, campaign, horde)
+            # but we can add unique army IDs for tracking
+            for army_type, army_data in armies.items():
+                army_data["unique_id"] = self.generate_army_identifier(player_name, army_type)
+                army_data["player_name"] = player_name
+                army_data["army_type"] = army_type
+
     # _parse_dragon_dice_description is removed as we are now getting structured dragon selections.
 
     # Army management methods
     def get_unit_health(self, player_name: str, army_identifier: str, unit_name: str) -> Optional[int]:
         """Get the current health of a specific unit."""
-        player_data = self.get_player_data(player_name)
-        if not player_data:
-            return None
-        
-        army = player_data.get("armies", {}).get(army_identifier)
-        if not army:
-            return None
+        # Support both legacy and specific army identifiers
+        if player_name and army_identifier in ["home", "campaign", "horde"]:
+            # Legacy identifier - use provided player_name
+            player_data = self.get_player_data(player_name)
+            if not player_data:
+                return None
+            army = player_data.get("armies", {}).get(army_identifier)
+        else:
+            # Specific identifier - parse to get army
+            parsed_player, army = self.get_army_by_identifier(army_identifier)
+            if not army:
+                return None
         
         for unit in army.get("units", []):
             if unit.get("name") == unit_name:
@@ -164,19 +317,25 @@ class GameStateManager(QObject):
     
     def update_unit_health(self, player_name: str, army_identifier: str, unit_name: str, new_health: int) -> bool:
         """Update the health of a specific unit."""
-        player_data = self.get_player_data(player_name)
-        if not player_data:
-            return False
-        
-        army = player_data.get("armies", {}).get(army_identifier)
-        if not army:
-            return False
+        # Support both legacy and specific army identifiers
+        if player_name and army_identifier in ["home", "campaign", "horde"]:
+            # Legacy identifier - use provided player_name
+            player_data = self.get_player_data(player_name)
+            if not player_data:
+                return False
+            army = player_data.get("armies", {}).get(army_identifier)
+            target_player = player_name
+        else:
+            # Specific identifier - parse to get army
+            target_player, army = self.get_army_by_identifier(army_identifier)
+            if not army or not target_player:
+                return False
         
         for unit in army.get("units", []):
             if unit.get("name") == unit_name:
                 unit["health"] = max(0, new_health)  # Ensure health doesn't go negative
                 if unit["health"] <= 0:
-                    self._move_unit_to_dua(player_name, unit)
+                    self._move_unit_to_dua(target_player, unit)
                     army["units"].remove(unit)
                 self.game_state_changed.emit()
                 return True
@@ -233,8 +392,8 @@ class GameStateManager(QObject):
                 return True
         return False
     
-    def move_unit_to_reserve(self, player_name: str, army_identifier: str, unit_name: str) -> bool:
-        """Move a unit to the Reserve Pool."""
+    def move_unit_to_reserve_area(self, player_name: str, army_identifier: str, unit_name: str) -> bool:
+        """Move a unit to the Reserve Area for tactical repositioning."""
         player_data = self.get_player_data(player_name)
         if not player_data:
             return False
@@ -246,7 +405,47 @@ class GameStateManager(QObject):
         for unit in army.get("units", []):
             if unit.get("name") == unit_name:
                 army["units"].remove(unit)
-                player_data.setdefault("reserve_pool", []).append(unit)
+                player_data.setdefault("reserve_area", []).append(unit)
+                self.game_state_changed.emit()
+                return True
+        return False
+    
+    def move_unit_from_reserve_area(self, player_name: str, unit_name: str, target_army: str) -> bool:
+        """Move a unit from Reserve Area to an army."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return False
+        
+        reserve_area = player_data.get("reserve_area", [])
+        target_army_data = player_data.get("armies", {}).get(target_army)
+        
+        if not target_army_data:
+            return False
+        
+        for unit in reserve_area:
+            if unit.get("name") == unit_name:
+                reserve_area.remove(unit)
+                target_army_data["units"].append(unit)
+                self.game_state_changed.emit()
+                return True
+        return False
+    
+    def move_unit_from_reserve_pool(self, player_name: str, unit_name: str, target_army: str) -> bool:
+        """Move a unit from Reserve Pool to an army (deployment)."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return False
+        
+        reserve_pool = player_data.get("reserve_pool", [])
+        target_army_data = player_data.get("armies", {}).get(target_army)
+        
+        if not target_army_data:
+            return False
+        
+        for unit in reserve_pool:
+            if unit.get("name") == unit_name:
+                reserve_pool.remove(unit)
+                target_army_data["units"].append(unit)
                 self.game_state_changed.emit()
                 return True
         return False
@@ -297,6 +496,16 @@ class GameStateManager(QObject):
                         "army": army
                     })
         return armies_at_location
+    
+    def get_reserve_pool(self, player_name: str) -> List[Dict[str, Any]]:
+        """Get the reserve pool (available for deployment) for a player."""
+        player_data = self.get_player_data(player_name)
+        return player_data.get("reserve_pool", []) if player_data else []
+    
+    def get_reserve_area(self, player_name: str) -> List[Dict[str, Any]]:
+        """Get the reserve area (tactical repositioning) for a player."""
+        player_data = self.get_player_data(player_name)
+        return player_data.get("reserve_area", []) if player_data else []
     
     def get_summoning_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the summoning pool for a player."""
@@ -412,19 +621,120 @@ class GameStateManager(QObject):
         player = self.get_player_data(player_name)
         return player.get("home_terrain_name") if player else None
 
-    def get_active_army_units(self, player_name: str) -> List[Dict[str, Any]]:
+    def set_active_army(self, player_name: str, army_type: str) -> bool:
+        """Set the active army for a player based on current game context."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return False
+        
+        # Validate that the army type exists
+        if army_type not in player_data.get("armies", {}):
+            return False
+        
+        player_data["active_army_type"] = army_type
+        self.game_state_changed.emit()
+        return True
+    
+    def determine_active_army_by_location(self, player_name: str, current_location: str) -> Optional[str]:
         """
-        Returns the list of units for the currently active army of the specified player.
-        The "active" army is determined by game flow (e.g., which army marched).
-        This is a simplification; a more robust system would track the selected army.
+        Determine which army should be active based on the current game location.
+        Returns the army type that should be active.
         """
         player_data = self.get_player_data(player_name)
         if not player_data:
+            return None
+        
+        armies = player_data.get("armies", {})
+        
+        # Find armies at the current location
+        armies_at_location = []
+        for army_type, army_data in armies.items():
+            if army_data.get("location") == current_location:
+                armies_at_location.append(army_type)
+        
+        # If only one army at location, it's the active one
+        if len(armies_at_location) == 1:
+            return armies_at_location[0]
+        
+        # If multiple armies, prefer by priority: home > campaign > horde
+        priority_order = ["home", "campaign", "horde"]
+        for army_type in priority_order:
+            if army_type in armies_at_location:
+                return army_type
+        
+        return None
+    
+    def determine_active_army_by_phase(self, player_name: str, current_phase: str, current_location: str = None) -> Optional[str]:
+        """
+        Determine which army should be active based on the current game phase and context.
+        """
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return None
+        
+        armies = player_data.get("armies", {})
+        
+        # Phase-specific logic
+        if current_phase in [constants.PHASE_FIRST_MARCH, constants.PHASE_SECOND_MARCH]:
+            # During march phases, determine by location if provided
+            if current_location:
+                return self.determine_active_army_by_location(player_name, current_location)
+            # Otherwise, use current active army
+            return player_data.get("active_army_type", "home")
+        
+        elif current_phase == constants.PHASE_DRAGON_ATTACK:
+            # Dragons can attack any army, but usually home terrain
+            home_terrain = player_data.get("home_terrain_name")
+            if home_terrain:
+                return self.determine_active_army_by_location(player_name, home_terrain)
+        
+        elif current_phase == constants.PHASE_RESERVES:
+            # Reserve phase can involve any army
+            return player_data.get("active_army_type", "home")
+        
+        # Default to current active army or home
+        return player_data.get("active_army_type", "home")
+    
+    def get_active_army_type(self, player_name: str) -> Optional[str]:
+        """Get the currently active army type for a player."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return None
+        return player_data.get("active_army_type", "home")
+    
+    def get_active_army_data(self, player_name: str) -> Optional[Dict[str, Any]]:
+        """Get the data for the currently active army."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return None
+        
+        active_army_type = self.get_active_army_type(player_name)
+        if not active_army_type:
+            return None
+        
+        return player_data.get("armies", {}).get(active_army_type)
+    
+    def get_active_army_units(self, player_name: str) -> List[Dict[str, Any]]:
+        """
+        Returns the list of units for the currently active army of the specified player.
+        The "active" army is determined by game flow context.
+        """
+        active_army = self.get_active_army_data(player_name)
+        return active_army.get("units", []) if active_army else []
+    
+    def get_all_armies_at_location(self, player_name: str, location: str) -> List[Dict[str, Any]]:
+        """Get all armies for a player at a specific location."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
             return []
-
-        # TODO: Determine active army more dynamically (e.g., based on current march phase or selected army)
-        # For now, assume 'home' army is active if nothing else is specified.
-        active_army_type = player_data.get(
-            "active_army_type", "home"
-        )  # Fallback to home
-        return player_data.get("armies", {}).get(active_army_type, {}).get("units", [])
+        
+        armies_at_location = []
+        for army_type, army_data in player_data.get("armies", {}).items():
+            if army_data.get("location") == location:
+                armies_at_location.append({
+                    "army_type": army_type,
+                    "army_data": army_data,
+                    "unique_id": army_data.get("unique_id", f"{player_name}_{army_type}")
+                })
+        
+        return armies_at_location

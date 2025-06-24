@@ -18,6 +18,15 @@ class GameEngine(QObject):
     current_phase_changed = Signal(str)
     unit_selection_required = Signal(str, int, list)  # player_name, damage_amount, available_units
     damage_allocation_completed = Signal(str, int)  # player_name, total_damage_applied
+    
+    # New signals to replace direct calls
+    march_step_change_requested = Signal(str)  # new_march_step
+    action_step_change_requested = Signal(str)  # new_action_step
+    phase_advance_requested = Signal()
+    player_advance_requested = Signal()
+    effect_expiration_requested = Signal(str)  # player_name
+    dice_roll_submitted = Signal(str, str, str)  # roll_type, results_string, player_name
+    damage_allocation_requested = Signal(str, str, str, int)  # player_name, army_id, unit_name, new_health
 
     def __init__(
         self,
@@ -78,6 +87,13 @@ class GameEngine(QObject):
         self.game_state_manager.game_state_changed.connect(
             self.game_state_updated.emit
         )  # If game state changes, emit general update
+        
+        # Connect new signals to manager methods
+        self.march_step_change_requested.connect(self.turn_manager.set_march_step)
+        self.action_step_change_requested.connect(self.turn_manager.set_action_step)
+        self.phase_advance_requested.connect(self.turn_manager.advance_phase)
+        self.player_advance_requested.connect(self.turn_manager.advance_player)
+        self.effect_expiration_requested.connect(self.effect_manager.process_effect_expirations)
         self.effect_manager.effects_changed.connect(
             self.game_state_updated.emit
         )  # If effects change, game state is updated
@@ -110,16 +126,14 @@ class GameEngine(QObject):
             current_phase == constants.PHASE_FIRST_MARCH
             or current_phase == constants.PHASE_SECOND_MARCH
         ):
-            # TODO: Request march step initialization through signal
-            # For now, update cached state directly
+            # Request march step initialization through signal
+            self.march_step_change_requested.emit(constants.MARCH_STEP_DECIDE_MANEUVER)
             self._current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
         elif current_phase == constants.PHASE_EXPIRE_EFFECTS:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
-            # Request effect expiration processing
-            self.effect_manager.process_effect_expirations(
-                self.get_current_player_name()
-            )
-            self.advance_phase()
+            # Request effect expiration processing through signal
+            self.effect_expiration_requested.emit(self.get_current_player_name())
+            self.phase_advance_requested.emit()
         elif current_phase == constants.PHASE_EIGHTH_FACE:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
         elif current_phase == constants.PHASE_DRAGON_ATTACK:
@@ -141,19 +155,15 @@ class GameEngine(QObject):
         return self._current_action_step
 
     def advance_phase(self):
-        """Request phase advancement. TurnManager will emit signals to update state."""
-        # TODO: Replace direct call with signal emission
-        # For now, use direct calls until signal system is fully implemented
-        self.turn_manager.advance_phase()
+        """Request phase advancement through signal emission."""
+        self.phase_advance_requested.emit()
         self._handle_phase_entry()
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
     def advance_player(self):
-        """Request player advancement. TurnManager will emit signals to update state."""
-        # TODO: Replace direct call with signal emission
-        # For now, use direct calls until signal system is fully implemented
-        self.turn_manager.advance_player()
+        """Request player advancement through signal emission."""
+        self.player_advance_requested.emit()
         self._initialize_turn_for_current_player()
 
     def get_current_player_name(self):
@@ -185,11 +195,12 @@ class GameEngine(QObject):
         if self._is_very_first_turn:
             self._is_very_first_turn = False
 
-        # TODO: Emit signal to TurnManager to handle decision
-        # For now, update state directly until signal system is fully implemented
+        # Emit signal to TurnManager to handle decision
         if wants_to_maneuver:
+            self.march_step_change_requested.emit(constants.MARCH_STEP_AWAITING_MANEUVER_INPUT)
             self._current_march_step = constants.MARCH_STEP_AWAITING_MANEUVER_INPUT
         else:
+            self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
             self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
@@ -199,8 +210,8 @@ class GameEngine(QObject):
         print(
             f"Player {self.get_current_player_name()} submitted maneuver details: {details}"
         )
-        # TODO: Emit signal to TurnManager to handle input
-        # For now, update state directly until signal system is fully implemented
+        # Emit signal to TurnManager to handle input
+        self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
         self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
@@ -208,21 +219,19 @@ class GameEngine(QObject):
     def select_action(self, action_type: str):
         """Request action selection processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} selected action: {action_type}")
-        # TODO: Emit signal to TurnManager to handle action selection
-        # For now, update state directly until signal system is fully implemented
+        # Emit signal to TurnManager to handle action selection
         if action_type == constants.ACTION_MELEE:
-            self._current_action_step = (
-                constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
-            )
+            action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
         elif action_type == constants.ACTION_MISSILE:
-            self._current_action_step = (
-                constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
-            )
+            action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
         elif action_type == constants.ACTION_MAGIC:
-            self._current_action_step = constants.ACTION_STEP_AWAITING_MAGIC_ROLL
+            action_step = constants.ACTION_STEP_AWAITING_MAGIC_ROLL
         else:
             print(f"Unknown action type: {action_type}")
             return
+        
+        self.action_step_change_requested.emit(action_step)
+        self._current_action_step = action_step
 
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
