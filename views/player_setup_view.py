@@ -105,16 +105,6 @@ class PlayerSetupView(QWidget):
         title_layout.addStretch(1)
         main_layout.addLayout(title_layout)
 
-        # Informational text for force size requirement
-        self.dragon_info_label = QLabel(
-            f"Reminder: You must build armies totaling exactly {self.force_size} points. You also need {self.required_dragons} dragon(s) for this game."
-        )
-        dragon_font = self.dragon_info_label.font() # No change, good comment
-        dragon_font.setPointSize(dragon_font.pointSize() - 2)
-        self.dragon_info_label.setFont(dragon_font) # No change, good comment
-        main_layout.addWidget(
-            self.dragon_info_label, alignment=Qt.AlignmentFlag.AlignCenter
-        )
 
         # Tabbed Interface (Game and Help)
         self.tabbed_widget = TabbedViewWidget()
@@ -329,9 +319,12 @@ class PlayerSetupView(QWidget):
         # Official Dragon Dice army assembly validation
         # Rule 1: Each army must have at least 1 unit
         # Rule 2: No army can exceed 50% of total force points (rounded down)
-        # Rule 3: Total army points must equal selected force size
+        # Rule 3: Magic units cannot exceed 25% of total force points (rounded down)
+        # Rule 4: Total army points must equal selected force size
         
         total_force_points = 0
+        total_magic_points = 0
+        max_magic_points = self.force_size // 4  # 25% of total force size (rounded down)
         
         for army_type in constants.ARMY_TYPES_ALL:
             # Skip horde army for single player games
@@ -355,9 +348,23 @@ class PlayerSetupView(QWidget):
                 )
                 return False
             
+            # Count magic unit points for Rule 3
+            for unit in current_units:
+                unit_def = self.unit_roster.get_unit_definition(unit.unit_type)
+                if unit_def and unit_def.get("unit_class_type") == "Magic":
+                    total_magic_points += unit.max_health
+            
             total_force_points += army_points
 
-        # Rule 3: Total force points must equal selected force size
+        # Rule 3: Magic units cannot exceed 25% of total force points
+        if total_magic_points > max_magic_points:
+            self._set_status_message(
+                f"Magic units ({total_magic_points} pts) exceed maximum {max_magic_points} pts (25% of {self.force_size} pts).", 
+                "red"
+            )
+            return False
+
+        # Rule 4: Total force points must equal selected force size
         if total_force_points != self.force_size:
             self._set_status_message(
                 f"Total army points ({total_force_points} pts) must equal selected force size ({self.force_size} pts).", 
@@ -365,8 +372,11 @@ class PlayerSetupView(QWidget):
             )
             return False
 
-        # All validation passed
-        self._set_status_message("", "black")
+        # All validation passed - show helpful reminder
+        if total_force_points == 0:
+            self._set_status_message(f"Build armies totaling exactly {self.force_size} points.", "blue")
+        else:
+            self._set_status_message("", "black")
         return True
 
     def _set_player_setup_help_text(self):

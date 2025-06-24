@@ -115,12 +115,17 @@ class UnitSelectionDialog(QDialog):
             name_item.setData(Qt.ItemDataRole.UserRole, unit.unit_id)
             self.selected_units_table.setItem(row, 0, name_item)
             
+            # Get unit definition data from the unit roster
+            unit_def = self.unit_roster.get_unit_definition(unit.unit_type)
+            
             # Class Type
-            class_item = QTableWidgetItem(unit.unit_class_type)
+            class_type = unit_def.get("unit_class_type", "Unknown") if unit_def else "Unknown"
+            class_item = QTableWidgetItem(class_type)
             self.selected_units_table.setItem(row, 1, class_item)
             
             # Health Points
-            health_item = QTableWidgetItem(str(unit.max_health))
+            health = unit_def.get("max_health", unit.max_health) if unit_def else unit.max_health
+            health_item = QTableWidgetItem(str(health))
             self.selected_units_table.setItem(row, 2, health_item)
 
     @Slot(int, int)
