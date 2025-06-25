@@ -299,35 +299,65 @@ class ManeuverDialog(QDialog):
         terrain_info = self.terrain_data.get(location, {})
         current_face = terrain_info.get("face", 1)
 
-        result_text = f"Maneuver succeeded with {getattr(self, 'maneuver_result', 1)} maneuver icons!\n\n"
-
         # Determine terrain change
         if hasattr(self, "maneuver_result") and self.maneuver_result > 0:
-            # For simplicity, assume terrain turns up one step
-            new_face = min(current_face + 1, 8)  # Max face is 8
-            result_text += f"Terrain '{location}' changes from face {current_face} to face {new_face}."
+            result_text = f"Maneuver succeeded with {getattr(self, 'maneuver_result', 1)} maneuver icons!\n\n"
+            result_text += f"Current terrain '{location}' is on face {current_face}.\n"
+            result_text += "Choose whether to turn the terrain UP or DOWN by one step:"
 
-            # Store the result for emission
-            self.final_result = {
-                "success": True,
-                "army": self.selected_army,
-                "location": location,
-                "old_face": current_face,
-                "new_face": new_face,
-                "maneuver_icons": self.maneuver_result,
-            }
+            result_label = QLabel(result_text)
+            result_label.setWordWrap(True)
+            self.content_layout.addWidget(result_label)
+
+            # Add terrain direction choice
+            direction_group = QGroupBox("Terrain Direction Choice")
+            direction_layout = QVBoxLayout(direction_group)
+            
+            self.terrain_direction_group = QButtonGroup(self)
+            
+            # UP option
+            up_face = min(current_face + 1, 8)  # Max face is 8
+            up_radio = QRadioButton(f"⬆️ Turn UP to face {up_face}")
+            if current_face < 8:  # Only enable if not already at max
+                up_radio.setEnabled(True)
+                up_radio.setChecked(True)  # Default selection
+            else:
+                up_radio.setEnabled(False)
+            self.terrain_direction_group.addButton(up_radio, 1)  # 1 = UP
+            direction_layout.addWidget(up_radio)
+            
+            # DOWN option  
+            down_face = max(current_face - 1, 1)  # Min face is 1
+            down_radio = QRadioButton(f"⬇️ Turn DOWN to face {down_face}")
+            if current_face > 1:  # Only enable if not already at min
+                down_radio.setEnabled(True)
+                if current_face >= 8:  # If at max face, default to DOWN
+                    down_radio.setChecked(True)
+            else:
+                down_radio.setEnabled(False)
+            self.terrain_direction_group.addButton(down_radio, -1)  # -1 = DOWN
+            direction_layout.addWidget(down_radio)
+
+            self.content_layout.addWidget(direction_group)
+
+            # Store initial result data (will be updated when direction is chosen)
+            self.terrain_location = location
+            self.terrain_current_face = current_face
+            
         else:
-            result_text += "Maneuver failed. No terrain changes."
+            result_text = f"Maneuver failed with {getattr(self, 'maneuver_result', 0)} maneuver icons.\n\n"
+            result_text += "No terrain changes."
+            
+            result_label = QLabel(result_text)
+            result_label.setWordWrap(True)
+            self.content_layout.addWidget(result_label)
+            
             self.final_result = {
                 "success": False,
                 "army": self.selected_army,
                 "location": location,
                 "maneuver_icons": 0,
             }
-
-        result_label = QLabel(result_text)
-        result_label.setWordWrap(True)
-        self.content_layout.addWidget(result_label)
 
     def _update_buttons(self):
         """Update button states based on current step."""
@@ -370,6 +400,39 @@ class ManeuverDialog(QDialog):
             self.current_step = "results"
         elif self.current_step == "results":
             # Complete the maneuver
+            if hasattr(self, "maneuver_result") and self.maneuver_result > 0:
+                # Calculate final result based on player's terrain direction choice
+                if hasattr(self, "terrain_direction_group"):
+                    selected_direction = self.terrain_direction_group.checkedButton()
+                    if selected_direction:
+                        direction_value = self.terrain_direction_group.id(selected_direction)
+                        new_face = self.terrain_current_face + direction_value
+                        new_face = max(1, min(8, new_face))  # Clamp between 1 and 8
+                        
+                        direction_text = "UP" if direction_value > 0 else "DOWN"
+                        
+                        self.final_result = {
+                            "success": True,
+                            "army": self.selected_army,
+                            "location": self.terrain_location,
+                            "old_face": self.terrain_current_face,
+                            "new_face": new_face,
+                            "direction": direction_text,
+                            "maneuver_icons": self.maneuver_result,
+                        }
+                    else:
+                        # No direction selected, default to UP for backwards compatibility
+                        new_face = min(self.terrain_current_face + 1, 8)
+                        self.final_result = {
+                            "success": True,
+                            "army": self.selected_army,
+                            "location": self.terrain_location,
+                            "old_face": self.terrain_current_face,
+                            "new_face": new_face,
+                            "direction": "UP",
+                            "maneuver_icons": self.maneuver_result,
+                        }
+            
             if hasattr(self, "final_result"):
                 self.maneuver_completed.emit(self.final_result)
             self.accept()

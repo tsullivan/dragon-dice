@@ -227,6 +227,37 @@ class GameEngine(QObject):
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
+    def apply_maneuver_results(self, maneuver_result: dict):
+        """Apply the results of a completed maneuver, including terrain face changes."""
+        print(f"GameEngine: Applying maneuver results: {maneuver_result}")
+        
+        if not maneuver_result.get("success", False):
+            print("GameEngine: Maneuver failed, no terrain changes to apply")
+            return
+        
+        # Extract terrain change information
+        location = maneuver_result.get("location")
+        old_face = maneuver_result.get("old_face")
+        new_face = maneuver_result.get("new_face")
+        direction = maneuver_result.get("direction", "UP")
+        maneuver_icons = maneuver_result.get("maneuver_icons", 0)
+        
+        if not location or new_face is None:
+            print("GameEngine: Missing terrain change information in maneuver result")
+            return
+        
+        # Apply terrain face change to game state
+        success = self.game_state_manager.update_terrain_face(location, str(new_face))
+        
+        if success:
+            print(f"GameEngine: Successfully updated terrain '{location}' from face {old_face} to face {new_face} (turned {direction})")
+            print(f"GameEngine: Maneuver achieved {maneuver_icons} maneuver icons")
+            self.game_state_updated.emit()
+        else:
+            print(f"GameEngine: Failed to update terrain face for '{location}'")
+        
+        return success
+
     def select_action(self, action_type: str):
         """Request action selection processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} selected action: {action_type}")

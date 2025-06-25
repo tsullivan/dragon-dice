@@ -551,7 +551,7 @@ class GameStateManager(QObject):
         if not terrain:
             return False
 
-        terrain["current_face"] = face
+        terrain["face"] = int(face) if isinstance(face, str) else face
         self.game_state_changed.emit()
         return True
 

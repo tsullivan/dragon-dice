@@ -34,6 +34,11 @@ class PlayerIdentityWidget(QWidget):
     def clear_inputs(self):
         """Clears the name input and resets carousels to their default (first item)."""
         self.player_name_input.clear()
+    
+    def set_default_name(self, player_num: int):
+        """Sets the default player name based on the player number."""
+        default_name = f"Player {player_num}"
+        self.player_name_input.setText(default_name)
 
     def set_player_display_number(self, player_num: int):
         """Updates the placeholder text for the player name input."""

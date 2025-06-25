@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QTextEdit,
     QGroupBox,
+    QRadioButton,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont  # Added for QFont
@@ -63,13 +64,12 @@ class FrontierSelectionView(QWidget):
         first_player_buttons_h_layout = QHBoxLayout()
         if self.player_names:
             for i, name in enumerate(self.player_names):
-                button = QPushButton(name)
-                button.setCheckable(True)
-                button.setMaximumWidth(150)  # Prevent excessive stretching
-                self.first_player_button_group.addButton(button, i)
-                first_player_buttons_h_layout.addWidget(button)
-            if self.first_player_button_group.buttons():
-                self.first_player_button_group.buttons()[0].setChecked(True)
+                radio_button = QRadioButton(name)
+                radio_button.setMaximumWidth(150)  # Prevent excessive stretching
+                self.first_player_button_group.addButton(radio_button, i)
+                first_player_buttons_h_layout.addWidget(radio_button)
+                if i == 0:  # Default selection for first player
+                    radio_button.setChecked(True)
         else:
             no_players_label = QLabel("No Players Available")
             no_players_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -88,16 +88,13 @@ class FrontierSelectionView(QWidget):
                 self.proposed_frontier_terrains
             ):
                 button_text = f"{terrain_type} - Proposed by {player_name}"
-                button = QPushButton(button_text)
-                button.setCheckable(True)
-                button.setMaximumWidth(300)  # Prevent excessive stretching
-                button.setProperty("terrain_type", terrain_type)
-                self.frontier_terrain_button_group.addButton(button, i)
-                terrain_buttons_internal_v_layout.addWidget(button)
-            if self.frontier_terrain_button_group.buttons():
-                self.frontier_terrain_button_group.buttons()[0].setChecked(
-                    True
-                )  # Default
+                radio_button = QRadioButton(button_text)
+                radio_button.setMaximumWidth(300)  # Prevent excessive stretching
+                radio_button.setProperty("terrain_type", terrain_type)
+                self.frontier_terrain_button_group.addButton(radio_button, i)
+                terrain_buttons_internal_v_layout.addWidget(radio_button)
+                if i == 0:  # Default selection for first terrain
+                    radio_button.setChecked(True)
         else:
             no_terrains_label = QLabel("No Frontier Terrains Proposed")
             no_terrains_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

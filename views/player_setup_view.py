@@ -476,6 +476,7 @@ class PlayerSetupView(QWidget):
             self.player_identity_widget.clear_inputs()
             self.terrain_selection_widget.clear_selections()
             self.player_identity_widget.set_player_display_number(player_display_num)
+            self.player_identity_widget.set_default_name(player_display_num)
 
             for widget in self.dragon_selection_widgets:
                 widget.clear()

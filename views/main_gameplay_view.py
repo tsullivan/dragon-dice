@@ -282,15 +282,22 @@ class MainGameplayView(QWidget):
         """Handle completed maneuver from dialog."""
         print(f"Maneuver completed: {maneuver_result}")
 
+        # Apply maneuver results to game state (including terrain face changes)
+        if maneuver_result.get("success"):
+            success = self.game_engine.apply_maneuver_results(maneuver_result)
+            if success:
+                army_name = maneuver_result.get("army", {}).get("name", "Unknown Army")
+                location = maneuver_result.get("location", "Unknown")
+                direction = maneuver_result.get("direction", "UP")
+                old_face = maneuver_result.get("old_face", "?")
+                new_face = maneuver_result.get("new_face", "?")
+                result_text = f"{army_name} maneuvered at {location} - turned terrain {direction} from face {old_face} to {new_face}"
+                self.maneuver_input_submitted_signal.emit(result_text)
+            else:
+                print("Failed to apply maneuver results")
+        
         # Emit the maneuver decision signal
         self.maneuver_decision_signal.emit(True)
-
-        # If there are details to submit, emit them
-        if maneuver_result.get("success"):
-            army_name = maneuver_result.get("army", {}).get("name", "Unknown Army")
-            location = maneuver_result.get("location", "Unknown")
-            result_text = f"{army_name} maneuvered at {location}"
-            self.maneuver_input_submitted_signal.emit(result_text)
 
         # Transition to action decision step
         self.game_engine.march_step_change_requested.emit(
