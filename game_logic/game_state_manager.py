@@ -96,20 +96,23 @@ class GameStateManager(QObject):
             for army_type_key, army_details in p_data.get("armies", {}).items():
                 location = ""
                 if army_type_key == "home":
-                    location = p_data["home_terrain"]
+                    # Create unique home terrain name for this player
+                    location = f"{player_name} {p_data['home_terrain']}"
                 elif army_type_key == "campaign":
                     location = frontier_terrain_name
                 elif army_type_key == "horde":
                     # Horde army is placed in opponent's home terrain
                     # For 2-player games, find the other player's home terrain
-                    opponent_home_terrain = None
+                    opponent_player_name = None
+                    opponent_home_terrain_type = None
                     for other_player in initial_player_setup_data:
                         if other_player["name"] != player_name:
-                            opponent_home_terrain = other_player["home_terrain"]
+                            opponent_player_name = other_player["name"]
+                            opponent_home_terrain_type = other_player["home_terrain"]
                             break
                     location = (
-                        opponent_home_terrain
-                        if opponent_home_terrain
+                        f"{opponent_player_name} {opponent_home_terrain_type}"
+                        if opponent_player_name and opponent_home_terrain_type
                         else "Unknown Opponent Home"
                     )
                 # dragon_dice_description = army_details.get("dragon_dice_description", "") # Removed
@@ -153,9 +156,11 @@ class GameStateManager(QObject):
                 continue
 
             # Handle home terrain rolls
-            player_home_terrain = self.players[player_name]["home_terrain_name"]
-            self.terrains[player_home_terrain] = {
-                "name": player_home_terrain,
+            player_home_terrain_type = self.players[player_name]["home_terrain_name"]
+            # Create unique home terrain name that matches army location naming
+            unique_home_terrain_name = f"{player_name} {player_home_terrain_type}"
+            self.terrains[unique_home_terrain_name] = {
+                "name": unique_home_terrain_name,
                 "type": "Home",
                 "face": distance,
                 "controller": player_name,
@@ -248,6 +253,23 @@ class GameStateManager(QObject):
             f"GameStateManager: Created {len(reserve_units)} reserve units for {player_name}"
         )
         return reserve_units
+
+    def extract_terrain_type_from_location(self, location: str) -> str:
+        """
+        Extract the base terrain type from a location name.
+        Examples:
+        - "Player 1 Coastland" -> "Coastland"
+        - "Swampland (Green, Yellow)" -> "Swampland (Green, Yellow)"
+        """
+        # If location contains a player name prefix, extract the terrain type
+        import constants
+
+        for terrain_name in constants.TERRAIN_ICONS.keys():
+            if terrain_name in location:
+                return terrain_name
+
+        # Fallback: return the location as-is if no terrain type found
+        return location
 
     def generate_army_identifier(self, player_name: str, army_type: str) -> str:
         """

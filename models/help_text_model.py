@@ -84,11 +84,11 @@ This application will help you track game state, turns, and phases, but all dice
 <ul>
     <li><b>🗺️ Rolling distance to: {terrain_icon} {frontier_terrain}</b>: The central Frontier Terrain for this game.</li>
     <li><b>🏰 Home Terrain Rolls:</b> Each player selects their Home Terrain die roll result (1-6).</li>
-    <li><b>🚩 Frontier Terrain Roll:</b> The player who proposed this frontier terrain also rolls that die and selects the result (1-6).</li>
+    <li><b>🚩 Frontier Terrain Roll:</b> The first player (who was selected to go first) also rolls the frontier terrain die and selects the result (1-6).</li>
     <li><b>📤 Submit All Rolls:</b> Click once all required distance rolls are entered using the radio buttons.</li>
 </ul>
 <p><b>📖 Current Phase: Determine Starting Distance (Rulebook pg. 10)</b></p>
-<p>🎲 Each player rolls their Home Terrain die. The player that proposed the Frontier Terrain also rolls that die.
+<p>🎲 Each player rolls their Home Terrain die. The first player also rolls the Frontier Terrain die.
 ⚠️ If an 8 is rolled, roll again. If a 7 is rolled, turn the die down to 6. All terrains will therefore start the game showing a number between 1 and 6. Select these final 1-6 values using the radio buttons.</p>
 """
 

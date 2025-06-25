@@ -685,6 +685,10 @@ class GameEngine(QObject):
         """Get all terrain data from the GameStateManager."""
         return self.game_state_manager.get_all_terrain_data()
 
+    def extract_terrain_type_from_location(self, location: str) -> str:
+        """Extract the base terrain type from a location name for UI display."""
+        return self.game_state_manager.extract_terrain_type_from_location(location)
+
     def choose_acting_army(self, army_data: dict):
         """Set the acting army for the current march phase."""
         self._current_acting_army = army_data

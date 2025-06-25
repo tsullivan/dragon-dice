@@ -219,7 +219,10 @@ class MainWindow(QMainWindow):
             print("Error: Missing player data or frontier terrain for distance rolls.")
             return
 
-        distance_view = DistanceRollsView(player_setup_data, frontier_terrain)
+        first_player_name = self.data_model._first_player_name
+        distance_view = DistanceRollsView(
+            player_setup_data, frontier_terrain, first_player_name
+        )
         distance_view.rolls_submitted.connect(self.data_model.set_distance_rolls)
         distance_view.back_signal.connect(self.show_frontier_selection_view)
         self.switch_view(distance_view)

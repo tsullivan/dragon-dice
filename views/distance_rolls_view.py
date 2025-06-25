@@ -28,10 +28,13 @@ class DistanceRollsView(QWidget):
     rolls_submitted = Signal(list)
     back_signal = Signal()
 
-    def __init__(self, player_setup_data, frontier_terrain, parent=None):
+    def __init__(
+        self, player_setup_data, frontier_terrain, first_player_name=None, parent=None
+    ):
         super().__init__(parent)
         self.player_setup_data = player_setup_data
         self.frontier_terrain = frontier_terrain
+        self.first_player_name = first_player_name
         self.help_model = HelpTextModel()
         self.roll_inputs = {}
         self.setWindowTitle("Enter Starting Distances")
@@ -104,10 +107,10 @@ class DistanceRollsView(QWidget):
             player_layout.addLayout(home_buttons_layout)
             self.roll_inputs[f"{player_name}_home"] = home_button_group
 
-            # Frontier terrain roll (only for the player who proposed this frontier)
-            if frontier_terrain_proposal == self.frontier_terrain:
+            # Frontier terrain roll (only for the first player)
+            if player_name == self.first_player_name:
                 frontier_terrain_label = QLabel(
-                    f"Roll for {self.frontier_terrain} (Frontier Terrain - you proposed this):"
+                    f"Roll for {self.frontier_terrain} (Frontier Terrain - you are the first player):"
                 )
                 frontier_terrain_label.setStyleSheet(
                     "font-weight: bold; color: #006600;"
