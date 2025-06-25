@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 from typing import Optional, List, Dict, Any
+import constants
 
 
 class ActingArmyWidget(QWidget):
@@ -80,20 +81,13 @@ class ActingArmyWidget(QWidget):
             location_icon = ""
             terrain_description = ""
 
-            if "Highland" in location:
-                location_icon = "[HIGHLAND]"
-            elif "Coastland" in location:
-                location_icon = "[COAST]"
-            elif "Deadland" in location:
-                location_icon = "[DEAD]"
-            elif "Flatland" in location:
-                location_icon = "[FLAT]"
-            elif "Swampland" in location:
-                location_icon = "[SWAMP]"
-            elif "Feyland" in location:
-                location_icon = "[FEY]"
-            elif "Wasteland" in location:
-                location_icon = "[WASTE]"
+            # Get terrain icon from constants
+            for terrain_name, icon in constants.TERRAIN_ICONS.items():
+                if terrain_name in location:
+                    location_icon = icon
+                    break
+            if not location_icon:
+                location_icon = "🗺️"  # Default terrain icon
 
             # Get terrain info for description
             if terrain_data and location in terrain_data:
@@ -112,13 +106,7 @@ class ActingArmyWidget(QWidget):
                     terrain_description = f" (Home Terrain - Face {terrain_face})"
 
             # Add army type indicators
-            army_type_indicator = ""
-            if army_type == "home":
-                army_type_indicator = "[HOME]"
-            elif army_type == "campaign":
-                army_type_indicator = "[CAMPAIGN]"
-            elif army_type == "horde":
-                army_type_indicator = "[HORDE]"
+            army_type_indicator = constants.ARMY_TYPE_ICONS.get(army_type, "⚔️")
 
             button_text = f"{army_type_indicator} {army_name}\nLOCATION: {location_icon} {location}{terrain_description}\nUNITS: {unit_count} units available"
 

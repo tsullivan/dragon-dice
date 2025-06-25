@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 from typing import Dict, List, Any, Optional
+import constants
 
 
 class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled border
@@ -50,25 +51,14 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
             army_location = army.get("location", "N/A")
 
             # Make location very prominent with bold formatting and terrain type description
-            location_icon = "[TERRAIN]"
+            location_icon = "🗺️"  # Default terrain icon
             terrain_description = ""
 
-            # Determine terrain type and add descriptive text
-            if "Highland" in army_location:
-                location_icon = "[HIGHLAND]"
-            elif "Coastland" in army_location:
-                location_icon = "[COAST]"
-            elif "Deadland" in army_location:
-                location_icon = "[DEAD]"
-            elif "Flatland" in army_location:
-                location_icon = "[FLAT]"
-                terrain_description = " (Frontier Terrain)"
-            elif "Swampland" in army_location:
-                location_icon = "[SWAMP]"
-            elif "Feyland" in army_location:
-                location_icon = "[FEY]"
-            elif "Wasteland" in army_location:
-                location_icon = "[WASTE]"
+            # Get terrain icon from constants
+            for terrain_name, icon in constants.TERRAIN_ICONS.items():
+                if terrain_name in army_location:
+                    location_icon = icon
+                    break
 
             # Add home terrain designation using terrain data if available
             if terrain_data and army_location in terrain_data:

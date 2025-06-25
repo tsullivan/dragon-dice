@@ -129,17 +129,30 @@ class GameStateManager(QObject):
             # Populate reserve pool with available units based on point allocation
             self._populate_reserve_pool(player_name, p_data)
 
+        # Initialize frontier terrain with default face
+        frontier_face = 1  # Default
+
         # Initialize terrains
         self.terrains[frontier_terrain_name] = {
-            # Default face, will be updated by distance roll if applicable
             "name": frontier_terrain_name,
             "type": "Frontier",
-            "face": 1,
+            "face": frontier_face,  # Will be updated below if frontier roll is provided
             "controller": None,
             "armies_present": [],
         }
+
         for roll_data in distance_rolls:
             player_name, distance = roll_data
+
+            # Handle frontier terrain roll
+            if player_name == "__frontier__":
+                self.terrains[frontier_terrain_name]["face"] = distance
+                print(
+                    f"GameStateManager: Set frontier terrain {frontier_terrain_name} to face {distance}"
+                )
+                continue
+
+            # Handle home terrain rolls
             player_home_terrain = self.players[player_name]["home_terrain_name"]
             self.terrains[player_home_terrain] = {
                 "name": player_home_terrain,

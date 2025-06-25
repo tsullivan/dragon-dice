@@ -50,6 +50,13 @@ TERRAIN_ICONS = {
     "Wasteland": "🏜️",  # Desert
 }
 
+# Army Type Icons
+ARMY_TYPE_ICONS = {
+    "home": "🏰",  # Castle (representing home base)
+    "campaign": "🚩",  # Flag (representing campaign/expedition)
+    "horde": "🌊",  # Wave (representing a horde surge)
+}
+
 # Game Phases
 PHASE_EXPIRE_EFFECTS = "EXPIRE_EFFECTS"
 PHASE_EIGHTH_FACE = "EIGHTH_FACE"

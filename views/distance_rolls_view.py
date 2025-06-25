@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTextEdit,
     QGroupBox,
-    QComboBox,
+    QRadioButton,
+    QButtonGroup,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont  # Added for QFont
@@ -78,21 +79,56 @@ class DistanceRollsView(QWidget):
         for i, p_data in enumerate(self.player_setup_data):
             player_name = p_data.get("name", f"Player {i+1}")
             home_terrain = p_data.get("home_terrain", "N/A")
+            frontier_terrain_proposal = p_data.get("frontier_terrain_proposal", "")
 
-            label_text = f"{player_name} (Home: {home_terrain}):"
-            roll_combo_box = QComboBox()
-            roll_combo_box.setSizePolicy(
-                roll_combo_box.sizePolicy().horizontalPolicy(),
-                roll_combo_box.sizePolicy().verticalPolicy(),
-            )
-            # Limit width since it only shows numbers 1-6
-            roll_combo_box.setMaximumWidth(80)
+            # Create section for this player
+            player_group = QGroupBox(f"{player_name} (Home: {home_terrain})")
+            player_layout = QVBoxLayout(player_group)
+
+            # Home terrain roll
+            home_terrain_label = QLabel(f"Roll for {home_terrain} (Home Terrain):")
+            home_terrain_label.setStyleSheet("font-weight: bold;")
+            player_layout.addWidget(home_terrain_label)
+
+            # Radio buttons for home terrain distance (1-6)
+            home_button_group = QButtonGroup(self)
+            home_buttons_layout = QHBoxLayout()
+
             for val in distance_allowed_values:
-                roll_combo_box.addItem(str(val), val)
-            if distance_allowed_values:
-                roll_combo_box.setCurrentIndex(0)
-            form_layout.addRow(label_text, roll_combo_box)
-            self.roll_inputs[player_name] = roll_combo_box
+                radio_button = QRadioButton(str(val))
+                home_button_group.addButton(radio_button, val)
+                home_buttons_layout.addWidget(radio_button)
+                if val == 1:  # Default selection
+                    radio_button.setChecked(True)
+
+            player_layout.addLayout(home_buttons_layout)
+            self.roll_inputs[f"{player_name}_home"] = home_button_group
+
+            # Frontier terrain roll (only for the player who proposed this frontier)
+            if frontier_terrain_proposal == self.frontier_terrain:
+                frontier_terrain_label = QLabel(
+                    f"Roll for {self.frontier_terrain} (Frontier Terrain - you proposed this):"
+                )
+                frontier_terrain_label.setStyleSheet(
+                    "font-weight: bold; color: #006600;"
+                )
+                player_layout.addWidget(frontier_terrain_label)
+
+                # Radio buttons for frontier terrain distance (1-6)
+                frontier_button_group = QButtonGroup(self)
+                frontier_buttons_layout = QHBoxLayout()
+
+                for val in distance_allowed_values:
+                    radio_button = QRadioButton(str(val))
+                    frontier_button_group.addButton(radio_button, val)
+                    frontier_buttons_layout.addWidget(radio_button)
+                    if val == 1:  # Default selection
+                        radio_button.setChecked(True)
+
+                player_layout.addLayout(frontier_buttons_layout)
+                self.roll_inputs[f"{player_name}_frontier"] = frontier_button_group
+
+            form_layout.addRow("", player_group)
 
         inputs_v_layout.addWidget(distance_rolls_group)
 
@@ -134,14 +170,31 @@ class DistanceRollsView(QWidget):
     def _on_submit_rolls(self):
         submitted_rolls = []
         all_valid = True
-        for player_name, roll_combo_box in self.roll_inputs.items():
-            roll_val = roll_combo_box.currentData()
 
-            if roll_val is None:
-                self.status_label.setText(f"Error: No roll value for {player_name}.")
+        for input_key, button_group in self.roll_inputs.items():
+            checked_button = button_group.checkedButton()
+
+            if checked_button is None:
+                terrain_type = "home" if "_home" in input_key else "frontier"
+                player_name = input_key.replace("_home", "").replace("_frontier", "")
+                self.status_label.setText(
+                    f"Error: No roll value selected for {player_name}'s {terrain_type} terrain."
+                )
                 all_valid = False
                 break
-            submitted_rolls.append((player_name, roll_val))
+
+            roll_val = button_group.id(checked_button)
+
+            # Convert input key to player name and terrain type for submission
+            if "_home" in input_key:
+                player_name = input_key.replace("_home", "")
+                submitted_rolls.append((player_name, roll_val))
+            elif "_frontier" in input_key:
+                # Frontier terrain roll - this sets the frontier terrain face
+                # We'll handle this separately as it affects the frontier terrain itself
+                frontier_roll_val = roll_val
+                # Store frontier terrain roll for later processing
+                submitted_rolls.append(("__frontier__", frontier_roll_val))
 
         if all_valid:
             self.status_label.setText("")

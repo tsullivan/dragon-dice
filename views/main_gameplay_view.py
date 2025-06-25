@@ -239,7 +239,7 @@ class MainGameplayView(QWidget):
                 constants.MARCH_STEP_DECIDE_ACTION
             )
             self.game_engine._current_march_step = constants.MARCH_STEP_DECIDE_ACTION
-            self.game_state_updated.emit()
+            self.game_engine.game_state_updated.emit()
 
     def _handle_action_decision(self, wants_to_take_action: bool):
         """Handle action decision."""
@@ -474,6 +474,13 @@ class MainGameplayView(QWidget):
 
         elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
             self.action_choice_widget.show()
+            # Set available actions based on acting army's terrain die face
+            acting_army = self.game_engine.get_current_acting_army()
+            terrain_data = self.game_engine.get_all_terrain_data()
+            if acting_army:
+                self.action_choice_widget.set_available_actions(
+                    acting_army, terrain_data
+                )
         elif current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
             self.melee_action_widget.show()
             self.melee_action_widget.show_attacker_input()

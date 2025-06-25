@@ -68,69 +68,151 @@ This application will help you track game state, turns, and phases, but all dice
 """
 
     def get_distance_rolls_help(self, frontier_terrain: str) -> str:
+        # Get terrain icon for the frontier terrain
+        terrain_icon = "🗺️"  # Default
+        import constants
+
+        for terrain_name, icon in constants.TERRAIN_ICONS.items():
+            if terrain_name in frontier_terrain:
+                terrain_icon = icon
+                break
+
         return f"""
-<b>Enter Starting Distances</b>
+<b>🎲 Enter Starting Distances</b>
 <p>This step determines the initial battle distances at each terrain.</p>
-<p><b>UI Elements:</b></p>
+<p><b>🎯 UI Elements:</b></p>
 <ul>
-    <li><b>Rolling distance to: {frontier_terrain}</b>: Indicates the central Frontier Terrain.</li>
-    <li>For each player listed (e.g., "Player 1 (Home: Plains)"): Enter the result of their Home Terrain die roll.</li>
-    <li>The player who selected the Frontier Terrain also rolls that die; enter its result in the corresponding player's input field (or a dedicated field if added).</li>
-    <li><b>Submit All Rolls:</b> Click once all required distance rolls are entered.</li>
+    <li><b>🗺️ Rolling distance to: {terrain_icon} {frontier_terrain}</b>: The central Frontier Terrain for this game.</li>
+    <li><b>🏰 Home Terrain Rolls:</b> Each player selects their Home Terrain die roll result (1-6).</li>
+    <li><b>🚩 Frontier Terrain Roll:</b> The player who proposed this frontier terrain also rolls that die and selects the result (1-6).</li>
+    <li><b>📤 Submit All Rolls:</b> Click once all required distance rolls are entered using the radio buttons.</li>
 </ul>
-<p><b>Current Phase: Determine Starting Distance (Rulebook pg. 10)</b></p>
-<p>Each player rolls their Home Terrain die. The player that selected the Frontier Terrain rolls that die.
-If an 8 is rolled, roll again. If a 7 is rolled, turn the die down to 6. All terrains will therefore start the game showing a number between 1 and 6. Input these final 1-6 values.</p>
+<p><b>📖 Current Phase: Determine Starting Distance (Rulebook pg. 10)</b></p>
+<p>🎲 Each player rolls their Home Terrain die. The player that proposed the Frontier Terrain also rolls that die.
+⚠️ If an 8 is rolled, roll again. If a 7 is rolled, turn the die down to 6. All terrains will therefore start the game showing a number between 1 and 6. Select these final 1-6 values using the radio buttons.</p>
 """
 
     def get_main_gameplay_help(self, current_step: str) -> str:
         ui_explanation = """
-<b>UI Elements:</b>
+<b>🎯 UI Elements:</b>
 <ul>
-    <li><b>Current Player:</b> Shows whose turn it is.</li>
-    <li><b>Phase:</b> Displays the current game phase and step.</li>
-    <li><i>Action buttons and input fields will appear based on the current step.</i></li>
+    <li><b>👤 Current Player:</b> Shows whose turn it is.</li>
+    <li><b>⚡ Phase:</b> Displays the current game phase and step.</li>
+    <li><i>🎮 Action buttons and input fields will appear based on the current step.</i></li>
 </ul>
 """
         phase_explanation_map = {
             "FIRST_MARCH": """
 <p><b>🎮 Game Start: First March Phase</b></p>
 <p><strong>Welcome to Dragon Dice gameplay!</strong> The game begins with your First March phase.</p>
-<p><b>Army Selection:</b> Choose one of your three armies for this march:</p>
+<p><b>⚔️ Army Selection:</b> Choose one of your three armies for this march:</p>
 <ul>
-    <li><b>Home Army:</b> Located at your Home Terrain</li>
-    <li><b>Campaign Army:</b> Located at the Frontier Terrain</li>
-    <li><b>Horde Army:</b> Located at an opponent's Home Terrain</li>
+    <li><b>🏰 Home Army:</b> Located at your Home Terrain</li>
+    <li><b>🚩 Campaign Army:</b> Located at the Frontier Terrain</li>
+    <li><b>🌊 Horde Army:</b> Located at an opponent's Home Terrain</li>
 </ul>
-<p><b>What happens next:</b> Your selected army may maneuver (change terrain distance) and/or take an action (Melee, Missile, or Magic) based on the terrain's current face.</p>
-<p><b>Strategy tip:</b> Consider which army is best positioned to advance your objectives or capture terrain.</p>
+<p><b>🎯 What happens next:</b> Your selected army may maneuver (change terrain distance) and/or take an action (⚔️ Melee, 🏹 Missile, or ✨ Magic) based on the terrain's current face.</p>
+<p><b>💡 Strategy tip:</b> Consider which army is best positioned to advance your objectives or capture terrain.</p>
+""",
+            "CHOOSE_ACTING_ARMY": """
+<p><b>⚔️ Choose Acting Army</b></p>
+<p>Select which army will be active for both the Maneuver and Action steps of this March phase.</p>
+<p><b>🏰 Your Armies:</b></p>
+<ul>
+    <li><b>🏰 Home Army:</b> Located at your Home Terrain - strong defensive position</li>
+    <li><b>🚩 Campaign Army:</b> Located at the Frontier Terrain - central position for offense</li>
+    <li><b>🌊 Horde Army:</b> Located at opponent's Home Terrain - deep strike position</li>
+</ul>
+<p><b>📍 Location Info:</b> Each army shows its current terrain, terrain type, and die face. The terrain die face determines what actions are available:</p>
+<ul>
+    <li><b>Face 1+:</b> ⚔️ Melee actions available</li>
+    <li><b>Face 2+:</b> 🏹 Missile actions available</li>
+    <li><b>Face 3+:</b> ✨ Magic actions available</li>
+</ul>
+<p><b>💡 Strategy:</b> Choose the army best positioned for your tactical goals. Your choice persists through both Maneuver and Action steps.</p>
 """,
             "DECIDE_MANEUVER": """
-<p><b>Current Step: Decide Maneuver (within First/Second March)</b></p>
-<p>Choose one of your armies for this march phase. The selected army will attempt to maneuver and/or take an action.</p>
-<p><b>Army Selection:</b> You should choose which army (Home, Campaign, or Horde) will be active for this march. Consider which army is best positioned for your strategy.</p>
-<p><b>Maneuver Decision:</b> Decide if your selected army will attempt to maneuver. Maneuvering changes the distance on the terrain die where the army is located. If an opponent is at the same terrain, they may oppose the maneuver. (Rulebook pg. 11)</p>
-<p><b>Actions:</b> Click 'Maneuver: Yes' to attempt a maneuver, or 'Maneuver: No' to skip the maneuver step and proceed to selecting an action.</p>
+<p><b>🚀 Decide Maneuver</b></p>
+<p>Your acting army is ready! Now decide if it will attempt to maneuver.</p>
+<p><b>🎯 Maneuver Decision:</b> Maneuvering allows your army to change the distance (die face) on the terrain where it's located. This can:</p>
+<ul>
+    <li><b>📈 Turn Up:</b> Increase the terrain die face (more action options)</li>
+    <li><b>📉 Turn Down:</b> Decrease the terrain die face (fewer action options for opponents)</li>
+</ul>
+<p><b>⚠️ Opposition:</b> If an opponent army is at the same terrain, they may choose to counter-maneuver, leading to opposed rolls. (Rulebook pg. 11)</p>
+<p><b>🎮 Actions:</b></p>
+<ul>
+    <li><b>✅ Maneuver: Yes</b> - Open the maneuver dialog to attempt maneuvering</li>
+    <li><b>❌ Maneuver: No</b> - Skip maneuvering and proceed to action selection</li>
+</ul>
 """,
             "AWAITING_MANEUVER_INPUT": """
-<p><b>Current Step: Awaiting Maneuver Input (within First/Second March)</b></p>
-<p>The player chose to maneuver. If unopposed, the maneuver is automatic. If opposed, both players roll their armies and count maneuver results. Input the outcome or relevant dice results into the 'Enter Maneuver Details' field. The companion app does not roll dice for you. (Rulebook pg. 11)</p>
-<p><b>Actions:</b> Enter the details/results of the maneuver roll and click 'Submit Maneuver'.</p>
+<p><b>🎲 Awaiting Maneuver Input</b></p>
+<p>You chose to maneuver! The maneuver dialog will guide you through the complete process.</p>
+<p><b>🔄 Maneuver Process:</b></p>
+<ul>
+    <li><b>🛡️ Counter-Maneuver:</b> Opponents at the same terrain may choose to oppose</li>
+    <li><b>🎲 Resolution:</b> Roll armies and count 🏃 maneuver results</li>
+    <li><b>📈📉 Outcome:</b> Winner chooses to turn terrain up or down by 1</li>
+</ul>
+<p><b>⚠️ Note:</b> This app provides the interface but doesn't roll dice for you. Use your physical Dragon Dice! (Rulebook pg. 11)</p>
+""",
+            "DECIDE_ACTION": """
+<p><b>⚡ Decide Action</b></p>
+<p>Your acting army has completed any maneuvering. Now decide if it will take an action.</p>
+<p><b>🎯 Available Actions:</b> The actions available depend on the terrain die face where your army is located:</p>
+<ul>
+    <li><b>Face 1+:</b> ⚔️ Melee (Close combat attack)</li>
+    <li><b>Face 2+:</b> 🏹 Missile (Ranged attack)</li>
+    <li><b>Face 3+:</b> ✨ Magic (Spell casting)</li>
+</ul>
+<p><b>🎮 Decision:</b></p>
+<ul>
+    <li><b>✅ Take Action: Yes</b> - Proceed to select specific action type</li>
+    <li><b>❌ Take Action: No</b> - End your march and advance to next phase</li>
+</ul>
+<p><b>💡 Strategy:</b> Consider whether an action will advance your position or if it's better to conserve your army for later phases.</p>
 """,
             "SELECT_ACTION": """
-<p><b>Current Step: Select Action (within First/Second March)</b></p>
-<p>The army may now take an action: Melee, Missile, or Magic. The available action is usually determined by the icon on the terrain die. If the terrain is on its 8th face, the controlling army has more options. An army in the Reserve Area may only take a Magic action. (Rulebook pg. 12)</p>
-<p><b>Actions:</b> Click the button corresponding to the action you wish to take.</p>
+<p><b>🎯 Select Action</b></p>
+<p>Choose the specific action your acting army will take. Only actions available based on the terrain die face are shown.</p>
+<p><b>⚔️ Action Types:</b></p>
+<ul>
+    <li><b>⚔️ Melee Action:</b> Close combat attack against armies at the same terrain</li>
+    <li><b>🏹 Missile Action:</b> Ranged attack that can target multiple terrains</li>
+    <li><b>✨ Magic Action:</b> Spell casting with various effects and targets</li>
+</ul>
+<p><b>🗺️ Terrain Limitations:</b> Your terrain die face determines available actions:</p>
+<ul>
+    <li><b>Face 1:</b> Only ⚔️ Melee available</li>
+    <li><b>Face 2:</b> ⚔️ Melee and 🏹 Missile available</li>
+    <li><b>Face 3+:</b> All actions (⚔️ Melee, 🏹 Missile, ✨ Magic) available</li>
+</ul>
+<p><b>🎮 Actions:</b> Click the button for your chosen action type. (Rulebook pg. 12)</p>
 """,
             "AWAITING_ATTACKER_MELEE_ROLL": """
-<p><b>Current Step: Attacker Melee Roll (within Melee Action)</b></p>
-<p>The attacking army makes a melee roll. Count melee results and resolve any applicable SAIs first. Input the total melee results. (Rulebook pg. 12)</p>
-<p><b>Actions:</b> Enter the attacker's melee results and click 'Submit Attacker Melee'.</p>
+<p><b>⚔️ Attacker Melee Roll</b></p>
+<p>The attacking army makes a melee roll with their dice. Time to count your results!</p>
+<p><b>🎲 Roll Process:</b></p>
+<ul>
+    <li><b>1️⃣ Roll:</b> Roll all dice in your attacking army</li>
+    <li><b>2️⃣ Count ⚔️:</b> Count all melee icons that come up</li>
+    <li><b>3️⃣ Resolve 💎 SAIs:</b> Apply any Special Action Icons first</li>
+    <li><b>4️⃣ Total:</b> Calculate final melee results after all modifiers</li>
+</ul>
+<p><b>📋 Actions:</b> Enter your total melee results and click '📤 Submit Attacker Melee'. (Rulebook pg. 12)</p>
 """,
             "AWAITING_DEFENDER_SAVES": """
-<p><b>Current Step: Defender Save Roll (within Melee Action)</b></p>
-<p>The defending army makes a save roll. Resolve SAIs, then subtract save results from the attacker's melee results to determine damage. (Rulebook pg. 12)</p>
-<p><b>Actions:</b> Enter the defender's save results and click 'Submit Defender Saves'.</p>
+<p><b>🛡️ Defender Save Roll</b></p>
+<p>The defending army makes a save roll to reduce incoming damage.</p>
+<p><b>🎲 Save Process:</b></p>
+<ul>
+    <li><b>1️⃣ Roll:</b> Roll all dice in your defending army</li>
+    <li><b>2️⃣ Count 🛡️:</b> Count all save icons that come up</li>
+    <li><b>3️⃣ Resolve 💎 SAIs:</b> Apply any Special Action Icons that affect saves</li>
+    <li><b>4️⃣ Subtract:</b> Saves reduce the attacker's melee results</li>
+</ul>
+<p><b>📋 Actions:</b> Enter your total save results and click '📤 Submit Defender Saves'. (Rulebook pg. 12)</p>
 """,
         }
         # Add explanations for other phases
