@@ -91,55 +91,58 @@ class TurnManager(QObject):
     def get_current_player(self) -> str:
         """Get the current player's name."""
         return self.player_names[self.current_player_idx]
-    
+
     def get_current_phase(self) -> str:
         """Get the current phase."""
         return self.current_phase
-    
+
     def get_current_march_step(self) -> str:
         """Get the current march step."""
         return self.current_march_step
-    
+
     def get_current_action_step(self) -> str:
         """Get the current action step."""
         return self.current_action_step
-    
+
     def get_phase_display_string(self) -> str:
         """Get the formatted display string for the current phase/step."""
         return self._get_current_phase_display_string()
-    
+
     # Setter methods
     def set_march_step(self, step: str):
         """Set the current march step and emit phase change signal."""
         self.current_march_step = step
         print(f"TurnManager: Setting march step to {step}")
         self.current_phase_changed.emit(self._get_current_phase_display_string())
-    
+
     def set_action_step(self, step: str):
         """Set the current action step and emit phase change signal."""
         self.current_action_step = step
         print(f"TurnManager: Setting action step to {step}")
         self.current_phase_changed.emit(self._get_current_phase_display_string())
-    
+
     def clear_march_step(self):
         """Clear the current march step."""
         self.current_march_step = ""
         self.current_phase_changed.emit(self._get_current_phase_display_string())
-    
+
     def clear_action_step(self):
         """Clear the current action step."""
         self.current_action_step = ""
         self.current_phase_changed.emit(self._get_current_phase_display_string())
-    
+
     # Utility methods
     def is_march_phase(self) -> bool:
         """Check if current phase is a march phase."""
-        return self.current_phase in [constants.PHASE_FIRST_MARCH, constants.PHASE_SECOND_MARCH]
-    
+        return self.current_phase in [
+            constants.PHASE_FIRST_MARCH,
+            constants.PHASE_SECOND_MARCH,
+        ]
+
     def get_player_index(self) -> int:
         """Get the current player's index."""
         return self.current_player_idx
-    
+
     def get_all_players(self) -> list[str]:
         """Get list of all player names."""
         return self.player_names.copy()

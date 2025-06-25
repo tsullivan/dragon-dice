@@ -176,5 +176,65 @@ def test_main_gameplay_view_expire_effects_phase_auto_advances(qtbot):
     )
 
 
-# TODO: Add tests for other phases like SPECIES_ABILITIES, RESERVES
-# TODO: Add tests for MISSILE and MAGIC action steps once implemented
+def test_main_gameplay_view_species_abilities_phase(qtbot):
+    """Tests the SPECIES_ABILITIES phase display."""
+    game_engine = setup_game_engine()
+    # Set to SPECIES_ABILITIES phase
+    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index(
+        constants.PHASE_SPECIES_ABILITIES
+    )
+    game_engine.turn_manager.current_phase = constants.PHASE_SPECIES_ABILITIES
+    game_engine.turn_manager.current_march_step = ""
+    game_engine.turn_manager.current_action_step = ""
+    game_engine._handle_phase_entry()
+
+    main_gameplay_view = MainGameplayView(game_engine=game_engine)
+    QApplication.processEvents()
+    capture_widget_screenshot(
+        qtbot, main_gameplay_view, "MainGameplayView_SpeciesAbilitiesPhase"
+    )
+
+
+def test_main_gameplay_view_reserves_phase(qtbot):
+    """Tests the RESERVES phase display."""
+    game_engine = setup_game_engine()
+    # Set to RESERVES phase
+    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index(
+        constants.PHASE_RESERVES
+    )
+    game_engine.turn_manager.current_phase = constants.PHASE_RESERVES
+    game_engine.turn_manager.current_march_step = ""
+    game_engine.turn_manager.current_action_step = ""
+    game_engine._handle_phase_entry()
+
+    main_gameplay_view = MainGameplayView(game_engine=game_engine)
+    QApplication.processEvents()
+    capture_widget_screenshot(
+        qtbot, main_gameplay_view, "MainGameplayView_ReservesPhase"
+    )
+
+
+def test_main_gameplay_view_attacker_missile_roll(qtbot):
+    """Tests the MISSILE action step display."""
+    game_engine = setup_game_engine()
+    # Navigate to SELECT_ACTION state first, then select MISSILE
+    game_engine.decide_maneuver(False)
+    game_engine.select_action(constants.ACTION_MISSILE)
+
+    main_gameplay_view = MainGameplayView(game_engine=game_engine)
+    QApplication.processEvents()
+    capture_widget_screenshot(
+        qtbot, main_gameplay_view, "MainGameplayView_AttackerMissileRoll"
+    )
+
+
+def test_main_gameplay_view_magic_roll(qtbot):
+    """Tests the MAGIC action step display."""
+    game_engine = setup_game_engine()
+    # Navigate to SELECT_ACTION state first, then select MAGIC
+    game_engine.decide_maneuver(False)
+    game_engine.select_action(constants.ACTION_MAGIC)
+
+    main_gameplay_view = MainGameplayView(game_engine=game_engine)
+    QApplication.processEvents()
+    capture_widget_screenshot(qtbot, main_gameplay_view, "MainGameplayView_MagicRoll")

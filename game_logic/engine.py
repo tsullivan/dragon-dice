@@ -16,17 +16,23 @@ class GameEngine(QObject):
     game_state_updated = Signal()  # Emitted when significant game state changes
     current_player_changed = Signal(str)
     current_phase_changed = Signal(str)
-    unit_selection_required = Signal(str, int, list)  # player_name, damage_amount, available_units
+    unit_selection_required = Signal(
+        str, int, list
+    )  # player_name, damage_amount, available_units
     damage_allocation_completed = Signal(str, int)  # player_name, total_damage_applied
-    
+
     # New signals to replace direct calls
     march_step_change_requested = Signal(str)  # new_march_step
     action_step_change_requested = Signal(str)  # new_action_step
     phase_advance_requested = Signal()
     player_advance_requested = Signal()
     effect_expiration_requested = Signal(str)  # player_name
-    dice_roll_submitted = Signal(str, str, str)  # roll_type, results_string, player_name
-    damage_allocation_requested = Signal(str, str, str, int)  # player_name, army_id, unit_name, new_health
+    dice_roll_submitted = Signal(
+        str, str, str
+    )  # roll_type, results_string, player_name
+    damage_allocation_requested = Signal(
+        str, str, str, int
+    )  # player_name, army_id, unit_name, new_health
 
     def __init__(
         self,
@@ -58,6 +64,7 @@ class GameEngine(QObject):
         self._is_very_first_turn = (
             True  # Track if this is the very first turn of the game
         )
+        self._current_acting_army = None  # Store the acting army for the current march
 
         # Instantiate managers
         self.turn_manager = TurnManager(
@@ -87,13 +94,15 @@ class GameEngine(QObject):
         self.game_state_manager.game_state_changed.connect(
             self.game_state_updated.emit
         )  # If game state changes, emit general update
-        
+
         # Connect new signals to manager methods
         self.march_step_change_requested.connect(self.turn_manager.set_march_step)
         self.action_step_change_requested.connect(self.turn_manager.set_action_step)
         self.phase_advance_requested.connect(self.turn_manager.advance_phase)
         self.player_advance_requested.connect(self.turn_manager.advance_player)
-        self.effect_expiration_requested.connect(self.effect_manager.process_effect_expirations)
+        self.effect_expiration_requested.connect(
+            self.effect_manager.process_effect_expirations
+        )
         self.effect_manager.effects_changed.connect(
             self.game_state_updated.emit
         )  # If effects change, game state is updated
@@ -126,9 +135,11 @@ class GameEngine(QObject):
             current_phase == constants.PHASE_FIRST_MARCH
             or current_phase == constants.PHASE_SECOND_MARCH
         ):
-            # Request march step initialization through signal
-            self.march_step_change_requested.emit(constants.MARCH_STEP_DECIDE_MANEUVER)
-            self._current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
+            # Request march step initialization through signal - start with choosing acting army
+            self.march_step_change_requested.emit(
+                constants.MARCH_STEP_CHOOSE_ACTING_ARMY
+            )
+            self._current_march_step = constants.MARCH_STEP_CHOOSE_ACTING_ARMY
         elif current_phase == constants.PHASE_EXPIRE_EFFECTS:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
             # Request effect expiration processing through signal
@@ -195,11 +206,11 @@ class GameEngine(QObject):
         if self._is_very_first_turn:
             self._is_very_first_turn = False
 
-        # Emit signal to TurnManager to handle decision
-        if wants_to_maneuver:
-            self.march_step_change_requested.emit(constants.MARCH_STEP_AWAITING_MANEUVER_INPUT)
-            self._current_march_step = constants.MARCH_STEP_AWAITING_MANEUVER_INPUT
-        else:
+        # Note: When wants_to_maneuver is True, the MainGameplayView will show the ManeuverDialog
+        # and handle the complete maneuver flow. When the dialog completes, it will trigger
+        # the transition to SELECT_ACTION phase. For now, we stay in DECIDE_MANEUVER step
+        # until the dialog completes or the user chooses "No".
+        if not wants_to_maneuver:
             self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
             self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
         self.current_phase_changed.emit(self.get_current_phase_display())
@@ -229,7 +240,7 @@ class GameEngine(QObject):
         else:
             print(f"Unknown action type: {action_type}")
             return
-        
+
         self.action_step_change_requested.emit(action_step)
         self._current_action_step = action_step
 
@@ -331,42 +342,44 @@ class GameEngine(QObject):
         """Slot to update the current action step via cached state."""
         print(f"GameEngine: Setting next action step to: {next_step}")
         self._current_action_step = next_step
-    
+
     @Slot(dict)
     def _handle_action_resolution(self, action_result: dict):
         """Handle the resolution of actions from ActionResolver."""
         action_type = action_result.get("type", "unknown")
         print(f"GameEngine: Handling action resolution of type: {action_type}")
-        
+
         if action_type == "melee_complete":
             damage_dealt = action_result.get("damage_dealt", 0)
             print(f"GameEngine: Melee action complete, {damage_dealt} damage dealt")
-            
+
             # Check for counter-attack
             if action_result.get("counter_attack_possible", False):
                 print("GameEngine: Counter-attack is possible")
                 # TODO: Implement counter-attack logic
-            
+
             self._complete_current_action()
-        
+
         elif action_type == "missile_complete":
             damage_dealt = action_result.get("damage_dealt", 0)
             print(f"GameEngine: Missile action complete, {damage_dealt} damage dealt")
             self._complete_current_action()
-        
+
         elif action_type == "magic_complete":
             effects = action_result.get("effects", [])
             print(f"GameEngine: Magic action complete, effects: {effects}")
             self._complete_current_action()
-        
+
         elif action_type == "melee_attacker_complete":
             # Intermediate step - attacker finished, now defender needs to save
             hits = action_result.get("hits", 0)
-            print(f"GameEngine: Attacker melee complete, {hits} hits scored, awaiting defender saves")
+            print(
+                f"GameEngine: Attacker melee complete, {hits} hits scored, awaiting defender saves"
+            )
             # Update action step is handled by ActionResolver via signal
-        
+
         self.game_state_updated.emit()
-    
+
     def _complete_current_action(self):
         """Complete the current action and advance phase."""
         self._current_action_step = ""
@@ -515,49 +528,56 @@ class GameEngine(QObject):
     def get_displayable_active_effects(self) -> list[str]:
         """Returns a list of strings representing active effects for UI display."""
         return self.effect_manager.get_displayable_effects()
-    
-    def get_available_units_for_damage(self, player_name: str, army_identifier: str = None) -> list:
+
+    def get_available_units_for_damage(
+        self, player_name: str, army_identifier: str = None
+    ) -> list:
         """Get units that can receive damage for a specific player/army."""
         if army_identifier:
             # Get units from specific army
             player_data = self.game_state_manager.get_player_data(player_name)
             if not player_data:
                 return []
-            
+
             army = player_data.get("armies", {}).get(army_identifier, {})
             units = army.get("units", [])
         else:
             # Get units from active army
             units = self.game_state_manager.get_active_army_units(player_name)
-        
+
         # Filter to only units that can take damage (health > 0)
-        available_units = [
-            unit for unit in units 
-            if unit.get("health", 0) > 0
-        ]
-        
+        available_units = [unit for unit in units if unit.get("health", 0) > 0]
+
         return available_units
-    
-    def request_unit_damage_allocation(self, player_name: str, damage_amount: int, army_identifier: str = None):
+
+    def request_unit_damage_allocation(
+        self, player_name: str, damage_amount: int, army_identifier: str = None
+    ):
         """Request that the player allocate damage to specific units."""
-        available_units = self.get_available_units_for_damage(player_name, army_identifier)
-        
+        available_units = self.get_available_units_for_damage(
+            player_name, army_identifier
+        )
+
         if not available_units:
             print(f"GameEngine: No units available to take damage for {player_name}")
             self.damage_allocation_completed.emit(player_name, 0)
             return
-        
+
         if damage_amount <= 0:
             print(f"GameEngine: No damage to allocate for {player_name}")
             self.damage_allocation_completed.emit(player_name, 0)
             return
-        
-        print(f"GameEngine: Requesting damage allocation for {player_name}: {damage_amount} damage, {len(available_units)} units available")
-        
+
+        print(
+            f"GameEngine: Requesting damage allocation for {player_name}: {damage_amount} damage, {len(available_units)} units available"
+        )
+
         # Emit signal for UI to handle unit selection
         self.unit_selection_required.emit(player_name, damage_amount, available_units)
-    
-    def allocate_damage_to_units(self, player_name: str, damage_allocations: dict, army_identifier: str = None):
+
+    def allocate_damage_to_units(
+        self, player_name: str, damage_allocations: dict, army_identifier: str = None
+    ):
         """Apply damage allocation decisions to specific units."""
         """
         damage_allocations format: {
@@ -568,84 +588,137 @@ class GameEngine(QObject):
         """
         total_damage_applied = 0
         army_id = army_identifier or "home"  # Default to home army
-        
-        print(f"GameEngine: Allocating damage to {player_name}'s units: {damage_allocations}")
-        
+
+        print(
+            f"GameEngine: Allocating damage to {player_name}'s units: {damage_allocations}"
+        )
+
         for unit_name, damage_amount in damage_allocations.items():
             if damage_amount <= 0:
                 continue
-            
+
             # Get current unit health first
-            current_health = self.game_state_manager.get_unit_health(player_name, army_id, unit_name)
+            current_health = self.game_state_manager.get_unit_health(
+                player_name, army_id, unit_name
+            )
             if current_health is None:
-                print(f"GameEngine: Could not find unit {unit_name} for damage allocation")
+                print(
+                    f"GameEngine: Could not find unit {unit_name} for damage allocation"
+                )
                 continue
-            
+
             # Calculate new health after damage
             new_health = max(0, current_health - damage_amount)
-            
+
             success = self.game_state_manager.update_unit_health(
-                player_name, 
-                army_id, 
-                unit_name, 
-                new_health
+                player_name, army_id, unit_name, new_health
             )
-            
+
             if success:
                 total_damage_applied += damage_amount
                 print(f"GameEngine: Applied {damage_amount} damage to {unit_name}")
             else:
                 print(f"GameEngine: Failed to apply damage to {unit_name}")
-        
+
         print(f"GameEngine: Total damage applied: {total_damage_applied}")
         self.damage_allocation_completed.emit(player_name, total_damage_applied)
         self.game_state_updated.emit()
-    
-    def auto_allocate_damage(self, player_name: str, damage_amount: int, army_identifier: str = None):
+
+    def auto_allocate_damage(
+        self, player_name: str, damage_amount: int, army_identifier: str = None
+    ):
         """Automatically allocate damage to units (for AI or quick resolution)."""
-        available_units = self.get_available_units_for_damage(player_name, army_identifier)
-        
+        available_units = self.get_available_units_for_damage(
+            player_name, army_identifier
+        )
+
         if not available_units or damage_amount <= 0:
             self.damage_allocation_completed.emit(player_name, 0)
             return
-        
+
         damage_allocations = {}
         remaining_damage = damage_amount
-        
+
         # Simple allocation: damage units in order until damage is exhausted
         for unit in available_units:
             if remaining_damage <= 0:
                 break
-            
+
             unit_name = unit.get("name", "Unknown")
             unit_health = unit.get("health", 0)
-            
+
             # Allocate damage up to unit's current health
             damage_to_allocate = min(remaining_damage, unit_health)
             damage_allocations[unit_name] = damage_to_allocate
             remaining_damage -= damage_to_allocate
-        
+
         print(f"GameEngine: Auto-allocating damage: {damage_allocations}")
         self.allocate_damage_to_units(player_name, damage_allocations, army_identifier)
-    
+
     def get_player_armies_summary(self, player_name: str) -> dict:
         """Get a summary of all armies for a specific player."""
         player_data = self.game_state_manager.get_player_data(player_name)
         if not player_data:
             return {}
-        
+
         armies_summary = {}
         for army_key, army_data in player_data.get("armies", {}).items():
             units = army_data.get("units", [])
             total_health = sum(unit.get("health", 0) for unit in units)
             unit_count = len(units)
-            
+
             armies_summary[army_key] = {
                 "name": army_data.get("name", army_key.title()),
                 "location": army_data.get("location", "Unknown"),
                 "unit_count": unit_count,
                 "total_health": total_health,
-                "points_value": army_data.get("points_value", 0)
+                "points_value": army_data.get("points_value", 0),
             }
-        
+
         return armies_summary
+
+    def get_all_players_data(self):
+        """Get all players data from the GameStateManager."""
+        return self.game_state_manager.get_all_players_data()
+
+    def get_all_terrain_data(self):
+        """Get all terrain data from the GameStateManager."""
+        return self.game_state_manager.get_all_terrain_data()
+
+    def choose_acting_army(self, army_data: dict):
+        """Set the acting army for the current march phase."""
+        self._current_acting_army = army_data
+        print(
+            f"Acting army chosen: {army_data.get('name')} at {army_data.get('location')}"
+        )
+
+        # Mark that the first turn interaction has begun
+        if self._is_very_first_turn:
+            self._is_very_first_turn = False
+
+        # Proceed to maneuver decision step
+        self.march_step_change_requested.emit(constants.MARCH_STEP_DECIDE_MANEUVER)
+        self._current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
+        self.current_phase_changed.emit(self.get_current_phase_display())
+        self.game_state_updated.emit()
+
+    def get_current_acting_army(self):
+        """Get the current acting army."""
+        return self._current_acting_army
+
+    def decide_action(self, wants_to_take_action: bool):
+        """Handle the decision whether to take an action with the acting army."""
+        print(
+            f"Player {self.get_current_player_name()} decided action: {wants_to_take_action}"
+        )
+
+        if wants_to_take_action:
+            self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
+            self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+        else:
+            # Skip action step, advance to next phase
+            self.advance_phase()
+            return
+
+        self.current_phase_changed.emit(self.get_current_phase_display())
+        self.game_state_updated.emit()

@@ -52,19 +52,23 @@ class UnitSelectionDialog(QDialog):
 
         # Available Units (Tabs with Tables)
         self.available_units_tabs = QTabWidget()
-        self.available_units_tabs.setMaximumWidth(500)  # Prevent excessive horizontal stretching
+        self.available_units_tabs.setMaximumWidth(
+            500
+        )  # Prevent excessive horizontal stretching
         self._populate_available_units_tabs()
         # Give more space to tabs
         main_area_layout.addWidget(self.available_units_tabs, 2)
 
         # Right side layout with selected units and die face display
         right_side_layout = QVBoxLayout()
-        
+
         # Selected units section
         selected_units_group = QVBoxLayout()
         selected_units_group.addWidget(QLabel("Units in Army:"))
         self.selected_units_table = QTableWidget()
-        self.selected_units_table.setMaximumWidth(350)  # Prevent excessive horizontal stretching
+        self.selected_units_table.setMaximumWidth(
+            350
+        )  # Prevent excessive horizontal stretching
         self.selected_units_table.setColumnCount(3)
         self.selected_units_table.setHorizontalHeaderLabels(
             ["Unit Name", "Class Type", "Health Points"]
@@ -83,11 +87,11 @@ class UnitSelectionDialog(QDialog):
         )
         selected_units_group.addWidget(self.selected_units_table)
         right_side_layout.addLayout(selected_units_group)
-        
+
         # Die face display section
         self.die_face_widget = DieFaceDisplayWidget()
         right_side_layout.addWidget(self.die_face_widget)
-        
+
         main_area_layout.addLayout(right_side_layout, 1)
 
         layout.addLayout(main_area_layout)
@@ -153,7 +157,9 @@ class UnitSelectionDialog(QDialog):
                 table.setItem(row_idx, 2, health_item)
             table.cellClicked.connect(self._table_cell_clicked)
             table.selectionModel().selectionChanged.connect(
-                lambda selected, deselected, t=table: self._on_available_unit_selected(t)
+                lambda selected, deselected, t=table: self._on_available_unit_selected(
+                    t
+                )
             )
             tab_layout.addWidget(table)
             self.available_units_tabs.addTab(tab_content_widget, species)
@@ -237,7 +243,7 @@ class UnitSelectionDialog(QDialog):
                     die_faces = unit_type_info.get("die_faces", {})
                     self.die_face_widget.set_die_faces(die_faces)
                     return
-        
+
         # Clear die face display if no valid selection
         self.die_face_widget.clear()
 
@@ -252,7 +258,7 @@ class UnitSelectionDialog(QDialog):
                 die_faces = unit_def.get("die_faces", {})
                 self.die_face_widget.set_die_faces(die_faces)
                 return
-        
+
         # Clear die face display if no valid selection
         self.die_face_widget.clear()
 

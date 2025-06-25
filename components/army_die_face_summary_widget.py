@@ -69,7 +69,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
         """Get display icon for a die face type."""
         icon_map = {
             constants.ICON_MELEE: "⚔️",
-            constants.ICON_MISSILE: "🏹", 
+            constants.ICON_MISSILE: "🏹",
             constants.ICON_MAGIC: "✨",
             constants.ICON_SAVE: "🛡️",
             constants.ICON_MANEUVER: "🏃",
@@ -83,20 +83,27 @@ class ArmyDieFaceSummaryWidget(QWidget):
             return {}
 
         face_counts = Counter()
-        
+
         for unit in units:
             unit_def = self.unit_roster.get_unit_definition(unit.unit_type)
             if not unit_def:
                 continue
-                
+
             die_faces = unit_def.get("die_faces", {})
-            
+
             # Count standard faces (face_1 through face_6)
-            for face_key in ["face_1", "face_2", "face_3", "face_4", "face_5", "face_6"]:
+            for face_key in [
+                "face_1",
+                "face_2",
+                "face_3",
+                "face_4",
+                "face_5",
+                "face_6",
+            ]:
                 face_type = die_faces.get(face_key)
                 if face_type and face_type != "ID":  # Don't count ID faces
                     face_counts[face_type] += 1
-            
+
             # Count eighth faces
             for face_key in ["eighth_face_1", "eighth_face_2"]:
                 face_type = die_faces.get(face_key)
@@ -105,18 +112,20 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
         return dict(face_counts)
 
-    def set_units_and_roster(self, units: List[UnitModel], unit_roster: UnitRosterModel):
+    def set_units_and_roster(
+        self, units: List[UnitModel], unit_roster: UnitRosterModel
+    ):
         """Update the summary with new units and roster."""
         self.unit_roster = unit_roster
-        
+
         if not units:
             self._show_empty_state()
             return
 
         self._clear_summary()
-        
+
         face_counts = self._count_die_faces(units)
-        
+
         if not face_counts:
             self._show_empty_state()
             return
@@ -124,7 +133,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
         # Show the most common face types in a compact format
         priority_order = [
             constants.ICON_MELEE,
-            constants.ICON_MISSILE, 
+            constants.ICON_MISSILE,
             constants.ICON_MAGIC,
             constants.ICON_SAVE,
             constants.ICON_MANEUVER,
@@ -133,8 +142,11 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
         # Sort by priority, then by count (descending)
         sorted_faces = sorted(
-            face_counts.items(), 
-            key=lambda x: (priority_order.index(x[0]) if x[0] in priority_order else 999, -x[1])
+            face_counts.items(),
+            key=lambda x: (
+                priority_order.index(x[0]) if x[0] in priority_order else 999,
+                -x[1],
+            ),
         )
 
         for face_type, count in sorted_faces:

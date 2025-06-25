@@ -306,7 +306,7 @@ class PlayerSetupView(QWidget):
 
     def _validate_inputs(self) -> bool:
         validation_errors = []
-        
+
         # Check player name
         player_name = self.player_identity_widget.get_name()
         if not player_name:

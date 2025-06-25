@@ -52,8 +52,10 @@ class DieFaceDisplayWidget(QWidget):
             face_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             face_label.setMinimumSize(30, 30)
             face_label.setFrameStyle(QFrame.Shape.Box)
-            face_label.setStyleSheet("background-color: #f0f0f0; border: 1px solid #ccc;")
-            
+            face_label.setStyleSheet(
+                "background-color: #f0f0f0; border: 1px solid #ccc;"
+            )
+
             row = (i - 1) // 3
             col = (i - 1) % 3
             standard_layout.addWidget(face_label, row, col)
@@ -78,8 +80,10 @@ class DieFaceDisplayWidget(QWidget):
             face_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             face_label.setMinimumSize(30, 30)
             face_label.setFrameStyle(QFrame.Shape.Box)
-            face_label.setStyleSheet("background-color: #ffe6e6; border: 1px solid #ffcccc;")
-            
+            face_label.setStyleSheet(
+                "background-color: #ffe6e6; border: 1px solid #ffcccc;"
+            )
+
             eighth_layout.addWidget(face_label)
             self.eighth_face_labels[f"eighth_face_{i}"] = face_label
 
@@ -92,17 +96,21 @@ class DieFaceDisplayWidget(QWidget):
         """Show the widget in an empty state."""
         for label in self.standard_face_labels.values():
             label.setText("—")
-            label.setStyleSheet("background-color: #f8f8f8; border: 1px solid #ddd; color: #999;")
-        
+            label.setStyleSheet(
+                "background-color: #f8f8f8; border: 1px solid #ddd; color: #999;"
+            )
+
         for label in self.eighth_face_labels.values():
             label.setText("—")
-            label.setStyleSheet("background-color: #f8f8f8; border: 1px solid #ddd; color: #999;")
+            label.setStyleSheet(
+                "background-color: #f8f8f8; border: 1px solid #ddd; color: #999;"
+            )
 
     def _get_icon_for_face(self, face_type: str) -> str:
         """Get display icon/text for a die face type."""
         icon_map = {
             constants.ICON_MELEE: "⚔️",
-            constants.ICON_MISSILE: "🏹", 
+            constants.ICON_MISSILE: "🏹",
             constants.ICON_MAGIC: "✨",
             constants.ICON_SAVE: "🛡️",
             constants.ICON_ID: "—",
@@ -118,20 +126,20 @@ class DieFaceDisplayWidget(QWidget):
     def _get_color_for_face(self, face_type: str) -> str:
         """Get background color for a die face type."""
         color_map = {
-            constants.ICON_MELEE: "#ffeeee",      # Light red
-            constants.ICON_MISSILE: "#eeeeff",    # Light blue
-            constants.ICON_MAGIC: "#ffffee",      # Light yellow
-            constants.ICON_SAVE: "#eeffee",       # Light green
-            constants.ICON_ID: "#f0f0f0",         # Light gray
-            constants.ICON_SAI: "#ffeeff",        # Light purple
-            constants.ICON_MANEUVER: "#eeffff",   # Light cyan
+            constants.ICON_MELEE: "#ffeeee",  # Light red
+            constants.ICON_MISSILE: "#eeeeff",  # Light blue
+            constants.ICON_MAGIC: "#ffffee",  # Light yellow
+            constants.ICON_SAVE: "#eeffee",  # Light green
+            constants.ICON_ID: "#f0f0f0",  # Light gray
+            constants.ICON_SAI: "#ffeeff",  # Light purple
+            constants.ICON_MANEUVER: "#eeffff",  # Light cyan
         }
         return color_map.get(face_type, "#f0f0f0")
 
     def set_die_faces(self, die_face_data: Optional[Dict[str, str]]):
         """Set the die face data to display."""
         self.die_face_data = die_face_data
-        
+
         if not die_face_data:
             self._show_empty_state()
             return
@@ -141,7 +149,7 @@ class DieFaceDisplayWidget(QWidget):
             face_type = die_face_data.get(face_key, "ID")
             icon = self._get_icon_for_face(face_type)
             color = self._get_color_for_face(face_type)
-            
+
             label.setText(icon)
             label.setStyleSheet(f"background-color: {color}; border: 1px solid #ccc;")
             label.setToolTip(f"{face_key.replace('_', ' ').title()}: {face_type}")
@@ -151,9 +159,11 @@ class DieFaceDisplayWidget(QWidget):
             face_type = die_face_data.get(face_key, "ID")
             icon = self._get_icon_for_face(face_type)
             color = self._get_color_for_face(face_type)
-            
+
             label.setText(icon)
-            label.setStyleSheet(f"background-color: {color}; border: 1px solid #ffcccc;")
+            label.setStyleSheet(
+                f"background-color: {color}; border: 1px solid #ffcccc;"
+            )
             label.setToolTip(f"{face_key.replace('_', ' ').title()}: {face_type}")
 
     def clear(self):

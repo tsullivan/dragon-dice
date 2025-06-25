@@ -129,9 +129,11 @@ class ArmySetupWidget(QWidget):
         unit_count = len(self.current_units)
         total_points = sum(unit.max_health for unit in self.current_units)
         self.units_summary_label.setText(f"Units: {unit_count} ({total_points} pts)")
-        
+
         # Update die face summary
         if self.unit_roster:
-            self.die_face_summary.set_units_and_roster(self.current_units, self.unit_roster)
+            self.die_face_summary.set_units_and_roster(
+                self.current_units, self.unit_roster
+            )
         else:
             self.die_face_summary.clear()
