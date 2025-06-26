@@ -28,6 +28,7 @@ from components.active_effects_widget import ActiveEffectsWidget
 from views.maneuver_dialog import ManeuverDialog
 from views.action_dialog import ActionDialog
 import constants
+from utils.display_utils import format_terrain_summary, format_player_turn_label
 
 
 class MainGameplayView(QWidget):
@@ -89,7 +90,7 @@ class MainGameplayView(QWidget):
         self.player_armies_info_layout = QVBoxLayout(self.player_armies_info_group)
         top_main_content_h_layout.addWidget(self.player_armies_info_group, 1)
 
-        self.current_player_terrains_group = QGroupBox("Player X's Turn")
+        self.current_player_terrains_group = QGroupBox("Terrain Summaries")
         current_player_terrains_v_layout = QVBoxLayout(
             self.current_player_terrains_group
         )
@@ -197,14 +198,29 @@ class MainGameplayView(QWidget):
 
         main_layout.addWidget(self.tabbed_widget)
 
-        # 3. Continue Button
+        # 3. Player Turn and Continue Section
+        player_continue_layout = QVBoxLayout()
+        player_continue_layout.setContentsMargins(0, 10, 0, 0)
+        
+        # Player turn label
+        self.player_turn_label = QLabel("👤 Player's Turn")
+        player_turn_font = self.player_turn_label.font()
+        player_turn_font.setPointSize(14)
+        player_turn_font.setBold(True)
+        self.player_turn_label.setFont(player_turn_font)
+        self.player_turn_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        player_continue_layout.addWidget(self.player_turn_label)
+        
+        # Continue Button
         self.continue_button = QPushButton("Continue to Next Phase")
         self.continue_button.setMaximumWidth(220)  # Limit button width
         self.continue_button.setEnabled(
             False
         )  # Disabled by default until phase actions are completed
         self.continue_button.clicked.connect(self._on_continue_clicked)
-        main_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
+        player_continue_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
+        
+        main_layout.addLayout(player_continue_layout)
 
         self.setLayout(main_layout)
 
@@ -511,16 +527,24 @@ class MainGameplayView(QWidget):
                 QLabel("No player data available.")
             )
 
-        # Update Current Player and Terrains
+        # Update Current Player Turn Label
         current_player_name = self.game_engine.get_current_player_name()
-        self.current_player_terrains_group.setTitle(f"{current_player_name}'s Turn")
+        self.player_turn_label.setText(format_player_turn_label(current_player_name))
 
+        # Update Terrain Summaries
         terrains_html = "<ul style='margin-left:0px; padding-left:5px; list-style-position:inside;'>"
 
         relevant_terrains = self.game_engine.get_relevant_terrains_info()
         for terrain in relevant_terrains:
-            terrains_html += f"<li>{terrain.get('icon', '')} {terrain.get('name', 'N/A')} ({
-                terrain.get('type', 'N/A')}) - {terrain.get('details', '')}</li>"
+            terrain_name = terrain.get('name', 'N/A')
+            terrain_type = terrain.get('type', 'N/A') 
+            face_number = terrain.get('face', 1)
+            controller = terrain.get('controller', None)
+            
+            # Use utility function for consistent formatting
+            formatted_summary = format_terrain_summary(terrain_name, terrain_type, face_number, controller)
+            terrains_html += f"<li>{formatted_summary}</li>"
+            
         terrains_html += "</ul>"
         self.terrains_list_label.setHtml(terrains_html)
         if not relevant_terrains:

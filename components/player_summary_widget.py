@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 from typing import Dict, List, Any, Optional
 import constants
+from utils.display_utils import format_army_type, format_terrain_summary
 
 
 class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled border
@@ -47,39 +48,26 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
         armies = player_data.get("armies", [])
         for army in armies:
             army_name = army.get("name", "N/A")
+            army_type = army.get("army_type", "Home")  # Default to Home army
             army_points = army.get("points", 0)
             army_location = army.get("location", "N/A")
 
-            # Make location very prominent with bold formatting and terrain type description
-            location_icon = "🗺️"  # Default terrain icon
-            terrain_description = ""
-
-            # Get terrain icon from constants
-            for terrain_name, icon in constants.TERRAIN_ICONS.items():
-                if terrain_name in army_location:
-                    location_icon = icon
-                    break
-
-            # Add home terrain designation using terrain data if available
+            # Format army with type emoji
+            formatted_army = format_army_type(army_type)
+            
+            # Format location using utility function
             if terrain_data and army_location in terrain_data:
                 terrain_info = terrain_data[army_location]
                 terrain_type = terrain_info.get("type", "")
+                face_number = terrain_info.get("face", 1)
                 terrain_controller = terrain_info.get("controller", "")
+                
+                formatted_location = format_terrain_summary(army_location, terrain_type, face_number, terrain_controller)
+            else:
+                # Fallback formatting when no terrain data
+                formatted_location = f"🗺️ {army_location}"
 
-                if terrain_type == "Frontier":
-                    terrain_description = " (Frontier Terrain)"
-                elif terrain_type == "Home" and terrain_controller:
-                    terrain_description = f" ({terrain_controller}'s Home Terrain)"
-                elif terrain_type == "Home":
-                    terrain_description = " (Home Terrain)"
-            elif terrain_description == "":  # Fallback if no terrain data
-                # Try to guess from common terrain names
-                if "Flatland" in army_location:
-                    terrain_description = " (Frontier Terrain)"
-                else:
-                    terrain_description = " (Home Terrain)"
-
-            summary_html += f"<li><b>{army_name}</b>: {army_points}pts<br>&nbsp;&nbsp;LOCATION: <b>{location_icon} {army_location}{terrain_description}</b></li>"
+            summary_html += f"<li><b>{formatted_army} {army_name}</b>: {army_points}pts<br>&nbsp;&nbsp;LOCATION: <b>{formatted_location}</b></li>"
         summary_html += "</ul>"
 
         self.details_label.setText(summary_html)

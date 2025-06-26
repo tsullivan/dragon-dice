@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 from typing import Optional, List, Dict, Any
 import constants
+from utils.display_utils import format_army_type, format_terrain_summary
 
 
 class ActingArmyWidget(QWidget):
@@ -73,42 +74,26 @@ class ActingArmyWidget(QWidget):
         # Add radio buttons for each army
         for i, army_info in enumerate(armies):
             army_name = army_info.get("name", "Unknown Army")
-            army_type = army_info.get("army_type", "unknown")
+            army_type = army_info.get("army_type", "Home")  # Default to Home
             location = army_info.get("location", "Unknown")
             unit_count = len(army_info.get("units", []))
 
-            # Add terrain icons and type descriptions
-            location_icon = ""
-            terrain_description = ""
+            # Format army using utility function
+            formatted_army = format_army_type(army_type)
 
-            # Get terrain icon from constants
-            for terrain_name, icon in constants.TERRAIN_ICONS.items():
-                if terrain_name in location:
-                    location_icon = icon
-                    break
-            if not location_icon:
-                location_icon = "🗺️"  # Default terrain icon
-
-            # Get terrain info for description
+            # Format location using utility function
             if terrain_data and location in terrain_data:
                 terrain_info = terrain_data[location]
                 terrain_type = terrain_info.get("type", "")
-                terrain_controller = terrain_info.get("controller", "")
                 terrain_face = terrain_info.get("face", 1)
+                terrain_controller = terrain_info.get("controller", "")
+                
+                formatted_location = format_terrain_summary(location, terrain_type, terrain_face, terrain_controller)
+            else:
+                # Fallback formatting when no terrain data
+                formatted_location = f"🗺️ {location}"
 
-                if terrain_type == "Frontier":
-                    terrain_description = f" (Frontier Terrain - Face {terrain_face})"
-                elif terrain_type == "Home" and terrain_controller:
-                    terrain_description = (
-                        f" ({terrain_controller}'s Home Terrain - Face {terrain_face})"
-                    )
-                else:
-                    terrain_description = f" (Home Terrain - Face {terrain_face})"
-
-            # Add army type indicators
-            army_type_indicator = constants.ARMY_TYPE_ICONS.get(army_type, "⚔️")
-
-            button_text = f"{army_type_indicator} {army_name}\nLOCATION: {location_icon} {location}{terrain_description}\nUNITS: {unit_count} units available"
+            button_text = f"{formatted_army} {army_name}\nLOCATION: {formatted_location}\nUNITS: {unit_count} units available"
 
             radio_button = QRadioButton(button_text)
             self.army_button_group.addButton(radio_button, i)

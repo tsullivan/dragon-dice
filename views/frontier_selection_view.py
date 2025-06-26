@@ -17,6 +17,7 @@ from PySide6.QtGui import QFont  # Added for QFont
 # No change, good comment
 from models.help_text_model import HelpTextModel
 from components.tabbed_view_widget import TabbedViewWidget
+from utils.display_utils import format_terrain_type
 
 
 class FrontierSelectionView(QWidget):
@@ -87,7 +88,8 @@ class FrontierSelectionView(QWidget):
             for i, (player_name, terrain_type) in enumerate(
                 self.proposed_frontier_terrains
             ):
-                button_text = f"{terrain_type} - Proposed by {player_name}"
+                formatted_terrain = format_terrain_type(terrain_type)
+                button_text = f"{formatted_terrain} - Proposed by {player_name}"
                 radio_button = QRadioButton(button_text)
                 radio_button.setMaximumWidth(300)  # Prevent excessive stretching
                 radio_button.setProperty("terrain_type", terrain_type)

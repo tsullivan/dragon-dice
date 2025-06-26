@@ -18,6 +18,7 @@ from PySide6.QtGui import QFont  # Added for QFont
 # No change, good comment
 from models.help_text_model import HelpTextModel
 from components.tabbed_view_widget import TabbedViewWidget
+from utils.display_utils import format_terrain_type
 
 
 class DistanceRollsView(QWidget):
@@ -54,10 +55,8 @@ class DistanceRollsView(QWidget):
         main_layout.addWidget(title_label)
 
         # Sub-title for Frontier Terrain
-        frontier_info_label = QLabel(
-            f"Rolling distance to: {
-                                     self.frontier_terrain}"
-        )
+        formatted_frontier = format_terrain_type(self.frontier_terrain)
+        frontier_info_label = QLabel(f"Rolling distance to: {formatted_frontier}")
         frontier_info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         font = frontier_info_label.font()
         font.setPointSize(16)
@@ -85,11 +84,12 @@ class DistanceRollsView(QWidget):
             frontier_terrain_proposal = p_data.get("frontier_terrain_proposal", "")
 
             # Create section for this player
-            player_group = QGroupBox(f"{player_name} (Home: {home_terrain})")
+            formatted_home_terrain = format_terrain_type(home_terrain)
+            player_group = QGroupBox(f"{player_name} (Home: {formatted_home_terrain})")
             player_layout = QVBoxLayout(player_group)
 
             # Home terrain roll
-            home_terrain_label = QLabel(f"Roll for {home_terrain} (Home Terrain):")
+            home_terrain_label = QLabel(f"Roll for {formatted_home_terrain} (Home Terrain):")
             home_terrain_label.setStyleSheet("font-weight: bold;")
             player_layout.addWidget(home_terrain_label)
 
@@ -110,7 +110,7 @@ class DistanceRollsView(QWidget):
             # Frontier terrain roll (only for the first player)
             if player_name == self.first_player_name:
                 frontier_terrain_label = QLabel(
-                    f"Roll for {self.frontier_terrain} (Frontier Terrain - you are the first player):"
+                    f"Roll for {formatted_frontier} (Frontier Terrain - you are the first player):"
                 )
                 frontier_terrain_label.setStyleSheet(
                     "font-weight: bold; color: #006600;"
