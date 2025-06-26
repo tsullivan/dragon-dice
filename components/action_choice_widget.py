@@ -34,19 +34,19 @@ class ActionChoiceWidget(QWidget):
         button_layout = QHBoxLayout()
         button_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.melee_button = QPushButton("⚔️ Melee Action")
+        self.melee_button = QPushButton(constants.format_action_display("Melee Action"))
         self.melee_button.setMaximumWidth(150)
         self.melee_button.clicked.connect(lambda: self.action_selected.emit("MELEE"))
         button_layout.addWidget(self.melee_button)
 
-        self.missile_button = QPushButton("🏹 Missile Action")
+        self.missile_button = QPushButton(constants.format_action_display("Missile Action"))
         self.missile_button.setMaximumWidth(150)
         self.missile_button.clicked.connect(
             lambda: self.action_selected.emit("MISSILE")
         )
         button_layout.addWidget(self.missile_button)
 
-        self.magic_button = QPushButton("✨ Magic Action")
+        self.magic_button = QPushButton(constants.format_action_display("Magic Action"))
         self.magic_button.setMaximumWidth(150)
         self.magic_button.clicked.connect(lambda: self.action_selected.emit("MAGIC"))
         button_layout.addWidget(self.magic_button)

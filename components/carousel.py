@@ -147,9 +147,27 @@ class CarouselInputWidget(QWidget):
             return
 
         current_val = self._allowed_values[self._current_index]
-        self.value_label.setText(str(current_val))
+        # Check if this might be a terrain name and format with emoji
+        display_text = self._format_display_value(current_val)
+        self.value_label.setText(display_text)
         self._update_button_states()
         self.valueChanged.emit(current_val)
+
+    def _format_display_value(self, value: Any) -> str:
+        """Format display value with emoji if it's a known terrain type."""
+        if not value:
+            return str(value)
+        
+        # Import constants locally to avoid circular imports
+        try:
+            import constants
+            # Check if this value is a terrain name
+            if hasattr(constants, 'TERRAIN_ICONS') and str(value) in constants.TERRAIN_ICONS:
+                return constants.format_terrain_display(str(value))
+        except ImportError:
+            pass
+        
+        return str(value)
 
     def _update_button_states(self):
         # For circular navigation, buttons are always enabled if there are options

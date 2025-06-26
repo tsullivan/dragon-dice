@@ -57,6 +57,31 @@ ARMY_TYPE_ICONS = {
     "horde": "🌊",  # Wave (representing a horde surge)
 }
 
+# Action Icons (centralized from various components)
+ACTION_ICONS = {
+    "MELEE": "⚔️",      # Crossed Swords
+    "MISSILE": "🏹",     # Bow and Arrow
+    "MAGIC": "✨",       # Sparkles
+    "SAVE": "🛡️",       # Shield
+    "SAI": "💎",        # Diamond (Special Action Icon)
+    "MANEUVER": "🏃",    # Running Person
+}
+
+# Dragon Attack Icons
+DRAGON_ATTACK_ICONS = {
+    "CLAW": "🗺️",       # Map (representing claw terrain changes)
+    "BITE": "🦷",       # Tooth
+    "TAIL": "🐉",       # Dragon
+    "BREATH": "🔥",     # Fire
+}
+
+# UI Icons (general interface elements)
+UI_ICONS = {
+    "DICE": "🎲",       # Die
+    "DEFAULT_TERRAIN": "🗺️",  # Map (fallback for unknown terrains)
+    "RANDOMIZE": "🎲",  # Die (for randomize buttons)
+}
+
 # Game Phases
 PHASE_EXPIRE_EFFECTS = "EXPIRE_EFFECTS"
 PHASE_EIGHTH_FACE = "EIGHTH_FACE"
@@ -175,3 +200,45 @@ EFFECT_DURATION_NEXT_TURN_TARGET = "NEXT_TURN_TARGET"
 # Default/Fallback UI Strings
 DEFAULT_UNKNOWN_VALUE = "Unknown"
 DEFAULT_NA_VALUE = "N/A"
+
+
+# Utility Functions for Centralized Emoji Application
+def get_terrain_icon(terrain_name: str) -> str:
+    """Get terrain icon with fallback to default."""
+    return TERRAIN_ICONS.get(terrain_name, UI_ICONS["DEFAULT_TERRAIN"])
+
+
+def get_army_type_icon(army_type: str) -> str:
+    """Get army type icon with fallback to empty string."""
+    # Convert display names to lowercase keys
+    army_key = army_type.lower()
+    return ARMY_TYPE_ICONS.get(army_key, "")
+
+
+def get_action_icon(action_type: str) -> str:
+    """Get action icon with fallback to empty string."""
+    return ACTION_ICONS.get(action_type.upper(), "")
+
+
+def format_terrain_display(terrain_name: str) -> str:
+    """Return 'icon terrain_name' format for display."""
+    icon = get_terrain_icon(terrain_name)
+    return f"{icon} {terrain_name}" if icon else terrain_name
+
+
+def format_army_type_display(army_type: str) -> str:
+    """Return 'icon army_type' format for display."""
+    icon = get_army_type_icon(army_type)
+    return f"{icon} {army_type}" if icon else army_type
+
+
+def format_action_display(action_type: str) -> str:
+    """Return 'icon action_type' format for display."""
+    # Handle both "MELEE" and "Melee Action" formats
+    if "Action" in action_type:
+        base_action = action_type.replace(" Action", "").upper()
+    else:
+        base_action = action_type.upper()
+    
+    icon = get_action_icon(base_action)
+    return f"{icon} {action_type}" if icon else action_type

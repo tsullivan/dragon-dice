@@ -129,7 +129,7 @@ class PlayerSetupView(QWidget):
         player_name_layout.addWidget(self.player_identity_widget.player_name_input)
 
         # Small inline dice button
-        self.global_randomize_button = QPushButton("🎲")
+        self.global_randomize_button = QPushButton(constants.UI_ICONS["RANDOMIZE"])
         self.global_randomize_button.setToolTip("Randomize player name")
         self.global_randomize_button.clicked.connect(self._set_random_player_name)
         self.global_randomize_button.setFixedSize(30, 30)  # Small square button
@@ -170,7 +170,7 @@ class PlayerSetupView(QWidget):
             current_army_main_row = base_row_for_armies + (i * 2)
 
             army_label = QLabel(
-                f"{army_type} Army:"
+                f"{constants.format_army_type_display(army_type)} Army:"
             )  # External label for the army type
             self.army_labels[army_type] = army_label
             self.inputs_grid_layout.addWidget(

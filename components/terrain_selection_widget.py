@@ -21,18 +21,20 @@ class TerrainSelectionWidget(QWidget):
         layout = QGridLayout(self)
 
         # Home Terrain Selection
-        self.home_terrain_label = QLabel("Home Terrain:")
+        self.home_terrain_label = QLabel("🏠 Home Terrain:")
         self.home_terrain_carousel = CarouselInputWidget(self.all_terrain_options)
         self.home_terrain_carousel.valueChanged.connect(self.home_terrain_changed.emit)
+        self.home_terrain_carousel.valueChanged.connect(self._update_home_terrain_label)
         layout.addWidget(self.home_terrain_label, 0, 0)
         layout.addWidget(self.home_terrain_carousel, 0, 1)
 
         # Proposed Frontier Terrain Selection
-        self.frontier_proposal_label = QLabel("Proposed Frontier Terrain:")
+        self.frontier_proposal_label = QLabel("🗺️ Proposed Frontier Terrain:")
         self.frontier_proposal_carousel = CarouselInputWidget(self.all_terrain_options)
         self.frontier_proposal_carousel.valueChanged.connect(
             self.frontier_proposal_changed.emit
         )
+        self.frontier_proposal_carousel.valueChanged.connect(self._update_frontier_proposal_label)
         layout.addWidget(self.frontier_proposal_label, 1, 0)
         layout.addWidget(self.frontier_proposal_carousel, 1, 1)
 
@@ -52,3 +54,24 @@ class TerrainSelectionWidget(QWidget):
         if self.all_terrain_options:
             self.home_terrain_carousel.setValue(self.all_terrain_options[0])
             self.frontier_proposal_carousel.setValue(self.all_terrain_options[0])
+            # Update labels with the first terrain option
+            self._update_home_terrain_label(self.all_terrain_options[0])
+            self._update_frontier_proposal_label(self.all_terrain_options[0])
+    
+    def _update_home_terrain_label(self, terrain_name: str):
+        """Update home terrain label with terrain-specific emoji."""
+        if terrain_name:
+            import constants
+            formatted_terrain = constants.format_terrain_display(terrain_name)
+            self.home_terrain_label.setText(f"🏠 Home Terrain: {formatted_terrain}")
+        else:
+            self.home_terrain_label.setText("🏠 Home Terrain:")
+    
+    def _update_frontier_proposal_label(self, terrain_name: str):
+        """Update frontier proposal label with terrain-specific emoji."""
+        if terrain_name:
+            import constants
+            formatted_terrain = constants.format_terrain_display(terrain_name)
+            self.frontier_proposal_label.setText(f"🗺️ Proposed Frontier: {formatted_terrain}")
+        else:
+            self.frontier_proposal_label.setText("🗺️ Proposed Frontier Terrain:")
