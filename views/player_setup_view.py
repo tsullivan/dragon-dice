@@ -110,22 +110,16 @@ class PlayerSetupView(QWidget):
         # Game Tab Content (Player Setup Form)
         game_content_layout = QVBoxLayout()
 
-        inputs_group = QGroupBox(f"Setup for Player {self.current_player_index + 1}")
-        self.inputs_grid_layout = QGridLayout(inputs_group)
-        self.inputs_grid_layout.setContentsMargins(10, 10, 10, 10)
-        self.inputs_grid_layout.setSpacing(5)
-        game_content_layout.addWidget(inputs_group)
-
+        # Remove the outer fieldset and create individual ones for each section
+        
         # Instantiate PlayerIdentityWidget to get its components
         self.player_identity_widget = PlayerIdentityWidget(
             self.current_player_index + 1
         )
 
-        # Player Name with inline dice button
-        self.inputs_grid_layout.addWidget(QLabel("Player Name:"), 0, 0)
-
-        # Create horizontal layout for player name input and dice button
-        player_name_layout = QHBoxLayout()
+        # Player Name Section with fieldset
+        player_name_group = QGroupBox("Player Name")
+        player_name_layout = QHBoxLayout(player_name_group)
         player_name_layout.addWidget(self.player_identity_widget.player_name_input)
 
         # Small inline dice button
@@ -136,16 +130,16 @@ class PlayerSetupView(QWidget):
         self.global_randomize_button.setStyleSheet("font-size: 12px;")  # Smaller emoji
         player_name_layout.addWidget(self.global_randomize_button)
 
-        # Add the horizontal layout to the grid
-        player_name_widget = QWidget()
-        player_name_widget.setLayout(player_name_layout)
-        self.inputs_grid_layout.addWidget(player_name_widget, 0, 1, 1, 2)
+        game_content_layout.addWidget(player_name_group)
 
-        # Terrain Selections Widget
+        # Terrain Selection Section with fieldset
+        terrain_selection_group = QGroupBox("Terrain Selection")
+        terrain_selection_layout = QVBoxLayout(terrain_selection_group)
         self.terrain_selection_widget = TerrainSelectionWidget(self.all_terrain_options)
-        self.inputs_grid_layout.addWidget(self.terrain_selection_widget, 1, 0, 1, 3)
+        terrain_selection_layout.addWidget(self.terrain_selection_widget)
+        game_content_layout.addWidget(terrain_selection_group)
 
-        # Dragon Selection Section
+        # Dragon Selection Section (already has its own fieldset)
         dragon_selection_group = QGroupBox(
             f"Select Your {self.required_dragons} Dragon(s)"
         )
@@ -159,39 +153,44 @@ class PlayerSetupView(QWidget):
             dragon_widget.valueChanged.connect(self._validate_and_update_button_state)
             dragon_selection_layout.addWidget(dragon_widget)
 
-        self.inputs_grid_layout.addWidget(dragon_selection_group, 2, 0, 1, 3)
+        game_content_layout.addWidget(dragon_selection_group)
 
-        # Army Setups
+        # Army Setups - each army in its own fieldset
         self.army_setup_widgets: dict[str, ArmySetupWidget] = {}
-        self.army_labels = {}
+        self.army_detailed_units_labels = {}
+        self.army_group_boxes = {}  # Track the QGroupBox widgets for visibility control
 
-        base_row_for_armies = 3
-        for i, army_type in enumerate(constants.ARMY_TYPES_ALL):
-            current_army_main_row = base_row_for_armies + (i * 2)
+        for army_type in constants.ARMY_TYPES_ALL:
+            # Create fieldset for each army
+            army_group = QGroupBox(f"{constants.format_army_type_display(army_type)} Army")
+            army_layout = QVBoxLayout(army_group)
+            self.army_group_boxes[army_type] = army_group  # Store reference for visibility control
 
-            army_label = QLabel(
-                f"{constants.format_army_type_display(army_type)} Army:"
-            )  # External label for the army type
-            self.army_labels[army_type] = army_label
-            self.inputs_grid_layout.addWidget(
-                army_label, current_army_main_row, 0, Qt.AlignmentFlag.AlignTop
-            )
-
-            # max_points_per_army removed
+            # Army setup widget (manage units button and summary)
             army_widget = ArmySetupWidget(army_type, self.unit_roster)
             self.army_setup_widgets[army_type] = army_widget
-            self.inputs_grid_layout.addWidget(
-                army_widget, current_army_main_row, 1, 1, 2
-            )
+            army_layout.addWidget(army_widget)
 
-            detailed_units_label = QLabel(constants.NO_UNITS_SELECTED_TEXT)
-            detailed_units_label.setWordWrap(True)
-            self.army_detailed_units_labels[army_type] = detailed_units_label
-            self.inputs_grid_layout.addWidget(
-                detailed_units_label, current_army_main_row + 1, 1, 1, 2
-            )
+            # Scrollable detailed units text area
+            detailed_units_text = QTextEdit(constants.NO_UNITS_SELECTED_TEXT)
+            detailed_units_text.setReadOnly(True)
+            detailed_units_text.setMaximumHeight(80)  # Limit height to allow scrolling
+            detailed_units_text.setMinimumHeight(60)  # Minimum height for visibility
+            detailed_units_text.setStyleSheet("""
+                QTextEdit {
+                    background-color: #f9f9f9;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    padding: 8px;
+                }
+            """)
+            self.army_detailed_units_labels[army_type] = detailed_units_text
+            army_layout.addWidget(detailed_units_text)
 
-        self.inputs_group = inputs_group
+            # Connect army widget signals
+            army_widget.units_updated_signal.connect(self._handle_units_updated_from_widget)
+            
+            game_content_layout.addWidget(army_group)
 
         # Add game content to tabbed widget
         self.tabbed_widget.add_game_layout(game_content_layout)
@@ -240,10 +239,7 @@ class PlayerSetupView(QWidget):
         self.terrain_selection_widget.frontier_proposal_changed.connect(
             self._validate_and_update_button_state
         )
-        for army_widget in self.army_setup_widgets.values():
-            army_widget.units_updated_signal.connect(
-                self._handle_units_updated_from_widget
-            )
+        # Signal connections are now done individually in the army setup loop above
 
         self._set_player_setup_help_text()
         self.update_for_player(self.current_player_index, self.initial_player_data)
@@ -409,14 +405,54 @@ class PlayerSetupView(QWidget):
         army_key = army_type.lower()
         units_in_army = self.army_units_data.get(army_key, [])
         if units_in_army:
-            unit_names = [unit.get("name", "Unknown Unit") for unit in units_in_army]
-            self.army_detailed_units_labels[army_type].setText(
-                f"Selected: {', '.join(unit_names)}"
-            )
+            formatted_units = self._format_units_with_species_and_count(units_in_army)
+            self.army_detailed_units_labels[army_type].setPlainText(formatted_units)
         else:
-            self.army_detailed_units_labels[army_type].setText(
+            self.army_detailed_units_labels[army_type].setPlainText(
                 constants.NO_UNITS_SELECTED_TEXT
             )
+    
+    def _format_units_with_species_and_count(self, units_list: list) -> str:
+        """Format units with species prefix and count aggregation."""
+        if not units_list:
+            return constants.NO_UNITS_SELECTED_TEXT
+        
+        # Count units by species + name combination
+        unit_counts = {}
+        for unit in units_list:
+            unit_type_id = unit.get("unit_type", "unknown")
+            unit_name = unit.get("name", "Unknown Unit")
+            
+            # Extract species from unit_type_id (e.g., "amazon_war_driver" -> "Amazon")
+            species = self._extract_species_from_unit_type_id(unit_type_id)
+            species_unit_name = f"{species} {unit_name}"
+            
+            unit_counts[species_unit_name] = unit_counts.get(species_unit_name, 0) + 1
+        
+        # Format as bulleted list with counts
+        formatted_lines = []
+        for species_unit_name, count in sorted(unit_counts.items()):
+            if count > 1:
+                formatted_lines.append(f"• {species_unit_name} (x{count})")
+            else:
+                formatted_lines.append(f"• {species_unit_name}")
+        
+        return "Selected:\n" + "\n".join(formatted_lines)
+    
+    def _extract_species_from_unit_type_id(self, unit_type_id: str) -> str:
+        """Extract species name from unit type ID."""
+        # Get species from unit roster if available
+        if hasattr(self, 'unit_roster') and self.unit_roster:
+            unit_def = self.unit_roster.get_unit_definition(unit_type_id)
+            if unit_def and "species" in unit_def:
+                return unit_def["species"]
+        
+        # Fallback: parse from unit_type_id (e.g., "amazon_war_driver" -> "Amazon")
+        if "_" in unit_type_id:
+            species_part = unit_type_id.split("_")[0]
+            return species_part.capitalize()
+        
+        return "Unknown"
 
     def update_for_player(
         self, player_index, player_data_to_load: Optional[dict] = None
@@ -424,7 +460,6 @@ class PlayerSetupView(QWidget):
         self.current_player_index = player_index
         player_display_num = self.current_player_index + 1
         self.title_label.setText(f"Player {player_display_num} Setup")
-        self.inputs_group.setTitle(f"Setup for Player {player_display_num}")
         self.player_identity_widget.set_player_display_number(player_display_num)
 
         if player_data_to_load:
@@ -505,10 +540,6 @@ class PlayerSetupView(QWidget):
 
     def _update_horde_visibility(self):
         show_horde = self.num_players > 1
-        self.army_labels[constants.ARMY_TYPE_HORDE].setVisible(show_horde)
-        if constants.ARMY_TYPE_HORDE in self.army_setup_widgets:
-            self.army_setup_widgets[constants.ARMY_TYPE_HORDE].setVisible(show_horde)
-            if constants.ARMY_TYPE_HORDE in self.army_detailed_units_labels:
-                self.army_detailed_units_labels[constants.ARMY_TYPE_HORDE].setVisible(
-                    show_horde
-                )
+        # Hide/show the entire army group box (which contains the label, widget, and unit list)
+        if constants.ARMY_TYPE_HORDE in self.army_group_boxes:
+            self.army_group_boxes[constants.ARMY_TYPE_HORDE].setVisible(show_horde)
