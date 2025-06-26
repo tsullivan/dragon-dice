@@ -66,9 +66,7 @@ class WelcomeView(QWidget):
             if count == 2:
                 radio_button.setChecked(True)
         player_count_group.setLayout(player_count_hbox)
-        self.player_count_button_group.idClicked.connect(
-            self._on_player_count_changed
-        )
+        self.player_count_button_group.idClicked.connect(self._on_player_count_changed)
         selections_layout.addWidget(player_count_group)
 
         # Force Size Selection
@@ -99,7 +97,7 @@ class WelcomeView(QWidget):
         self._set_welcome_help_text()
 
         main_layout.addWidget(self.tabbed_widget)
-        
+
         # Validation Error Message Area
         self.validation_error_label = QLabel("")
         self.validation_error_label.setStyleSheet(
@@ -119,7 +117,7 @@ class WelcomeView(QWidget):
         self.validation_error_label.setWordWrap(True)
         self.validation_error_label.hide()  # Hidden by default
         main_layout.addWidget(self.validation_error_label)
-        
+
         main_layout.addSpacerItem(
             QSpacerItem(
                 20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
@@ -167,20 +165,22 @@ class WelcomeView(QWidget):
         """Handle player count selection change and validate."""
         self.player_count_selected_signal.emit(player_count)
         self._validate_selections()
-    
+
     def _on_proceed_clicked(self):
         """Handle proceed button click with validation."""
         if self._validate_selections():
             self.proceed_signal.emit()
-    
+
     def _validate_selections(self) -> bool:
         """Validate current selections and show/hide error messages."""
         selected_player_button = self.player_count_button_group.checkedButton()
         if not selected_player_button:
             return True  # No selection yet, don't show error
-        
-        selected_player_count = self.player_count_button_group.id(selected_player_button)
-        
+
+        selected_player_count = self.player_count_button_group.id(
+            selected_player_button
+        )
+
         if selected_player_count != 2:
             # Show validation error
             error_message = (

@@ -40,7 +40,9 @@ class ActionChoiceWidget(QWidget):
         self.melee_button.clicked.connect(lambda: self.action_selected.emit("MELEE"))
         button_layout.addWidget(self.melee_button)
 
-        self.missile_button = QPushButton(constants.format_action_display("Missile Action"))
+        self.missile_button = QPushButton(
+            constants.format_action_display("Missile Action")
+        )
         self.missile_button.setMaximumWidth(150)
         self.missile_button.clicked.connect(
             lambda: self.action_selected.emit("MISSILE")

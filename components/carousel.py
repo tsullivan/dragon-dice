@@ -157,16 +157,20 @@ class CarouselInputWidget(QWidget):
         """Format display value with emoji if it's a known terrain type."""
         if not value:
             return str(value)
-        
+
         # Import constants locally to avoid circular imports
         try:
             import constants
+
             # Check if this value is a terrain name
-            if hasattr(constants, 'TERRAIN_ICONS') and str(value) in constants.TERRAIN_ICONS:
+            if (
+                hasattr(constants, "TERRAIN_ICONS")
+                and str(value) in constants.TERRAIN_ICONS
+            ):
                 return constants.format_terrain_display(str(value))
         except ImportError:
             pass
-        
+
         return str(value)
 
     def _update_button_states(self):

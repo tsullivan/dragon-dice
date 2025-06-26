@@ -111,7 +111,7 @@ class PlayerSetupView(QWidget):
         game_content_layout = QVBoxLayout()
 
         # Remove the outer fieldset and create individual ones for each section
-        
+
         # Instantiate PlayerIdentityWidget to get its components
         self.player_identity_widget = PlayerIdentityWidget(
             self.current_player_index + 1
@@ -162,9 +162,13 @@ class PlayerSetupView(QWidget):
 
         for army_type in constants.ARMY_TYPES_ALL:
             # Create fieldset for each army
-            army_group = QGroupBox(f"{constants.format_army_type_display(army_type)} Army")
+            army_group = QGroupBox(
+                f"{constants.format_army_type_display(army_type)} Army"
+            )
             army_layout = QVBoxLayout(army_group)
-            self.army_group_boxes[army_type] = army_group  # Store reference for visibility control
+            self.army_group_boxes[army_type] = (
+                army_group  # Store reference for visibility control
+            )
 
             # Army setup widget (manage units button and summary)
             army_widget = ArmySetupWidget(army_type, self.unit_roster)
@@ -176,20 +180,24 @@ class PlayerSetupView(QWidget):
             detailed_units_text.setReadOnly(True)
             detailed_units_text.setMaximumHeight(80)  # Limit height to allow scrolling
             detailed_units_text.setMinimumHeight(60)  # Minimum height for visibility
-            detailed_units_text.setStyleSheet("""
+            detailed_units_text.setStyleSheet(
+                """
                 QTextEdit {
                     background-color: #f9f9f9;
                     border: 1px solid #ccc;
                     border-radius: 4px;
                     padding: 8px;
                 }
-            """)
+            """
+            )
             self.army_detailed_units_labels[army_type] = detailed_units_text
             army_layout.addWidget(detailed_units_text)
 
             # Connect army widget signals
-            army_widget.units_updated_signal.connect(self._handle_units_updated_from_widget)
-            
+            army_widget.units_updated_signal.connect(
+                self._handle_units_updated_from_widget
+            )
+
             game_content_layout.addWidget(army_group)
 
         # Add game content to tabbed widget
@@ -411,24 +419,24 @@ class PlayerSetupView(QWidget):
             self.army_detailed_units_labels[army_type].setPlainText(
                 constants.NO_UNITS_SELECTED_TEXT
             )
-    
+
     def _format_units_with_species_and_count(self, units_list: list) -> str:
         """Format units with species prefix and count aggregation."""
         if not units_list:
             return constants.NO_UNITS_SELECTED_TEXT
-        
+
         # Count units by species + name combination
         unit_counts = {}
         for unit in units_list:
             unit_type_id = unit.get("unit_type", "unknown")
             unit_name = unit.get("name", "Unknown Unit")
-            
+
             # Extract species from unit_type_id (e.g., "amazon_war_driver" -> "Amazon")
             species = self._extract_species_from_unit_type_id(unit_type_id)
             species_unit_name = f"{species} {unit_name}"
-            
+
             unit_counts[species_unit_name] = unit_counts.get(species_unit_name, 0) + 1
-        
+
         # Format as bulleted list with counts
         formatted_lines = []
         for species_unit_name, count in sorted(unit_counts.items()):
@@ -436,22 +444,22 @@ class PlayerSetupView(QWidget):
                 formatted_lines.append(f"• {species_unit_name} (x{count})")
             else:
                 formatted_lines.append(f"• {species_unit_name}")
-        
+
         return "Selected:\n" + "\n".join(formatted_lines)
-    
+
     def _extract_species_from_unit_type_id(self, unit_type_id: str) -> str:
         """Extract species name from unit type ID."""
         # Get species from unit roster if available
-        if hasattr(self, 'unit_roster') and self.unit_roster:
+        if hasattr(self, "unit_roster") and self.unit_roster:
             unit_def = self.unit_roster.get_unit_definition(unit_type_id)
             if unit_def and "species" in unit_def:
                 return unit_def["species"]
-        
+
         # Fallback: parse from unit_type_id (e.g., "amazon_war_driver" -> "Amazon")
         if "_" in unit_type_id:
             species_part = unit_type_id.split("_")[0]
             return species_part.capitalize()
-        
+
         return "Unknown"
 
     def update_for_player(

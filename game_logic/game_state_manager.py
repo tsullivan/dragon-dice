@@ -223,34 +223,78 @@ class GameStateManager(QObject):
         self, player_name: str, points_available: int
     ) -> List[Dict[str, Any]]:
         """
-        Create reserve units based on available points.
-        This is a simplified implementation - in practice, this would use
-        the unit roster to create appropriate units within the point limit.
+        Create reserve units based on available points using actual unit roster.
+        Uses a simplified cost system based on unit health (1 health = 1 point).
         """
+        from models.unit_roster_model import UnitRosterModel
+
         reserve_units = []
         remaining_points = points_available
+        unit_roster = UnitRosterModel()
 
-        # Create simple reserve units (1-point units for now)
+        # Get all available unit types
+        available_units = []
+        for species_units in unit_roster.get_available_unit_types_by_species().values():
+            available_units.extend(species_units)
+
+        # Sort by health (using health as cost proxy)
+        available_units.sort(
+            key=lambda u: unit_roster.get_unit_definition(u["id"])["max_health"]
+        )
+
         unit_count = 0
-        while remaining_points > 0 and unit_count < 10:  # Cap at 10 units
+        unit_cycle_index = 0  # Track which units we've used for variety
+
+        while remaining_points > 0 and unit_count < 15:  # Cap at 15 units
+            # Find affordable units and cycle through them for variety
+            affordable_units = [
+                u
+                for u in available_units
+                if unit_roster.get_unit_definition(u["id"])["max_health"]
+                <= remaining_points
+            ]
+
+            if not affordable_units:
+                break  # No units fit within remaining points
+
+            # Cycle through affordable units for variety
+            selected_unit_info = affordable_units[
+                unit_cycle_index % len(affordable_units)
+            ]
+            selected_unit_id = selected_unit_info["id"]
+            unit_cycle_index += 1
+
+            unit_def = unit_roster.get_unit_definition(selected_unit_id)
+            unit_cost = unit_def["max_health"]
+
             unit_count += 1
-            reserve_unit = {
-                "id": f"{player_name.lower().replace(' ', '_')}_reserve_{unit_count}",
-                "name": f"Reserve Unit {unit_count}",
-                "health": 1,
-                "max_health": 1,
-                "point_cost": 1,
-                "unit_type": "reserve_infantry",
-                "abilities": {
-                    "id_results": {constants.ICON_MELEE: 1, constants.ICON_SAVE: 1}
-                },
-                "location": "Reserve Pool",
-            }
-            reserve_units.append(reserve_unit)
-            remaining_points -= 1
+            instance_id = (
+                f"{player_name.lower().replace(' ', '_')}_reserve_{unit_count}"
+            )
+
+            # Create unit instance using roster
+            unit_instance = unit_roster.create_unit_instance(
+                selected_unit_id, instance_id, f"Reserve {unit_def['display_name']}"
+            )
+
+            if unit_instance:
+                # Convert to dict format expected by game state
+                reserve_unit = {
+                    "id": unit_instance.unit_id,
+                    "name": unit_instance.name,
+                    "health": unit_instance.health,
+                    "max_health": unit_instance.max_health,
+                    "point_cost": unit_cost,
+                    "unit_type": unit_instance.unit_type,
+                    "abilities": unit_instance.abilities,
+                    "location": "Reserve Pool",
+                }
+                reserve_units.append(reserve_unit)
+                remaining_points -= unit_cost
 
         print(
-            f"GameStateManager: Created {len(reserve_units)} reserve units for {player_name}"
+            f"GameStateManager: Created {len(reserve_units)} reserve units for {player_name} "
+            f"({points_available - remaining_points}/{points_available} points used)"
         )
         return reserve_units
 
@@ -565,6 +609,65 @@ class GameStateManager(QObject):
                         {"player": player_name, "army_id": army_id, "army": army}
                     )
         return armies_at_location
+
+    def find_defending_armies_at_location(
+        self, attacking_player_name: str, location: str
+    ) -> List[Dict[str, Any]]:
+        """Find all enemy armies at the specified location that can be targeted."""
+        all_armies_at_location = self.get_armies_at_location(location)
+        defending_armies = []
+
+        for army_info in all_armies_at_location:
+            if army_info["player"] != attacking_player_name:  # Enemy army
+                defending_armies.append(army_info)
+
+        return defending_armies
+
+    def determine_primary_defending_player(
+        self, attacking_player_name: str, location: str
+    ) -> Optional[str]:
+        """Determine the primary defending player at a location using Dragon Dice army priority."""
+        defending_armies = self.find_defending_armies_at_location(
+            attacking_player_name, location
+        )
+
+        if not defending_armies:
+            return None
+
+        # Priority: home > campaign > horde armies according to Dragon Dice rules
+        for priority_type in ["home", "campaign", "horde"]:
+            for army_info in defending_armies:
+                if army_info["army_id"] == priority_type:
+                    return army_info["player"]
+
+        # Fallback to first defending player found
+        return defending_armies[0]["player"]
+
+    def determine_primary_defending_army_id(
+        self, attacking_player_name: str, location: str
+    ) -> Optional[str]:
+        """Determine the primary defending army identifier at a location."""
+        defending_armies = self.find_defending_armies_at_location(
+            attacking_player_name, location
+        )
+
+        if not defending_armies:
+            return None
+
+        # Priority: home > campaign > horde armies according to Dragon Dice rules
+        for priority_type in ["home", "campaign", "horde"]:
+            for army_info in defending_armies:
+                if army_info["army_id"] == priority_type:
+                    # Generate specific army identifier
+                    return self.generate_army_identifier(
+                        army_info["player"], priority_type
+                    )
+
+        # Fallback to first defending army found
+        first_army = defending_armies[0]
+        return self.generate_army_identifier(
+            first_army["player"], first_army["army_id"]
+        )
 
     def get_reserve_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve pool (available for deployment) for a player."""

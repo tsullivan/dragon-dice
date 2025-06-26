@@ -312,9 +312,9 @@ class ManeuverDialog(QDialog):
             # Add terrain direction choice
             direction_group = QGroupBox("Terrain Direction Choice")
             direction_layout = QVBoxLayout(direction_group)
-            
+
             self.terrain_direction_group = QButtonGroup(self)
-            
+
             # UP option
             up_face = min(current_face + 1, 8)  # Max face is 8
             up_radio = QRadioButton(f"⬆️ Turn UP to face {up_face}")
@@ -325,8 +325,8 @@ class ManeuverDialog(QDialog):
                 up_radio.setEnabled(False)
             self.terrain_direction_group.addButton(up_radio, 1)  # 1 = UP
             direction_layout.addWidget(up_radio)
-            
-            # DOWN option  
+
+            # DOWN option
             down_face = max(current_face - 1, 1)  # Min face is 1
             down_radio = QRadioButton(f"⬇️ Turn DOWN to face {down_face}")
             if current_face > 1:  # Only enable if not already at min
@@ -343,15 +343,15 @@ class ManeuverDialog(QDialog):
             # Store initial result data (will be updated when direction is chosen)
             self.terrain_location = location
             self.terrain_current_face = current_face
-            
+
         else:
             result_text = f"Maneuver failed with {getattr(self, 'maneuver_result', 0)} maneuver icons.\n\n"
             result_text += "No terrain changes."
-            
+
             result_label = QLabel(result_text)
             result_label.setWordWrap(True)
             self.content_layout.addWidget(result_label)
-            
+
             self.final_result = {
                 "success": False,
                 "army": self.selected_army,
@@ -405,12 +405,14 @@ class ManeuverDialog(QDialog):
                 if hasattr(self, "terrain_direction_group"):
                     selected_direction = self.terrain_direction_group.checkedButton()
                     if selected_direction:
-                        direction_value = self.terrain_direction_group.id(selected_direction)
+                        direction_value = self.terrain_direction_group.id(
+                            selected_direction
+                        )
                         new_face = self.terrain_current_face + direction_value
                         new_face = max(1, min(8, new_face))  # Clamp between 1 and 8
-                        
+
                         direction_text = "UP" if direction_value > 0 else "DOWN"
-                        
+
                         self.final_result = {
                             "success": True,
                             "army": self.selected_army,
@@ -432,7 +434,7 @@ class ManeuverDialog(QDialog):
                             "direction": "UP",
                             "maneuver_icons": self.maneuver_result,
                         }
-            
+
             if hasattr(self, "final_result"):
                 self.maneuver_completed.emit(self.final_result)
             self.accept()

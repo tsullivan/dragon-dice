@@ -216,7 +216,14 @@ class MainWindow(QMainWindow):
         frontier_terrain = self.data_model._frontier_terrain
 
         if not player_setup_data or not frontier_terrain:
-            print("Error: Missing player data or frontier terrain for distance rolls.")
+            from components.error_dialog import ErrorDialog
+
+            ErrorDialog.show_error(
+                self,
+                "Dragon Dice - Setup Error",
+                "Cannot proceed to distance rolls.",
+                "Missing player setup data or frontier terrain selection. Please complete the previous steps.",
+            )
             return
 
         first_player_name = self.data_model._first_player_name
@@ -229,7 +236,14 @@ class MainWindow(QMainWindow):
 
     def show_main_gameplay_view(self, game_engine_instance):
         if not game_engine_instance:
-            print("Error: GameEngine instance not provided to show_main_gameplay_view.")
+            from components.error_dialog import ErrorDialog
+
+            ErrorDialog.show_error(
+                self,
+                "Dragon Dice - Engine Error",
+                "Cannot start gameplay.",
+                "Game engine was not properly initialized. Please restart the application.",
+            )
             return
         print(
             f"Game engine initialized. Transitioning to Main Gameplay View for player: {game_engine_instance.get_current_player_name()}"

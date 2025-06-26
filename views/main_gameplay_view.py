@@ -26,6 +26,7 @@ from components.action_choice_widget import ActionChoiceWidget
 from components.tabbed_view_widget import TabbedViewWidget
 from components.active_effects_widget import ActiveEffectsWidget
 from views.maneuver_dialog import ManeuverDialog
+from views.action_dialog import ActionDialog
 import constants
 
 
@@ -295,7 +296,7 @@ class MainGameplayView(QWidget):
                 self.maneuver_input_submitted_signal.emit(result_text)
             else:
                 print("Failed to apply maneuver results")
-        
+
         # Emit the maneuver decision signal
         self.maneuver_decision_signal.emit(True)
 
@@ -313,6 +314,64 @@ class MainGameplayView(QWidget):
         print("Maneuver cancelled")
         # Reset the maneuver widget to decision state
         self.maneuver_input_widget.reset_to_decision()
+
+    def _show_action_dialog(self, action_type: str):
+        """Show the action dialog for proper action flow."""
+        try:
+            # Get the current acting army
+            acting_army = self.game_engine.get_current_acting_army()
+            if not acting_army:
+                print("No acting army selected")
+                return
+
+            current_player = self.game_engine.get_current_player_name()
+            all_players_data = self.game_engine.get_all_players_data()
+            terrain_data = self.game_engine.get_all_terrain_data()
+
+            # Create and show action dialog with the acting army
+            dialog = ActionDialog(
+                action_type=action_type,
+                current_player_name=current_player,
+                acting_army=acting_army,
+                all_players_data=all_players_data,
+                terrain_data=terrain_data,
+                parent=self,
+            )
+
+            dialog.action_completed.connect(self._handle_action_completed)
+            dialog.action_cancelled.connect(self._handle_action_cancelled)
+
+            dialog.exec()
+
+        except Exception as e:
+            print(f"Error showing action dialog: {e}")
+            # Fallback: advance phase
+            self.game_engine.advance_phase()
+
+    def _handle_action_completed(self, action_result: dict):
+        """Handle completed action from dialog."""
+        print(f"Action completed: {action_result}")
+
+        action_type = action_result.get("action_type", "UNKNOWN")
+        attacker = action_result.get("attacker", "Unknown")
+        location = action_result.get("location", "Unknown")
+
+        # Apply action results to game state if needed
+        # For now, just advance to the next phase
+        print(f"{attacker} completed {action_type} action at {location}")
+
+        # Advance to next phase
+        self.game_engine.advance_phase()
+
+    def _handle_action_cancelled(self):
+        """Handle cancelled action from dialog."""
+        print("Action cancelled")
+        # Return to action selection
+        self.game_engine.march_step_change_requested.emit(
+            constants.MARCH_STEP_SELECT_ACTION
+        )
+        self.game_engine._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+        self.game_engine.game_state_updated.emit()
 
     def _update_continue_button_state(self):
         """Update the continue button state based on current phase requirements."""
@@ -489,11 +548,16 @@ class MainGameplayView(QWidget):
                     acting_army, terrain_data
                 )
         elif current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
-            self.melee_action_widget.show()
-            self.melee_action_widget.show_attacker_input()
+            self._show_action_dialog("MELEE")
+        elif (
+            current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
+        ):
+            self._show_action_dialog("MISSILE")
+        elif current_action_step == constants.ACTION_STEP_AWAITING_MAGIC_ROLL:
+            self._show_action_dialog("MAGIC")
         elif current_action_step == constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
-            self.melee_action_widget.show()
-            self.melee_action_widget.show_defender_input()
+            # This will be handled within the action dialog itself
+            pass
         elif not current_march_step and not current_action_step:
             if current_phase == constants.PHASE_DRAGON_ATTACK:
                 self.dragon_attack_prompt_label.show()

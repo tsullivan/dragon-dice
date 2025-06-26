@@ -54,11 +54,11 @@ class UnitRosterModel:
         }
 
     def get_available_unit_types(self) -> List[Dict[str, Any]]:
-        """Returns a list of unit types for UI selection (id, display_name, cost)."""
+        """Returns a list of unit types for UI selection (id, display_name, health-based cost)."""
         return [
-            {"id": unit_id, "name": data["display_name"], "cost": data["points_cost"]}
+            {"id": unit_id, "name": data["display_name"], "cost": data["max_health"]}
             for unit_id, data in self._unit_definitions.items()
-        ]  # Cost is no longer here, this method might need adjustment or removal
+        ]  # Using max_health as cost proxy
 
     def get_available_unit_types_by_species(self) -> Dict[str, List[Dict[str, Any]]]:
         """Returns a dict of unit types grouped by species."""

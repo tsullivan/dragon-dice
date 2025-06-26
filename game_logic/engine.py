@@ -230,32 +230,34 @@ class GameEngine(QObject):
     def apply_maneuver_results(self, maneuver_result: dict):
         """Apply the results of a completed maneuver, including terrain face changes."""
         print(f"GameEngine: Applying maneuver results: {maneuver_result}")
-        
+
         if not maneuver_result.get("success", False):
             print("GameEngine: Maneuver failed, no terrain changes to apply")
             return
-        
+
         # Extract terrain change information
         location = maneuver_result.get("location")
         old_face = maneuver_result.get("old_face")
         new_face = maneuver_result.get("new_face")
         direction = maneuver_result.get("direction", "UP")
         maneuver_icons = maneuver_result.get("maneuver_icons", 0)
-        
+
         if not location or new_face is None:
             print("GameEngine: Missing terrain change information in maneuver result")
             return
-        
+
         # Apply terrain face change to game state
         success = self.game_state_manager.update_terrain_face(location, str(new_face))
-        
+
         if success:
-            print(f"GameEngine: Successfully updated terrain '{location}' from face {old_face} to face {new_face} (turned {direction})")
+            print(
+                f"GameEngine: Successfully updated terrain '{location}' from face {old_face} to face {new_face} (turned {direction})"
+            )
             print(f"GameEngine: Maneuver achieved {maneuver_icons} maneuver icons")
             self.game_state_updated.emit()
         else:
             print(f"GameEngine: Failed to update terrain face for '{location}'")
-        
+
         return success
 
     def select_action(self, action_type: str):
@@ -296,11 +298,67 @@ class GameEngine(QObject):
             results, roll_type="MELEE"
         )
         if not parsed_results:
-            print(
-                "GameEngine: Error: Could not parse attacker melee results via ActionResolver."
+            error_msg = (
+                "Could not parse the dice roll results. Please check the format."
             )
-            return
+            details = f"Input received: '{results}'\nExpected format: 'MM,S,SAI' or '2 melee, 1 save, 1 SAI'"
+            print(
+                f"GameEngine: Error: Could not parse attacker melee results via ActionResolver."
+            )
+            # In a real implementation, this would emit a signal to show user error
+            # For now, continue with empty results to avoid blocking the game
+            parsed_results = {"melee": 0, "saves": 0, "sais": []}
         print(f"GameEngine: Parsed attacker melee via ActionResolver: {parsed_results}")
+
+        # Set combat context for proper army targeting
+        attacking_location = (
+            self._current_acting_army.get("location")
+            if self._current_acting_army
+            else None
+        )
+        attacking_army_id = (
+            self._current_acting_army.get("unique_id")
+            if self._current_acting_army
+            else None
+        )
+
+        # Note: determine_primary_defending_army_id expects the defending player name,
+        # but we want to find the defending player. Let's use the more general method.
+        defending_armies = (
+            self.game_state_manager.find_defending_armies_at_location(
+                self.get_current_player_name(), attacking_location
+            )
+            if attacking_location
+            else []
+        )
+
+        defending_army_id = None
+        if defending_armies:
+            # Use Dragon Dice priority: home > campaign > horde
+            for priority_type in ["home", "campaign", "horde"]:
+                for army_info in defending_armies:
+                    if army_info["army_id"] == priority_type:
+                        defending_army_id = (
+                            self.game_state_manager.generate_army_identifier(
+                                army_info["player"], priority_type
+                            )
+                        )
+                        break
+                if defending_army_id:
+                    break
+
+            # Fallback to first defending army
+            if not defending_army_id and defending_armies:
+                first_army = defending_armies[0]
+                defending_army_id = self.game_state_manager.generate_army_identifier(
+                    first_army["player"], first_army["army_id"]
+                )
+
+        self.action_resolver.set_combat_context(
+            location=attacking_location,
+            attacking_army_id=attacking_army_id,
+            defending_army_id=defending_army_id,
+        )
 
         attacker_outcome = self.action_resolver.process_attacker_melee_roll(
             attacking_player_name=self.get_current_player_name(),
@@ -348,7 +406,18 @@ class GameEngine(QObject):
             )
             return
 
-        defending_player_name = constants.PLACEHOLDER_OPPONENT_NAME
+        # Determine the defending player based on the attacking army's location
+        attacking_location = (
+            self._current_acting_army.get("location")
+            if self._current_acting_army
+            else None
+        )
+        defending_player_name = (
+            self.game_state_manager.determine_primary_defending_player(
+                self.get_current_player_name(), attacking_location
+            )
+            or "No_Defender_Found"
+        )
 
         defender_outcome = self.action_resolver.process_defender_save_roll(
             defending_player_name=defending_player_name,

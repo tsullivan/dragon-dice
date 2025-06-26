@@ -59,25 +59,25 @@ ARMY_TYPE_ICONS = {
 
 # Action Icons (centralized from various components)
 ACTION_ICONS = {
-    "MELEE": "⚔️",      # Crossed Swords
-    "MISSILE": "🏹",     # Bow and Arrow
-    "MAGIC": "✨",       # Sparkles
-    "SAVE": "🛡️",       # Shield
-    "SAI": "💎",        # Diamond (Special Action Icon)
-    "MANEUVER": "🏃",    # Running Person
+    "MELEE": "⚔️",  # Crossed Swords
+    "MISSILE": "🏹",  # Bow and Arrow
+    "MAGIC": "✨",  # Sparkles
+    "SAVE": "🛡️",  # Shield
+    "SAI": "💎",  # Diamond (Special Action Icon)
+    "MANEUVER": "🏃",  # Running Person
 }
 
 # Dragon Attack Icons
 DRAGON_ATTACK_ICONS = {
-    "CLAW": "🗺️",       # Map (representing claw terrain changes)
-    "BITE": "🦷",       # Tooth
-    "TAIL": "🐉",       # Dragon
-    "BREATH": "🔥",     # Fire
+    "CLAW": "🗺️",  # Map (representing claw terrain changes)
+    "BITE": "🦷",  # Tooth
+    "TAIL": "🐉",  # Dragon
+    "BREATH": "🔥",  # Fire
 }
 
 # UI Icons (general interface elements)
 UI_ICONS = {
-    "DICE": "🎲",       # Die
+    "DICE": "🎲",  # Die
     "DEFAULT_TERRAIN": "🗺️",  # Map (fallback for unknown terrains)
     "RANDOMIZE": "🎲",  # Die (for randomize buttons)
 }
@@ -187,9 +187,8 @@ ARMY_TYPE_CAMPAIGN = "Campaign"
 ARMY_TYPE_HORDE = "Horde"
 ARMY_TYPES_ALL = [ARMY_TYPE_HOME, ARMY_TYPE_CAMPAIGN, ARMY_TYPE_HORDE]
 
-# Placeholder Identifiers
-PLACEHOLDER_DEFENDING_ARMY_ID = "Placeholder_Defending_Army_ID"
-PLACEHOLDER_OPPONENT_NAME = "Opponent_Placeholder"
+# Army/Combat Targeting System uses dynamic identification based on actual game state
+# Placeholders removed - see GameStateManager targeting methods
 
 # Effect System Strings
 EFFECT_TARGET_TERRAIN = "TERRAIN"
@@ -239,6 +238,6 @@ def format_action_display(action_type: str) -> str:
         base_action = action_type.replace(" Action", "").upper()
     else:
         base_action = action_type.upper()
-    
+
     icon = get_action_icon(base_action)
     return f"{icon} {action_type}" if icon else action_type

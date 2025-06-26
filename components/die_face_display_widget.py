@@ -109,19 +109,28 @@ class DieFaceDisplayWidget(QWidget):
     def _get_icon_for_face(self, face_type: str) -> str:
         """Get display icon/text for a die face type."""
         # Use centralized constants for action icons
-        if face_type in [constants.ICON_MELEE, constants.ICON_MISSILE, constants.ICON_MAGIC, constants.ICON_SAVE, constants.ICON_SAI, constants.ICON_MANEUVER]:
+        if face_type in [
+            constants.ICON_MELEE,
+            constants.ICON_MISSILE,
+            constants.ICON_MAGIC,
+            constants.ICON_SAVE,
+            constants.ICON_SAI,
+            constants.ICON_MANEUVER,
+        ]:
             action_type = face_type.replace("ICON_", "")
             return constants.ACTION_ICONS.get(action_type, "❓")
-        
+
         # Use centralized constants for dragon attack icons
         if face_type.startswith("DRAGON_"):
-            dragon_type = face_type.replace("ICON_DRAGON_ATTACK_", "").replace("ICON_DRAGON_", "")
+            dragon_type = face_type.replace("ICON_DRAGON_ATTACK_", "").replace(
+                "ICON_DRAGON_", ""
+            )
             return constants.DRAGON_ATTACK_ICONS.get(dragon_type, "❓")
-        
+
         # Handle special cases
         if face_type == constants.ICON_ID:
             return "—"  # ID doesn't have a specific emoji, use dash
-        
+
         return "❓"  # Fallback for unknown types
 
     def _get_color_for_face(self, face_type: str) -> str:
