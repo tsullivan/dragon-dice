@@ -5,26 +5,334 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QGroupBox,
-    QRadioButton,
-    QButtonGroup,
     QTextEdit,
     QSpacerItem,
     QSizePolicy,
     QListWidget,
-    QComboBox,
+    QListWidgetItem,
+    QWidget,
+    QSpinBox,
 )
 import constants
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont
 from typing import List, Dict, Any, Optional
+from components.error_dialog import ErrorDialog
+
+
+class TerrainDirectionDialog(QDialog):
+    """Dialog for choosing terrain direction when maneuver succeeds."""
+
+    direction_chosen = Signal(str)  # "UP" or "DOWN"
+
+    def __init__(self, location: str, current_face: int, parent=None):
+        super().__init__(parent)
+        self.location = location
+        self.current_face = current_face
+
+        self.setWindowTitle("Choose Terrain Direction")
+        self.setModal(True)
+        self.resize(400, 250)
+
+        self._setup_ui()
+
+    def _setup_ui(self):
+        """Set up the terrain direction choice UI."""
+        layout = QVBoxLayout(self)
+
+        # Title
+        title = QLabel("Maneuver Successful!")
+        title_font = QFont()
+        title_font.setPointSize(16)
+        title_font.setBold(True)
+        title.setFont(title_font)
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        # Current terrain info
+        terrain_info = QLabel(
+            f"Location: {self.location}\n"
+            f"Current Face: {self.current_face}\n\n"
+            f"Choose the direction to turn the terrain:"
+        )
+        terrain_info.setAlignment(Qt.AlignCenter)
+        terrain_info.setWordWrap(True)
+        layout.addWidget(terrain_info)
+
+        layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        # Direction buttons
+        button_layout = QHBoxLayout()
+
+        # UP button
+        up_face = min(self.current_face + 1, 8)  # Dragon Dice faces 1-8
+        self.up_button = QPushButton(f"Turn UP\n(Face {self.current_face} → {up_face})")
+        self.up_button.setStyleSheet(
+            "QPushButton { background-color: #339af0; color: white; font-weight: bold; padding: 10px; }"
+        )
+        self.up_button.clicked.connect(lambda: self._choose_direction("UP"))
+
+        # DOWN button
+        down_face = max(self.current_face - 1, 1)  # Dragon Dice faces 1-8
+        self.down_button = QPushButton(
+            f"Turn DOWN\n(Face {self.current_face} → {down_face})"
+        )
+        self.down_button.setStyleSheet(
+            "QPushButton { background-color: #ff8787; color: white; font-weight: bold; padding: 10px; }"
+        )
+        self.down_button.clicked.connect(lambda: self._choose_direction("DOWN"))
+
+        # Disable buttons if at extremes
+        if self.current_face >= 8:
+            self.up_button.setEnabled(False)
+            self.up_button.setText("Turn UP\n(Already at Max)")
+        if self.current_face <= 1:
+            self.down_button.setEnabled(False)
+            self.down_button.setText("Turn DOWN\n(Already at Min)")
+
+        button_layout.addWidget(self.up_button)
+        button_layout.addWidget(self.down_button)
+        layout.addLayout(button_layout)
+
+    def _choose_direction(self, direction: str):
+        """Emit the chosen direction and close dialog."""
+        self.direction_chosen.emit(direction)
+        self.accept()
+
+
+class CounterManeuverDecisionDialog(QDialog):
+    """Dialog for asking opposing players about counter-maneuvering."""
+
+    decision_made = Signal(str, bool)  # player_name, will_counter
+
+    def __init__(
+        self, player_name: str, location: str, maneuvering_player: str, parent=None
+    ):
+        super().__init__(parent)
+        self.player_name = player_name
+        self.location = location
+        self.maneuvering_player = maneuvering_player
+
+        self.setWindowTitle(f"Counter-Maneuver Decision - {player_name}")
+        self.setModal(True)
+        self.resize(400, 250)
+
+        self._setup_ui()
+
+    def _setup_ui(self):
+        """Set up the counter-maneuver decision UI."""
+        layout = QVBoxLayout(self)
+
+        # Title
+        title = QLabel(f"Counter-Maneuver Opportunity")
+        title_font = QFont()
+        title_font.setPointSize(14)
+        title_font.setBold(True)
+        title.setFont(title_font)
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        # Explanation
+        explanation = QLabel(
+            f"Player {self.maneuvering_player} wants to maneuver at {self.location}.\n\n"
+            f"You have an army at this location. According to Dragon Dice rules,\n"
+            f"you may choose to oppose this maneuver (counter-maneuver).\n\n"
+            f"If you counter-maneuver, both armies will roll dice simultaneously.\n"
+            f"If you don't oppose, the maneuver automatically succeeds."
+        )
+        explanation.setWordWrap(True)
+        explanation.setAlignment(Qt.AlignCenter)
+        layout.addWidget(explanation)
+
+        layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        # Buttons
+        button_layout = QHBoxLayout()
+
+        self.counter_button = QPushButton("Counter-Maneuver")
+        self.counter_button.setStyleSheet(
+            "QPushButton { background-color: #ff6b6b; color: white; font-weight: bold; }"
+        )
+        self.counter_button.clicked.connect(lambda: self._make_decision(True))
+
+        self.allow_button = QPushButton("Allow Maneuver")
+        self.allow_button.setStyleSheet(
+            "QPushButton { background-color: #51cf66; color: white; font-weight: bold; }"
+        )
+        self.allow_button.clicked.connect(lambda: self._make_decision(False))
+
+        button_layout.addWidget(self.counter_button)
+        button_layout.addWidget(self.allow_button)
+        layout.addLayout(button_layout)
+
+    def _make_decision(self, will_counter: bool):
+        """Emit the decision and close dialog."""
+        self.decision_made.emit(self.player_name, will_counter)
+        self.accept()
+
+
+class SimultaneousManeuverRollDialog(QDialog):
+    """Dialog for handling simultaneous maneuver rolls."""
+
+    rolls_completed = Signal(int, int)  # maneuvering_results, counter_results
+
+    def __init__(
+        self,
+        maneuvering_player: str,
+        maneuvering_army: dict,
+        counter_players: list,
+        location: str,
+        parent=None,
+    ):
+        super().__init__(parent)
+        self.maneuvering_player = maneuvering_player
+        self.maneuvering_army = maneuvering_army
+        self.counter_players = counter_players
+        self.location = location
+
+        self.maneuvering_results = 0
+        self.counter_results = 0
+        self.results_submitted = {"maneuvering": False, "counter": False}
+
+        self.setWindowTitle(f"Simultaneous Maneuver Rolls - {location}")
+        self.setModal(True)
+        self.resize(600, 400)
+
+        self._setup_ui()
+
+    def _setup_ui(self):
+        """Set up the simultaneous rolling UI."""
+        layout = QVBoxLayout(self)
+
+        # Title
+        title = QLabel("Simultaneous Maneuver Rolls")
+        title_font = QFont()
+        title_font.setPointSize(16)
+        title_font.setBold(True)
+        title.setFont(title_font)
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        # Instructions
+        instructions = QLabel(
+            f"Both armies must roll dice simultaneously at {self.location}.\n"
+            f"Count maneuver results only. Maneuvering succeeds if results ≥ counter-maneuver results."
+        )
+        instructions.setWordWrap(True)
+        instructions.setAlignment(Qt.AlignCenter)
+        layout.addWidget(instructions)
+
+        # Rolling sections
+        roll_layout = QHBoxLayout()
+
+        # Maneuvering player section
+        maneuvering_group = QGroupBox(f"Maneuvering Army - {self.maneuvering_player}")
+        maneuvering_layout = QVBoxLayout(maneuvering_group)
+
+        maneuvering_info = QLabel(
+            f"Army: {self.maneuvering_army.get('name', 'Unknown')}\n"
+            f"Units: {len(self.maneuvering_army.get('units', []))}"
+        )
+        maneuvering_layout.addWidget(maneuvering_info)
+
+        maneuver_result_layout = QHBoxLayout()
+        maneuver_result_layout.addWidget(QLabel("Maneuver Results:"))
+        self.maneuvering_spin = QSpinBox()
+        self.maneuvering_spin.setMinimum(0)
+        self.maneuvering_spin.setMaximum(50)  # Reasonable max
+        maneuver_result_layout.addWidget(self.maneuvering_spin)
+        maneuvering_layout.addLayout(maneuver_result_layout)
+
+        self.submit_maneuvering_btn = QPushButton("Submit Maneuvering Results")
+        self.submit_maneuvering_btn.clicked.connect(self._submit_maneuvering_results)
+        maneuvering_layout.addWidget(self.submit_maneuvering_btn)
+
+        roll_layout.addWidget(maneuvering_group)
+
+        # Counter-maneuvering player section
+        counter_group = QGroupBox(f"Counter-Maneuvering Army")
+        counter_layout = QVBoxLayout(counter_group)
+
+        counter_players_text = ", ".join(self.counter_players)
+        counter_info = QLabel(f"Players: {counter_players_text}")
+        counter_layout.addWidget(counter_info)
+
+        counter_result_layout = QHBoxLayout()
+        counter_result_layout.addWidget(QLabel("Maneuver Results:"))
+        self.counter_spin = QSpinBox()
+        self.counter_spin.setMinimum(0)
+        self.counter_spin.setMaximum(50)  # Reasonable max
+        counter_result_layout.addWidget(self.counter_spin)
+        counter_layout.addLayout(counter_result_layout)
+
+        self.submit_counter_btn = QPushButton("Submit Counter-Maneuver Results")
+        self.submit_counter_btn.clicked.connect(self._submit_counter_results)
+        counter_layout.addWidget(self.submit_counter_btn)
+
+        roll_layout.addWidget(counter_group)
+        layout.addLayout(roll_layout)
+
+        # Results display
+        self.results_display = QTextEdit()
+        self.results_display.setMaximumHeight(100)
+        self.results_display.setPlainText(
+            "Waiting for both armies to submit their maneuver results..."
+        )
+        layout.addWidget(self.results_display)
+
+        # Complete button (initially disabled)
+        self.complete_btn = QPushButton("Complete Maneuver")
+        self.complete_btn.setEnabled(False)
+        self.complete_btn.clicked.connect(self._complete_maneuver)
+        layout.addWidget(self.complete_btn)
+
+    def _submit_maneuvering_results(self):
+        """Submit maneuvering army results."""
+        self.maneuvering_results = self.maneuvering_spin.value()
+        self.results_submitted["maneuvering"] = True
+        self.submit_maneuvering_btn.setEnabled(False)
+        self.maneuvering_spin.setEnabled(False)
+
+        self.results_display.append(
+            f"Maneuvering army rolled {self.maneuvering_results} maneuver results."
+        )
+        self._check_completion()
+
+    def _submit_counter_results(self):
+        """Submit counter-maneuvering army results."""
+        self.counter_results = self.counter_spin.value()
+        self.results_submitted["counter"] = True
+        self.submit_counter_btn.setEnabled(False)
+        self.counter_spin.setEnabled(False)
+
+        self.results_display.append(
+            f"Counter-maneuvering army rolled {self.counter_results} maneuver results."
+        )
+        self._check_completion()
+
+    def _check_completion(self):
+        """Check if both results are submitted and show final result."""
+        if all(self.results_submitted.values()):
+            if self.maneuvering_results >= self.counter_results:
+                result_text = f"MANEUVER SUCCEEDS! ({self.maneuvering_results} ≥ {self.counter_results})"
+                self.results_display.append(f"\n{result_text}")
+            else:
+                result_text = f"MANEUVER FAILS! ({self.maneuvering_results} < {self.counter_results})"
+                self.results_display.append(f"\n{result_text}")
+
+            self.complete_btn.setEnabled(True)
+
+    def _complete_maneuver(self):
+        """Complete the maneuver and emit results."""
+        self.rolls_completed.emit(self.maneuvering_results, self.counter_results)
+        self.accept()
 
 
 class ManeuverDialog(QDialog):
     """
-    Dialog for handling proper Dragon Dice maneuver flow:
-    1. Player selects which army to maneuver
-    2. Check for counter-maneuvers from other players
-    3. Roll dice for maneuver results
-    4. Apply terrain changes based on results
+    Main dialog coordinator for Dragon Dice maneuver flow.
+    This dialog now serves as a coordinator and may not always show UI -
+    it manages the proper Dragon Dice maneuver sequence.
     """
 
     maneuver_completed = Signal(dict)  # Emits maneuver results
@@ -36,6 +344,7 @@ class ManeuverDialog(QDialog):
         acting_army: Dict[str, Any],
         all_players_data: Dict[str, Dict[str, Any]],
         terrain_data: Dict[str, Dict[str, Any]],
+        game_engine,
         parent=None,
     ):
         super().__init__(parent)
@@ -43,406 +352,124 @@ class ManeuverDialog(QDialog):
         self.acting_army = acting_army
         self.all_players_data = all_players_data
         self.terrain_data = terrain_data
+        self.game_engine = game_engine
 
-        # Dialog state
-        self.selected_army = acting_army  # Use the pre-selected acting army
-        self.maneuver_participants = []
-        self.current_step = "counter_maneuver"  # Skip army selection, start with counter_maneuver, roll_dice, results
-
-        self.setWindowTitle("Army Maneuver")
-        self.setModal(True)
-        self.setMinimumSize(500, 400)
-
-        self._setup_ui()
-        self._update_step_display()
-
-    def _setup_ui(self):
-        """Set up the dialog UI with different sections for each step."""
-        layout = QVBoxLayout(self)
-
-        # Title
-        self.title_label = QLabel(f"{self.current_player_name} - Army Maneuver")
-        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        font = self.title_label.font()
-        font.setPointSize(14)
-        font.setBold(True)
-        self.title_label.setFont(font)
-        layout.addWidget(self.title_label)
-
-        # Step indicator
-        self.step_label = QLabel()
-        self.step_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.step_label)
-
-        # Main content area (will be populated based on current step)
-        self.content_widget = QGroupBox()
-        self.content_layout = QVBoxLayout(self.content_widget)
-        layout.addWidget(self.content_widget)
-
-        # Button area - allow buttons to stretch across the dialog
-        button_layout = QHBoxLayout()
-
-        self.back_button = QPushButton("Back")
-        self.back_button.clicked.connect(self._on_back)
-        button_layout.addWidget(self.back_button)
-
-        self.next_button = QPushButton("Next")
-        self.next_button.clicked.connect(self._on_next)
-        button_layout.addWidget(self.next_button)
-
-        self.cancel_button = QPushButton("Cancel")
-        self.cancel_button.clicked.connect(self._on_cancel)
-        button_layout.addWidget(self.cancel_button)
-
-        layout.addLayout(button_layout)
-
-    def _update_step_display(self):
-        """Update the dialog content based on current step."""
-        # Clear existing content
-        for i in reversed(range(self.content_layout.count())):
-            child = self.content_layout.itemAt(i).widget()
-            if child:
-                child.setParent(None)
-
-        if self.current_step == "counter_maneuver":
-            self._show_counter_maneuver()
-        elif self.current_step == "roll_dice":
-            self._show_dice_rolling()
-        elif self.current_step == "results":
-            self._show_results()
-
-        self._update_buttons()
-
-    def _show_army_selection(self):
-        """Show army selection step."""
-        self.step_label.setText("Step 1: Select Army to Maneuver")
-
-        instruction_label = QLabel("Choose which army you want to maneuver:")
-        self.content_layout.addWidget(instruction_label)
-
-        self.army_button_group = QButtonGroup(self)
-
-        for i, army_info in enumerate(self.available_armies):
-            army_name = army_info.get("name", "Unknown Army")
-            army_type = army_info.get("army_type", "unknown")
-            location = army_info.get("location", "Unknown")
-            unit_count = len(army_info.get("units", []))
-
-            # Add terrain icons to make locations much clearer
-            location_icon = ""
-            for terrain_name, icon in constants.TERRAIN_ICONS.items():
-                if terrain_name in location:
-                    location_icon = icon
-                    break
-            if not location_icon:
-                location_icon = "🗺️"  # Default terrain icon
-
-            # Add army type indicators
-            army_type_indicator = constants.ARMY_TYPE_ICONS.get(army_type, "⚔️")
-
-            button_text = f"{army_type_indicator} {army_name} ({army_type.title()} Army)\nLOCATION: {location_icon} {location} ({unit_count} units)"
-            radio_button = QRadioButton(button_text)
-            self.army_button_group.addButton(radio_button, i)
-            self.content_layout.addWidget(radio_button)
-
-        if self.available_armies:
-            self.army_button_group.buttons()[0].setChecked(True)
-            self.selected_army = self.available_armies[0]
-
-        self.army_button_group.idClicked.connect(self._on_army_selected)
-
-    def _show_counter_maneuver(self):
-        """Show counter-maneuver opportunity step."""
-        self.step_label.setText("Step 1: Counter-Maneuver Opportunity")
-
-        # Show which army is maneuvering
-        army_name = self.selected_army.get("name", "Unknown Army")
-        army_type = self.selected_army.get("army_type", "unknown")
-        army_type_indicator = (
-            "[HOME]"
-            if army_type == "home"
-            else "[CAMPAIGN]" if army_type == "campaign" else "[HORDE]"
+        # Connect to engine signals
+        self.game_engine.counter_maneuver_requested.connect(
+            self._handle_counter_maneuver_request
+        )
+        self.game_engine.simultaneous_maneuver_rolls_requested.connect(
+            self._handle_simultaneous_rolls_request
+        )
+        self.game_engine.terrain_direction_choice_requested.connect(
+            self._handle_terrain_direction_request
         )
 
-        acting_army_label = QLabel(
-            f"ACTING ARMY: {army_type_indicator} {army_name} is attempting to maneuver..."
+        # This coordinator dialog should never be visible - it just manages the flow
+        self.setWindowTitle("Maneuver Coordinator")
+        self.setModal(False)  # Not modal since it's just a coordinator
+        self.setVisible(False)  # Completely invisible
+        self.setAttribute(Qt.WA_DontShowOnScreen, True)  # Prevent showing
+
+        # Automatically start the maneuver process
+        self._start_maneuver_process()
+
+    def _start_maneuver_process(self):
+        """Start the Dragon Dice maneuver process through the engine."""
+        # The engine will handle the logic and emit appropriate signals
+        # This triggers the proper Dragon Dice maneuver flow
+        self.game_engine.decide_maneuver(True)
+
+    def _handle_counter_maneuver_request(self, location: str, opposing_armies: list):
+        """Handle request for counter-maneuver decisions from opposing players."""
+        print(f"ManeuverDialog: Handling counter-maneuver request at {location}")
+
+        # Get unique opposing players
+        opposing_players = list(set(army["player"] for army in opposing_armies))
+        self.pending_decisions = {}
+        self.expected_decisions = set(opposing_players)
+
+        # Show counter-maneuver decision dialogs for each opposing player
+        for player_name in opposing_players:
+            decision_dialog = CounterManeuverDecisionDialog(
+                player_name, location, self.current_player_name, self
+            )
+            decision_dialog.decision_made.connect(self._handle_counter_decision)
+            decision_dialog.show()
+
+    def _handle_counter_decision(self, player_name: str, will_counter: bool):
+        """Handle a player's counter-maneuver decision."""
+        print(
+            f"ManeuverDialog: {player_name} counter-maneuver decision: {will_counter}"
         )
-        acting_army_label.setStyleSheet(
-            "font-weight: bold; color: blue; background-color: #e6f3ff; padding: 8px; border: 1px solid #0066cc; border-radius: 4px;"
+
+        self.pending_decisions[player_name] = will_counter
+
+        # Check if we have all decisions
+        if set(self.pending_decisions.keys()) >= self.expected_decisions:
+            # All decisions received - submit to engine
+            for player, decision in self.pending_decisions.items():
+                self.game_engine.submit_counter_maneuver_decision(player, decision)
+
+    def _handle_simultaneous_rolls_request(
+        self,
+        maneuvering_player: str,
+        maneuvering_army: dict,
+        opposing_armies: list,
+        counter_responses: dict,
+    ):
+        """Handle request for simultaneous maneuver rolls."""
+        print(f"ManeuverDialog: Handling simultaneous rolls request")
+
+        # Get players who chose to counter-maneuver
+        counter_players = [
+            player for player, decision in counter_responses.items() if decision
+        ]
+        location = maneuvering_army.get("location", "Unknown Location")
+
+        # Show simultaneous roll dialog
+        roll_dialog = SimultaneousManeuverRollDialog(
+            maneuvering_player, maneuvering_army, counter_players, location, self
         )
-        acting_army_label.setWordWrap(True)
-        self.content_layout.addWidget(acting_army_label)
+        roll_dialog.rolls_completed.connect(self._handle_roll_results)
+        roll_dialog.show()
 
-        if not self.selected_army:
-            return
-
-        location = self.selected_army.get("location", "")
-
-        # Find other players with armies at the same location
-        other_armies = []
-        for player_name, player_data in self.all_players_data.items():
-            if player_name == self.current_player_name:
-                continue
-
-            for army_type, army_data in player_data.get("armies", {}).items():
-                if army_data.get("location") == location:
-                    other_armies.append(
-                        {
-                            "player": player_name,
-                            "army": army_data,
-                            "army_type": army_type,
-                        }
-                    )
-
-        # Add terrain icon for location (WSL-friendly)
-        location_icon = ""
-        if "Highland" in location:
-            location_icon = "[HIGHLAND]"
-        elif "Coastland" in location:
-            location_icon = "[COAST]"
-        elif "Deadland" in location:
-            location_icon = "[DEAD]"
-        elif "Flatland" in location:
-            location_icon = "[FLAT]"
-        elif "Swampland" in location:
-            location_icon = "[SWAMP]"
-        elif "Feyland" in location:
-            location_icon = "[FEY]"
-        elif "Wasteland" in location:
-            location_icon = "[WASTE]"
-
-        if not other_armies:
-            info_label = QLabel(
-                f"LOCATION: No other armies at {location_icon} {location}.\n\n>> Your maneuver will proceed unopposed!"
-            )
-            info_label.setStyleSheet("color: green; font-weight: bold;")
-            info_label.setWordWrap(True)
-            self.content_layout.addWidget(info_label)
-        else:
-            info_label = QLabel(
-                f"LOCATION: Other armies at {location_icon} {location} have the option to counter-maneuver:"
-            )
-            info_label.setWordWrap(True)
-            self.content_layout.addWidget(info_label)
-
-            self.counter_list = QListWidget()
-            for army_info in other_armies:
-                army_type = army_info["army_type"]
-                army_type_indicator = (
-                    "[HOME]"
-                    if army_type == "home"
-                    else "[CAMPAIGN]" if army_type == "campaign" else "[HORDE]"
-                )
-                item_text = f"{army_type_indicator} {army_info['player']} - {army_info['army']['name']} ({army_type.title()} Army)"
-                self.counter_list.addItem(f"WARNING: {item_text}")
-            self.content_layout.addWidget(self.counter_list)
-
-            counter_label = QLabel(
-                "INFO: <b>Note:</b> Counter-maneuvering is <u>optional</u> for opposing players.<br>In a real game, they would now choose whether to counter-maneuver.<br><br>SIMULATION: <b>For this simulation:</b> Assuming no players choose to counter-maneuver."
-            )
-            counter_label.setWordWrap(True)
-            counter_label.setStyleSheet(
-                "background-color: #f0f0f0; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
-            )
-            self.content_layout.addWidget(counter_label)
-
-    def _show_dice_rolling(self):
-        """Show dice rolling step."""
-        self.step_label.setText("Step 2: Roll for Maneuver")
-
-        if not self.selected_army:
-            return
-
-        army_name = self.selected_army.get("name", "Unknown Army")
-        units = self.selected_army.get("units", [])
-
-        instruction_label = QLabel(f"Rolling maneuver dice for {army_name}...")
-        self.content_layout.addWidget(instruction_label)
-
-        # Show army composition
-        army_info = QLabel(f"Army has {len(units)} units:")
-        self.content_layout.addWidget(army_info)
-
-        unit_list = QTextEdit()
-        unit_list.setMaximumHeight(100)
-        unit_list.setReadOnly(True)
-        unit_text = ""
-        for unit in units:
-            unit_name = unit.get("name", "Unknown Unit")
-            unit_health = unit.get("health", 0)
-            unit_text += f"• {unit_name} ({unit_health} HP)\n"
-        unit_list.setPlainText(unit_text)
-        self.content_layout.addWidget(unit_list)
-
-        # Simulate dice roll results
-        import random
-
-        maneuver_results = random.randint(1, len(units) + 2)  # Simple simulation
-
-        result_label = QLabel(
-            f"Maneuver Roll Result: {maneuver_results} maneuver icons"
+    def _handle_roll_results(self, maneuvering_results: int, counter_results: int):
+        """Handle the results from simultaneous rolling."""
+        print(
+            f"ManeuverDialog: Roll results - Maneuvering: {maneuvering_results}, Counter: {counter_results}"
         )
-        result_label.setStyleSheet("font-weight: bold; color: blue;")
-        self.content_layout.addWidget(result_label)
 
-        # Store results for next step
-        self.maneuver_result = maneuver_results
+        # Submit results to engine for processing
+        self.game_engine.submit_maneuver_roll_results(
+            maneuvering_results, counter_results
+        )
 
-    def _show_results(self):
-        """Show maneuver results and terrain changes."""
-        self.step_label.setText("Step 3: Maneuver Results")
+        # Close this coordinator dialog
+        self.accept()
 
-        if not self.selected_army:
-            return
+    def _handle_terrain_direction_request(self, location: str, current_face: int):
+        """Handle request for terrain direction choice."""
+        print(
+            f"ManeuverDialog: Handling terrain direction request for {location} (face {current_face})"
+        )
 
-        location = self.selected_army.get("location", "")
-        terrain_info = self.terrain_data.get(location, {})
-        current_face = terrain_info.get("face", 1)
+        # Show terrain direction choice dialog
+        direction_dialog = TerrainDirectionDialog(location, current_face, self)
+        direction_dialog.direction_chosen.connect(self._handle_direction_choice)
+        direction_dialog.show()
 
-        # Determine terrain change
-        if hasattr(self, "maneuver_result") and self.maneuver_result > 0:
-            result_text = f"Maneuver succeeded with {getattr(self, 'maneuver_result', 1)} maneuver icons!\n\n"
-            result_text += f"Current terrain '{location}' is on face {current_face}.\n"
-            result_text += "Choose whether to turn the terrain UP or DOWN by one step:"
+    def _handle_direction_choice(self, direction: str):
+        """Handle the player's terrain direction choice."""
+        print(f"ManeuverDialog: Player chose direction: {direction}")
 
-            result_label = QLabel(result_text)
-            result_label.setWordWrap(True)
-            self.content_layout.addWidget(result_label)
+        # Submit direction choice to engine
+        self.game_engine.submit_terrain_direction_choice(direction)
 
-            # Add terrain direction choice
-            direction_group = QGroupBox("Terrain Direction Choice")
-            direction_layout = QVBoxLayout(direction_group)
+        # Close the coordinator dialog
+        self.accept()
 
-            self.terrain_direction_group = QButtonGroup(self)
-
-            # UP option
-            up_face = min(current_face + 1, 8)  # Max face is 8
-            up_radio = QRadioButton(f"⬆️ Turn UP to face {up_face}")
-            if current_face < 8:  # Only enable if not already at max
-                up_radio.setEnabled(True)
-                up_radio.setChecked(True)  # Default selection
-            else:
-                up_radio.setEnabled(False)
-            self.terrain_direction_group.addButton(up_radio, 1)  # 1 = UP
-            direction_layout.addWidget(up_radio)
-
-            # DOWN option
-            down_face = max(current_face - 1, 1)  # Min face is 1
-            down_radio = QRadioButton(f"⬇️ Turn DOWN to face {down_face}")
-            if current_face > 1:  # Only enable if not already at min
-                down_radio.setEnabled(True)
-                if current_face >= 8:  # If at max face, default to DOWN
-                    down_radio.setChecked(True)
-            else:
-                down_radio.setEnabled(False)
-            self.terrain_direction_group.addButton(down_radio, -1)  # -1 = DOWN
-            direction_layout.addWidget(down_radio)
-
-            self.content_layout.addWidget(direction_group)
-
-            # Store initial result data (will be updated when direction is chosen)
-            self.terrain_location = location
-            self.terrain_current_face = current_face
-
-        else:
-            result_text = f"Maneuver failed with {getattr(self, 'maneuver_result', 0)} maneuver icons.\n\n"
-            result_text += "No terrain changes."
-
-            result_label = QLabel(result_text)
-            result_label.setWordWrap(True)
-            self.content_layout.addWidget(result_label)
-
-            self.final_result = {
-                "success": False,
-                "army": self.selected_army,
-                "location": location,
-                "maneuver_icons": 0,
-            }
-
-    def _update_buttons(self):
-        """Update button states based on current step."""
-        self.back_button.setEnabled(
-            False
-        )  # No back button since we skip army selection
-
-        if self.current_step == "counter_maneuver":
-            self.next_button.setText("Roll Dice")
-            self.next_button.setEnabled(True)
-        elif self.current_step == "roll_dice":
-            self.next_button.setText("Apply Results")
-            self.next_button.setEnabled(True)
-        elif self.current_step == "results":
-            self.next_button.setText("Complete Maneuver")
-            self.next_button.setEnabled(True)
-
-    def _on_army_selected(self, army_index: int):
-        """Handle army selection."""
-        if 0 <= army_index < len(self.available_armies):
-            self.selected_army = self.available_armies[army_index]
-            self._update_buttons()
-
-    def _on_back(self):
-        """Handle back button."""
-        if self.current_step == "counter_maneuver":
-            self.current_step = "select_army"
-        elif self.current_step == "roll_dice":
-            self.current_step = "counter_maneuver"
-        elif self.current_step == "results":
-            self.current_step = "roll_dice"
-
-        self._update_step_display()
-
-    def _on_next(self):
-        """Handle next button."""
-        if self.current_step == "counter_maneuver":
-            self.current_step = "roll_dice"
-        elif self.current_step == "roll_dice":
-            self.current_step = "results"
-        elif self.current_step == "results":
-            # Complete the maneuver
-            if hasattr(self, "maneuver_result") and self.maneuver_result > 0:
-                # Calculate final result based on player's terrain direction choice
-                if hasattr(self, "terrain_direction_group"):
-                    selected_direction = self.terrain_direction_group.checkedButton()
-                    if selected_direction:
-                        direction_value = self.terrain_direction_group.id(
-                            selected_direction
-                        )
-                        new_face = self.terrain_current_face + direction_value
-                        new_face = max(1, min(8, new_face))  # Clamp between 1 and 8
-
-                        direction_text = "UP" if direction_value > 0 else "DOWN"
-
-                        self.final_result = {
-                            "success": True,
-                            "army": self.selected_army,
-                            "location": self.terrain_location,
-                            "old_face": self.terrain_current_face,
-                            "new_face": new_face,
-                            "direction": direction_text,
-                            "maneuver_icons": self.maneuver_result,
-                        }
-                    else:
-                        # No direction selected, default to UP for backwards compatibility
-                        new_face = min(self.terrain_current_face + 1, 8)
-                        self.final_result = {
-                            "success": True,
-                            "army": self.selected_army,
-                            "location": self.terrain_location,
-                            "old_face": self.terrain_current_face,
-                            "new_face": new_face,
-                            "direction": "UP",
-                            "maneuver_icons": self.maneuver_result,
-                        }
-
-            if hasattr(self, "final_result"):
-                self.maneuver_completed.emit(self.final_result)
-            self.accept()
-            return
-
-        self._update_step_display()
-
-    def _on_cancel(self):
-        """Handle cancel button."""
+    def closeEvent(self, event):
+        """Handle dialog close event."""
         self.maneuver_cancelled.emit()
-        self.reject()
+        super().closeEvent(event)

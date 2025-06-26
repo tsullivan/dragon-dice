@@ -266,6 +266,9 @@ class MainWindow(QMainWindow):
         gameplay_view.magic_action_selected_signal.connect(
             self.current_controller.handle_magic_action_selected
         )
+        gameplay_view.skip_action_selected_signal.connect(
+            self.current_controller.handle_skip_action_selected
+        )
         gameplay_view.attacker_melee_results_submitted.connect(
             self.current_controller.handle_attacker_melee_submission
         )
@@ -275,4 +278,22 @@ class MainWindow(QMainWindow):
         gameplay_view.continue_to_next_phase_signal.connect(
             self.current_controller.handle_continue_to_next_phase
         )
+        
+        # Connect critical GameEngine signals to controller for debug logging
+        game_engine_instance.unit_selection_required.connect(
+            self.current_controller.handle_unit_selection_required
+        )
+        game_engine_instance.damage_allocation_completed.connect(
+            self.current_controller.handle_damage_allocation_completed
+        )
+        game_engine_instance.counter_maneuver_requested.connect(
+            self.current_controller.handle_counter_maneuver_request
+        )
+        game_engine_instance.simultaneous_maneuver_rolls_requested.connect(
+            self.current_controller.handle_simultaneous_maneuver_rolls_request
+        )
+        game_engine_instance.terrain_direction_choice_requested.connect(
+            self.current_controller.handle_terrain_direction_choice_request
+        )
+        
         self.switch_view(gameplay_view)

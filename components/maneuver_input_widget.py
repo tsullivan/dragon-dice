@@ -1,16 +1,20 @@
 from PySide6.QtWidgets import (
     QWidget,
     QHBoxLayout,
+    QVBoxLayout,
     QPushButton,
+    QLabel,
+    QGroupBox,
 )
 from PySide6.QtCore import Signal
-from typing import Optional
+from PySide6.QtGui import QFont
+from typing import Optional, Dict, Any
 
 
 class ManeuverInputWidget(QWidget):
     """
-    A widget for handling maneuver decisions only.
-    Shows Yes/No buttons for deciding whether to maneuver.
+    A widget for handling maneuver decisions with acting army display.
+    Shows the selected acting army and Yes/No buttons for deciding whether to maneuver.
     If 'Yes' is clicked, the parent view will show the ManeuverDialog.
     """
 
@@ -19,18 +23,73 @@ class ManeuverInputWidget(QWidget):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
 
-        self._main_layout = QHBoxLayout(self)
-        self._main_layout.setContentsMargins(0, 0, 0, 0)
+        # Main vertical layout
+        self._main_layout = QVBoxLayout(self)
+        self._main_layout.setContentsMargins(5, 5, 5, 5)
 
-        self._maneuver_yes_button = QPushButton("Choose Army & Maneuver: Yes")
-        self._maneuver_yes_button.setMaximumWidth(250)  # Limit button width
+        # Acting army display group
+        self._army_group = QGroupBox("Acting Army for Maneuver")
+        army_layout = QVBoxLayout(self._army_group)
+
+        self._army_info_label = QLabel("No acting army selected")
+        self._army_info_label.setWordWrap(True)
+        army_font = QFont()
+        army_font.setPointSize(10)
+        self._army_info_label.setFont(army_font)
+        army_layout.addWidget(self._army_info_label)
+
+        self._main_layout.addWidget(self._army_group)
+
+        # Decision buttons
+        button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(0, 5, 0, 0)
+
+        self._maneuver_yes_button = QPushButton("Maneuver: Yes")
+        self._maneuver_yes_button.setMaximumWidth(200)
+        self._maneuver_yes_button.setStyleSheet(
+            "QPushButton { background-color: #51cf66; color: white; font-weight: bold; }"
+        )
         self._maneuver_yes_button.clicked.connect(self._on_maneuver_yes)
-        self._main_layout.addWidget(self._maneuver_yes_button)
+        button_layout.addWidget(self._maneuver_yes_button)
 
-        self._maneuver_no_button = QPushButton("Choose Army & Maneuver: No")
-        self._maneuver_no_button.setMaximumWidth(250)  # Limit button width
+        self._maneuver_no_button = QPushButton("Maneuver: No")
+        self._maneuver_no_button.setMaximumWidth(200)
+        self._maneuver_no_button.setStyleSheet(
+            "QPushButton { background-color: #868e96; color: white; font-weight: bold; }"
+        )
         self._maneuver_no_button.clicked.connect(self._on_maneuver_no)
-        self._main_layout.addWidget(self._maneuver_no_button)
+        button_layout.addWidget(self._maneuver_no_button)
+
+        self._main_layout.addLayout(button_layout)
+
+    def set_acting_army(
+        self, acting_army: Dict[str, Any], terrain_data: Dict[str, Any] = None
+    ):
+        """Set the acting army information to display."""
+        if not acting_army:
+            self._army_info_label.setText("No acting army selected")
+            return
+
+        army_name = acting_army.get("name", "Unknown Army")
+        location = acting_army.get("location", "Unknown Location")
+        units = acting_army.get("units", [])
+        unit_count = len(units)
+
+        # Get terrain information
+        terrain_info = ""
+        if terrain_data and location in terrain_data:
+            terrain = terrain_data[location]
+            face = terrain.get("face", 1)
+            terrain_type = terrain.get("type", "Unknown")
+            terrain_info = f"\nTerrain: {terrain_type}, Face {face}"
+
+        army_text = (
+            f"Army: {army_name}\n"
+            f"Location: {location}\n"
+            f"Units: {unit_count}{terrain_info}"
+        )
+
+        self._army_info_label.setText(army_text)
 
     def _on_maneuver_yes(self):
         """Emit decision signal - parent view will handle showing ManeuverDialog."""

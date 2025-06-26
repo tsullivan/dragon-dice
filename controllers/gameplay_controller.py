@@ -33,6 +33,11 @@ class GameplayController(QObject):
         print("[GameplayController] Magic action selected")
         self.game_engine.select_action(constants.ACTION_MAGIC)
 
+    @Slot()
+    def handle_skip_action_selected(self):
+        print("[GameplayController] Skip action selected")
+        self.game_engine.select_action(constants.ACTION_SKIP)
+
     @Slot(str)
     def handle_attacker_melee_submission(self, results: str):
         print(f"[GameplayController] Attacker melee results: {results}")
@@ -47,3 +52,35 @@ class GameplayController(QObject):
     def handle_continue_to_next_phase(self):
         print("[GameplayController] Continue to next phase requested.")
         self.game_engine.advance_phase()
+
+    # Critical signal handlers with debug logging
+    @Slot(str, int, list)
+    def handle_unit_selection_required(self, player_name: str, damage_amount: int, available_units: list):
+        print(f"[GameplayController] Unit selection required for {player_name}: {damage_amount} damage")
+        print(f"[GameplayController] Available units: {[unit.get('name', 'Unknown') for unit in available_units]}")
+        # TODO: Show unit selection dialog for damage allocation
+        # For now, just log the requirement
+        
+    @Slot(str, int)
+    def handle_damage_allocation_completed(self, player_name: str, total_damage: int):
+        print(f"[GameplayController] Damage allocation completed for {player_name}: {total_damage} total damage applied")
+        # TODO: Handle UI updates after damage allocation
+        
+    @Slot(str, list)
+    def handle_counter_maneuver_request(self, location: str, opposing_armies: list):
+        print(f"[GameplayController] Counter-maneuver requested at {location}")
+        print(f"[GameplayController] Opposing armies: {[army.get('name', 'Unknown') for army in opposing_armies]}")
+        # TODO: Show counter-maneuver decision dialog
+        
+    @Slot(str, dict, list, dict)
+    def handle_simultaneous_maneuver_rolls_request(self, maneuvering_player: str, maneuvering_army: dict, opposing_armies: list, counter_responses: dict):
+        print(f"[GameplayController] Simultaneous maneuver rolls requested")
+        print(f"[GameplayController] Maneuvering player: {maneuvering_player}")
+        print(f"[GameplayController] Maneuvering army: {maneuvering_army.get('name', 'Unknown')}")
+        print(f"[GameplayController] Counter responses: {counter_responses}")
+        # TODO: Show simultaneous maneuver roll dialog
+        
+    @Slot(str, int)
+    def handle_terrain_direction_choice_request(self, location: str, current_face: int):
+        print(f"[GameplayController] Terrain direction choice requested at {location}, current face: {current_face}")
+        # TODO: Show terrain direction choice dialog

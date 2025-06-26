@@ -34,6 +34,13 @@ class GameEngine(QObject):
         str, str, str, int
     )  # player_name, army_id, unit_name, new_health
 
+    # Maneuver-related signals for Dragon Dice rules compliance
+    counter_maneuver_requested = Signal(str, list)  # location, opposing_armies
+    simultaneous_maneuver_rolls_requested = Signal(
+        str, dict, list, dict
+    )  # maneuvering_player, maneuvering_army, opposing_armies, counter_responses
+    terrain_direction_choice_requested = Signal(str, int)  # location, current_face
+
     def __init__(
         self,
         player_setup_data,
@@ -197,7 +204,7 @@ class GameEngine(QObject):
         return phase_display
 
     def decide_maneuver(self, wants_to_maneuver: bool):
-        """Request maneuver decision processing. Manager will emit signals to update state."""
+        """Process maneuver decision according to Dragon Dice rules."""
         print(
             f"Player {self.get_current_player_name()} decided maneuver: {wants_to_maneuver}"
         )
@@ -206,22 +213,48 @@ class GameEngine(QObject):
         if self._is_very_first_turn:
             self._is_very_first_turn = False
 
-        # Note: When wants_to_maneuver is True, the MainGameplayView will show the ManeuverDialog
-        # and handle the complete maneuver flow. When the dialog completes, it will trigger
-        # the transition to SELECT_ACTION phase. For now, we stay in DECIDE_MANEUVER step
-        # until the dialog completes or the user chooses "No".
         if not wants_to_maneuver:
+            # No maneuver - proceed to action selection
             self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
             self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
-        self.current_phase_changed.emit(self.get_current_phase_display())
-        self.game_state_updated.emit()
+            self.current_phase_changed.emit(self.get_current_phase_display())
+            self.game_state_updated.emit()
+            return
+
+        # Player wants to maneuver - check for opposing armies per Dragon Dice rules
+        acting_army = self.get_current_acting_army()
+        if not acting_army:
+            print("GameEngine: No acting army selected for maneuver")
+            return
+
+        location = acting_army.get("location")
+        if not location:
+            print("GameEngine: Acting army has no location")
+            return
+
+        # Find opposing armies at the same terrain
+        opposing_armies = self.game_state_manager.find_defending_armies_at_location(
+            self.get_current_player_name(), location
+        )
+
+        if not opposing_armies:
+            # No opposition - maneuver automatically succeeds per Dragon Dice rules
+            print("GameEngine: No opposing armies - maneuver automatically succeeds")
+            self._execute_automatic_maneuver_success(location)
+        else:
+            # Opposition exists - initiate counter-maneuver process
+            print(
+                f"GameEngine: Found {len(opposing_armies)} opposing armies - requesting counter-maneuver decisions"
+            )
+            self._initiate_counter_maneuver_process(location, opposing_armies)
 
     def submit_maneuver_input(self, details: str):
-        """Request maneuver input processing. Manager will emit signals to update state."""
+        """DEPRECATED: Old maneuver system - use new Dragon Dice compliant flow instead."""
         print(
-            f"Player {self.get_current_player_name()} submitted maneuver details: {details}"
+            f"WARNING: submit_maneuver_input is deprecated - maneuver should use Dragon Dice rules flow"
         )
-        # Emit signal to TurnManager to handle input
+        print(f"Details received: {details}")
+        # For backward compatibility, just proceed to action selection
         self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
         self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
         self.current_phase_changed.emit(self.get_current_phase_display())
@@ -260,11 +293,198 @@ class GameEngine(QObject):
 
         return success
 
+    def _execute_automatic_maneuver_success(self, location: str):
+        """Execute automatic maneuver success when no opposition exists (no dice rolled)."""
+        try:
+            # Get current terrain face and ask player for direction choice
+            terrain_data = self.game_state_manager.get_terrain_data(location)
+            if not terrain_data:
+                print(f"GameEngine: Could not find terrain data for '{location}'")
+                return
+
+            current_face = terrain_data.get("face", 1)
+            print(
+                f"GameEngine: Automatic maneuver success - requesting direction choice for '{location}' (current face: {current_face})"
+            )
+
+            # Store the location for when direction is chosen
+            self._pending_terrain_change = {
+                "location": location,
+                "current_face": current_face,
+                "reason": "automatic_success",
+            }
+
+            # Request direction choice from UI
+            self.terrain_direction_choice_requested.emit(location, current_face)
+
+        except Exception as e:
+            print(f"GameEngine: Error in automatic maneuver: {e}")
+
+    def _initiate_counter_maneuver_process(self, location: str, opposing_armies: list):
+        """Initiate the counter-maneuver process per Dragon Dice rules."""
+        # Store maneuver context for the counter-maneuver process
+        self._pending_maneuver = {
+            "location": location,
+            "opposing_armies": opposing_armies,
+            "counter_maneuver_responses": {},
+            "maneuvering_player": self.get_current_player_name(),
+            "maneuvering_army": self.get_current_acting_army(),
+        }
+
+        # Emit signal to UI to handle counter-maneuver decisions
+        # This will trigger the UI to ask each opposing player if they want to counter-maneuver
+        self.counter_maneuver_requested.emit(location, opposing_armies)
+
+    def submit_counter_maneuver_decision(self, player_name: str, will_counter: bool):
+        """Record a player's decision about counter-maneuvering."""
+        if not hasattr(self, "_pending_maneuver") or not self._pending_maneuver:
+            print("GameEngine: No pending maneuver for counter-maneuver decision")
+            return
+
+        print(
+            f"GameEngine: Player {player_name} counter-maneuver decision: {will_counter}"
+        )
+        self._pending_maneuver["counter_maneuver_responses"][player_name] = will_counter
+
+        # Check if we have all responses
+        opposing_players = {
+            army["player"] for army in self._pending_maneuver["opposing_armies"]
+        }
+        responses = self._pending_maneuver["counter_maneuver_responses"]
+
+        if set(responses.keys()) >= opposing_players:
+            # All responses received - process maneuver
+            self._process_maneuver_with_responses()
+
+    def _process_maneuver_with_responses(self):
+        """Process the maneuver after receiving all counter-maneuver responses."""
+        if not hasattr(self, "_pending_maneuver") or not self._pending_maneuver:
+            return
+
+        responses = self._pending_maneuver["counter_maneuver_responses"]
+        any_opposition = any(responses.values())
+
+        if not any_opposition:
+            # No one chose to counter-maneuver - automatic success
+            print(
+                "GameEngine: No players chose to counter-maneuver - automatic success"
+            )
+            location = self._pending_maneuver["location"]
+            self._execute_automatic_maneuver_success(location)
+            # Clear pending maneuver after automatic success
+            self._pending_maneuver = None
+        else:
+            # At least one player chose to counter-maneuver - initiate simultaneous rolls
+            print(
+                "GameEngine: Counter-maneuver detected - initiating simultaneous rolls"
+            )
+            self._execute_simultaneous_maneuver_rolls()
+            # DON'T clear pending maneuver yet - wait for roll results
+
+    def _execute_simultaneous_maneuver_rolls(self):
+        """Execute simultaneous maneuver rolls between maneuvering and counter-maneuvering armies."""
+        if not hasattr(self, "_pending_maneuver") or not self._pending_maneuver:
+            return
+
+        # Emit signal to UI to handle simultaneous rolling
+        # This will show a dialog where both players roll their armies simultaneously
+        self.simultaneous_maneuver_rolls_requested.emit(
+            self._pending_maneuver["maneuvering_player"],
+            self._pending_maneuver["maneuvering_army"],
+            self._pending_maneuver["opposing_armies"],
+            self._pending_maneuver["counter_maneuver_responses"],
+        )
+
+    def submit_maneuver_roll_results(
+        self, maneuvering_results: int, counter_results: int
+    ):
+        """Process the results of simultaneous maneuver rolls."""
+        if not hasattr(self, "_pending_maneuver") or not self._pending_maneuver:
+            print("GameEngine: ERROR - No pending maneuver for roll results")
+            print(
+                f"GameEngine: Has _pending_maneuver attr: {hasattr(self, '_pending_maneuver')}"
+            )
+            if hasattr(self, "_pending_maneuver"):
+                print(f"GameEngine: _pending_maneuver value: {self._pending_maneuver}")
+            return
+
+        print(
+            f"GameEngine: Processing maneuver roll results - Maneuvering: {maneuvering_results}, Counter: {counter_results}"
+        )
+
+        location = self._pending_maneuver["location"]
+
+        if maneuvering_results >= counter_results:
+            # Maneuver succeeds
+            print(
+                "GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)"
+            )
+            self._execute_automatic_maneuver_success(location)
+        else:
+            # Maneuver fails
+            print("GameEngine: Maneuver failed (maneuvering < counter-maneuvering)")
+            # Proceed to action selection without terrain change
+            self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
+            self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+            self.current_phase_changed.emit(self.get_current_phase_display())
+            self.game_state_updated.emit()
+
+        # Clear pending maneuver
+        print("GameEngine: Clearing pending maneuver")
+        self._pending_maneuver = None
+
+    def submit_terrain_direction_choice(self, direction: str):
+        """Process the player's terrain direction choice."""
+        if (
+            not hasattr(self, "_pending_terrain_change")
+            or not self._pending_terrain_change
+        ):
+            print("GameEngine: No pending terrain change for direction choice")
+            return
+
+        location = self._pending_terrain_change["location"]
+        current_face = self._pending_terrain_change["current_face"]
+
+        print(f"GameEngine: Player chose to turn terrain {direction} at {location}")
+
+        # Calculate new face based on direction
+        if direction == "UP":
+            new_face = min(current_face + 1, 8)  # Dragon Dice faces 1-8
+        elif direction == "DOWN":
+            new_face = max(current_face - 1, 1)  # Dragon Dice faces 1-8
+        else:
+            print(f"GameEngine: Invalid direction '{direction}', defaulting to UP")
+            new_face = min(current_face + 1, 8)
+
+        # Apply terrain change
+        success = self.game_state_manager.update_terrain_face(location, str(new_face))
+
+        if success:
+            print(
+                f"GameEngine: Successfully turned terrain '{location}' {direction} from face {current_face} to {new_face}"
+            )
+        else:
+            print(f"GameEngine: Failed to apply terrain change to '{location}'")
+
+        # Clear pending terrain change
+        self._pending_terrain_change = None
+
+        # Proceed to action selection after terrain change
+        self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
+        self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+        self.current_phase_changed.emit(self.get_current_phase_display())
+        self.game_state_updated.emit()
+
     def select_action(self, action_type: str):
         """Request action selection processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} selected action: {action_type}")
-        # Emit signal to TurnManager to handle action selection
-        if action_type == constants.ACTION_MELEE:
+        # Handle action selection
+        if action_type == constants.ACTION_SKIP:
+            print("Player chose to skip action - advancing to next phase")
+            # Skip action - advance to next phase
+            self.advance_phase()
+            return
+        elif action_type == constants.ACTION_MELEE:
             action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
         elif action_type == constants.ACTION_MISSILE:
             action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
@@ -274,6 +494,7 @@ class GameEngine(QObject):
             print(f"Unknown action type: {action_type}")
             return
 
+        # Emit signal to TurnManager to handle action selection
         self.action_step_change_requested.emit(action_step)
         self._current_action_step = action_step
 

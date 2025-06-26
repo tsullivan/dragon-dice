@@ -40,9 +40,11 @@ class MainGameplayView(QWidget):
     melee_action_selected_signal = Signal()
     missile_action_selected_signal = Signal()
     magic_action_selected_signal = Signal()
+    skip_action_selected_signal = Signal()
     attacker_melee_results_submitted = Signal(str)
     defender_save_results_submitted = Signal(str)
     continue_to_next_phase_signal = Signal()
+    game_state_updated = Signal()
 
     def __init__(self, game_engine: GameEngine, parent=None):
         super().__init__(parent)
@@ -52,6 +54,9 @@ class MainGameplayView(QWidget):
         # Track phase completion to control continue button
         self.phase_actions_completed = False
         self.current_phase_requirements_met = False
+
+        # Track active dialogs to prevent duplicates
+        self.active_action_dialog = None
 
         self.setWindowTitle("Dragon Dice - Gameplay")
 
@@ -207,6 +212,13 @@ class MainGameplayView(QWidget):
         self.game_engine.game_state_updated.connect(self.update_ui)
         self.game_engine.current_phase_changed.connect(self.update_ui)
         self.game_engine.current_player_changed.connect(self.update_ui)
+        
+        # Connect critical signals for debug logging
+        self.game_engine.unit_selection_required.connect(self._handle_unit_selection_required)
+        self.game_engine.damage_allocation_completed.connect(self._handle_damage_allocation_completed)
+        self.game_engine.counter_maneuver_requested.connect(self._handle_counter_maneuver_request)
+        self.game_engine.simultaneous_maneuver_rolls_requested.connect(self._handle_simultaneous_maneuver_rolls_request)
+        self.game_engine.terrain_direction_choice_requested.connect(self._handle_terrain_direction_choice_request)
 
         self.update_ui()  # Initial call
 
@@ -266,6 +278,7 @@ class MainGameplayView(QWidget):
                 acting_army=acting_army,
                 all_players_data=all_players_data,
                 terrain_data=terrain_data,
+                game_engine=self.game_engine,
                 parent=self,
             )
 
@@ -317,6 +330,11 @@ class MainGameplayView(QWidget):
 
     def _show_action_dialog(self, action_type: str):
         """Show the action dialog for proper action flow."""
+        # Check if dialog is already active
+        if self.active_action_dialog is not None:
+            print(f"Action dialog already active for {action_type}, skipping")
+            return
+
         try:
             # Get the current acting army
             acting_army = self.game_engine.get_current_acting_army()
@@ -338,19 +356,30 @@ class MainGameplayView(QWidget):
                 parent=self,
             )
 
+            # Track the active dialog
+            self.active_action_dialog = dialog
+
             dialog.action_completed.connect(self._handle_action_completed)
             dialog.action_cancelled.connect(self._handle_action_cancelled)
+
+            # Clear dialog reference when it's finished
+            dialog.finished.connect(lambda: setattr(self, "active_action_dialog", None))
 
             dialog.exec()
 
         except Exception as e:
             print(f"Error showing action dialog: {e}")
+            # Clear dialog reference on error
+            self.active_action_dialog = None
             # Fallback: advance phase
             self.game_engine.advance_phase()
 
     def _handle_action_completed(self, action_result: dict):
         """Handle completed action from dialog."""
         print(f"Action completed: {action_result}")
+
+        # Clear dialog reference
+        self.active_action_dialog = None
 
         action_type = action_result.get("action_type", "UNKNOWN")
         attacker = action_result.get("attacker", "Unknown")
@@ -366,6 +395,10 @@ class MainGameplayView(QWidget):
     def _handle_action_cancelled(self):
         """Handle cancelled action from dialog."""
         print("Action cancelled")
+
+        # Clear dialog reference
+        self.active_action_dialog = None
+
         # Return to action selection
         self.game_engine.march_step_change_requested.emit(
             constants.MARCH_STEP_SELECT_ACTION
@@ -422,6 +455,8 @@ class MainGameplayView(QWidget):
             self.missile_action_selected_signal.emit()
         elif action_type == constants.ACTION_MAGIC:  # Use constant
             self.magic_action_selected_signal.emit()
+        elif action_type == constants.ACTION_SKIP:
+            self.skip_action_selected_signal.emit()
 
         # Mark that an action has been selected
         self.phase_actions_completed = True
@@ -429,16 +464,29 @@ class MainGameplayView(QWidget):
 
     @Slot()
     def update_ui(self):
-        # Check if phase changed to reset completion state
+        # Check if phase/step changed to reset completion state
         current_phase = self.game_engine.current_phase
         current_march_step = self.game_engine.current_march_step
+        current_action_step = self.game_engine.current_action_step
 
-        # Reset phase actions completed when entering a new phase or step
+        # Reset phase actions completed when entering a new phase, march step, or action step
         if not hasattr(self, "_last_phase_state"):
-            self._last_phase_state = (current_phase, current_march_step)
-        elif self._last_phase_state != (current_phase, current_march_step):
+            self._last_phase_state = (
+                current_phase,
+                current_march_step,
+                current_action_step,
+            )
+        elif self._last_phase_state != (
+            current_phase,
+            current_march_step,
+            current_action_step,
+        ):
             self.phase_actions_completed = False
-            self._last_phase_state = (current_phase, current_march_step)
+            self._last_phase_state = (
+                current_phase,
+                current_march_step,
+                current_action_step,
+            )
 
         # Update Phase Title
         current_phase_display = self.game_engine.get_current_phase_display()
@@ -502,8 +550,26 @@ class MainGameplayView(QWidget):
         if is_eighth_face_phase:
             self.eighth_face_input_field.clear()
 
+        # Debug current state
+        print(
+            f"MainGameplayView: UI Update - Phase: {current_phase}, March: {current_march_step}, Action: {current_action_step}"
+        )
+
+        # Check action steps first - they take precedence over march steps
+        if current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
+            print("MainGameplayView: Triggering melee action dialog")
+            self._show_action_dialog("MELEE")
+        elif (
+            current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
+        ):
+            self._show_action_dialog("MISSILE")
+        elif current_action_step == constants.ACTION_STEP_AWAITING_MAGIC_ROLL:
+            self._show_action_dialog("MAGIC")
+        elif current_action_step == constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
+            # This will be handled within the action dialog itself
+            pass
         # Show appropriate widgets based on current march step
-        if current_march_step == constants.MARCH_STEP_CHOOSE_ACTING_ARMY:
+        elif current_march_step == constants.MARCH_STEP_CHOOSE_ACTING_ARMY:
             self.acting_army_widget.show()
             # Set available armies for the current player
             current_player = self.game_engine.get_current_player_name()
@@ -529,6 +595,11 @@ class MainGameplayView(QWidget):
         elif current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
             self.maneuver_input_widget.show()
             self.maneuver_input_widget.reset_to_decision()
+            # Set the acting army for the maneuver widget
+            acting_army = self.game_engine.get_current_acting_army()
+            terrain_data = self.game_engine.get_all_terrain_data()
+            if acting_army:
+                self.maneuver_input_widget.set_acting_army(acting_army, terrain_data)
 
         elif current_march_step == constants.MARCH_STEP_DECIDE_ACTION:
             self.action_decision_widget.show()
@@ -547,17 +618,6 @@ class MainGameplayView(QWidget):
                 self.action_choice_widget.set_available_actions(
                     acting_army, terrain_data
                 )
-        elif current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
-            self._show_action_dialog("MELEE")
-        elif (
-            current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
-        ):
-            self._show_action_dialog("MISSILE")
-        elif current_action_step == constants.ACTION_STEP_AWAITING_MAGIC_ROLL:
-            self._show_action_dialog("MAGIC")
-        elif current_action_step == constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
-            # This will be handled within the action dialog itself
-            pass
         elif not current_march_step and not current_action_step:
             if current_phase == constants.PHASE_DRAGON_ATTACK:
                 self.dragon_attack_prompt_label.show()
@@ -580,3 +640,34 @@ class MainGameplayView(QWidget):
 
         # Update continue button state based on current phase requirements
         self._update_continue_button_state()
+
+    # Critical signal debug handlers
+    def _handle_unit_selection_required(self, player_name: str, damage_amount: int, available_units: list):
+        """Debug handler for unit selection requirement."""
+        print(f"[MainGameplayView] Unit selection required signal received for {player_name}")
+        print(f"[MainGameplayView] Damage amount: {damage_amount}")
+        print(f"[MainGameplayView] Available units: {len(available_units)}")
+        # TODO: Implement unit selection dialog for damage allocation
+        
+    def _handle_damage_allocation_completed(self, player_name: str, total_damage: int):
+        """Debug handler for damage allocation completion."""
+        print(f"[MainGameplayView] Damage allocation completed for {player_name}: {total_damage} damage")
+        # TODO: Update UI to reflect damage changes
+        
+    def _handle_counter_maneuver_request(self, location: str, opposing_armies: list):
+        """Debug handler for counter-maneuver requests."""
+        print(f"[MainGameplayView] Counter-maneuver request at {location}")
+        print(f"[MainGameplayView] Opposing armies count: {len(opposing_armies)}")
+        # TODO: Show counter-maneuver decision UI
+        
+    def _handle_simultaneous_maneuver_rolls_request(self, maneuvering_player: str, maneuvering_army: dict, opposing_armies: list, counter_responses: dict):
+        """Debug handler for simultaneous maneuver roll requests."""
+        print(f"[MainGameplayView] Simultaneous maneuver rolls requested")
+        print(f"[MainGameplayView] Maneuvering player: {maneuvering_player}")
+        print(f"[MainGameplayView] Counter responses: {list(counter_responses.keys())}")
+        # TODO: Show simultaneous roll UI
+        
+    def _handle_terrain_direction_choice_request(self, location: str, current_face: int):
+        """Debug handler for terrain direction choice requests."""
+        print(f"[MainGameplayView] Terrain direction choice requested at {location}, face {current_face}")
+        # TODO: Show terrain direction choice UI

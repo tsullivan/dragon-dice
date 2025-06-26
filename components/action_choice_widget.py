@@ -54,6 +54,15 @@ class ActionChoiceWidget(QWidget):
         self.magic_button.clicked.connect(lambda: self.action_selected.emit("MAGIC"))
         button_layout.addWidget(self.magic_button)
 
+        # Add Skip Action button
+        self.skip_button = QPushButton("Skip Action")
+        self.skip_button.setMaximumWidth(150)
+        self.skip_button.setStyleSheet(
+            "QPushButton { background-color: #868e96; color: white; font-weight: bold; }"
+        )
+        self.skip_button.clicked.connect(lambda: self.action_selected.emit("SKIP"))
+        button_layout.addWidget(self.skip_button)
+
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)
 
