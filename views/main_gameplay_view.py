@@ -428,41 +428,42 @@ class MainGameplayView(QWidget):
         current_march_step = self.game_engine.current_march_step
         current_action_step = self.game_engine.current_action_step
 
-        # Determine if continue button should be enabled
+        # Most phases should advance automatically, so hide the continue button in most cases
+        should_show = False
         should_enable = False
 
-        if current_phase in [constants.PHASE_FIRST_MARCH, constants.PHASE_SECOND_MARCH]:
-            # March phases require either maneuver decision or action completion
-            if current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
-                should_enable = False  # Must make maneuver decision first
-            elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
-                should_enable = False  # Must select an action first
-            elif current_action_step:
-                should_enable = self.phase_actions_completed
-            else:
-                should_enable = self.phase_actions_completed
-        elif current_phase == constants.PHASE_EIGHTH_FACE:
-            # Can always continue from eighth face (optional actions)
+        # Only show continue button for phases that genuinely need manual progression
+        if current_phase == constants.PHASE_EIGHTH_FACE:
+            # Eighth face has optional actions, allow manual continuation
+            should_show = True
             should_enable = True
         elif current_phase == constants.PHASE_DRAGON_ATTACK:
-            # Can always continue from dragon attack
+            # Dragon attack needs manual progression after resolution
+            should_show = True
+            should_enable = True
+        elif current_phase in [constants.PHASE_RESERVES, constants.PHASE_EXPIRE_EFFECTS]:
+            # These might need manual review/progression
+            should_show = True
             should_enable = True
         else:
-            # Other phases can be continued
-            should_enable = True
+            # March phases should advance automatically via actions/skips
+            should_show = False
+            should_enable = False
 
+        # Set button visibility and state
+        self.continue_button.setVisible(should_show)
         self.continue_button.setEnabled(should_enable)
 
-        # Update button text based on state
-        if should_enable:
-            self.continue_button.setText("Continue to Next Phase")
-        else:
-            if current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
-                self.continue_button.setText("Make Maneuver Decision First")
-            elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
-                self.continue_button.setText("Select an Action First")
+        # Update button text based on phase
+        if should_show and should_enable:
+            if current_phase == constants.PHASE_EIGHTH_FACE:
+                self.continue_button.setText("Continue (Eighth Face Complete)")
+            elif current_phase == constants.PHASE_DRAGON_ATTACK:
+                self.continue_button.setText("Continue (Dragon Attacks Complete)")
             else:
-                self.continue_button.setText("Complete Required Actions")
+                self.continue_button.setText("Continue to Next Phase")
+        else:
+            self.continue_button.setText("Phase Auto-Advancing...")
 
     def _handle_action_selected(self, action_type: str):
         if action_type == constants.ACTION_MELEE:

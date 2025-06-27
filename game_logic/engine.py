@@ -90,8 +90,8 @@ class GameEngine(QObject):
             self.current_player_changed.emit
         )
         self.turn_manager.current_phase_changed.connect(
-            self.current_phase_changed.emit
-        )  # Assuming TurnManager will emit display string
+            self._sync_phase_state_from_turn_manager
+        )  # Sync cached state when TurnManager changes phases
         self.action_resolver.next_action_step_determined.connect(
             self._set_next_action_step
         )  # Connect new signal
@@ -663,6 +663,20 @@ class GameEngine(QObject):
         """Slot to update the current action step via cached state."""
         print(f"GameEngine: Setting next action step to: {next_step}")
         self._current_action_step = next_step
+
+    @Slot()
+    def _sync_phase_state_from_turn_manager(self):
+        """Slot to sync cached phase state when TurnManager changes phases."""
+        # Update cached state from TurnManager
+        old_phase = self._current_phase
+        self._current_phase = self.turn_manager.get_current_phase()
+        self._current_march_step = self.turn_manager.get_current_march_step()
+        self._current_action_step = self.turn_manager.get_current_action_step()
+        
+        print(f"GameEngine: Synced phase state - {old_phase} → {self._current_phase}")
+        
+        # Re-emit the corrected phase display
+        self.current_phase_changed.emit(self.get_current_phase_display())
 
     @Slot(dict)
     def _handle_action_resolution(self, action_result: dict):
