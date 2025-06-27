@@ -94,27 +94,33 @@ class GameStateManager(QObject):
             # Initialize armies for the player
             # 'home', 'campaign', 'horde'
             for army_type_key, army_details in p_data.get("armies", {}).items():
-                location = ""
-                if army_type_key == "home":
-                    # Create unique home terrain name for this player
-                    location = f"{player_name} {p_data['home_terrain']}"
-                elif army_type_key == "campaign":
-                    location = frontier_terrain_name
-                elif army_type_key == "horde":
-                    # Horde army is placed in opponent's home terrain
-                    # For 2-player games, find the other player's home terrain
-                    opponent_player_name = None
-                    opponent_home_terrain_type = None
-                    for other_player in initial_player_setup_data:
-                        if other_player["name"] != player_name:
-                            opponent_player_name = other_player["name"]
-                            opponent_home_terrain_type = other_player["home_terrain"]
-                            break
-                    location = (
-                        f"{opponent_player_name} {opponent_home_terrain_type}"
-                        if opponent_player_name and opponent_home_terrain_type
-                        else "Unknown Opponent Home"
-                    )
+                # Use provided location if specified, otherwise use default logic
+                location = army_details.get("location")
+
+                if not location:
+                    # Apply default location logic only if no location provided
+                    if army_type_key == "home":
+                        # Create unique home terrain name for this player
+                        location = f"{player_name} {p_data['home_terrain']}"
+                    elif army_type_key == "campaign":
+                        location = frontier_terrain_name
+                    elif army_type_key == "horde":
+                        # Horde army is placed in opponent's home terrain
+                        # For 2-player games, find the other player's home terrain
+                        opponent_player_name = None
+                        opponent_home_terrain_type = None
+                        for other_player in initial_player_setup_data:
+                            if other_player["name"] != player_name:
+                                opponent_player_name = other_player["name"]
+                                opponent_home_terrain_type = other_player[
+                                    "home_terrain"
+                                ]
+                                break
+                        location = (
+                            f"{opponent_player_name} {opponent_home_terrain_type}"
+                            if opponent_player_name and opponent_home_terrain_type
+                            else "Unknown Opponent Home"
+                        )
                 # dragon_dice_description = army_details.get("dragon_dice_description", "") # Removed
                 # parsed_dice = self._parse_dragon_dice_description(dragon_dice_description) # Removed
                 self.players[player_name]["armies"][army_type_key] = {

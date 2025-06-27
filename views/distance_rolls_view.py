@@ -89,7 +89,9 @@ class DistanceRollsView(QWidget):
             player_layout = QVBoxLayout(player_group)
 
             # Home terrain roll
-            home_terrain_label = QLabel(f"Roll for {formatted_home_terrain} (Home Terrain):")
+            home_terrain_label = QLabel(
+                f"Roll for {formatted_home_terrain} (Home Terrain):"
+            )
             home_terrain_label.setStyleSheet("font-weight: bold;")
             player_layout.addWidget(home_terrain_label)
 

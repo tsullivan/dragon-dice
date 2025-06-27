@@ -87,7 +87,7 @@ class GameEngine(QObject):
 
         # Connect signals from managers to GameEngine signals or slots
         self.turn_manager.current_player_changed.connect(
-            self.current_player_changed.emit
+            self._sync_player_state_from_turn_manager
         )
         self.turn_manager.current_phase_changed.connect(
             self._sync_phase_state_from_turn_manager
@@ -414,15 +414,16 @@ class GameEngine(QObject):
 
         location = self._pending_maneuver["location"]
 
-        if maneuvering_results >= counter_results:
-            # Maneuver succeeds
-            print(
-                "GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)"
-            )
+        if maneuvering_results > counter_results:
+            # Maneuver succeeds - maneuvering player must beat defender (ties favor defender)
+            print("GameEngine: Maneuver successful (maneuvering > counter-maneuvering)")
             self._execute_automatic_maneuver_success(location)
         else:
-            # Maneuver fails
-            print("GameEngine: Maneuver failed (maneuvering < counter-maneuvering)")
+            # Maneuver fails - defender wins ties per Dragon Dice rules
+            if maneuvering_results == counter_results:
+                print("GameEngine: Maneuver failed (tie - defender wins)")
+            else:
+                print("GameEngine: Maneuver failed (maneuvering < counter-maneuvering)")
             # Proceed to action selection without terrain change
             self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
             self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
@@ -447,14 +448,14 @@ class GameEngine(QObject):
 
         print(f"GameEngine: Player chose to turn terrain {direction} at {location}")
 
-        # Calculate new face based on direction
+        # Calculate new face based on direction (Dragon Dice faces wrap 1-8)
         if direction == "UP":
-            new_face = min(current_face + 1, 8)  # Dragon Dice faces 1-8
+            new_face = (current_face % 8) + 1  # Wrap from 8 to 1
         elif direction == "DOWN":
-            new_face = max(current_face - 1, 1)  # Dragon Dice faces 1-8
+            new_face = ((current_face - 2) % 8) + 1  # Wrap from 1 to 8
         else:
             print(f"GameEngine: Invalid direction '{direction}', defaulting to UP")
-            new_face = min(current_face + 1, 8)
+            new_face = (current_face % 8) + 1
 
         # Apply terrain change
         success = self.game_state_manager.update_terrain_face(location, str(new_face))
@@ -672,11 +673,25 @@ class GameEngine(QObject):
         self._current_phase = self.turn_manager.get_current_phase()
         self._current_march_step = self.turn_manager.get_current_march_step()
         self._current_action_step = self.turn_manager.get_current_action_step()
-        
+
         print(f"GameEngine: Synced phase state - {old_phase} → {self._current_phase}")
-        
+
         # Re-emit the corrected phase display
         self.current_phase_changed.emit(self.get_current_phase_display())
+
+    @Slot()
+    def _sync_player_state_from_turn_manager(self):
+        """Slot to sync cached player state when TurnManager advances players."""
+        # Update cached state from TurnManager
+        old_player = self._current_player_name
+        self._current_player_name = self.turn_manager.get_current_player()
+
+        print(
+            f"GameEngine: Synced player state - {old_player} → {self._current_player_name}"
+        )
+
+        # Re-emit the corrected player name
+        self.current_player_changed.emit(self._current_player_name)
 
     @Slot(dict)
     def _handle_action_resolution(self, action_result: dict):
@@ -789,7 +804,7 @@ class GameEngine(QObject):
     def get_relevant_terrains_info(self):
         """
         Returns a list of dictionaries for relevant terrains for the current player.
-        
+
         Returns:
             List of terrain dictionaries with keys:
             - 'name': terrain name
@@ -798,7 +813,7 @@ class GameEngine(QObject):
             - 'controller': controlling player name or None
             - 'icon': terrain emoji icon
             - 'details': formatted details string
-            
+
         Example: [{'name': 'Coastland', 'type': 'Frontier', 'face': 5, 'controller': None, 'details': 'Face 5'}, ...]
         This method queries GameStateManager.
         """
@@ -823,7 +838,9 @@ class GameEngine(QObject):
                     "name": terrain_name,
                     "type": terrain_data.get("type", constants.DEFAULT_UNKNOWN_VALUE),
                     "face": face_number,  # Add face field for UI access
-                    "controller": controller if controller != "None" else None,  # Add controller field for UI access
+                    "controller": (
+                        controller if controller != "None" else None
+                    ),  # Add controller field for UI access
                     "details": details,
                 }
             )

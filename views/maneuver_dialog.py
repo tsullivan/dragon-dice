@@ -388,7 +388,9 @@ class ManeuverDialog(QDialog):
         opposing_players = list(set(army["player"] for army in opposing_armies))
         self.pending_decisions = {}
         self.expected_decisions = set(opposing_players)
-        self.active_decision_dialogs = []  # Store dialog references to prevent garbage collection
+        self.active_decision_dialogs = (
+            []
+        )  # Store dialog references to prevent garbage collection
 
         # Show counter-maneuver decision dialogs for each opposing player
         for player_name in opposing_players:
@@ -410,10 +412,10 @@ class ManeuverDialog(QDialog):
         # Check if we have all decisions
         if set(self.pending_decisions.keys()) >= self.expected_decisions:
             # Close all decision dialogs
-            for dialog in getattr(self, 'active_decision_dialogs', []):
+            for dialog in getattr(self, "active_decision_dialogs", []):
                 dialog.close()
             self.active_decision_dialogs = []
-            
+
             # All decisions received - submit to engine
             for player, decision in self.pending_decisions.items():
                 self.game_engine.submit_counter_maneuver_decision(player, decision)

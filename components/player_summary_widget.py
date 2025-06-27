@@ -54,15 +54,17 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
 
             # Format army with type emoji
             formatted_army = format_army_type(army_type)
-            
+
             # Format location using utility function
             if terrain_data and army_location in terrain_data:
                 terrain_info = terrain_data[army_location]
                 terrain_type = terrain_info.get("type", "")
                 face_number = terrain_info.get("face", 1)
                 terrain_controller = terrain_info.get("controller", "")
-                
-                formatted_location = format_terrain_summary(army_location, terrain_type, face_number, terrain_controller)
+
+                formatted_location = format_terrain_summary(
+                    army_location, terrain_type, face_number, terrain_controller
+                )
             else:
                 # Fallback formatting when no terrain data
                 formatted_location = f"🗺️ {army_location}"

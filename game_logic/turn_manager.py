@@ -53,9 +53,11 @@ class TurnManager(QObject):
                 f"TurnManager: Starting FIRST TURN with First March for {self.player_names[self.current_player_idx]}"
             )
         else:
-            # Regular turn initialization starts with first phase
-            self.current_phase_idx = 0
-            self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
+            # Dragon Dice Rule: Each player's turn starts with First March
+            self.current_phase_idx = constants.TURN_PHASES.index(
+                constants.PHASE_FIRST_MARCH
+            )
+            self.current_phase = constants.PHASE_FIRST_MARCH
             print(
                 f"TurnManager: Initializing turn for {self.player_names[self.current_player_idx]}. Phase: {self.current_phase}"
             )
@@ -66,18 +68,29 @@ class TurnManager(QObject):
         self.current_phase_changed.emit(self._get_current_phase_display_string())
 
     def advance_phase(self):
-        """Advances to the next phase or next player if all phases are complete."""
-        self.current_phase_idx += 1
-        if self.current_phase_idx >= len(constants.TURN_PHASES):
+        """Advances to the next phase or next player based on Dragon Dice rules."""
+        # Dragon Dice Rule: Player turn consists of First March + Second March
+        # After Second March, advance to next player (who starts at First March)
+        if self.current_phase == constants.PHASE_SECOND_MARCH:
+            print(
+                f"TurnManager: Completed {self.player_names[self.current_player_idx]}'s turn (First + Second March)"
+            )
             self.advance_player()
         else:
-            self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
-            self.current_march_step = ""  # Reset march step when advancing phase
-            self.current_action_step = ""  # Reset action step
-            print(
-                f"TurnManager: Advancing phase to {self.current_phase} for {self.player_names[self.current_player_idx]}"
-            )
-            self.current_phase_changed.emit(self._get_current_phase_display_string())
+            # Normal phase advancement within a player's turn
+            self.current_phase_idx += 1
+            if self.current_phase_idx >= len(constants.TURN_PHASES):
+                self.advance_player()
+            else:
+                self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
+                self.current_march_step = ""  # Reset march step when advancing phase
+                self.current_action_step = ""  # Reset action step
+                print(
+                    f"TurnManager: Advancing phase to {self.current_phase} for {self.player_names[self.current_player_idx]}"
+                )
+                self.current_phase_changed.emit(
+                    self._get_current_phase_display_string()
+                )
 
     def advance_player(self):
         """Advances to the next player and initializes their turn."""

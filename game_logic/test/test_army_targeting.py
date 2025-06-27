@@ -143,18 +143,20 @@ class TestArmyTargeting(unittest.TestCase):
                 break
 
         # Add a home army from Player 3 at same location for testing
-        self.player_setup_data.append({
-            "name": "Player 3",
-            "home_terrain": "Highland",
-            "armies": {
-                "home": {
-                    "name": "Home Army",
-                    "location": "Player 1 Highland",  # Conflict scenario
-                    "units": [{"name": "Test Unit", "health": 2}],
-                    "unique_id": "player_3_home",
-                }
-            },
-        })
+        self.player_setup_data.append(
+            {
+                "name": "Player 3",
+                "home_terrain": "Highland",
+                "armies": {
+                    "home": {
+                        "name": "Home Army",
+                        "location": "Player 1 Highland",  # Conflict scenario
+                        "units": [{"name": "Test Unit", "health": 2}],
+                        "unique_id": "player_3_home",
+                    }
+                },
+            }
+        )
 
         manager = GameStateManager(
             self.player_setup_data, self.frontier_terrain, self.distance_rolls

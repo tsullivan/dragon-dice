@@ -87,8 +87,10 @@ class ActingArmyWidget(QWidget):
                 terrain_type = terrain_info.get("type", "")
                 terrain_face = terrain_info.get("face", 1)
                 terrain_controller = terrain_info.get("controller", "")
-                
-                formatted_location = format_terrain_summary(location, terrain_type, terrain_face, terrain_controller)
+
+                formatted_location = format_terrain_summary(
+                    location, terrain_type, terrain_face, terrain_controller
+                )
             else:
                 # Fallback formatting when no terrain data
                 formatted_location = f"🗺️ {location}"

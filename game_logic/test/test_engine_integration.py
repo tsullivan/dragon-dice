@@ -162,7 +162,7 @@ class TestEngineIntegration(unittest.TestCase):
             # Should have attempted to parse
             mock_parse.assert_called_once_with("invalid_dice", roll_type="MELEE")
 
-    @unittest.skip("Test disabled - needs ActionResolver implementation") 
+    @unittest.skip("Test disabled - needs ActionResolver implementation")
     def test_submit_defender_save_results_with_targeting(self):
         """Test defender save result submission with proper targeting."""
         # Set up pending attacker outcome

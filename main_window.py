@@ -278,7 +278,7 @@ class MainWindow(QMainWindow):
         gameplay_view.continue_to_next_phase_signal.connect(
             self.current_controller.handle_continue_to_next_phase
         )
-        
+
         # Connect critical GameEngine signals to controller for debug logging
         game_engine_instance.unit_selection_required.connect(
             self.current_controller.handle_unit_selection_required
@@ -295,5 +295,5 @@ class MainWindow(QMainWindow):
         game_engine_instance.terrain_direction_choice_requested.connect(
             self.current_controller.handle_terrain_direction_choice_request
         )
-        
+
         self.switch_view(gameplay_view)

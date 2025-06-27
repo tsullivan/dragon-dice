@@ -201,7 +201,7 @@ class MainGameplayView(QWidget):
         # 3. Player Turn and Continue Section
         player_continue_layout = QVBoxLayout()
         player_continue_layout.setContentsMargins(0, 10, 0, 0)
-        
+
         # Player turn label
         self.player_turn_label = QLabel("👤 Player's Turn")
         player_turn_font = self.player_turn_label.font()
@@ -210,7 +210,7 @@ class MainGameplayView(QWidget):
         self.player_turn_label.setFont(player_turn_font)
         self.player_turn_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         player_continue_layout.addWidget(self.player_turn_label)
-        
+
         # Continue Button
         self.continue_button = QPushButton("Continue to Next Phase")
         self.continue_button.setMaximumWidth(220)  # Limit button width
@@ -218,8 +218,10 @@ class MainGameplayView(QWidget):
             False
         )  # Disabled by default until phase actions are completed
         self.continue_button.clicked.connect(self._on_continue_clicked)
-        player_continue_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
-        
+        player_continue_layout.addWidget(
+            self.continue_button, 0, Qt.AlignmentFlag.AlignCenter
+        )
+
         main_layout.addLayout(player_continue_layout)
 
         self.setLayout(main_layout)
@@ -228,13 +230,23 @@ class MainGameplayView(QWidget):
         self.game_engine.game_state_updated.connect(self.update_ui)
         self.game_engine.current_phase_changed.connect(self.update_ui)
         self.game_engine.current_player_changed.connect(self.update_ui)
-        
+
         # Connect critical signals for debug logging
-        self.game_engine.unit_selection_required.connect(self._handle_unit_selection_required)
-        self.game_engine.damage_allocation_completed.connect(self._handle_damage_allocation_completed)
-        self.game_engine.counter_maneuver_requested.connect(self._handle_counter_maneuver_request)
-        self.game_engine.simultaneous_maneuver_rolls_requested.connect(self._handle_simultaneous_maneuver_rolls_request)
-        self.game_engine.terrain_direction_choice_requested.connect(self._handle_terrain_direction_choice_request)
+        self.game_engine.unit_selection_required.connect(
+            self._handle_unit_selection_required
+        )
+        self.game_engine.damage_allocation_completed.connect(
+            self._handle_damage_allocation_completed
+        )
+        self.game_engine.counter_maneuver_requested.connect(
+            self._handle_counter_maneuver_request
+        )
+        self.game_engine.simultaneous_maneuver_rolls_requested.connect(
+            self._handle_simultaneous_maneuver_rolls_request
+        )
+        self.game_engine.terrain_direction_choice_requested.connect(
+            self._handle_terrain_direction_choice_request
+        )
 
         self.update_ui()  # Initial call
 
@@ -441,7 +453,10 @@ class MainGameplayView(QWidget):
             # Dragon attack needs manual progression after resolution
             should_show = True
             should_enable = True
-        elif current_phase in [constants.PHASE_RESERVES, constants.PHASE_EXPIRE_EFFECTS]:
+        elif current_phase in [
+            constants.PHASE_RESERVES,
+            constants.PHASE_EXPIRE_EFFECTS,
+        ]:
             # These might need manual review/progression
             should_show = True
             should_enable = True
@@ -537,15 +552,17 @@ class MainGameplayView(QWidget):
 
         relevant_terrains = self.game_engine.get_relevant_terrains_info()
         for terrain in relevant_terrains:
-            terrain_name = terrain.get('name', 'N/A')
-            terrain_type = terrain.get('type', 'N/A') 
-            face_number = terrain.get('face', 1)
-            controller = terrain.get('controller', None)
-            
+            terrain_name = terrain.get("name", "N/A")
+            terrain_type = terrain.get("type", "N/A")
+            face_number = terrain.get("face", 1)
+            controller = terrain.get("controller", None)
+
             # Use utility function for consistent formatting
-            formatted_summary = format_terrain_summary(terrain_name, terrain_type, face_number, controller)
+            formatted_summary = format_terrain_summary(
+                terrain_name, terrain_type, face_number, controller
+            )
             terrains_html += f"<li>{formatted_summary}</li>"
-            
+
         terrains_html += "</ul>"
         self.terrains_list_label.setHtml(terrains_html)
         if not relevant_terrains:
@@ -667,32 +684,48 @@ class MainGameplayView(QWidget):
         self._update_continue_button_state()
 
     # Critical signal debug handlers
-    def _handle_unit_selection_required(self, player_name: str, damage_amount: int, available_units: list):
+    def _handle_unit_selection_required(
+        self, player_name: str, damage_amount: int, available_units: list
+    ):
         """Debug handler for unit selection requirement."""
-        print(f"[MainGameplayView] Unit selection required signal received for {player_name}")
+        print(
+            f"[MainGameplayView] Unit selection required signal received for {player_name}"
+        )
         print(f"[MainGameplayView] Damage amount: {damage_amount}")
         print(f"[MainGameplayView] Available units: {len(available_units)}")
         # TODO: Implement unit selection dialog for damage allocation
-        
+
     def _handle_damage_allocation_completed(self, player_name: str, total_damage: int):
         """Debug handler for damage allocation completion."""
-        print(f"[MainGameplayView] Damage allocation completed for {player_name}: {total_damage} damage")
+        print(
+            f"[MainGameplayView] Damage allocation completed for {player_name}: {total_damage} damage"
+        )
         # TODO: Update UI to reflect damage changes
-        
+
     def _handle_counter_maneuver_request(self, location: str, opposing_armies: list):
         """Debug handler for counter-maneuver requests."""
         print(f"[MainGameplayView] Counter-maneuver request at {location}")
         print(f"[MainGameplayView] Opposing armies count: {len(opposing_armies)}")
         # TODO: Show counter-maneuver decision UI
-        
-    def _handle_simultaneous_maneuver_rolls_request(self, maneuvering_player: str, maneuvering_army: dict, opposing_armies: list, counter_responses: dict):
+
+    def _handle_simultaneous_maneuver_rolls_request(
+        self,
+        maneuvering_player: str,
+        maneuvering_army: dict,
+        opposing_armies: list,
+        counter_responses: dict,
+    ):
         """Debug handler for simultaneous maneuver roll requests."""
         print(f"[MainGameplayView] Simultaneous maneuver rolls requested")
         print(f"[MainGameplayView] Maneuvering player: {maneuvering_player}")
         print(f"[MainGameplayView] Counter responses: {list(counter_responses.keys())}")
         # TODO: Show simultaneous roll UI
-        
-    def _handle_terrain_direction_choice_request(self, location: str, current_face: int):
+
+    def _handle_terrain_direction_choice_request(
+        self, location: str, current_face: int
+    ):
         """Debug handler for terrain direction choice requests."""
-        print(f"[MainGameplayView] Terrain direction choice requested at {location}, face {current_face}")
+        print(
+            f"[MainGameplayView] Terrain direction choice requested at {location}, face {current_face}"
+        )
         # TODO: Show terrain direction choice UI
