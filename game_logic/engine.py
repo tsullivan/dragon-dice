@@ -775,7 +775,17 @@ class GameEngine(QObject):
     def get_relevant_terrains_info(self):
         """
         Returns a list of dictionaries for relevant terrains for the current player.
-        Example: [{'name': 'Flatland', 'type': 'Frontier', 'details': 'Face 3'}, ...]
+        
+        Returns:
+            List of terrain dictionaries with keys:
+            - 'name': terrain name
+            - 'type': terrain type ('Frontier', 'Home', etc.)
+            - 'face': current face number (1-8)
+            - 'controller': controlling player name or None
+            - 'icon': terrain emoji icon
+            - 'details': formatted details string
+            
+        Example: [{'name': 'Coastland', 'type': 'Frontier', 'face': 5, 'controller': None, 'details': 'Face 5'}, ...]
         This method queries GameStateManager.
         """
         relevant_terrains_info = []
@@ -785,7 +795,8 @@ class GameEngine(QObject):
         # Later, this could be filtered based on current player's army locations or game rules.
         for terrain_name, terrain_data in all_terrains_state.items():
             controller = terrain_data.get("controller", "None")
-            details = f"Face {terrain_data.get('face', constants.DEFAULT_NA_VALUE)}"
+            face_number = terrain_data.get("face", 1)
+            details = f"Face {face_number}"
             icon = constants.TERRAIN_ICONS.get(
                 terrain_name, "❓"
             )  # Get icon, default to question mark
@@ -797,6 +808,8 @@ class GameEngine(QObject):
                     "icon": icon,
                     "name": terrain_name,
                     "type": terrain_data.get("type", constants.DEFAULT_UNKNOWN_VALUE),
+                    "face": face_number,  # Add face field for UI access
+                    "controller": controller if controller != "None" else None,  # Add controller field for UI access
                     "details": details,
                 }
             )
