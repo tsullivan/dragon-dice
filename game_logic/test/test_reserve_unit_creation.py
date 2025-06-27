@@ -26,7 +26,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         self.frontier_terrain = "Swampland (Green, Yellow)"
         self.distance_rolls = [("Player 1", 5)]
 
-    @patch("game_logic.game_state_manager.UnitRosterModel")
+    @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_basic(self, mock_roster_class):
         """Test basic reserve unit creation."""
         # Mock unit roster
@@ -80,7 +80,7 @@ class TestReserveUnitCreation(unittest.TestCase):
             self.assertIn("abilities", unit)
             self.assertEqual(unit["location"], "Reserve Pool")
 
-    @patch("game_logic.game_state_manager.UnitRosterModel")
+    @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_variety(self, mock_roster_class):
         """Test that reserve unit creation provides variety."""
         mock_roster = Mock()
@@ -129,7 +129,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         unique_types = set(unit_types)
         self.assertGreater(len(unique_types), 1)  # Should have more than one type
 
-    @patch("game_logic.game_state_manager.UnitRosterModel")
+    @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_cost_limits(self, mock_roster_class):
         """Test that reserve unit creation respects cost limits."""
         mock_roster = Mock()
@@ -178,7 +178,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         # Should create some units
         self.assertGreater(len(reserves), 0)
 
-    @patch("game_logic.game_state_manager.UnitRosterModel")
+    @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_no_affordable_units(self, mock_roster_class):
         """Test reserve creation when no units are affordable."""
         mock_roster = Mock()
@@ -203,7 +203,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         # Should create no units if none are affordable
         self.assertEqual(len(reserves), 0)
 
-    @patch("game_logic.game_state_manager.UnitRosterModel")
+    @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_empty_roster(self, mock_roster_class):
         """Test reserve creation with empty unit roster."""
         mock_roster = Mock()
@@ -221,7 +221,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         # Should create no units with empty roster
         self.assertEqual(len(reserves), 0)
 
-    @patch("game_logic.game_state_manager.UnitRosterModel")
+    @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_cap_limit(self, mock_roster_class):
         """Test that reserve unit creation respects the unit cap."""
         mock_roster = Mock()

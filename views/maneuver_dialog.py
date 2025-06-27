@@ -388,14 +388,16 @@ class ManeuverDialog(QDialog):
         opposing_players = list(set(army["player"] for army in opposing_armies))
         self.pending_decisions = {}
         self.expected_decisions = set(opposing_players)
+        self.active_decision_dialogs = []  # Store dialog references to prevent garbage collection
 
         # Show counter-maneuver decision dialogs for each opposing player
         for player_name in opposing_players:
             decision_dialog = CounterManeuverDecisionDialog(
-                player_name, location, self.current_player_name, self
+                player_name, location, self.current_player_name, None
             )
             decision_dialog.decision_made.connect(self._handle_counter_decision)
-            decision_dialog.show()
+            decision_dialog.show()  # Use show() for multiple simultaneous dialogs
+            self.active_decision_dialogs.append(decision_dialog)  # Keep reference
 
     def _handle_counter_decision(self, player_name: str, will_counter: bool):
         """Handle a player's counter-maneuver decision."""
@@ -407,6 +409,11 @@ class ManeuverDialog(QDialog):
 
         # Check if we have all decisions
         if set(self.pending_decisions.keys()) >= self.expected_decisions:
+            # Close all decision dialogs
+            for dialog in getattr(self, 'active_decision_dialogs', []):
+                dialog.close()
+            self.active_decision_dialogs = []
+            
             # All decisions received - submit to engine
             for player, decision in self.pending_decisions.items():
                 self.game_engine.submit_counter_maneuver_decision(player, decision)
@@ -429,10 +436,10 @@ class ManeuverDialog(QDialog):
 
         # Show simultaneous roll dialog
         roll_dialog = SimultaneousManeuverRollDialog(
-            maneuvering_player, maneuvering_army, counter_players, location, self
+            maneuvering_player, maneuvering_army, counter_players, location, None
         )
         roll_dialog.rolls_completed.connect(self._handle_roll_results)
-        roll_dialog.show()
+        roll_dialog.exec()  # Use exec() to ensure modal and visible
 
     def _handle_roll_results(self, maneuvering_results: int, counter_results: int):
         """Handle the results from simultaneous rolling."""
@@ -455,9 +462,10 @@ class ManeuverDialog(QDialog):
         )
 
         # Show terrain direction choice dialog
-        direction_dialog = TerrainDirectionDialog(location, current_face, self)
+        # Use None as parent to avoid visibility issues with invisible coordinator
+        direction_dialog = TerrainDirectionDialog(location, current_face, None)
         direction_dialog.direction_chosen.connect(self._handle_direction_choice)
-        direction_dialog.show()
+        direction_dialog.exec()  # Use exec() instead of show() to ensure it's modal and visible
 
     def _handle_direction_choice(self, direction: str):
         """Handle the player's terrain direction choice."""
