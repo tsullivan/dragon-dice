@@ -27,7 +27,7 @@ from components.tabbed_view_widget import TabbedViewWidget
 from components.active_effects_widget import ActiveEffectsWidget
 from views.maneuver_dialog import ManeuverDialog
 from views.action_dialog import ActionDialog
-import constants
+import utils.constants as constants
 from utils.display_utils import format_terrain_summary, format_player_turn_label
 
 
@@ -276,10 +276,8 @@ class MainGameplayView(QWidget):
         else:
             # Player chose not to maneuver, proceed to action decision
             self.maneuver_decision_signal.emit(False)
-            self.game_engine.march_step_change_requested.emit(
-                constants.MARCH_STEP_DECIDE_ACTION
-            )
-            self.game_engine._current_march_step = constants.MARCH_STEP_DECIDE_ACTION
+            self.game_engine.march_step_change_requested.emit("DECIDE_ACTION")
+            self.game_engine._current_march_step = "DECIDE_ACTION"
             self.game_engine.game_state_updated.emit()
 
     def _handle_action_decision(self, wants_to_take_action: bool):
@@ -342,10 +340,8 @@ class MainGameplayView(QWidget):
         self.maneuver_decision_signal.emit(True)
 
         # Transition to action decision step
-        self.game_engine.march_step_change_requested.emit(
-            constants.MARCH_STEP_DECIDE_ACTION
-        )
-        self.game_engine._current_march_step = constants.MARCH_STEP_DECIDE_ACTION
+        self.game_engine.march_step_change_requested.emit("DECIDE_ACTION")
+        self.game_engine._current_march_step = "DECIDE_ACTION"
 
         # Update UI
         self.game_state_updated.emit()
@@ -432,10 +428,8 @@ class MainGameplayView(QWidget):
         self.active_action_dialog = None
 
         # Return to action selection
-        self.game_engine.march_step_change_requested.emit(
-            constants.MARCH_STEP_SELECT_ACTION
-        )
-        self.game_engine._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+        self.game_engine.march_step_change_requested.emit("SELECT_ACTION")
+        self.game_engine._current_march_step = "SELECT_ACTION"
         self.game_engine.game_state_updated.emit()
 
     def _update_continue_button_state(self):
@@ -449,17 +443,17 @@ class MainGameplayView(QWidget):
         should_enable = False
 
         # Only show continue button for phases that genuinely need manual progression
-        if current_phase == constants.PHASE_EIGHTH_FACE:
+        if current_phase == "EIGHTH_FACE":
             # Eighth face has optional actions, allow manual continuation
             should_show = True
             should_enable = True
-        elif current_phase == constants.PHASE_DRAGON_ATTACK:
+        elif current_phase == "DRAGON_ATTACK":
             # Dragon attack needs manual progression after resolution
             should_show = True
             should_enable = True
         elif current_phase in [
-            constants.PHASE_RESERVES,
-            constants.PHASE_EXPIRE_EFFECTS,
+            "RESERVES",
+            "EXPIRE_EFFECTS",
         ]:
             # These might need manual review/progression
             should_show = True
@@ -475,9 +469,9 @@ class MainGameplayView(QWidget):
 
         # Update button text based on phase
         if should_show and should_enable:
-            if current_phase == constants.PHASE_EIGHTH_FACE:
+            if current_phase == "EIGHTH_FACE":
                 self.continue_button.setText("Continue (Eighth Face Complete)")
-            elif current_phase == constants.PHASE_DRAGON_ATTACK:
+            elif current_phase == "DRAGON_ATTACK":
                 self.continue_button.setText("Continue (Dragon Attacks Complete)")
             else:
                 self.continue_button.setText("Continue to Next Phase")
@@ -487,16 +481,16 @@ class MainGameplayView(QWidget):
     def _handle_action_selected(self, action_type: str):
         print(f"[MainGameplayView] Action selected: {action_type}")
 
-        if action_type == constants.ACTION_MELEE:
+        if action_type == "MELEE":
             print(f"[MainGameplayView] Emitting melee action signal")
             self.melee_action_selected_signal.emit()
-        elif action_type == constants.ACTION_MISSILE:
+        elif action_type == "MISSILE":
             print(f"[MainGameplayView] Emitting missile action signal")
             self.missile_action_selected_signal.emit()
-        elif action_type == constants.ACTION_MAGIC:  # Use constant
+        elif action_type == "MAGIC":  # Use string literal
             print(f"[MainGameplayView] Emitting magic action signal")
             self.magic_action_selected_signal.emit()
-        elif action_type == constants.ACTION_SKIP:
+        elif action_type == "SKIP":
             print(f"[MainGameplayView] Emitting skip action signal")
             self.skip_action_selected_signal.emit()
 
@@ -608,7 +602,7 @@ class MainGameplayView(QWidget):
         self.dragon_attack_prompt_label.hide()
         self.dragon_attack_continue_button.hide()
 
-        is_eighth_face_phase = current_phase == constants.PHASE_EIGHTH_FACE
+        is_eighth_face_phase = current_phase == "EIGHTH_FACE"
         self.eighth_face_description_label.setVisible(is_eighth_face_phase)
         self.eighth_face_input_field.setVisible(is_eighth_face_phase)
         self.eighth_face_add_button.setVisible(is_eighth_face_phase)
@@ -621,20 +615,18 @@ class MainGameplayView(QWidget):
         )
 
         # Check action steps first - they take precedence over march steps
-        if current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL:
+        if current_action_step == "AWAITING_ATTACKER_MELEE_ROLL":
             print("MainGameplayView: Triggering melee action dialog")
             self._show_action_dialog("MELEE")
-        elif (
-            current_action_step == constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
-        ):
+        elif current_action_step == "AWAITING_ATTACKER_MISSILE_ROLL":
             self._show_action_dialog("MISSILE")
-        elif current_action_step == constants.ACTION_STEP_AWAITING_MAGIC_ROLL:
+        elif current_action_step == "AWAITING_MAGIC_ROLL":
             self._show_action_dialog("MAGIC")
-        elif current_action_step == constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
+        elif current_action_step == "AWAITING_DEFENDER_SAVES":
             # This will be handled within the action dialog itself
             pass
         # Show appropriate widgets based on current march step
-        elif current_march_step == constants.MARCH_STEP_CHOOSE_ACTING_ARMY:
+        elif current_march_step == "CHOOSE_ACTING_ARMY":
             self.acting_army_widget.show()
             # Set available armies for the current player
             current_player = self.game_engine.get_current_player_name()
@@ -657,7 +649,7 @@ class MainGameplayView(QWidget):
 
             self.acting_army_widget.set_available_armies(available_armies, terrain_data)
 
-        elif current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER:
+        elif current_march_step == "DECIDE_MANEUVER":
             self.maneuver_input_widget.show()
             self.maneuver_input_widget.reset_to_decision()
             # Set the acting army for the maneuver widget
@@ -666,7 +658,7 @@ class MainGameplayView(QWidget):
             if acting_army:
                 self.maneuver_input_widget.set_acting_army(acting_army, terrain_data)
 
-        elif current_march_step == constants.MARCH_STEP_DECIDE_ACTION:
+        elif current_march_step == "DECIDE_ACTION":
             self.action_decision_widget.show()
             # Set the acting army for the action decision widget
             acting_army = self.game_engine.get_current_acting_army()
@@ -674,7 +666,7 @@ class MainGameplayView(QWidget):
             if acting_army:
                 self.action_decision_widget.set_acting_army(acting_army, terrain_data)
 
-        elif current_march_step == constants.MARCH_STEP_SELECT_ACTION:
+        elif current_march_step == "SELECT_ACTION":
             self.action_choice_widget.show()
             # Set available actions based on acting army's terrain die face
             acting_army = self.game_engine.get_current_acting_army()
@@ -684,18 +676,18 @@ class MainGameplayView(QWidget):
                     acting_army, terrain_data
                 )
         elif not current_march_step and not current_action_step:
-            if current_phase == constants.PHASE_DRAGON_ATTACK:
+            if current_phase == "DRAGON_ATTACK":
                 self.dragon_attack_prompt_label.show()
                 self.dragon_attack_continue_button.show()
 
         # Special handling for first turn
         if (
-            current_phase == constants.PHASE_FIRST_MARCH
+            current_phase == "FIRST_MARCH"
             and hasattr(self.game_engine, "_is_very_first_turn")
             and self.game_engine._is_very_first_turn
             and not current_march_step
         ):
-            help_key = constants.PHASE_FIRST_MARCH
+            help_key = "FIRST_MARCH"
         else:
             help_key = current_action_step or current_march_step or current_phase
 

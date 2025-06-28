@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject, Signal, Slot
 import uuid  # For generating unique effect IDs
 from typing import Optional  # Import Optional
-import constants
+import utils.constants as constants
 from game_logic.turn_manager import TurnManager
 from game_logic.action_resolver import ActionResolver
 from game_logic.effect_manager import EffectManager
@@ -138,23 +138,18 @@ class GameEngine(QObject):
         """Logic to execute when entering a new phase."""
         current_phase = self._current_phase
 
-        if (
-            current_phase == constants.PHASE_FIRST_MARCH
-            or current_phase == constants.PHASE_SECOND_MARCH
-        ):
+        if current_phase == "FIRST_MARCH" or current_phase == "SECOND_MARCH":
             # Request march step initialization through signal - start with choosing acting army
-            self.march_step_change_requested.emit(
-                constants.MARCH_STEP_CHOOSE_ACTING_ARMY
-            )
-            self._current_march_step = constants.MARCH_STEP_CHOOSE_ACTING_ARMY
-        elif current_phase == constants.PHASE_EXPIRE_EFFECTS:
+            self.march_step_change_requested.emit("CHOOSE_ACTING_ARMY")
+            self._current_march_step = "CHOOSE_ACTING_ARMY"
+        elif current_phase == "EXPIRE_EFFECTS":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
             # Request effect expiration processing through signal
             self.effect_expiration_requested.emit(self.get_current_player_name())
             self.phase_advance_requested.emit()
-        elif current_phase == constants.PHASE_EIGHTH_FACE:
+        elif current_phase == "EIGHTH_FACE":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
-        elif current_phase == constants.PHASE_DRAGON_ATTACK:
+        elif current_phase == "DRAGON_ATTACK":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
         else:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
@@ -190,9 +185,9 @@ class GameEngine(QObject):
     def get_current_phase_display(self):
         # Special handling for the very first turn
         if (
-            self._current_phase == constants.PHASE_FIRST_MARCH
+            self._current_phase == "FIRST_MARCH"
             and self._is_very_first_turn
-            and self._current_march_step == constants.MARCH_STEP_DECIDE_MANEUVER
+            and self._current_march_step == "DECIDE_MANEUVER"
         ):
             return "🎮 Game Start: First March Phase"
 
@@ -251,8 +246,8 @@ class GameEngine(QObject):
 
         if not wants_to_maneuver:
             # No maneuver - proceed to action selection
-            self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
-            self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+            self.march_step_change_requested.emit("SELECT_ACTION")
+            self._current_march_step = "SELECT_ACTION"
             self.current_phase_changed.emit(self.get_current_phase_display())
             self.game_state_updated.emit()
             return
@@ -291,8 +286,8 @@ class GameEngine(QObject):
         )
         print(f"Details received: {details}")
         # For backward compatibility, just proceed to action selection
-        self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
-        self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+        self.march_step_change_requested.emit("SELECT_ACTION")
+        self._current_march_step = "SELECT_ACTION"
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
@@ -461,8 +456,8 @@ class GameEngine(QObject):
             else:
                 print("GameEngine: Maneuver failed (maneuvering < counter-maneuvering)")
             # Proceed to action selection without terrain change
-            self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
-            self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+            self.march_step_change_requested.emit("SELECT_ACTION")
+            self._current_march_step = "SELECT_ACTION"
             self.current_phase_changed.emit(self.get_current_phase_display())
             self.game_state_updated.emit()
 
@@ -507,8 +502,8 @@ class GameEngine(QObject):
         self._pending_terrain_change = None
 
         # Proceed to action selection after terrain change
-        self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
-        self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+        self.march_step_change_requested.emit("SELECT_ACTION")
+        self._current_march_step = "SELECT_ACTION"
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
@@ -516,17 +511,17 @@ class GameEngine(QObject):
         """Request action selection processing. Manager will emit signals to update state."""
         print(f"Player {self.get_current_player_name()} selected action: {action_type}")
         # Handle action selection
-        if action_type == constants.ACTION_SKIP:
+        if action_type == "SKIP":
             print("Player chose to skip action - advancing to next phase")
             # Skip action - advance to next phase
             self.advance_phase()
             return
-        elif action_type == constants.ACTION_MELEE:
-            action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
-        elif action_type == constants.ACTION_MISSILE:
-            action_step = constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL
-        elif action_type == constants.ACTION_MAGIC:
-            action_step = constants.ACTION_STEP_AWAITING_MAGIC_ROLL
+        elif action_type == "MELEE":
+            action_step = "AWAITING_ATTACKER_MELEE_ROLL"
+        elif action_type == "MISSILE":
+            action_step = "AWAITING_ATTACKER_MISSILE_ROLL"
+        elif action_type == "MAGIC":
+            action_step = "AWAITING_MAGIC_ROLL"
         else:
             print(f"Unknown action type: {action_type}")
             return
@@ -540,10 +535,7 @@ class GameEngine(QObject):
 
     def submit_attacker_melee_results(self, results: str):
         """Request processing of attacker's melee roll results."""
-        if (
-            self._current_action_step
-            != constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL
-        ):
+        if self._current_action_step != "AWAITING_ATTACKER_MELEE_ROLL":
             print("Error: Not expecting attacker melee results now.")
             return
         print(
@@ -638,7 +630,7 @@ class GameEngine(QObject):
 
     def submit_defender_save_results(self, results: str):
         """Request processing of defender's save roll results."""
-        if self._current_action_step != constants.ACTION_STEP_AWAITING_DEFENDER_SAVES:
+        if self._current_action_step != "AWAITING_DEFENDER_SAVES":
             print("Error: Not expecting defender save results now.")
             return
         print(
@@ -694,6 +686,86 @@ class GameEngine(QObject):
         else:
             self.current_phase_changed.emit(self.get_current_phase_display())
             self.game_state_updated.emit()
+
+    def submit_magic_results(self, results: str):
+        """Request processing of magic roll results."""
+        if self._current_action_step != "AWAITING_MAGIC_ROLL":
+            print("Error: Not expecting magic results now.")
+            return
+        print(
+            f"Player {self.get_current_player_name()} submitted magic results: {results}"
+        )
+
+        # TODO: Replace direct calls with signals to ActionResolver
+        # For now, use direct calls until signal system is fully implemented
+        parsed_results = self.action_resolver.parse_dice_string(
+            results, roll_type="MAGIC"
+        )
+        if not parsed_results:
+            error_msg = (
+                "Could not parse the dice roll results. Please check the format."
+            )
+            details = f"Input received: '{results}'\nExpected format: 'MA,MA,SAI' or '2 magic, 1 SAI'"
+            print(
+                f"GameEngine: Error: Could not parse magic results via ActionResolver."
+            )
+            # In a real implementation, this would emit a signal to show user error
+            # For now, continue with empty results to avoid blocking the game
+            parsed_results = {"magic": 0, "sais": []}
+        print(f"GameEngine: Parsed magic via ActionResolver: {parsed_results}")
+
+        # Process magic effects
+        magic_outcome = self.action_resolver.resolve_magic(parsed_results)
+        print(f"GameEngine: Magic outcome from ActionResolver: {magic_outcome}")
+
+        # Clear action step to indicate completion
+        self._current_action_step = ""
+        print(f"Magic action in {self.current_phase} complete.")
+
+        # Emit signals to update UI
+        self.current_phase_changed.emit(self.get_current_phase_display())
+        self.game_state_updated.emit()
+
+    def submit_attacker_missile_results(self, results: str):
+        """Request processing of attacker's missile roll results."""
+        if self._current_action_step != "AWAITING_ATTACKER_MISSILE_ROLL":
+            print("Error: Not expecting attacker missile results now.")
+            return
+        print(
+            f"Player {self.get_current_player_name()} (Attacker) submitted missile results: {results}"
+        )
+
+        # TODO: Replace direct calls with signals to ActionResolver
+        # For now, use direct calls until signal system is fully implemented
+        parsed_results = self.action_resolver.parse_dice_string(
+            results, roll_type="MISSILE"
+        )
+        if not parsed_results:
+            error_msg = (
+                "Could not parse the dice roll results. Please check the format."
+            )
+            details = f"Input received: '{results}'\nExpected format: 'MI,MI,SAI' or '2 missile, 1 SAI'"
+            print(
+                f"GameEngine: Error: Could not parse attacker missile results via ActionResolver."
+            )
+            # In a real implementation, this would emit a signal to show user error
+            # For now, continue with empty results to avoid blocking the game
+            parsed_results = {"missile": 0, "saves": 0, "sais": []}
+        print(
+            f"GameEngine: Parsed attacker missile via ActionResolver: {parsed_results}"
+        )
+
+        # Process missile attack
+        missile_outcome = self.action_resolver.resolve_attacker_missile(parsed_results)
+        print(f"GameEngine: Missile outcome from ActionResolver: {missile_outcome}")
+
+        # Clear action step to indicate completion
+        self._current_action_step = ""
+        print(f"Missile action in {self.current_phase} complete.")
+
+        # Emit signals to update UI
+        self.current_phase_changed.emit(self.get_current_phase_display())
+        self.game_state_updated.emit()
 
     @Slot(str)
     def _set_next_action_step(self, next_step: str):
@@ -866,9 +938,10 @@ class GameEngine(QObject):
             controller = terrain_data.get("controller", "None")
             face_number = terrain_data.get("face", 1)
             details = f"Face {face_number}"
-            icon = constants.TERRAIN_ICONS.get(
-                terrain_name, "❓"
-            )  # Get icon, default to question mark
+            try:
+                icon = constants.get_terrain_icon(terrain_name)
+            except KeyError:
+                icon = "❓"  # Default to question mark
             if controller and controller != "None":
                 details += f", Controlled by: {controller}"
 
@@ -1106,8 +1179,8 @@ class GameEngine(QObject):
             self._is_very_first_turn = False
 
         # Proceed to maneuver decision step
-        self.march_step_change_requested.emit(constants.MARCH_STEP_DECIDE_MANEUVER)
-        self._current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
+        self.march_step_change_requested.emit("DECIDE_MANEUVER")
+        self._current_march_step = "DECIDE_MANEUVER"
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
@@ -1122,8 +1195,8 @@ class GameEngine(QObject):
         )
 
         if wants_to_take_action:
-            self.march_step_change_requested.emit(constants.MARCH_STEP_SELECT_ACTION)
-            self._current_march_step = constants.MARCH_STEP_SELECT_ACTION
+            self.march_step_change_requested.emit("SELECT_ACTION")
+            self._current_march_step = "SELECT_ACTION"
         else:
             # Skip action step, advance to next phase
             self.advance_phase()

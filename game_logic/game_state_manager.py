@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal
 from typing import List, Dict, Any, Optional
-import constants
+import utils.constants as constants
 
 # For type hinting and potential reconstruction
 from models.army_model import ArmyModel
@@ -312,10 +312,18 @@ class GameStateManager(QObject):
         - "Swampland (Green, Yellow)" -> "Swampland (Green, Yellow)"
         """
         # If location contains a player name prefix, extract the terrain type
-        import constants
+        import utils.constants as constants
 
-        for terrain_name in constants.TERRAIN_ICONS.keys():
-            if terrain_name in location:
+        location_upper = location.upper()
+        for terrain_name in constants.TERRAIN_DATA.keys():
+            if terrain_name in location_upper:
+                # Return the terrain name in its original case from the location string
+                # Find the actual terrain name in the location (case-insensitive)
+                location_words = location.split()
+                for word in location_words:
+                    if word.upper() == terrain_name:
+                        return word
+                # If not found as a separate word, return the uppercase version
                 return terrain_name
 
         # Fallback: return the location as-is if no terrain type found
@@ -859,7 +867,7 @@ class GameStateManager(QObject):
         armies = player_data.get("armies", {})
 
         # Phase-specific logic
-        if current_phase in [constants.PHASE_FIRST_MARCH, constants.PHASE_SECOND_MARCH]:
+        if current_phase in ["FIRST_MARCH", "SECOND_MARCH"]:
             # During march phases, determine by location if provided
             if current_location:
                 return self.determine_active_army_by_location(
@@ -868,13 +876,13 @@ class GameStateManager(QObject):
             # Otherwise, use current active army
             return player_data.get("active_army_type", "home")
 
-        elif current_phase == constants.PHASE_DRAGON_ATTACK:
+        elif current_phase == "DRAGON_ATTACK":
             # Dragons can attack any army, but usually home terrain
             home_terrain = player_data.get("home_terrain_name")
             if home_terrain:
                 return self.determine_active_army_by_location(player_name, home_terrain)
 
-        elif current_phase == constants.PHASE_RESERVES:
+        elif current_phase == "RESERVES":
             # Reserve phase can involve any army
             return player_data.get("active_army_type", "home")
 

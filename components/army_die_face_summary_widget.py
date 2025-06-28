@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from typing import List, Dict, Optional
 from collections import Counter
-import constants
+import utils.constants as constants
 from models.unit_model import UnitModel
 from models.unit_roster_model import UnitRosterModel
 

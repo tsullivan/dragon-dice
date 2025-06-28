@@ -70,11 +70,11 @@ This application will help you track game state, turns, and phases, but all dice
     def get_distance_rolls_help(self, frontier_terrain: str) -> str:
         # Get terrain icon for the frontier terrain
         terrain_icon = "🗺️"  # Default
-        import constants
+        import utils.constants as constants
 
-        for terrain_name, icon in constants.TERRAIN_ICONS.items():
+        for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
             if terrain_name in frontier_terrain:
-                terrain_icon = icon
+                terrain_icon = terrain_info["icon"]
                 break
 
         return f"""

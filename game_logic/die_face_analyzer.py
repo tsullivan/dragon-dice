@@ -9,7 +9,7 @@ testability and reusability.
 from typing import List, Dict, Any, Optional, Tuple
 from collections import Counter
 from dataclasses import dataclass
-import constants
+import utils.constants as constants
 
 
 @dataclass

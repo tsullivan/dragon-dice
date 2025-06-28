@@ -1,6 +1,6 @@
 # models/unit_model.py
 from typing import Dict, Any
-import constants
+import utils.constants as constants
 
 
 class UnitModel:

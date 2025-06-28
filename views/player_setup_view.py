@@ -31,7 +31,7 @@ from models.help_text_model import HelpTextModel
 from models.unit_roster_model import UnitRosterModel
 from models.unit_model import UnitModel
 from config.resource_manager import ResourceManager
-import constants
+import utils.constants as constants
 
 
 class PlayerSetupView(QWidget):
@@ -491,7 +491,7 @@ class PlayerSetupView(QWidget):
                         widget.setValue(
                             {
                                 "dragon_type": dragon_data,
-                                "die_type": constants.DRAGON_DIE_TYPE_DRAKE,
+                                "die_type": "Drake",
                             }
                         )
                 else:
@@ -549,5 +549,5 @@ class PlayerSetupView(QWidget):
     def _update_horde_visibility(self):
         show_horde = self.num_players > 1
         # Hide/show the entire army group box (which contains the label, widget, and unit list)
-        if constants.ARMY_TYPE_HORDE in self.army_group_boxes:
-            self.army_group_boxes[constants.ARMY_TYPE_HORDE].setVisible(show_horde)
+        if "Horde" in self.army_group_boxes:
+            self.army_group_boxes["Horde"].setVisible(show_horde)

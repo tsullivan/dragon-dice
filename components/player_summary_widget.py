@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 from typing import Dict, List, Any, Optional
-import constants
+import utils.constants as constants
 from utils.display_utils import format_army_type, format_terrain_summary
 
 

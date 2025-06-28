@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject, Signal
 import uuid
 from typing import Optional, Dict, Any, List
-import constants
+import utils.constants as constants
 
 
 class EffectManager(QObject):

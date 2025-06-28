@@ -6,7 +6,7 @@ import pytest
 from PySide6.QtWidgets import QApplication
 
 from components.dragon_selection_widget import DragonSelectionWidget
-import constants
+import utils.constants as constants
 
 
 class TestDragonSelectionWidget:
@@ -20,7 +20,7 @@ class TestDragonSelectionWidget:
         # Check default values
         value = widget.value()
         assert value["dragon_type"] == constants.AVAILABLE_DRAGON_TYPES[0]
-        assert value["die_type"] == constants.DRAGON_DIE_TYPE_DRAKE
+        assert value["die_type"] == "Drake"
 
     def test_dragon_type_selection(self, qtbot):
         """Test that dragon type can be changed."""
@@ -70,7 +70,7 @@ class TestDragonSelectionWidget:
         widget.clear()
         value = widget.value()
         assert value["dragon_type"] == constants.AVAILABLE_DRAGON_TYPES[0]
-        assert value["die_type"] == constants.DRAGON_DIE_TYPE_DRAKE
+        assert value["die_type"] == "Drake"
 
     def test_signal_emission(self, qtbot):
         """Test that valueChanged signal is emitted properly."""
@@ -98,12 +98,12 @@ def test_dragon_constants():
 
     # Test die types exist
     assert len(constants.AVAILABLE_DRAGON_DIE_TYPES) == 2
-    assert constants.DRAGON_DIE_TYPE_DRAKE in constants.AVAILABLE_DRAGON_DIE_TYPES
-    assert constants.DRAGON_DIE_TYPE_WYRM in constants.AVAILABLE_DRAGON_DIE_TYPES
+    assert "Drake" in constants.AVAILABLE_DRAGON_DIE_TYPES
+    assert "Wyrm" in constants.AVAILABLE_DRAGON_DIE_TYPES
 
     # Test specific values
-    assert constants.DRAGON_DIE_TYPE_DRAKE == "Drake"
-    assert constants.DRAGON_DIE_TYPE_WYRM == "Wyrm"
+    assert constants.DRAGON_DATA["DIE_TYPES"]["DRAKE"]["display_name"] == "Drake"
+    assert constants.DRAGON_DATA["DIE_TYPES"]["WYRM"]["display_name"] == "Wyrm"
 
 
 if __name__ == "__main__":

@@ -8,8 +8,8 @@ def test_frontier_selection_view_render(qtbot):
     """Captures a PNG of the FrontierSelectionView with mock data."""
     mock_player_names = ["Gandalf", "Saruman"]
     mock_proposed_terrains = [
-        ("Gandalf", "Highland (Green, Brown)"),
-        ("Saruman", "Swamp (DarkGreen, Black)"),
+        ("Gandalf", "Highland"),
+        ("Saruman", "Swampland"),
     ]
     frontier_view = FrontierSelectionView(
         player_names=mock_player_names,

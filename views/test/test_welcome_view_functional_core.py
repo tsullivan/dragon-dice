@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 
 from views.welcome_view import WelcomeView
-import constants
+import utils.constants as constants
 
 
 class TestWelcomeViewCoreFunctionality:

@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from typing import Dict, Optional
-import constants
+import utils.constants as constants
 
 
 class DieFaceDisplayWidget(QWidget):
@@ -118,7 +118,7 @@ class DieFaceDisplayWidget(QWidget):
             constants.ICON_MANEUVER,
         ]:
             action_type = face_type.replace("ICON_", "")
-            return constants.ACTION_ICONS.get(action_type, "❓")
+            return constants.get_action_icon(action_type)
 
         # Use centralized constants for dragon attack icons
         if face_type.startswith("DRAGON_"):

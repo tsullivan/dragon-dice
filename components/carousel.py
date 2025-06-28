@@ -166,8 +166,12 @@ class CarouselInputWidget(QWidget):
             value_str = str(value)
             clean_name = clean_terrain_name(value_str)
 
-            # Use format_terrain_type which directly looks up terrain names in TERRAIN_ICONS
-            return format_terrain_type(clean_name)
+            # Try to format as terrain/location, but gracefully fall back to plain text
+            try:
+                return format_terrain_type(clean_name)
+            except KeyError:
+                # Not a terrain or location, return the original value as-is
+                return value_str
         except ImportError:
             pass
 

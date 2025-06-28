@@ -1,6 +1,6 @@
 # models/unit_roster_model.py
 from typing import List, Dict, Any, Optional
-import constants
+import utils.constants as constants
 from .unit_model import UnitModel
 from config.resource_manager import ResourceManager
 

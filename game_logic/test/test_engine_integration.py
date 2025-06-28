@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch, MagicMock
 from game_logic.engine import GameEngine
-import constants
+import utils.constants as constants
 
 
 class TestEngineIntegration(unittest.TestCase):
@@ -93,24 +93,22 @@ class TestEngineIntegration(unittest.TestCase):
     def test_action_selection(self):
         """Test action selection and state transitions."""
         # Test melee action selection
-        self.engine.select_action(constants.ACTION_MELEE)
+        self.engine.select_action("MELEE")
         self.assertEqual(
             self.engine.current_action_step,
-            constants.ACTION_STEP_AWAITING_ATTACKER_MELEE_ROLL,
+            "AWAITING_ATTACKER_MELEE_ROLL",
         )
 
         # Test missile action selection
-        self.engine.select_action(constants.ACTION_MISSILE)
+        self.engine.select_action("MISSILE")
         self.assertEqual(
             self.engine.current_action_step,
-            constants.ACTION_STEP_AWAITING_ATTACKER_MISSILE_ROLL,
+            "AWAITING_ATTACKER_MISSILE_ROLL",
         )
 
         # Test magic action selection
-        self.engine.select_action(constants.ACTION_MAGIC)
-        self.assertEqual(
-            self.engine.current_action_step, constants.ACTION_STEP_AWAITING_MAGIC_ROLL
-        )
+        self.engine.select_action("MAGIC")
+        self.assertEqual(self.engine.current_action_step, "AWAITING_MAGIC_ROLL")
 
     @patch("game_logic.engine.GameEngine._current_acting_army")
     @unittest.skip("Test disabled - needs ActionResolver implementation")
@@ -253,24 +251,22 @@ class TestEngineIntegration(unittest.TestCase):
     def test_march_step_management(self):
         """Test march step management."""
         # Test march step transitions
-        self.engine._current_march_step = constants.MARCH_STEP_CHOOSE_ACTING_ARMY
-        self.assertEqual(
-            self.engine.current_march_step, constants.MARCH_STEP_CHOOSE_ACTING_ARMY
-        )
+        self.engine._current_march_step = "CHOOSE_ACTING_ARMY"
+        self.assertEqual(self.engine.current_march_step, "CHOOSE_ACTING_ARMY")
 
     def test_get_current_phase_display(self):
         """Test phase display formatting."""
         # Test very first turn display
-        self.engine._current_phase = constants.PHASE_FIRST_MARCH
+        self.engine._current_phase = "FIRST_MARCH"
         self.engine._is_very_first_turn = True
-        self.engine._current_march_step = constants.MARCH_STEP_DECIDE_MANEUVER
+        self.engine._current_march_step = "DECIDE_MANEUVER"
 
         display = self.engine.get_current_phase_display()
         self.assertIn("Game Start", display)
 
         # Test normal phase display
         self.engine._is_very_first_turn = False
-        self.engine._current_phase = constants.PHASE_EIGHTH_FACE
+        self.engine._current_phase = "EIGHTH_FACE"
         self.engine._current_march_step = ""
 
         display = self.engine.get_current_phase_display()

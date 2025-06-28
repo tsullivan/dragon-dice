@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QRadioButton
 
 from views.welcome_view import WelcomeView
-import constants
+import utils.constants as constants
 
 
 class TestWelcomeViewFunctional:

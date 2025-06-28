@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject, Signal
 from typing import Optional
 
-import constants
+import utils.constants as constants
 
 
 class TurnManager(QObject):
@@ -26,10 +26,8 @@ class TurnManager(QObject):
         )
 
         # Start with First March phase for the very first turn of the game
-        self.current_phase_idx = constants.TURN_PHASES.index(
-            constants.PHASE_FIRST_MARCH
-        )
-        self.current_phase = constants.PHASE_FIRST_MARCH
+        self.current_phase_idx = constants.TURN_PHASES.index("FIRST_MARCH")
+        self.current_phase = "FIRST_MARCH"
         self.current_march_step = ""
         self.current_action_step = ""  # For sub-steps within Melee, Missile, Magic
         self.is_first_turn_of_game = True  # Track if this is the very first turn
@@ -54,10 +52,8 @@ class TurnManager(QObject):
             )
         else:
             # Dragon Dice Rule: Each player's turn starts with First March
-            self.current_phase_idx = constants.TURN_PHASES.index(
-                constants.PHASE_FIRST_MARCH
-            )
-            self.current_phase = constants.PHASE_FIRST_MARCH
+            self.current_phase_idx = constants.TURN_PHASES.index("FIRST_MARCH")
+            self.current_phase = "FIRST_MARCH"
             print(
                 f"TurnManager: Initializing turn for {self.player_names[self.current_player_idx]}. Phase: {self.current_phase}"
             )
@@ -71,7 +67,7 @@ class TurnManager(QObject):
         """Advances to the next phase or next player based on Dragon Dice rules."""
         # Dragon Dice Rule: Player turn consists of First March + Second March
         # After Second March, advance to next player (who starts at First March)
-        if self.current_phase == constants.PHASE_SECOND_MARCH:
+        if self.current_phase == "SECOND_MARCH":
             print(
                 f"TurnManager: Completed {self.player_names[self.current_player_idx]}'s turn (First + Second March)"
             )
@@ -148,8 +144,8 @@ class TurnManager(QObject):
     def is_march_phase(self) -> bool:
         """Check if current phase is a march phase."""
         return self.current_phase in [
-            constants.PHASE_FIRST_MARCH,
-            constants.PHASE_SECOND_MARCH,
+            "FIRST_MARCH",
+            "SECOND_MARCH",
         ]
 
     def get_player_index(self) -> int:

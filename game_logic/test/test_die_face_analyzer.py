@@ -12,7 +12,7 @@ from game_logic.die_face_analyzer import (
     DieFaceCount,
     UnitDieFaceExtractor,
 )
-import constants
+import utils.constants as constants
 
 
 class TestDieFaceCount(unittest.TestCase):

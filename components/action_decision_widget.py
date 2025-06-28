@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 from typing import Optional, Dict, Any
-import constants
+import utils.constants as constants
 
 
 class ActionDecisionWidget(QWidget):
@@ -71,15 +71,18 @@ class ActionDecisionWidget(QWidget):
 
         # Add terrain icon
         location_icon = ""
-        for terrain_name, icon in constants.TERRAIN_ICONS.items():
+        for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
             if terrain_name in location:
-                location_icon = icon
+                location_icon = terrain_info["icon"]
                 break
         if not location_icon:
             location_icon = "🗺️"  # Default terrain icon
 
         # Add army type indicator
-        army_type_indicator = constants.ARMY_TYPE_ICONS.get(army_type, "⚔️")
+        try:
+            army_type_indicator = constants.get_army_type_icon(army_type)
+        except KeyError:
+            army_type_indicator = "⚔️"
 
         # Update army info display
         self.army_info_label.setText(

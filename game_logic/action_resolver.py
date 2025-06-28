@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal
 from typing import Optional
-import constants  # For ICON_MELEE etc.
+import utils.constants as constants  # For ICON_MELEE etc.
 
 # Forward declaration for type hinting if GameStateManager and EffectManager are in different files
 # and create circular dependencies. Or import them directly if no circular dependency.
@@ -184,7 +184,7 @@ class ActionResolver(QObject):
             print(
                 f"ActionResolver: No active units found for attacker {attacking_player_name}. Aborting melee roll processing."
             )
-            # self.next_action_step_determined.emit(constants.ACTION_STEP_SELECT_ACTION) # Or some error state
+            # self.next_action_step_determined.emit("SELECT_ACTION") # Or some error state
             return {"hits": 0, "sais_for_defender": []}  # Early exit
 
         print(
@@ -281,9 +281,7 @@ class ActionResolver(QObject):
         # TODO: 7. Identify SAIs that will affect the defender's save roll.
 
         # After processing, determine the next step
-        self.next_action_step_determined.emit(
-            constants.ACTION_STEP_AWAITING_DEFENDER_SAVES
-        )
+        self.next_action_step_determined.emit("AWAITING_DEFENDER_SAVES")
         return calculated_results
 
     def process_defender_save_roll(
@@ -439,7 +437,7 @@ class ActionResolver(QObject):
 
         if counter_attack_possible:
             self.next_action_step_determined.emit(
-                constants.ACTION_STEP_AWAITING_MELEE_COUNTER_ATTACK_ROLL
+                "AWAITING_MELEE_COUNTER_ATTACK_ROLL"
             )  # Placeholder constant
         else:
             self.next_action_step_determined.emit(

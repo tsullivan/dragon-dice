@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from constants import ELEMENT_COLORS
+import utils.constants as constants
 
 
 class Terrain:
@@ -12,16 +12,22 @@ class Terrain:
         self.name = name
         if not 1 <= len(colors) <= 2:
             raise ValueError("Terrain must have one or two colors.")
+        # Get all valid element icons and color names from ELEMENT_ICONS
+        valid_icons = [icon_data[0] for icon_data in constants.ELEMENT_ICONS.values()]
+        valid_color_names = [
+            icon_data[1] for icon_data in constants.ELEMENT_ICONS.values()
+        ]
+        valid_element_names = list(constants.ELEMENT_ICONS.keys())
+
         for color in colors:
             if (
-                color not in ELEMENT_COLORS.values()
-                and color not in ELEMENT_COLORS.keys()
-            ):  # No change, good comment
-                actual_color_values = list(ELEMENT_COLORS.values())
-                if color not in actual_color_values:
-                    raise ValueError(
-                        f"Invalid color '{color}'. Must be one of {actual_color_values}"
-                    )
+                color not in valid_icons
+                and color not in valid_color_names
+                and color not in valid_element_names
+            ):
+                raise ValueError(
+                    f"Invalid color/icon '{color}'. Must be one of {valid_color_names} or {valid_icons}"
+                )
         self.colors = colors
 
     def __str__(self) -> str:
@@ -34,6 +40,6 @@ class Terrain:
         """Returns the element names associated with the terrain's colors."""
         return [
             element
-            for element, color_name in ELEMENT_COLORS.items()
-            if color_name in self.colors
+            for element, (icon, color_name) in constants.ELEMENT_ICONS.items()
+            if color_name in self.colors or icon in self.colors
         ]

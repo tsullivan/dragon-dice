@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QListWidget,
     QLineEdit,
 )
-import constants
+import utils.constants as constants
 from PySide6.QtCore import Qt, Signal
 from typing import List, Dict, Any, Optional
 
@@ -122,7 +122,7 @@ class ActionDialog(QDialog):
 
     def _show_attacker_roll(self):
         """Show attacker roll input."""
-        action_icon = constants.ACTION_ICONS.get(self.action_type, "⚔️")
+        action_icon = constants.get_action_icon(self.action_type)
         self.step_label.setText(
             f"Step 1: {action_icon} {self.action_type.title()} Attack"
         )
@@ -208,7 +208,7 @@ class ActionDialog(QDialog):
 
     def _show_results(self):
         """Show action results."""
-        action_icon = constants.ACTION_ICONS.get(self.action_type, "⚔️")
+        action_icon = constants.get_action_icon(self.action_type)
         self.step_label.setText(f"Step 3: {action_icon} Action Results")
 
         if not self.attacker_results or not self.defender_results:

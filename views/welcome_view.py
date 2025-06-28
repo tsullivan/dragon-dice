@@ -15,7 +15,7 @@ from PySide6.QtCore import Qt, Signal, Slot
 
 from models.help_text_model import HelpTextModel
 from components.tabbed_view_widget import TabbedViewWidget
-import constants
+import utils.constants as constants
 
 
 class WelcomeView(QWidget):

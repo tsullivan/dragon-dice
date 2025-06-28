@@ -5,7 +5,7 @@ All icon declarations are in constants.py - this module imports what it needs.
 """
 
 # Import all icon mappings from constants
-import constants
+import utils.constants as constants
 
 
 def format_terrain_type(terrain_type: str) -> str:
@@ -87,7 +87,7 @@ def format_terrain_face(face_number: int) -> str:
     Returns:
         Formatted string with dice icon (e.g., "🎲 Face 3")
     """
-    dice_icon = constants.UI_ICONS["DICE"]
+    dice_icon = constants.UI_ICONS["RANDOMIZE"]
     return f"{dice_icon} Face {face_number}"
 
 
@@ -143,7 +143,7 @@ def format_terrain_summary(
     # Clean the terrain name to remove color information
     clean_name = clean_terrain_name(terrain_name)
 
-    terrain_icon = constants.get_terrain_icon(terrain_type)
+    terrain_icon = constants.get_terrain_or_location_icon(terrain_type)
     face_display = format_terrain_face(face_number)
 
     if terrain_type.upper() == "FRONTIER":

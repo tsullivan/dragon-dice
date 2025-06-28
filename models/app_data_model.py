@@ -9,7 +9,7 @@ from .army_model import ArmyModel
 from .unit_model import (
     UnitModel,
 )  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
-from constants import TERRAIN_DATA, DEFAULT_FORCE_SIZE, calculate_required_dragons
+from utils.constants import TERRAIN_DATA, DEFAULT_FORCE_SIZE, calculate_required_dragons
 
 
 class AppDataModel(QObject):
@@ -44,8 +44,10 @@ class AppDataModel(QObject):
 
     def _initialize_terrains(self):
         try:
-            for name, colors in TERRAIN_DATA:
-                self._all_terrains.append(Terrain(name=name, colors=colors))
+            for name, terrain_info in TERRAIN_DATA.items():
+                self._all_terrains.append(
+                    Terrain(name=name, colors=terrain_info["colors"])
+                )
             self._terrain_display_options = [
                 str(terrain) for terrain in self._all_terrains
             ]
@@ -106,8 +108,9 @@ class AppDataModel(QObject):
     def get_all_terrains_list(self) -> list[Terrain]:
         return self._all_terrains
 
-    def get_terrain_display_options(self) -> list[str]:
-        return self._terrain_display_options
+    def get_terrain_display_options(self) -> list[tuple]:
+        """Returns terrain display options as list of tuples (name, colors) for PlayerSetupView."""
+        return [(terrain.name, terrain.colors) for terrain in self._all_terrains]
 
     def get_required_dragon_count(self) -> int:
         """Calculate required dragons based on current force size.
