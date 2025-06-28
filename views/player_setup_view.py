@@ -402,7 +402,9 @@ class PlayerSetupView(QWidget):
     @Slot(str, list)
     def _handle_units_updated_from_widget(self, army_type_key: str, unit_dicts: list):
         self.army_units_data[army_type_key] = unit_dicts
-        self._update_specific_army_detailed_units_label(army_type_key.title())
+        # Convert to uppercase to match ARMY_DATA keys used in army_detailed_units_labels
+        army_type_upper = army_type_key.upper()
+        self._update_specific_army_detailed_units_label(army_type_upper)
         self._validate_and_update_button_state()
 
     def _update_specific_army_summary_label(self, army_type: str):

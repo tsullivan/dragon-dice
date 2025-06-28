@@ -73,7 +73,7 @@ class ActionDecisionWidget(QWidget):
         location_icon = ""
         for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
             if terrain_name in location:
-                location_icon = terrain_info["icon"]
+                location_icon = terrain_info["ICON"]
                 break
         if not location_icon:
             location_icon = "🗺️"  # Default terrain icon

@@ -144,10 +144,14 @@ class TestActionFlows(unittest.TestCase):
         # Step 2: Submit attacker dice results
         print("Step 2: Player 1 submits melee dice results")
         # Mock the dice parsing to avoid implementation dependencies
+        # Return list format that process_attacker_melee_roll expects
         with patch.object(
             self.engine.action_resolver,
             "parse_dice_string",
-            return_value={"hits": 2, "damage": 3},
+            return_value=[
+                {"type": "MELEE", "count": 2},
+                {"type": "SAI", "count": 1, "sai_type": "BULLSEYE"}
+            ],
         ):
             with patch.object(
                 self.engine.action_resolver,
@@ -162,14 +166,14 @@ class TestActionFlows(unittest.TestCase):
         # Step 3: Submit defender save results
         print("Step 3: Player 2 submits save dice results")
         with patch.object(
-            self.engine.action_resolver, "parse_dice_string", return_value={"saves": 1}
+            self.engine.action_resolver, 
+            "parse_dice_string", 
+            return_value=[
+                {"type": "SAVE", "count": 1},
+                {"type": "ID", "count": 1}
+            ]
         ):
-            with patch.object(
-                self.engine.action_resolver,
-                "resolve_defender_saves",
-                return_value={"saves": 1, "damage_prevented": 1},
-            ):
-                self.engine.submit_defender_save_results("S,S")
+            self.engine.submit_defender_save_results("S,S")
 
         # After saves, should either request damage allocation or resolve action
         current_step = self.engine.current_action_step
@@ -204,7 +208,9 @@ class TestActionFlows(unittest.TestCase):
         with patch.object(
             self.engine.action_resolver,
             "parse_dice_string",
-            return_value={"hits": 1, "damage": 2},
+            return_value=[
+                {"type": "MISSILE", "count": 2}
+            ],
         ):
             with patch.object(
                 self.engine.action_resolver,
@@ -244,7 +250,10 @@ class TestActionFlows(unittest.TestCase):
         with patch.object(
             self.engine.action_resolver,
             "parse_dice_string",
-            return_value={"magic_results": 2},
+            return_value=[
+                {"type": "MAGIC", "count": 2},
+                {"type": "SAI", "count": 1, "sai_type": "MAGIC_BOLT"}
+            ],
         ):
             with patch.object(
                 self.engine.action_resolver,

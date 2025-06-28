@@ -74,7 +74,7 @@ This application will help you track game state, turns, and phases, but all dice
 
         for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
             if terrain_name in frontier_terrain:
-                terrain_icon = terrain_info["icon"]
+                terrain_icon = terrain_info["ICON"]
                 break
 
         return f"""

@@ -102,8 +102,8 @@ def test_dragon_constants():
     assert "Wyrm" in constants.AVAILABLE_DRAGON_DIE_TYPES
 
     # Test specific values
-    assert constants.DRAGON_DATA["DIE_TYPES"]["DRAKE"]["display_name"] == "Drake"
-    assert constants.DRAGON_DATA["DIE_TYPES"]["WYRM"]["display_name"] == "Wyrm"
+    assert constants.DRAGON_DATA["DIE_TYPES"]["DRAKE"]["DISPLAY_NAME"] == "Drake"
+    assert constants.DRAGON_DATA["DIE_TYPES"]["WYRM"]["DISPLAY_NAME"] == "Wyrm"
 
 
 if __name__ == "__main__":

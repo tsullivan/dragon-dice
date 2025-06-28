@@ -46,7 +46,7 @@ class AppDataModel(QObject):
         try:
             for name, terrain_info in TERRAIN_DATA.items():
                 self._all_terrains.append(
-                    Terrain(name=name, colors=terrain_info["colors"])
+                    Terrain(name=name, colors=terrain_info["COLORS"])
                 )
             self._terrain_display_options = [
                 str(terrain) for terrain in self._all_terrains

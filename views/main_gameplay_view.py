@@ -616,15 +616,21 @@ class MainGameplayView(QWidget):
 
         # Check action steps first - they take precedence over march steps
         if current_action_step == "AWAITING_ATTACKER_MELEE_ROLL":
-            print("MainGameplayView: Triggering melee action dialog")
-            self._show_action_dialog("MELEE")
+            print("MainGameplayView: In melee action step - showing attacker input")
+            self.melee_action_widget.show()
+            self.melee_action_widget.show_attacker_input()
         elif current_action_step == "AWAITING_ATTACKER_MISSILE_ROLL":
-            self._show_action_dialog("MISSILE")
+            print("MainGameplayView: In missile action step")
+            # For now, advance past missile since we don't have a widget yet
+            self.game_engine.advance_phase()
         elif current_action_step == "AWAITING_MAGIC_ROLL":
-            self._show_action_dialog("MAGIC")
+            print("MainGameplayView: In magic action step")
+            # For now, advance past magic since we don't have a widget yet  
+            self.game_engine.advance_phase()
         elif current_action_step == "AWAITING_DEFENDER_SAVES":
-            # This will be handled within the action dialog itself
-            pass
+            print("MainGameplayView: In defender saves step - showing defender input")
+            self.melee_action_widget.show()
+            self.melee_action_widget.show_defender_input()
         # Show appropriate widgets based on current march step
         elif current_march_step == "CHOOSE_ACTING_ARMY":
             self.acting_army_widget.show()

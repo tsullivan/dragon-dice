@@ -10,7 +10,7 @@ import utils.constants as constants
 
 def format_terrain_type(terrain_type: str) -> str:
     """
-    Format terrain type or location with icon.
+    Format terrain type or location with icon and display name.
 
     Args:
         terrain_type: The terrain type or location string (e.g., "Coastland", "Frontier", "Home")
@@ -19,7 +19,18 @@ def format_terrain_type(terrain_type: str) -> str:
         Formatted string with icon prefix (e.g., "🌊 Coastland", "🏔️ Frontier")
     """
     icon = constants.get_terrain_or_location_icon(terrain_type)
-    return f"{icon} {terrain_type}"
+    
+    # Use DISPLAY_NAME from constants if available
+    terrain_key = terrain_type.upper()
+    if terrain_key in constants.TERRAIN_DATA:
+        display_name = constants.TERRAIN_DATA[terrain_key]["DISPLAY_NAME"]
+        return f"{icon} {display_name}"
+    elif terrain_key in constants.LOCATION_DATA:
+        display_name = constants.LOCATION_DATA[terrain_key]["DISPLAY_NAME"]
+        return f"{icon} {display_name}"
+    else:
+        # Fallback to original terrain_type if not found in constants
+        return f"{icon} {terrain_type}"
 
 
 def format_terrain_name(terrain_name: str, terrain_type: str = None) -> str:
