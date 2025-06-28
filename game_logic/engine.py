@@ -220,21 +220,23 @@ class GameEngine(QObject):
         current_player = self.get_current_player_name()
         if not current_player:
             return []
-        
+
         player_data = self.game_state_manager.get_player_data(current_player)
         if not player_data or "armies" not in player_data:
             return []
-        
+
         available_armies = []
         for army_type, army_data in player_data["armies"].items():
             if army_data.get("units") and len(army_data["units"]) > 0:
-                available_armies.append({
-                    "name": army_data.get("name", f"{army_type.title()} Army"),
-                    "army_type": army_type,
-                    "location": army_data.get("location", "Unknown"),
-                    "unique_id": army_data.get("unique_id"),
-                    "units": army_data.get("units", [])
-                })
+                available_armies.append(
+                    {
+                        "name": army_data.get("name", f"{army_type.title()} Army"),
+                        "army_type": army_type,
+                        "location": army_data.get("location", "Unknown"),
+                        "unique_id": army_data.get("unique_id"),
+                        "units": army_data.get("units", []),
+                    }
+                )
         return available_armies
 
     def decide_maneuver(self, wants_to_maneuver: bool):
@@ -710,7 +712,9 @@ class GameEngine(QObject):
         self._current_action_step = self.turn_manager.get_current_action_step()
 
         print(f"GameEngine: Synced phase state - {old_phase} → {self._current_phase}")
-        print(f"GameEngine: Synced action step - {old_action_step} → {self._current_action_step}")
+        print(
+            f"GameEngine: Synced action step - {old_action_step} → {self._current_action_step}"
+        )
 
         # Re-emit the corrected phase display
         self.current_phase_changed.emit(self.get_current_phase_display())

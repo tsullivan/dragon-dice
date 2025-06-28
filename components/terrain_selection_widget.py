@@ -61,23 +61,11 @@ class TerrainSelectionWidget(QWidget):
             self._update_frontier_proposal_label(self.all_terrain_options[0])
 
     def _update_home_terrain_label(self, terrain_name: str):
-        """Update home terrain label with terrain-specific emoji."""
-        if terrain_name:
-            import constants
-
-            formatted_terrain = constants.format_terrain_display(terrain_name)
-            self.home_terrain_label.setText(f"🏠 Home Terrain: {formatted_terrain}")
-        else:
-            self.home_terrain_label.setText("🏠 Home Terrain:")
+        """Keep home terrain label static - terrain name only shows in carousel."""
+        # Label should always show just the static text, not the terrain name
+        self.home_terrain_label.setText("🏠 Home Terrain:")
 
     def _update_frontier_proposal_label(self, terrain_name: str):
-        """Update frontier proposal label with terrain-specific emoji."""
-        if terrain_name:
-            import constants
-
-            formatted_terrain = constants.format_terrain_display(terrain_name)
-            self.frontier_proposal_label.setText(
-                f"🗺️ Proposed Frontier: {formatted_terrain}"
-            )
-        else:
-            self.frontier_proposal_label.setText("🗺️ Proposed Frontier Terrain:")
+        """Keep frontier proposal label static - terrain name only shows in carousel."""
+        # Label should always show just the static text, not the terrain name
+        self.frontier_proposal_label.setText("🗺️ Proposed Frontier Terrain:")

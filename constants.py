@@ -20,54 +20,65 @@ def calculate_required_dragons(force_size_points: int) -> int:
 
 
 ELEMENT_COLORS = {
-    "Death": "Black",
-    "Air": "Blue",
-    "Water": "Green",
-    "Fire": "Red",
-    "Earth": "Yellow",
-    "Ivory": "Ivory",  # Lack of any elements
-    "White": "White",  # Presence of all elements
+    "DEATH": "Black",
+    "AIR": "Blue",
+    "WATER": "Green",
+    "FIRE": "Red",
+    "EARTH": "Yellow",
+    "IVORY": "Ivory",  # Lack of any elements
+    "WHITE": "White",  # Presence of all elements
 }
 
 # Terrain Definitions (Name, List of Colors from ELEMENT_COLORS values)
 TERRAIN_DATA = [
-    ("Coastland", [ELEMENT_COLORS["Air"], ELEMENT_COLORS["Water"]]),
-    ("Deadland", [ELEMENT_COLORS["Death"]]),
-    ("Flatland", [ELEMENT_COLORS["Air"], ELEMENT_COLORS["Earth"]]),
-    ("Highland", [ELEMENT_COLORS["Fire"], ELEMENT_COLORS["Earth"]]),
-    ("Swampland", [ELEMENT_COLORS["Water"], ELEMENT_COLORS["Earth"]]),
-    ("Feyland", [ELEMENT_COLORS["Water"], ELEMENT_COLORS["Fire"]]),
-    ("Wasteland", [ELEMENT_COLORS["Air"], ELEMENT_COLORS["Fire"]]),
+    ("COASTLAND", [ELEMENT_COLORS["AIR"], ELEMENT_COLORS["WATER"]]),
+    ("DEADLAND", [ELEMENT_COLORS["DEATH"]]),
+    ("FLATLAND", [ELEMENT_COLORS["AIR"], ELEMENT_COLORS["EARTH"]]),
+    ("HIGHLAND", [ELEMENT_COLORS["FIRE"], ELEMENT_COLORS["EARTH"]]),
+    ("SWAMPLAND", [ELEMENT_COLORS["WATER"], ELEMENT_COLORS["EARTH"]]),
+    ("FEYLAND", [ELEMENT_COLORS["WATER"], ELEMENT_COLORS["FIRE"]]),
+    ("WASTELAND", [ELEMENT_COLORS["AIR"], ELEMENT_COLORS["FIRE"]]),
 ]
 
 TERRAIN_ICONS = {
-    "Coastland": "🌊",  # Water Wave
-    "Deadland": "💀",  # Skull
-    "Flatland": "↔️",  # Left-Right Arrow (representing open space)
-    "Highland": "⛰️",  # Mountain
-    "Swampland": "🐸",  # Frog (or some other swampy icon)
-    "Feyland": "✨",  # Sparkles
-    "Wasteland": "🏜️",  # Desert
+    # Official Dragon Dice terrain types only (uppercase keys)
+    "COASTLAND": "🌊",  # Water Wave - Air & Water (blue & green)
+    "DEADLAND": "💀",  # Skull - Death only (black)
+    "FLATLAND": "↔️",  # Left-Right Arrow - Air & Earth (blue & yellow)
+    "HIGHLAND": "⛰️",  # Mountain - Fire & Earth (red & yellow)
+    "SWAMPLAND": "🐸",  # Frog - Water & Earth (green & yellow)
+    "FEYLAND": "✨",  # Sparkles - Water & Fire (green & red)
+    "WASTELAND": "🏜️",  # Desert - Air & Fire (blue & red)
 }
 
-# Army Type Icons
+# Location/Category Icons (uppercase keys)
+LOCATION_ICONS = {
+    "HOME": "🏠",  # House - player's home terrain
+    "FRONTIER": "🏔️",  # Mountain Peak - frontier terrain
+    "DUA": "⚡",  # Lightning - Dead Units Area
+    "RESERVES": "🏰",  # Castle - reserves area
+    "SUMMONING_POOL": "🌀",  # Cyclone - summoning pool
+}
+
+# Army Type Icons - uppercase keys
 ARMY_TYPE_ICONS = {
-    "home": "🏰",  # Castle (representing home base)
-    "campaign": "🚩",  # Flag (representing campaign/expedition)
-    "horde": "🌊",  # Wave (representing a horde surge)
+    "HOME": "🏰",  # Castle (representing home base)
+    "CAMPAIGN": "🚩",  # Flag (representing campaign/expedition)
+    "HORDE": "🌊",  # Wave (representing a horde surge)
 }
 
-# Action Icons (centralized from various components)
+# Action Icons (centralized from various components) - uppercase keys
 ACTION_ICONS = {
     "MELEE": "⚔️",  # Crossed Swords
     "MISSILE": "🏹",  # Bow and Arrow
-    "MAGIC": "✨",  # Sparkles
+    "MAGIC": "🔮",  # Crystal Ball (consistent with display_utils)
     "SAVE": "🛡️",  # Shield
     "SAI": "💎",  # Diamond (Special Action Icon)
     "MANEUVER": "🏃",  # Running Person
+    "SKIP": "⏭️",  # Fast Forward (from display_utils)
 }
 
-# Dragon Attack Icons
+# Dragon Attack Icons - uppercase keys
 DRAGON_ATTACK_ICONS = {
     "CLAW": "🗺️",  # Map (representing claw terrain changes)
     "BITE": "🦷",  # Tooth
@@ -75,10 +86,9 @@ DRAGON_ATTACK_ICONS = {
     "BREATH": "🔥",  # Fire
 }
 
-# UI Icons (general interface elements)
+# UI Icons (general interface elements) - uppercase keys
 UI_ICONS = {
-    "DICE": "🎲",  # Die
-    "DEFAULT_TERRAIN": "🗺️",  # Map (fallback for unknown terrains)
+    "DICE": "🎲",  # Die (from display_utils TERRAIN_FACE_SYMBOL)
     "RANDOMIZE": "🎲",  # Die (for randomize buttons)
 }
 
@@ -202,34 +212,81 @@ DEFAULT_UNKNOWN_VALUE = "Unknown"
 DEFAULT_NA_VALUE = "N/A"
 
 
-# Utility Functions for Centralized Emoji Application
+# Utility Functions for Centralized Icon Application
 def get_terrain_icon(terrain_name: str) -> str:
-    """Get terrain icon with fallback to default."""
-    return TERRAIN_ICONS.get(terrain_name, UI_ICONS["DEFAULT_TERRAIN"])
+    """Get terrain icon. Raises KeyError if terrain not found."""
+    terrain_key = terrain_name.upper()
+    if terrain_key not in TERRAIN_ICONS:
+        raise KeyError(
+            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {
+                       list(TERRAIN_ICONS.keys())}"
+        )
+    return TERRAIN_ICONS[terrain_key]
+
+
+def get_location_icon(location_name: str) -> str:
+    """Get location icon. Raises KeyError if location not found."""
+    location_key = location_name.upper()
+    if location_key not in LOCATION_ICONS:
+        raise KeyError(
+            f"Unknown location: '{location_name}'. Valid locations: {
+                       list(LOCATION_ICONS.keys())}"
+        )
+    return LOCATION_ICONS[location_key]
+
+
+def get_terrain_or_location_icon(name: str) -> str:
+    """Get icon for terrain type or location, checking both maps. Raises KeyError if not found."""
+    name_key = name.upper()
+
+    # Check terrain types first
+    if name_key in TERRAIN_ICONS:
+        return TERRAIN_ICONS[name_key]
+
+    # Then check locations
+    if name_key in LOCATION_ICONS:
+        return LOCATION_ICONS[name_key]
+
+    # If not found in either, raise error
+    valid_names = list(TERRAIN_ICONS.keys()) + list(LOCATION_ICONS.keys())
+    raise KeyError(
+        f"Unknown terrain or location: '{
+                   name}'. Valid options: {valid_names}"
+    )
 
 
 def get_army_type_icon(army_type: str) -> str:
-    """Get army type icon with fallback to empty string."""
-    # Convert display names to lowercase keys
-    army_key = army_type.lower()
-    return ARMY_TYPE_ICONS.get(army_key, "")
+    """Get army type icon. Raises KeyError if army type not found."""
+    army_key = army_type.upper()
+    if army_key not in ARMY_TYPE_ICONS:
+        raise KeyError(
+            f"Unknown army type: '{army_type}'. Valid army types: {
+                       list(ARMY_TYPE_ICONS.keys())}"
+        )
+    return ARMY_TYPE_ICONS[army_key]
 
 
 def get_action_icon(action_type: str) -> str:
-    """Get action icon with fallback to empty string."""
-    return ACTION_ICONS.get(action_type.upper(), "")
+    """Get action icon. Raises KeyError if action type not found."""
+    action_key = action_type.upper()
+    if action_key not in ACTION_ICONS:
+        raise KeyError(
+            f"Unknown action type: '{action_type}'. Valid action types: {
+                       list(ACTION_ICONS.keys())}"
+        )
+    return ACTION_ICONS[action_key]
 
 
 def format_terrain_display(terrain_name: str) -> str:
     """Return 'icon terrain_name' format for display."""
     icon = get_terrain_icon(terrain_name)
-    return f"{icon} {terrain_name}" if icon else terrain_name
+    return f"{icon} {terrain_name}"
 
 
 def format_army_type_display(army_type: str) -> str:
     """Return 'icon army_type' format for display."""
     icon = get_army_type_icon(army_type)
-    return f"{icon} {army_type}" if icon else army_type
+    return f"{icon} {army_type}"
 
 
 def format_action_display(action_type: str) -> str:
@@ -241,4 +298,4 @@ def format_action_display(action_type: str) -> str:
         base_action = action_type.upper()
 
     icon = get_action_icon(base_action)
-    return f"{icon} {action_type}" if icon else action_type
+    return f"{icon} {action_type}"

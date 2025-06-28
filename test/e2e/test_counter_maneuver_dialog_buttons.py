@@ -36,7 +36,13 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
                         "units": [
-                            {"name": "Soldier", "health": 1, "max_health": 1, "unit_id": "campaign_1", "unit_type": "amazon_soldier"},
+                            {
+                                "name": "Soldier",
+                                "health": 1,
+                                "max_health": 1,
+                                "unit_id": "campaign_1",
+                                "unit_type": "amazon_soldier",
+                            },
                         ],
                         "unique_id": "player_1_campaign",
                     },
@@ -50,7 +56,13 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
                         "name": "Home Army",
                         "location": "Player 2 Coastland",
                         "units": [
-                            {"name": "Runner", "health": 1, "max_health": 1, "unit_id": "home_p2_1", "unit_type": "amazon_runner"},
+                            {
+                                "name": "Runner",
+                                "health": 1,
+                                "max_health": 1,
+                                "unit_id": "home_p2_1",
+                                "unit_type": "amazon_runner",
+                            },
                         ],
                         "unique_id": "player_2_home",
                     },
@@ -58,7 +70,13 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
                         "name": "Horde Army",
                         "location": "Coastland",  # Same frontier terrain as Player 1
                         "units": [
-                            {"name": "Seer", "health": 1, "max_health": 1, "unit_id": "horde_p2_1", "unit_type": "amazon_seer"},
+                            {
+                                "name": "Seer",
+                                "health": 1,
+                                "max_health": 1,
+                                "unit_id": "horde_p2_1",
+                                "unit_type": "amazon_seer",
+                            },
                         ],
                         "unique_id": "player_2_horde",
                     },
@@ -72,7 +90,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         # Create game engine
         self.engine = GameEngine(
             self.player_setup_data,
-            "Player 1", 
+            "Player 1",
             self.frontier_terrain,
             self.distance_rolls,
         )
@@ -84,16 +102,19 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
     def _patch_engine_methods(self):
         """Patch engine methods to track calls."""
         original_submit = self.engine.submit_counter_maneuver_decision
+
         def tracked_submit(player_name, will_counter):
-            self.engine_calls.append(f"submit_counter_maneuver_decision({player_name}, {will_counter})")
+            self.engine_calls.append(
+                f"submit_counter_maneuver_decision({player_name}, {will_counter})"
+            )
             return original_submit(player_name, will_counter)
-        
+
         self.engine.submit_counter_maneuver_decision = tracked_submit
 
     def _choose_army_by_id(self, army_unique_id: str):
         """Helper to choose an army by its unique ID."""
         all_players_data = self.engine.get_all_players_data()
-        
+
         # Find the army across all players
         for player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
@@ -108,13 +129,13 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
                     }
                     self.engine.choose_acting_army(army_choice_data)
                     return
-        
+
         raise ValueError(f"Army with ID '{army_unique_id}' not found")
 
     def test_e2e_counter_maneuver_dialog_allow_button(self):
         """
         E2E Test: Counter-maneuver dialog "Allow Maneuver" button functionality
-        
+
         Flow:
         1. Set up maneuver scenario
         2. Trigger counter-maneuver request
@@ -130,13 +151,10 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # This should trigger counter-maneuver request
         # We'll simulate the dialog response programmatically
-        
+
         # Create the dialog that would be shown
         dialog = CounterManeuverDecisionDialog(
-            "Player 2", 
-            "Coastland", 
-            "Player 1", 
-            None
+            "Player 2", "Coastland", "Player 1", None
         )
 
         # Connect to track the signal
@@ -155,20 +173,24 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         self.assertEqual(player, "Player 2")
         self.assertEqual(decision, False)  # False = allow maneuver
 
-        print(f"✅ Signal emitted correctly: Player {player}, Decision: {'Allow' if not decision else 'Counter'}")
+        print(
+            f"✅ Signal emitted correctly: Player {player}, Decision: {'Allow' if not decision else 'Counter'}"
+        )
 
         # Now manually submit to engine to test the full flow
         self.engine.submit_counter_maneuver_decision("Player 2", False)
 
         # Verify engine method was called
-        self.assertIn("submit_counter_maneuver_decision(Player 2, False)", self.engine_calls)
-        
+        self.assertIn(
+            "submit_counter_maneuver_decision(Player 2, False)", self.engine_calls
+        )
+
         print("✅ Test completed - Allow Maneuver button works correctly")
 
     def test_e2e_counter_maneuver_dialog_counter_button(self):
         """
         E2E Test: Counter-maneuver dialog "Counter-Maneuver" button functionality
-        
+
         Flow:
         1. Set up maneuver scenario
         2. Trigger counter-maneuver request
@@ -184,10 +206,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Create the dialog that would be shown
         dialog = CounterManeuverDecisionDialog(
-            "Player 2", 
-            "Coastland", 
-            "Player 1", 
-            None
+            "Player 2", "Coastland", "Player 1", None
         )
 
         # Connect to track the signal
@@ -206,20 +225,24 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         self.assertEqual(player, "Player 2")
         self.assertEqual(decision, True)  # True = counter-maneuver
 
-        print(f"✅ Signal emitted correctly: Player {player}, Decision: {'Counter' if decision else 'Allow'}")
+        print(
+            f"✅ Signal emitted correctly: Player {player}, Decision: {'Counter' if decision else 'Allow'}"
+        )
 
         # Now manually submit to engine to test the full flow
         self.engine.submit_counter_maneuver_decision("Player 2", True)
 
         # Verify engine method was called
-        self.assertIn("submit_counter_maneuver_decision(Player 2, True)", self.engine_calls)
-        
+        self.assertIn(
+            "submit_counter_maneuver_decision(Player 2, True)", self.engine_calls
+        )
+
         print("✅ Test completed - Counter-Maneuver button works correctly")
 
     def test_e2e_dialog_button_signal_connection(self):
         """
         E2E Test: Verify dialog buttons are properly connected to signals
-        
+
         This test specifically checks that the button click handlers
         properly call the _make_decision method.
         """
@@ -228,43 +251,41 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Create dialog
         dialog = CounterManeuverDecisionDialog(
-            "Player 2", 
-            "Coastland", 
-            "Player 1", 
-            None
+            "Player 2", "Coastland", "Player 1", None
         )
 
         # Track method calls
         decision_calls = []
         original_make_decision = dialog._make_decision
+
         def tracked_make_decision(will_counter):
             decision_calls.append(will_counter)
             return original_make_decision(will_counter)
-        
+
         dialog._make_decision = tracked_make_decision
 
         # Simulate button clicks directly
         print("Step 1: Testing Counter-Maneuver button click")
         dialog.counter_button.click()
-        
+
         print("Step 2: Testing Allow Maneuver button click")
         dialog.allow_button.click()
 
         # Verify both button clicks were registered
         self.assertEqual(len(decision_calls), 2)
-        self.assertEqual(decision_calls[0], True)   # Counter button
+        self.assertEqual(decision_calls[0], True)  # Counter button
         self.assertEqual(decision_calls[1], False)  # Allow button
 
         print("✅ Both buttons correctly connected to _make_decision method")
         print(f"   Counter button call: {decision_calls[0]}")
         print(f"   Allow button call: {decision_calls[1]}")
-        
+
         print("✅ Test completed - button signal connections working")
 
     def test_e2e_full_counter_maneuver_dialog_flow(self):
         """
         E2E Test: Complete counter-maneuver dialog flow from start to finish
-        
+
         Flow:
         1. Trigger maneuver that requires counter-maneuver decision
         2. Verify counter-maneuver signal is emitted
@@ -278,7 +299,9 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         # Track signals
         signals_received = []
         self.engine.counter_maneuver_requested.connect(
-            lambda location, armies: signals_received.append(f"counter_maneuver_requested: {location}")
+            lambda location, armies: signals_received.append(
+                f"counter_maneuver_requested: {location}"
+            )
         )
 
         # Step 1: Set up contested maneuver
@@ -298,19 +321,21 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Step 4: Simulate dialog interaction
         print("Step 4: Testing dialog decision handling")
-        
+
         # Test allowing the maneuver
         self.engine.submit_counter_maneuver_decision("Player 2", False)
-        
+
         # Verify the call was tracked
-        self.assertIn("submit_counter_maneuver_decision(Player 2, False)", self.engine_calls)
+        self.assertIn(
+            "submit_counter_maneuver_decision(Player 2, False)", self.engine_calls
+        )
         print("✅ Decision processed by engine")
 
         # Step 5: Verify game progresses correctly
         print("Step 5: Verifying game state progression")
         # After allowing maneuver, should proceed to terrain direction choice
         # (This would normally trigger another signal, but we're testing the dialog part)
-        
+
         print("✅ Test completed - full counter-maneuver dialog flow working")
 
     def tearDown(self):

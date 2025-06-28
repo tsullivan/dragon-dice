@@ -158,16 +158,16 @@ class CarouselInputWidget(QWidget):
         if not value:
             return str(value)
 
-        # Import constants locally to avoid circular imports
+        # Import utilities locally to avoid circular imports
         try:
-            import constants
+            from utils.display_utils import clean_terrain_name, format_terrain_type
 
-            # Check if this value is a terrain name
-            if (
-                hasattr(constants, "TERRAIN_ICONS")
-                and str(value) in constants.TERRAIN_ICONS
-            ):
-                return constants.format_terrain_display(str(value))
+            # Extract clean terrain name from strings like "Coastland (Blue, Green)"
+            value_str = str(value)
+            clean_name = clean_terrain_name(value_str)
+
+            # Use format_terrain_type which directly looks up terrain names in TERRAIN_ICONS
+            return format_terrain_type(clean_name)
         except ImportError:
             pass
 

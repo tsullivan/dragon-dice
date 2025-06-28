@@ -628,101 +628,107 @@ class ActionResolver(QObject):
     def resolve_attacker_melee(self, dice_results_str: str) -> dict:
         """
         Resolve attacker melee dice results and return outcome.
-        
+
         Args:
             dice_results_str: String representation of dice results
-            
+
         Returns:
             Dict with 'hits', 'damage', and other result information
         """
         parsed_dice = self.parse_dice_string(dice_results_str, "MELEE")
-        
+
         hits = 0
         damage = 0
         effects = []
-        
+
         for die_result in parsed_dice:
             if die_result.get("type") == constants.ICON_MELEE:
                 hits += die_result.get("count", 0)
                 damage += die_result.get("count", 0)  # Each melee hit does 1 damage
             elif die_result.get("type") == constants.ICON_SAI:
-                effects.append({
-                    "type": "sai",
-                    "sai_type": die_result.get("sai_type", "unknown"),
-                    "count": die_result.get("count", 1)
-                })
-        
+                effects.append(
+                    {
+                        "type": "sai",
+                        "sai_type": die_result.get("sai_type", "unknown"),
+                        "count": die_result.get("count", 1),
+                    }
+                )
+
         return {
             "hits": hits,
             "damage": damage,
             "effects": effects,
-            "raw_results": parsed_dice
+            "raw_results": parsed_dice,
         }
 
     def resolve_magic(self, dice_results_str: str) -> dict:
         """
         Resolve magic dice results and return outcome.
-        
+
         Args:
             dice_results_str: String representation of dice results
-            
+
         Returns:
             Dict with magic effects and result information
         """
         parsed_dice = self.parse_dice_string(dice_results_str, "MAGIC")
-        
+
         magic_icons = 0
         effects = []
-        
+
         for die_result in parsed_dice:
             if die_result.get("type") == constants.ICON_MAGIC:
                 magic_icons += die_result.get("count", 0)
             elif die_result.get("type") == constants.ICON_SAI:
-                effects.append({
-                    "type": "sai",
-                    "sai_type": die_result.get("sai_type", "unknown"),
-                    "count": die_result.get("count", 1)
-                })
-        
+                effects.append(
+                    {
+                        "type": "sai",
+                        "sai_type": die_result.get("sai_type", "unknown"),
+                        "count": die_result.get("count", 1),
+                    }
+                )
+
         return {
             "magic_results": magic_icons,
             "effects_applied": magic_icons > 0,
             "effects": effects,
-            "raw_results": parsed_dice
+            "raw_results": parsed_dice,
         }
 
     def resolve_attacker_missile(self, dice_results_str: str) -> dict:
         """
         Resolve attacker missile dice results and return outcome.
-        
+
         Args:
             dice_results_str: String representation of dice results
-            
+
         Returns:
             Dict with 'hits', 'damage', and other result information
         """
         parsed_dice = self.parse_dice_string(dice_results_str, "MISSILE")
-        
+
         hits = 0
         damage = 0
         effects = []
-        
+
         for die_result in parsed_dice:
             if die_result.get("type") == constants.ICON_MISSILE:
                 hits += die_result.get("count", 0)
                 damage += die_result.get("count", 0)  # Each missile hit does 1 damage
             elif die_result.get("type") == constants.ICON_SAI:
-                effects.append({
-                    "type": "sai",
-                    "sai_type": die_result.get("sai_type", "unknown"),
-                    "count": die_result.get("count", 1)
-                })
-        
+                effects.append(
+                    {
+                        "type": "sai",
+                        "sai_type": die_result.get("sai_type", "unknown"),
+                        "count": die_result.get("count", 1),
+                    }
+                )
+
         return {
             "hits": hits,
             "damage": damage,
             "effects": effects,
-            "raw_results": parsed_dice
+            "raw_results": parsed_dice,
         }
 
     def resolve_missile_attack(

@@ -44,9 +44,7 @@ class ActionChoiceWidget(QWidget):
             constants.format_action_display("Missile Action")
         )
         self.missile_button.setMaximumWidth(150)
-        self.missile_button.clicked.connect(
-            lambda: self._emit_action_signal("MISSILE")
-        )
+        self.missile_button.clicked.connect(lambda: self._emit_action_signal("MISSILE"))
         button_layout.addWidget(self.missile_button)
 
         self.magic_button = QPushButton(constants.format_action_display("Magic Action"))
@@ -110,8 +108,12 @@ class ActionChoiceWidget(QWidget):
         # Skip button is always visible
         self.skip_button.setVisible(True)
 
-        print(f"[ActionChoiceWidget] Set available actions - Terrain face: {terrain_die_face}")
-        print(f"[ActionChoiceWidget] Button visibility - Melee: {self.melee_button.isVisible()}, Missile: {self.missile_button.isVisible()}, Magic: {self.magic_button.isVisible()}, Skip: {self.skip_button.isVisible()}")
+        print(
+            f"[ActionChoiceWidget] Set available actions - Terrain face: {terrain_die_face}"
+        )
+        print(
+            f"[ActionChoiceWidget] Button visibility - Melee: {self.melee_button.isVisible()}, Missile: {self.missile_button.isVisible()}, Magic: {self.magic_button.isVisible()}, Skip: {self.skip_button.isVisible()}"
+        )
 
     def _emit_action_signal(self, action_type: str):
         """Debug wrapper for action signal emission."""
