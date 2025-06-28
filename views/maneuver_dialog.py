@@ -167,6 +167,7 @@ class CounterManeuverDecisionDialog(QDialog):
 
     def _make_decision(self, will_counter: bool):
         """Emit the decision and close dialog."""
+        print(f"CounterManeuverDecisionDialog: {self.player_name} making decision: {will_counter}")
         self.decision_made.emit(self.player_name, will_counter)
         self.accept()
 
@@ -364,6 +365,8 @@ class ManeuverDialog(QDialog):
         self.game_engine.terrain_direction_choice_requested.connect(
             self._handle_terrain_direction_request
         )
+        # Connect to game state changes to auto-close when maneuver is complete
+        self.game_engine.game_state_updated.connect(self._check_if_should_close)
 
         # This coordinator dialog should never be visible - it just manages the flow
         self.setWindowTitle("Maneuver Coordinator")
@@ -383,23 +386,29 @@ class ManeuverDialog(QDialog):
     def _handle_counter_maneuver_request(self, location: str, opposing_armies: list):
         """Handle request for counter-maneuver decisions from opposing players."""
         print(f"ManeuverDialog: Handling counter-maneuver request at {location}")
+        print(f"ManeuverDialog: Opposing armies: {opposing_armies}")
 
         # Get unique opposing players
         opposing_players = list(set(army["player"] for army in opposing_armies))
+        print(f"ManeuverDialog: Opposing players: {opposing_players}")
+        
         self.pending_decisions = {}
         self.expected_decisions = set(opposing_players)
-        self.active_decision_dialogs = (
-            []
-        )  # Store dialog references to prevent garbage collection
+        self.active_decision_dialogs = []
 
-        # Show counter-maneuver decision dialogs for each opposing player
+        # Handle players sequentially (since typically it's one at a time in Dragon Dice)
         for player_name in opposing_players:
+            print(f"ManeuverDialog: Showing decision dialog for {player_name}")
             decision_dialog = CounterManeuverDecisionDialog(
                 player_name, location, self.current_player_name, None
             )
             decision_dialog.decision_made.connect(self._handle_counter_decision)
-            decision_dialog.show()  # Use show() for multiple simultaneous dialogs
-            self.active_decision_dialogs.append(decision_dialog)  # Keep reference
+            
+            # Show the dialog and wait for decision
+            result = decision_dialog.exec()  # This will block until decision is made
+            print(f"ManeuverDialog: Dialog result for {player_name}: {result}")
+            
+            # The signal should have been emitted by now
 
     def _handle_counter_decision(self, player_name: str, will_counter: bool):
         """Handle a player's counter-maneuver decision."""
@@ -407,18 +416,8 @@ class ManeuverDialog(QDialog):
             f"ManeuverDialog: {player_name} counter-maneuver decision: {will_counter}"
         )
 
-        self.pending_decisions[player_name] = will_counter
-
-        # Check if we have all decisions
-        if set(self.pending_decisions.keys()) >= self.expected_decisions:
-            # Close all decision dialogs
-            for dialog in getattr(self, "active_decision_dialogs", []):
-                dialog.close()
-            self.active_decision_dialogs = []
-
-            # All decisions received - submit to engine
-            for player, decision in self.pending_decisions.items():
-                self.game_engine.submit_counter_maneuver_decision(player, decision)
+        # Submit the decision immediately to the engine
+        self.game_engine.submit_counter_maneuver_decision(player_name, will_counter)
 
     def _handle_simultaneous_rolls_request(
         self,
@@ -479,7 +478,21 @@ class ManeuverDialog(QDialog):
         # Close the coordinator dialog
         self.accept()
 
+    def _check_if_should_close(self):
+        """Check if the dialog should auto-close based on game state."""
+        try:
+            current_march_step = self.game_engine.get_current_march_step()
+            print(f"[ManeuverDialog] Game state updated, march step: {current_march_step}")
+            
+            # If we've moved to SELECT_ACTION, the maneuver is complete
+            if current_march_step == "SELECT_ACTION":
+                print(f"[ManeuverDialog] Auto-closing due to SELECT_ACTION state")
+                self.accept()
+        except Exception as e:
+            print(f"[ManeuverDialog] Error checking game state: {e}")
+
     def closeEvent(self, event):
         """Handle dialog close event."""
+        print(f"[ManeuverDialog] Dialog closing")
         self.maneuver_cancelled.emit()
         super().closeEvent(event)

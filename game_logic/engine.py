@@ -203,6 +203,40 @@ class GameEngine(QObject):
             phase_display += f" - {self._current_action_step.replace('_', ' ').title()}"
         return phase_display
 
+    def get_current_phase(self):
+        """Get the current phase."""
+        return self._current_phase
+
+    def get_current_march_step(self):
+        """Get the current march step."""
+        return self._current_march_step
+
+    def get_current_action_step(self):
+        """Get the current action step."""
+        return self._current_action_step
+
+    def get_available_acting_armies(self):
+        """Get available armies that can act for the current player."""
+        current_player = self.get_current_player_name()
+        if not current_player:
+            return []
+        
+        player_data = self.game_state_manager.get_player_data(current_player)
+        if not player_data or "armies" not in player_data:
+            return []
+        
+        available_armies = []
+        for army_type, army_data in player_data["armies"].items():
+            if army_data.get("units") and len(army_data["units"]) > 0:
+                available_armies.append({
+                    "name": army_data.get("name", f"{army_type.title()} Army"),
+                    "army_type": army_type,
+                    "location": army_data.get("location", "Unknown"),
+                    "unique_id": army_data.get("unique_id"),
+                    "units": army_data.get("units", [])
+                })
+        return available_armies
+
     def decide_maneuver(self, wants_to_maneuver: bool):
         """Process maneuver decision according to Dragon Dice rules."""
         print(
@@ -670,11 +704,13 @@ class GameEngine(QObject):
         """Slot to sync cached phase state when TurnManager changes phases."""
         # Update cached state from TurnManager
         old_phase = self._current_phase
+        old_action_step = self._current_action_step
         self._current_phase = self.turn_manager.get_current_phase()
         self._current_march_step = self.turn_manager.get_current_march_step()
         self._current_action_step = self.turn_manager.get_current_action_step()
 
         print(f"GameEngine: Synced phase state - {old_phase} → {self._current_phase}")
+        print(f"GameEngine: Synced action step - {old_action_step} → {self._current_action_step}")
 
         # Re-emit the corrected phase display
         self.current_phase_changed.emit(self.get_current_phase_display())

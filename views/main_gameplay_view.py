@@ -417,6 +417,10 @@ class MainGameplayView(QWidget):
         # For now, just advance to the next phase
         print(f"{attacker} completed {action_type} action at {location}")
 
+        # Clear the action step before advancing phase
+        self.game_engine._current_action_step = ""
+        print(f"[MainGameplayView] Cleared action step after completing {action_type}")
+        
         # Advance to next phase
         self.game_engine.advance_phase()
 
@@ -481,13 +485,19 @@ class MainGameplayView(QWidget):
             self.continue_button.setText("Phase Auto-Advancing...")
 
     def _handle_action_selected(self, action_type: str):
+        print(f"[MainGameplayView] Action selected: {action_type}")
+        
         if action_type == constants.ACTION_MELEE:
+            print(f"[MainGameplayView] Emitting melee action signal")
             self.melee_action_selected_signal.emit()
         elif action_type == constants.ACTION_MISSILE:
+            print(f"[MainGameplayView] Emitting missile action signal")
             self.missile_action_selected_signal.emit()
         elif action_type == constants.ACTION_MAGIC:  # Use constant
+            print(f"[MainGameplayView] Emitting magic action signal")
             self.magic_action_selected_signal.emit()
         elif action_type == constants.ACTION_SKIP:
+            print(f"[MainGameplayView] Emitting skip action signal")
             self.skip_action_selected_signal.emit()
 
         # Mark that an action has been selected
@@ -500,25 +510,22 @@ class MainGameplayView(QWidget):
         current_phase = self.game_engine.current_phase
         current_march_step = self.game_engine.current_march_step
         current_action_step = self.game_engine.current_action_step
+        
+        current_state = (current_phase, current_march_step, current_action_step)
+        
+        # Check if this is a redundant update
+        if hasattr(self, "_last_phase_state") and self._last_phase_state == current_state:
+            print(f"MainGameplayView: Skipping redundant UI update")
+            return
+        
+        print(f"MainGameplayView: UI Update - Phase: {current_phase}, March: {current_march_step}, Action: {current_action_step}")
 
         # Reset phase actions completed when entering a new phase, march step, or action step
         if not hasattr(self, "_last_phase_state"):
-            self._last_phase_state = (
-                current_phase,
-                current_march_step,
-                current_action_step,
-            )
-        elif self._last_phase_state != (
-            current_phase,
-            current_march_step,
-            current_action_step,
-        ):
+            self._last_phase_state = current_state
+        else:
             self.phase_actions_completed = False
-            self._last_phase_state = (
-                current_phase,
-                current_march_step,
-                current_action_step,
-            )
+            self._last_phase_state = current_state
 
         # Update Phase Title
         current_phase_display = self.game_engine.get_current_phase_display()
@@ -526,18 +533,27 @@ class MainGameplayView(QWidget):
         self.phase_title_label.setText(phase_text)
 
         # Update Player Army Summaries
+        widgets_removed = 0
         for i in reversed(range(self.player_armies_info_layout.count())):
             widget = self.player_armies_info_layout.itemAt(i).widget()
             if widget:
                 widget.deleteLater()
+                widgets_removed += 1
+        
+        if widgets_removed > 0:
+            print(f"[MainGameplayView] Cleared {widgets_removed} existing player summary widgets")
 
         all_players_data = self.game_engine.get_all_player_summary_data()
         terrain_data = self.game_engine.get_all_terrain_data()
+        widgets_added = 0
         for player_data in all_players_data:
             player_name = player_data.get("name", "Unknown Player")
             summary_widget = PlayerSummaryWidget(player_name)
             summary_widget.update_summary(player_data, terrain_data)
             self.player_armies_info_layout.addWidget(summary_widget)
+            widgets_added += 1
+        
+        print(f"[MainGameplayView] Added {widgets_added} player summary widgets")
         if not all_players_data:
             self.player_armies_info_layout.addWidget(
                 QLabel("No player data available.")

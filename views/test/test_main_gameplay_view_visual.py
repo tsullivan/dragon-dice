@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication
 
 from views.main_gameplay_view import MainGameplayView
 from game_logic.engine import GameEngine  # To instantiate the game engine for the view
-from test_utils.visual_test_helpers import capture_widget_screenshot
+from test.utils.visual_test_helpers import capture_widget_screenshot
 import constants
 
 

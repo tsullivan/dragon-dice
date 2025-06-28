@@ -37,7 +37,7 @@ class ActionChoiceWidget(QWidget):
 
         self.melee_button = QPushButton(constants.format_action_display("Melee Action"))
         self.melee_button.setMaximumWidth(150)
-        self.melee_button.clicked.connect(lambda: self.action_selected.emit("MELEE"))
+        self.melee_button.clicked.connect(lambda: self._emit_action_signal("MELEE"))
         button_layout.addWidget(self.melee_button)
 
         self.missile_button = QPushButton(
@@ -45,13 +45,13 @@ class ActionChoiceWidget(QWidget):
         )
         self.missile_button.setMaximumWidth(150)
         self.missile_button.clicked.connect(
-            lambda: self.action_selected.emit("MISSILE")
+            lambda: self._emit_action_signal("MISSILE")
         )
         button_layout.addWidget(self.missile_button)
 
         self.magic_button = QPushButton(constants.format_action_display("Magic Action"))
         self.magic_button.setMaximumWidth(150)
-        self.magic_button.clicked.connect(lambda: self.action_selected.emit("MAGIC"))
+        self.magic_button.clicked.connect(lambda: self._emit_action_signal("MAGIC"))
         button_layout.addWidget(self.magic_button)
 
         # Add Skip Action button
@@ -60,7 +60,7 @@ class ActionChoiceWidget(QWidget):
         self.skip_button.setStyleSheet(
             "QPushButton { background-color: #868e96; color: white; font-weight: bold; }"
         )
-        self.skip_button.clicked.connect(lambda: self.action_selected.emit("SKIP"))
+        self.skip_button.clicked.connect(lambda: self._emit_action_signal("SKIP"))
         button_layout.addWidget(self.skip_button)
 
         main_layout.addLayout(button_layout)
@@ -106,3 +106,15 @@ class ActionChoiceWidget(QWidget):
 
         # Face 3+: Magic available
         self.magic_button.setVisible(terrain_die_face >= 3)
+
+        # Skip button is always visible
+        self.skip_button.setVisible(True)
+
+        print(f"[ActionChoiceWidget] Set available actions - Terrain face: {terrain_die_face}")
+        print(f"[ActionChoiceWidget] Button visibility - Melee: {self.melee_button.isVisible()}, Missile: {self.missile_button.isVisible()}, Magic: {self.magic_button.isVisible()}, Skip: {self.skip_button.isVisible()}")
+
+    def _emit_action_signal(self, action_type: str):
+        """Debug wrapper for action signal emission."""
+        print(f"[ActionChoiceWidget] Button clicked: {action_type}")
+        self.action_selected.emit(action_type)
+        print(f"[ActionChoiceWidget] Signal emitted: {action_type}")

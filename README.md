@@ -25,7 +25,7 @@ To manage complexity, the codebase is divided into several distinct domains, eac
 
 | Domain                     | Responsibility                                                                                                                          | Key Files/Modules                                           |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **1. Application Core**    | Initializes the Qt application, manages the main window, and the application's lifecycle.                                               | `main_app.py`, `main_window.py`                             |
+| **1. Application Core**    | Initializes the Qt application, manages the main window, and the application's lifecycle.                                               | `main.py`, `main_window.py`                             |
 | **2. Views (UI Screens)**  | Individual screens or UI components that the user interacts with. They display data and emit signals based on user actions.             | `views/` (e.g., `welcome_view.py`)                          |
 | **3. Controllers**         | Mediate between Views and the Model/Engine. They handle user input logic from views and update the model or trigger engine actions.     | `controllers/` (e.g., `gameplay_controller.py`)             |
 | **4. Game Logic & Engine** | The "Rules Lawyer." Enforces game rules, manages game state transitions, and processes player actions.                                  | `game_logic/engine.py` |
@@ -87,10 +87,10 @@ Before running the application, ensure you have **Python** installed on your sys
 
 ### Running the Application
 
-To run the game, execute the `main_app.py` script from the project's root directory:
+To run the game, execute the `main.py` script from the project's root directory:
 
 ```bash
-python main_app.py
+python main.py
 ```
 
 This will launch the Qt window and start the application, beginning with the Welcome Screen.

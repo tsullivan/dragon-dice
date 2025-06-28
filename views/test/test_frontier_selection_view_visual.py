@@ -1,7 +1,7 @@
 import pytest
 
 from views.frontier_selection_view import FrontierSelectionView
-from test_utils.visual_test_helpers import capture_widget_screenshot
+from test.utils.visual_test_helpers import capture_widget_screenshot
 
 
 def test_frontier_selection_view_render(qtbot):
