@@ -526,6 +526,15 @@ class MainGameplayView(QWidget):
             self.phase_actions_completed = False
             self._last_phase_state = current_state
 
+        # Hide all dynamic widgets initially (moved after redundancy check)
+        self.acting_army_widget.hide()
+        self.maneuver_input_widget.hide()
+        self.action_decision_widget.hide()
+        self.action_choice_widget.hide()
+        self.melee_action_widget.hide()
+        self.dragon_attack_prompt_label.hide()
+        self.dragon_attack_continue_button.hide()
+
         # Update Phase Title
         current_phase_display = self.game_engine.get_current_phase_display()
         phase_text = f"Phase: {current_phase_display}"
@@ -593,14 +602,6 @@ class MainGameplayView(QWidget):
         current_march_step = self.game_engine.current_march_step
         current_action_step = self.game_engine.current_action_step
 
-        # Hide all dynamic widgets initially
-        self.acting_army_widget.hide()
-        self.maneuver_input_widget.hide()
-        self.action_decision_widget.hide()
-        self.action_choice_widget.hide()
-        self.melee_action_widget.hide()
-        self.dragon_attack_prompt_label.hide()
-        self.dragon_attack_continue_button.hide()
 
         is_eighth_face_phase = current_phase == "EIGHTH_FACE"
         self.eighth_face_description_label.setVisible(is_eighth_face_phase)

@@ -261,7 +261,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
         1. Player 1 maneuvers
         2. Player 2 counter-maneuvers
         3. Simultaneous rolls result in tie
-        4. Should follow Dragon Dice tie resolution rules
+        4. Should follow Dragon Dice tie resolution rules (ties favor maneuvering army)
         """
         print("\n🧪 E2E Test: Counter-Maneuver Tie Resolution")
         print("=" * 50)
@@ -275,17 +275,21 @@ class TestCounterManeuverFlows(unittest.TestCase):
         print("Step 1: Submit tie roll results (3 vs 3)")
         self.engine.submit_maneuver_roll_results(3, 3)  # Tie
 
-        # In Dragon Dice, ties typically favor the defender
-        # Should NOT request terrain direction (maneuver failed)
+        # In Dragon Dice, ties favor the maneuvering army (per rules: "equals or exceeds")
+        # SHOULD request terrain direction (maneuver succeeded)
         terrain_direction_signals = [
             s for s in self.signals_received if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_direction_signals), 0)
+        self.assertEqual(len(terrain_direction_signals), 1)
 
-        # Should advance to action selection (maneuver failed)
+        # Complete the maneuver by choosing direction
+        print("Step 2: Player 1 chooses terrain direction")
+        self.engine.submit_terrain_direction_choice("UP")
+
+        # Should advance to action selection (maneuver succeeded)
         self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
 
-        print("✅ Test completed - tie correctly resolved in favor of defender")
+        print("✅ Test completed - tie correctly resolved in favor of maneuvering army")
 
     def test_e2e_counter_maneuver_multiple_opponents_mixed_responses(self):
         """

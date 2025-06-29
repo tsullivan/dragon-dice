@@ -445,16 +445,13 @@ class GameEngine(QObject):
 
         location = self._pending_maneuver["location"]
 
-        if maneuvering_results > counter_results:
-            # Maneuver succeeds - maneuvering player must beat defender (ties favor defender)
-            print("GameEngine: Maneuver successful (maneuvering > counter-maneuvering)")
+        if maneuvering_results >= counter_results:
+            # Maneuver succeeds - maneuvering player wins ties per Dragon Dice rules
+            print("GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)")
             self._execute_automatic_maneuver_success(location)
         else:
-            # Maneuver fails - defender wins ties per Dragon Dice rules
-            if maneuvering_results == counter_results:
-                print("GameEngine: Maneuver failed (tie - defender wins)")
-            else:
-                print("GameEngine: Maneuver failed (maneuvering < counter-maneuvering)")
+            # Maneuver fails - counter-maneuver beats maneuvering
+            print("GameEngine: Maneuver failed (maneuvering < counter-maneuvering)")
             # Proceed to action selection without terrain change
             self.march_step_change_requested.emit("SELECT_ACTION")
             self._current_march_step = "SELECT_ACTION"
@@ -891,12 +888,15 @@ class GameEngine(QObject):
         for player_name, player_state in all_players_state.items():
             army_list = []
             for army_key, army_data in player_state.get("armies", {}).items():
+                # Calculate actual unit points instead of allocated points
+                units = army_data.get("units", [])
+                total_unit_points = sum(unit.get("max_health", 0) for unit in units)
+                
                 army_list.append(
                     {
                         "name": army_data.get("name", army_key.title()),
-                        "points": army_data.get(
-                            "points_value", 0
-                        ),  # Ensure key matches GameStateManager
+                        "army_type": army_key,  # Include army type (home, campaign, horde)
+                        "points": total_unit_points,  # Show actual unit points, not allocated points
                         "location": army_data.get(
                             "location", constants.DEFAULT_UNKNOWN_VALUE
                         ),
