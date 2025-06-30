@@ -64,64 +64,71 @@ class ActionDecisionWidget(QWidget):
         self, army_data: Dict[str, Any], terrain_data: Dict[str, Any] = None
     ):
         """Set the acting army and show available actions based on terrain die face."""
-        army_name = army_data.get("name", "Unknown Army")
-        army_type = army_data.get("army_type", "unknown")
-        location = army_data.get("location", "Unknown")
-        unit_count = len(army_data.get("units", []))
-
-        # Add terrain icon
-        location_icon = ""
-        for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
-            if terrain_name in location:
-                location_icon = terrain_info["ICON"]
-                break
-        if not location_icon:
-            location_icon = "🗺️"  # Default terrain icon
-
-        # Add army type indicator
         try:
-            army_type_indicator = constants.get_army_type_icon(army_type)
-        except KeyError:
-            army_type_indicator = "⚔️"
+            army_name = army_data.get("name", "Unknown Army")
+            army_type = army_data.get("army_type", "unknown")
+            location = army_data.get("location", "Unknown")
+            unit_count = len(army_data.get("units", []))
 
-        # Update army info display
-        self.army_info_label.setText(
-            f"Acting Army: {army_type_indicator} {army_name}\n"
-            f"Location: {location_icon} {location} ({unit_count} units)"
-        )
+            # Add terrain icon
+            location_icon = ""
+            for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
+                if terrain_name in location:
+                    location_icon = terrain_info.get_color_string()
+                    break
+            if not location_icon:
+                location_icon = "🗺️"  # Default terrain icon
 
-        # Get terrain die face and determine available actions
-        terrain_die_face = 1  # Default
-        terrain_description = ""
+            # Add army type indicator
+            try:
+                army_type_indicator = constants.get_army_type_icon(army_type)
+            except KeyError:
+                army_type_indicator = "⚔️"
 
-        if terrain_data and location in terrain_data:
-            terrain_info = terrain_data[location]
-            terrain_die_face = terrain_info.get("face", 1)
-            terrain_type = terrain_info.get("type", "")
-            terrain_controller = terrain_info.get("controller", "")
+            # Update army info display
+            self.army_info_label.setText(
+                f"Acting Army: {army_type_indicator} {army_name}\n"
+                f"Location: {location_icon} {location} ({unit_count} units)"
+            )
 
-            if terrain_type == "Frontier":
-                terrain_description = f" (Frontier Terrain)"
-            elif terrain_type == "Home" and terrain_controller:
-                terrain_description = f" ({terrain_controller}'s Home Terrain)"
+            # Get terrain die face and determine available actions
+            terrain_die_face = 1  # Default
+            terrain_description = ""
+
+            if terrain_data and location in terrain_data:
+                terrain_info = terrain_data[location]
+                terrain_die_face = terrain_info.get("face", 1)
+                terrain_type = terrain_info.get("type", "")
+                terrain_controller = terrain_info.get("controller", "")
+
+                if terrain_type == "Frontier":
+                    terrain_description = f" (Frontier Terrain)"
+                elif terrain_type == "Home" and terrain_controller:
+                    terrain_description = f" ({terrain_controller}'s Home Terrain)"
+                else:
+                    terrain_description = f" (Home Terrain)"
+
+            # Determine available actions based on terrain die face
+            available_actions = self._get_available_actions(terrain_die_face)
+
+            actions_text = (
+                f"TERRAIN DIE FACE: {terrain_die_face}{terrain_description}\n\n"
+                f"AVAILABLE ACTIONS (based on terrain die face {terrain_die_face}):\n"
+            )
+
+            if available_actions:
+                for action in available_actions:
+                    actions_text += f"• {action}\n"
             else:
-                terrain_description = f" (Home Terrain)"
+                actions_text += "• No actions available at this terrain die face"
 
-        # Determine available actions based on terrain die face
-        available_actions = self._get_available_actions(terrain_die_face)
-
-        actions_text = (
-            f"TERRAIN DIE FACE: {terrain_die_face}{terrain_description}\n\n"
-            f"AVAILABLE ACTIONS (based on terrain die face {terrain_die_face}):\n"
-        )
-
-        if available_actions:
-            for action in available_actions:
-                actions_text += f"• {action}\n"
-        else:
-            actions_text += "• No actions available at this terrain die face"
-
-        self.actions_info_label.setText(actions_text)
+            self.actions_info_label.setText(actions_text)
+            
+        except Exception as e:
+            print(f"Error in ActionDecisionWidget.set_acting_army: {e}")
+            # Set fallback values to prevent crashes
+            self.army_info_label.setText("Acting Army: Error loading army data")
+            self.actions_info_label.setText("Error: Could not load terrain action data")
 
     def _get_available_actions(self, terrain_die_face: int) -> list:
         """

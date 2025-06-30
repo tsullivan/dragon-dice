@@ -1179,12 +1179,12 @@ class GameEngine(QObject):
         current_player = self.get_current_player_name()
         army_type = army_data.get("army_type")
         if army_type:
-            success = self.game_state_manager.set_active_army(current_player, army_type)
-            if success:
+            try:
+                self.game_state_manager.set_active_army(current_player, army_type)
                 print(f"Set active army type to '{army_type}' for {current_player}")
-            else:
+            except Exception as e:
                 print(
-                    f"Failed to set active army type '{army_type}' for {current_player}"
+                    f"Failed to set active army type '{army_type}' for {current_player}: {e}"
                 )
 
         # Mark that the first turn interaction has begun

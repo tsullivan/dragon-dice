@@ -1,25 +1,168 @@
 #!/usr/bin/env python3
 """
-Test runner for all end-to-end tests.
-Provides a single command to run all E2E tests with detailed reporting.
+Test runner for all E2E tests in the Dragon Dice application.
+Provides comprehensive testing with reporting and CI/CD integration.
 """
 
-import unittest
+import pytest
 import sys
 import os
-from PySide6.QtWidgets import QApplication
+import argparse
+import time
+from pathlib import Path
 
 # Add project root to path
-sys.path.insert(
-    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
-
-from test_first_march_flows import TestFirstMarchFlows
-from test_phase_transitions import TestPhaseTransitions
-from test_action_flows import TestActionFlows
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 
-class E2ETestRunner:
+def run_e2e_tests(test_categories=None, verbose=False, capture_output=True, save_screenshots=True):
+    """
+    Run E2E tests with specified options.
+    
+    Args:
+        test_categories: List of test categories to run (default: all)
+        verbose: Enable verbose output
+        capture_output: Capture test output
+        save_screenshots: Save screenshots during visual tests
+    """
+    print("🧪 Dragon Dice E2E Test Suite")
+    print("=" * 50)
+    
+    # Available test categories
+    available_categories = {
+        'complete': 'test_complete_gameplay_flow.py',
+        'visual': 'test_visual_validation.py', 
+        'performance': 'test_performance_validation.py',
+        'existing': 'test_*_flows.py'  # Existing E2E tests
+    }
+    
+    if test_categories is None:
+        test_categories = list(available_categories.keys())
+    
+    # Build pytest arguments
+    pytest_args = []
+    
+    # Add test files based on categories
+    test_dir = Path(__file__).parent
+    for category in test_categories:
+        if category in available_categories:
+            test_pattern = available_categories[category]
+            if category == 'existing':
+                # Add existing E2E tests
+                existing_tests = list(test_dir.glob('test_*_flows.py'))
+                pytest_args.extend(str(test) for test in existing_tests)
+            else:
+                test_file = test_dir / test_pattern
+                if test_file.exists():
+                    pytest_args.append(str(test_file))
+                else:
+                    print(f"⚠️ Test file not found: {test_file}")
+    
+    if not pytest_args:
+        print("❌ No test files found to run")
+        return False
+    
+    # Add pytest options
+    if verbose:
+        pytest_args.extend(['-v', '-s'])
+    else:
+        pytest_args.append('-v')
+    
+    if not capture_output:
+        pytest_args.append('--capture=no')
+    
+    # Add custom markers and options
+    pytest_args.extend([
+        '--tb=short',  # Short traceback format
+        '--maxfail=5',  # Stop after 5 failures
+        '--durations=10',  # Show 10 slowest tests
+    ])
+    
+    # Set environment variables for tests
+    if save_screenshots:
+        os.environ['E2E_SAVE_SCREENSHOTS'] = '1'
+    
+    print(f"Running tests: {', '.join(test_categories)}")
+    print()
+    
+    # Run the tests
+    start_time = time.time()
+    result = pytest.main(pytest_args)
+    end_time = time.time()
+    
+    # Print summary
+    print("\n" + "=" * 50)
+    print(f"🏁 E2E Tests Completed")
+    print(f"⏱️ Total time: {end_time - start_time:.1f} seconds")
+    
+    if result == 0:
+        print("✅ All tests passed!")
+    else:
+        print(f"❌ Tests failed with exit code: {result}")
+    
+    return result == 0
+
+
+def main():
+    """Main entry point for the test runner."""
+    parser = argparse.ArgumentParser(description='Run Dragon Dice E2E tests')
+    
+    parser.add_argument(
+        '--categories', 
+        nargs='+',
+        choices=['complete', 'visual', 'performance', 'existing', 'all'],
+        default=['all'],
+        help='Test categories to run'
+    )
+    
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help='Enable verbose output'
+    )
+    
+    parser.add_argument(
+        '--no-capture',
+        action='store_true', 
+        help='Do not capture output (useful for debugging)'
+    )
+    
+    parser.add_argument(
+        '--no-screenshots',
+        action='store_true',
+        help='Do not save screenshots during visual tests'
+    )
+    
+    parser.add_argument(
+        '--quick',
+        action='store_true',
+        help='Run only essential tests (complete gameplay flow)'
+    )
+    
+    args = parser.parse_args()
+    
+    # Handle special cases
+    if 'all' in args.categories:
+        categories = ['complete', 'visual', 'performance', 'existing']
+    elif args.quick:
+        categories = ['complete']
+    else:
+        categories = args.categories
+    
+    # Run the tests
+    success = run_e2e_tests(
+        test_categories=categories,
+        verbose=args.verbose,
+        capture_output=not args.no_capture,
+        save_screenshots=not args.no_screenshots
+    )
+    
+    sys.exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    main()
     """Comprehensive test runner for end-to-end tests."""
 
     def __init__(self):
