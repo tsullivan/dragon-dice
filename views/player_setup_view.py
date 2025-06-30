@@ -50,6 +50,7 @@ class PlayerSetupView(QWidget):
         terrain_display_options: list,  # List of tuples (name, colors)
         required_dragons: int,  # No change, good comment
         force_size: int,  # Total force size in points for army validation
+        app_data_model,  # AppDataModel instance
         initial_player_data: Optional[dict] = None,
         parent=None,
         current_player_index: int = 0,
@@ -71,8 +72,9 @@ class PlayerSetupView(QWidget):
         self.force_size = force_size  # Store total force size for army validation
         # Official rules: max 50% per army (rounded down)
         self.max_points_per_army = force_size // 2
+        self.app_data_model = app_data_model
         self.resource_manager = ResourceManager()
-        self.unit_roster = UnitRosterModel(self.resource_manager)
+        self.unit_roster = UnitRosterModel(app_data_model)
         self.help_model = HelpTextModel()
         self.current_player_index = current_player_index
 

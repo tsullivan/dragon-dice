@@ -16,62 +16,28 @@ class TestResourceManager(unittest.TestCase):
 
         self.resource_manager = ResourceManager(self.mock_paths)
 
-    def test_load_unit_definitions_success(self):
-        """Test successful loading of unit definitions from Python module."""
-        result = self.resource_manager.load_unit_definitions()
+    def test_resource_manager_focuses_on_file_io(self):
+        """Test that ResourceManager focuses on file I/O operations."""
+        # ResourceManager should only handle file operations like load_names()
+        # Unit definitions are now handled by AppDataModel
+        self.assertTrue(hasattr(self.resource_manager, "load_names"))
+        self.assertFalse(hasattr(self.resource_manager, "load_unit_definitions"))
 
-        # Should return a dict with species names as keys
-        self.assertIsInstance(result, dict)
-        self.assertGreater(len(result), 0)
-
-        # Should have Goblin species from actual data
-        self.assertIn("Goblin", result)
-
-        # Each species should have a list of unit dicts
-        goblin_units = result["Goblin"]
-        self.assertIsInstance(goblin_units, list)
-        self.assertGreater(len(goblin_units), 0)
-
-        # Each unit should have the expected fields
-        first_unit = goblin_units[0]
-        required_fields = [
-            "unit_type_id",
-            "display_name",
-            "max_health",
-            "unit_class_type",
-            "abilities",
+    def test_resource_manager_only_handles_files(self):
+        """Test that ResourceManager only handles external file operations."""
+        # ResourceManager methods should only deal with file I/O
+        # Unit data processing is now handled by AppDataModel
+        methods = [
+            method
+            for method in dir(self.resource_manager)
+            if not method.startswith("_")
         ]
-        for field in required_fields:
-            self.assertIn(field, first_unit)
+        expected_methods = ["load_names"]  # Only file I/O methods
+        file_io_methods = [method for method in methods if method.startswith("load_")]
 
-    def test_load_unit_definitions_file_not_found(self):
-        """Test handling of import errors (module not found)."""
-        with patch(
-            "config.resource_manager.UNIT_DATA",
-            side_effect=ImportError("Module not found"),
-        ):
-            with patch("builtins.print") as mock_print:
-                result = self.resource_manager.load_unit_definitions()
-
-                self.assertEqual(result, {})
-                mock_print.assert_called()
-                # Check that error message indicates import failure
-                error_call = mock_print.call_args[0][0]
-                self.assertIn("Failed to import", error_call)
-
-    def test_load_unit_definitions_invalid_json(self):
-        """Test handling of validation errors in unit data."""
-        with patch(
-            "config.resource_manager.validate_unit_data_integrity", return_value=False
-        ):
-            with patch("builtins.print") as mock_print:
-                result = self.resource_manager.load_unit_definitions()
-
-                self.assertEqual(result, {})
-                mock_print.assert_called()
-                # Check that error message indicates validation failure
-                error_call = mock_print.call_args[0][0]
-                self.assertIn("validation failed", error_call)
+        # Should only have file I/O related methods
+        for method in file_io_methods:
+            self.assertIn(method, expected_methods, f"Unexpected method: {method}")
 
     def test_load_names_success(self):
         """Test successful loading of names file."""
@@ -224,20 +190,18 @@ Storm Guard
         self.assertEqual(resource_manager.paths, custom_paths)
 
     def test_resource_manager_integration(self):
-        """Test ResourceManager integration with both methods."""
+        """Test ResourceManager integration with file operations."""
         names_content = "[Player]\nAlice\n[Army]\nTest Army\n"
 
         with patch("builtins.open", mock_open(read_data=names_content)):
-            units = self.resource_manager.load_unit_definitions()
             names = self.resource_manager.load_names()
-
-            # Unit definitions should load from Python module (real data)
-            self.assertIsInstance(units, dict)
-            self.assertGreater(len(units), 0)
 
             # Names should load from mocked file
             self.assertIn("Alice", names["Player"])
             self.assertIn("Test Army", names["Army"])
+
+            # ResourceManager should not handle unit definitions anymore
+            self.assertFalse(hasattr(self.resource_manager, "load_unit_definitions"))
 
 
 if __name__ == "__main__":

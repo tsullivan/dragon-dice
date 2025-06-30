@@ -109,6 +109,7 @@ class MainWindow(QMainWindow):
                 terrain_display_options=terrain_options,
                 required_dragons=required_dragons,
                 force_size=force_size,
+                app_data_model=self.data_model,
                 current_player_index=0,
                 initial_player_data=initial_data_for_player_1,
             )
@@ -210,6 +211,7 @@ class MainWindow(QMainWindow):
                     terrain_display_options=terrain_options,
                     required_dragons=required_dragons,
                     force_size=force_size,
+                    app_data_model=self.data_model,
                     current_player_index=last_player_idx,
                     initial_player_data=player_data_to_load,
                 )

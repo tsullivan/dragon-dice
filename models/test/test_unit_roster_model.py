@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 from models.unit_roster_model import UnitRosterModel
 from models.unit_model import UnitModel
+from models.app_data_model import AppDataModel
 
 
 class TestUnitRosterModel(unittest.TestCase):
@@ -37,27 +38,23 @@ class TestUnitRosterModel(unittest.TestCase):
             ],
         }
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_unit_roster_initialization(self, mock_resource_manager_class):
+    def test_unit_roster_initialization(self):
         """Test UnitRosterModel initialization."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         # Should have loaded unit definitions
-        mock_resource_manager.load_unit_definitions.assert_called_once()
+        mock_app_data_model.get_unit_definitions.assert_called_once()
         self.assertEqual(len(roster._unit_definitions), 3)  # 2 Goblin + 1 Amazon
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_get_available_unit_types(self, mock_resource_manager_class):
+    def test_get_available_unit_types(self):
         """Test getting available unit types."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
         unit_types = roster.get_available_unit_types()
 
         self.assertEqual(len(unit_types), 3)
@@ -81,14 +78,12 @@ class TestUnitRosterModel(unittest.TestCase):
         cutthroat_unit = next(u for u in unit_types if u["id"] == "goblin_cutthroat")
         self.assertEqual(cutthroat_unit["cost"], 2)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_get_available_unit_types_by_species(self, mock_resource_manager_class):
+    def test_get_available_unit_types_by_species(self):
         """Test getting unit types grouped by species."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
         units_by_species = roster.get_available_unit_types_by_species()
 
         # Should have two species
@@ -106,14 +101,12 @@ class TestUnitRosterModel(unittest.TestCase):
         amazon_unit_ids = [unit["id"] for unit in units_by_species["Amazon"]]
         self.assertIn("amazon_warrior", amazon_unit_ids)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_get_unit_definition(self, mock_resource_manager_class):
+    def test_get_unit_definition(self):
         """Test getting specific unit definitions."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         # Test existing unit
         thug_def = roster.get_unit_definition("goblin_thug")
@@ -126,14 +119,12 @@ class TestUnitRosterModel(unittest.TestCase):
         invalid_def = roster.get_unit_definition("invalid_unit")
         self.assertIsNone(invalid_def)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_create_unit_instance(self, mock_resource_manager_class):
+    def test_create_unit_instance(self):
         """Test creating unit instances from definitions."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         # Test creating valid unit instance
         unit_instance = roster.create_unit_instance(
@@ -148,14 +139,12 @@ class TestUnitRosterModel(unittest.TestCase):
         self.assertEqual(unit_instance.health, 1)
         self.assertEqual(unit_instance.max_health, 1)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_create_unit_instance_with_default_name(self, mock_resource_manager_class):
+    def test_create_unit_instance_with_default_name(self):
         """Test creating unit instance with default name."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         unit_instance = roster.create_unit_instance(
             "goblin_cutthroat", "test_instance_id"
@@ -166,14 +155,12 @@ class TestUnitRosterModel(unittest.TestCase):
         self.assertEqual(unit_instance.health, 2)
         self.assertEqual(unit_instance.max_health, 2)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_create_unit_instance_invalid_type(self, mock_resource_manager_class):
+    def test_create_unit_instance_invalid_type(self):
         """Test creating unit instance with invalid unit type."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         unit_instance = roster.create_unit_instance(
             "invalid_unit_type", "test_instance_id"
@@ -181,14 +168,12 @@ class TestUnitRosterModel(unittest.TestCase):
 
         self.assertIsNone(unit_instance)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_abilities_mapping(self, mock_resource_manager_class):
+    def test_abilities_mapping(self):
         """Test that abilities are properly mapped in unit creation."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         unit_instance = roster.create_unit_instance(
             "amazon_warrior", "test_instance_id"
@@ -202,14 +187,12 @@ class TestUnitRosterModel(unittest.TestCase):
         self.assertEqual(id_results["MISSILE"], 1)
         self.assertEqual(id_results["SAVE"], 1)
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_empty_unit_data_handling(self, mock_resource_manager_class):
+    def test_empty_unit_data_handling(self):
         """Test handling of empty unit data."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = {}
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = {}
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         # Should handle empty data gracefully
         unit_types = roster.get_available_unit_types()
@@ -221,9 +204,8 @@ class TestUnitRosterModel(unittest.TestCase):
         unit_def = roster.get_unit_definition("any_unit")
         self.assertIsNone(unit_def)
 
-    @patch("models.unit_roster_model.ResourceManager")
     @unittest.skip("Test disabled - needs unit data structure refactoring")
-    def test_unit_data_structure_validation(self, mock_resource_manager_class):
+    def test_unit_data_structure_validation(self):
         """Test that unit data structure is properly validated."""
         # Malformed unit data missing required fields
         malformed_data = {
@@ -235,11 +217,10 @@ class TestUnitRosterModel(unittest.TestCase):
             ]
         }
 
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = malformed_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = malformed_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         # Should handle malformed data gracefully
         try:
@@ -250,14 +231,12 @@ class TestUnitRosterModel(unittest.TestCase):
             # If it does fail, it should be a controlled failure
             self.assertIsInstance(e, (KeyError, AttributeError))
 
-    @patch("models.unit_roster_model.ResourceManager")
-    def test_unit_roster_caching(self, mock_resource_manager_class):
+    def test_unit_roster_caching(self):
         """Test that unit roster data is cached properly."""
-        mock_resource_manager = Mock()
-        mock_resource_manager.load_unit_definitions.return_value = self.sample_unit_data
-        mock_resource_manager_class.return_value = mock_resource_manager
+        mock_app_data_model = Mock(spec=AppDataModel)
+        mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
-        roster = UnitRosterModel()
+        roster = UnitRosterModel(mock_app_data_model)
 
         # Multiple calls should not reload data
         roster.get_available_unit_types()
@@ -265,7 +244,7 @@ class TestUnitRosterModel(unittest.TestCase):
         roster.get_unit_definition("goblin_thug")
 
         # Should only have loaded once during initialization
-        mock_resource_manager.load_unit_definitions.assert_called_once()
+        mock_app_data_model.get_unit_definitions.assert_called_once()
 
 
 if __name__ == "__main__":
