@@ -435,7 +435,10 @@ class PlayerSetupView(QWidget):
 
             # Extract species from unit_type_id (e.g., "amazon_war_driver" -> "Amazon")
             species = self._extract_species_from_unit_type_id(unit_type_id)
-            species_unit_name = f"{species} {unit_name}"
+
+            # Get species with element icons
+            species_with_icons = self._get_species_with_element_icons(species)
+            species_unit_name = f"{species_with_icons} {unit_name}"
 
             unit_counts[species_unit_name] = unit_counts.get(species_unit_name, 0) + 1
 
@@ -464,13 +467,50 @@ class PlayerSetupView(QWidget):
 
         return "Unknown"
 
+    def _get_species_with_element_icons(self, species_name: str) -> str:
+        """Get species name with element color icons prepended."""
+        try:
+            from models.species_model import ALL_SPECIES
+
+            # Try direct lookup first
+            species_key = species_name.upper().replace(" ", "_")
+            species = ALL_SPECIES.get(species_key)
+
+            # If not found, try matching by display name
+            if not species:
+                for species_obj in ALL_SPECIES.values():
+                    if (
+                        species_obj.name.lower() == species_name.lower()
+                        or species_obj.display_name.lower() == species_name.lower()
+                    ):
+                        species = species_obj
+                        break
+
+            if species:
+                element_icons = "".join(species.get_element_icons())
+                return f"{element_icons} {species_name}"
+        except:
+            pass
+
+        # Fallback to original species name
+        return species_name
+
     def update_for_player(
         self, player_index, player_data_to_load: Optional[dict] = None
     ):
+        print(
+            f"PlayerSetupView: update_for_player called for player {player_index + 1}"
+        )
+        print(
+            f"PlayerSetupView: player_data_to_load is None: {player_data_to_load is None}"
+        )
+
         self.current_player_index = player_index
         player_display_num = self.current_player_index + 1
         self.title_label.setText(f"Player {player_display_num} Setup")
         self.player_identity_widget.set_player_display_number(player_display_num)
+
+        print(f"PlayerSetupView: Updated title to 'Player {player_display_num} Setup'")
 
         if player_data_to_load:
             self.player_identity_widget.set_name(player_data_to_load.get("name", ""))
@@ -547,6 +587,11 @@ class PlayerSetupView(QWidget):
                 f"Next Player ({self.current_player_index +
                                 2}/{self.num_players})"
             )
+
+        # Ensure the widget is properly updated and visible
+        self.update()
+        self.repaint()
+        print(f"PlayerSetupView: update_for_player completed successfully")
 
     def _update_horde_visibility(self):
         show_horde = self.num_players > 1

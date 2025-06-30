@@ -602,7 +602,6 @@ class MainGameplayView(QWidget):
         current_march_step = self.game_engine.current_march_step
         current_action_step = self.game_engine.current_action_step
 
-
         is_eighth_face_phase = current_phase == "EIGHTH_FACE"
         self.eighth_face_description_label.setVisible(is_eighth_face_phase)
         self.eighth_face_input_field.setVisible(is_eighth_face_phase)
@@ -626,7 +625,7 @@ class MainGameplayView(QWidget):
             self.game_engine.advance_phase()
         elif current_action_step == "AWAITING_MAGIC_ROLL":
             print("MainGameplayView: In magic action step")
-            # For now, advance past magic since we don't have a widget yet  
+            # For now, advance past magic since we don't have a widget yet
             self.game_engine.advance_phase()
         elif current_action_step == "AWAITING_DEFENDER_SAVES":
             print("MainGameplayView: In defender saves step - showing defender input")

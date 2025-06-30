@@ -5,7 +5,7 @@ import pytest
 # from main_window import MainWindow # No longer needed for this direct view test
 from views.player_setup_view import PlayerSetupView
 from test.utils.visual_test_helpers import capture_widget_screenshot
-from utils.constants import TERRAIN_DATA  # For mock terrain options
+from models.terrain_model import TERRAIN_DATA  # For mock terrain options
 
 
 def test_player_setup_view_direct_render(qtbot):  # Use qtbot fixture
@@ -14,7 +14,7 @@ def test_player_setup_view_direct_render(qtbot):  # Use qtbot fixture
     # Mock data for PlayerSetupView - convert new structure to expected format
     mock_num_players = 2
     mock_terrain_options = [
-        (name, info["COLORS"]) for name, info in TERRAIN_DATA.items()
+        (terrain.name, terrain.element_colors) for terrain in TERRAIN_DATA.values()
     ]
     mock_required_dragons = 2  # As per AppDataModel.get_required_dragon_count()
     mock_force_size = 24  # Add required force_size parameter

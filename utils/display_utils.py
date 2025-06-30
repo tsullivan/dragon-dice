@@ -19,14 +19,16 @@ def format_terrain_type(terrain_type: str) -> str:
         Formatted string with icon prefix (e.g., "🌊 Coastland", "🏔️ Frontier")
     """
     icon = constants.get_terrain_or_location_icon(terrain_type)
-    
-    # Use DISPLAY_NAME from constants if available
+
+    # Use display_name from terrain/location objects
     terrain_key = terrain_type.upper()
     if terrain_key in constants.TERRAIN_DATA:
-        display_name = constants.TERRAIN_DATA[terrain_key]["DISPLAY_NAME"]
+        terrain = constants.TERRAIN_DATA[terrain_key]
+        display_name = terrain.display_name
         return f"{icon} {display_name}"
     elif terrain_key in constants.LOCATION_DATA:
-        display_name = constants.LOCATION_DATA[terrain_key]["DISPLAY_NAME"]
+        location = constants.LOCATION_DATA[terrain_key]
+        display_name = location.display_name
         return f"{icon} {display_name}"
     else:
         # Fallback to original terrain_type if not found in constants
@@ -154,15 +156,61 @@ def format_terrain_summary(
     # Clean the terrain name to remove color information
     clean_name = clean_terrain_name(terrain_name)
 
-    terrain_icon = constants.get_terrain_or_location_icon(terrain_type)
+    # Extract base terrain type and use DISPLAY_NAME from constants
+    display_name = clean_name
+    if " " in clean_name:
+        # Handle names like "Player 1 Coastland" -> extract "Coastland"
+        parts = clean_name.split()
+        if len(parts) >= 3 and parts[0] == "Player":
+            base_terrain = " ".join(parts[2:])
+            terrain_key = base_terrain.upper()
+            if terrain_key in constants.TERRAIN_DATA:
+                terrain = constants.TERRAIN_DATA[terrain_key]
+                display_name = terrain.display_name
+            else:
+                display_name = base_terrain
+        else:
+            # Check if entire name is a terrain type
+            terrain_key = clean_name.upper()
+            if terrain_key in constants.TERRAIN_DATA:
+                terrain = constants.TERRAIN_DATA[terrain_key]
+                display_name = terrain.display_name
+    else:
+        # Single word - check if it's a known terrain type
+        terrain_key = clean_name.upper()
+        if terrain_key in constants.TERRAIN_DATA:
+            terrain = constants.TERRAIN_DATA[terrain_key]
+            display_name = terrain.display_name
+
+    # For terrain types, get_terrain_or_location_icon now returns color icons
+    # For locations (HOME, FRONTIER), it returns location icons
+    location_icon = constants.get_terrain_or_location_icon(terrain_type)
+
+    # Get terrain color icons separately for terrain names
+    terrain_colors = ""
+    terrain_key = display_name.upper()
+    if terrain_key in constants.TERRAIN_DATA:
+        terrain = constants.TERRAIN_DATA[terrain_key]
+        terrain_colors = terrain.get_color_string()
+    else:
+        # Fallback - try to extract base terrain type from complex names
+        if " " in display_name:
+            parts = display_name.split()
+            if len(parts) >= 3 and parts[0] == "Player":
+                base_terrain = " ".join(parts[2:])
+                base_terrain_key = base_terrain.upper()
+                if base_terrain_key in constants.TERRAIN_DATA:
+                    terrain = constants.TERRAIN_DATA[base_terrain_key]
+                    terrain_colors = terrain.get_color_string()
+
     face_display = format_terrain_face(face_number)
 
     if terrain_type.upper() == "FRONTIER":
-        return f"{terrain_icon} {clean_name} ({face_display}) - Frontier Terrain"
+        return f"{location_icon} Frontier Terrain: {terrain_colors} {display_name} ({face_display})"
     elif controller and terrain_type.upper() == "HOME":
-        return f"{terrain_icon} {clean_name} ({face_display}) - {controller}'s Home"
+        return f"{location_icon} {controller}'s Home: {terrain_colors} {display_name} ({face_display})"
     else:
-        return f"{terrain_icon} {clean_name} ({face_display})"
+        return f"{terrain_colors} {display_name} ({face_display})"
 
 
 def format_player_turn_label(player_name: str) -> str:

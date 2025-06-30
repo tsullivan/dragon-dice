@@ -105,6 +105,34 @@ class UnitSelectionDialog(QDialog):
 
         self._populate_selected_units_table()
 
+    def _get_species_display_name(self, species_name: str) -> str:
+        """Get species display name with element color icons."""
+        try:
+            from models.species_model import ALL_SPECIES
+
+            # Try direct lookup first
+            species_key = species_name.upper().replace(" ", "_")
+            species = ALL_SPECIES.get(species_key)
+
+            # If not found, try matching by display name
+            if not species:
+                for species_obj in ALL_SPECIES.values():
+                    if (
+                        species_obj.name.lower() == species_name.lower()
+                        or species_obj.display_name.lower() == species_name.lower()
+                    ):
+                        species = species_obj
+                        break
+
+            if species:
+                element_icons = "".join(species.get_element_icons())
+                return f"{element_icons} {species_name}"
+        except:
+            pass
+
+        # Fallback to original species name
+        return species_name
+
     def _sort_units_for_display(self, units_list):
         """
         Sort units by health points (ascending), then class type (ascending), then unit name (ascending).
@@ -162,7 +190,10 @@ class UnitSelectionDialog(QDialog):
                 )
             )
             tab_layout.addWidget(table)
-            self.available_units_tabs.addTab(tab_content_widget, species)
+
+            # Get species element colors and create tab name with icons
+            tab_name = self._get_species_display_name(species)
+            self.available_units_tabs.addTab(tab_content_widget, tab_name)
 
     def _populate_selected_units_table(self):
         self.selected_units_table.setRowCount(len(self.selected_units))

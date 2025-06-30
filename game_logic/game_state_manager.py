@@ -10,6 +10,57 @@ from models.die_model import DieModel  # Import DieModel
 from models.unit_model import UnitModel
 
 
+# Custom exceptions for game state management
+class GameStateError(Exception):
+    """Base exception for game state errors."""
+
+    pass
+
+
+class PlayerNotFoundError(GameStateError):
+    """Raised when a player cannot be found in the game state."""
+
+    def __init__(self, player_name: str):
+        super().__init__(f"Player '{player_name}' not found in game state")
+        self.player_name = player_name
+
+
+class ArmyNotFoundError(GameStateError):
+    """Raised when an army cannot be found for a player."""
+
+    def __init__(self, player_name: str, army_type: str):
+        super().__init__(f"Army '{army_type}' not found for player '{player_name}'")
+        self.player_name = player_name
+        self.army_type = army_type
+
+
+class TerrainNotFoundError(GameStateError):
+    """Raised when terrain data cannot be found."""
+
+    def __init__(self, terrain_name: str):
+        super().__init__(f"Terrain '{terrain_name}' not found in game state")
+        self.terrain_name = terrain_name
+
+
+class UnitNotFoundError(GameStateError):
+    """Raised when a unit cannot be found in an army."""
+
+    def __init__(self, unit_name: str, army_identifier: str):
+        super().__init__(f"Unit '{unit_name}' not found in army '{army_identifier}'")
+        self.unit_name = unit_name
+        self.army_identifier = army_identifier
+
+
+class InvalidArmyIdentifierError(GameStateError):
+    """Raised when an army identifier cannot be parsed."""
+
+    def __init__(self, army_identifier: str):
+        super().__init__(
+            f"Invalid army identifier: '{army_identifier}'. Expected format: 'player_name_army_type'"
+        )
+        self.army_identifier = army_identifier
+
+
 class GameStateManager(QObject):
     """
     Manages the dynamic state of the game during gameplay.
@@ -326,8 +377,10 @@ class GameStateManager(QObject):
                 # If not found as a separate word, return the uppercase version
                 return terrain_name
 
-        # Fallback: return the location as-is if no terrain type found
-        return location
+        # No fallback - raise error if terrain type cannot be determined
+        raise TerrainNotFoundError(
+            f"Cannot extract terrain type from location: {location}"
+        )
 
     def generate_army_identifier(self, player_name: str, army_type: str) -> str:
         """
@@ -337,54 +390,46 @@ class GameStateManager(QObject):
         safe_player_name = player_name.replace(" ", "_").replace("'", "").lower()
         return f"{safe_player_name}_{army_type}"
 
-    def parse_army_identifier(
-        self, army_identifier: str
-    ) -> tuple[Optional[str], Optional[str]]:
+    def parse_army_identifier(self, army_identifier: str) -> tuple[str, str]:
         """
         Parse an army identifier back into player name and army type.
-        Returns (player_name, army_type) or (None, None) if parsing fails.
+        Returns (player_name, army_type) or raises InvalidArmyIdentifierError.
         """
-        # Handle legacy simple identifiers
-        if army_identifier in ["home", "campaign", "horde"]:
-            return None, army_identifier
-
-        # Handle new specific identifiers
         parts = army_identifier.split("_")
-        if len(parts) >= 2:
-            army_type = parts[-1]  # Last part is army type
-            player_part = "_".join(parts[:-1])  # Everything before last part
+        if len(parts) < 2:
+            raise InvalidArmyIdentifierError(army_identifier)
 
-            # Find matching player by reconstructing their safe name
-            for player_name in self.players.keys():
-                safe_name = player_name.replace(" ", "_").replace("'", "").lower()
-                if safe_name == player_part:
-                    return player_name, army_type
+        army_type = parts[-1]  # Last part is army type
+        if army_type not in ["home", "campaign", "horde"]:
+            raise InvalidArmyIdentifierError(army_identifier)
 
-        return None, None
+        player_part = "_".join(parts[:-1])  # Everything before last part
+
+        # Find matching player by reconstructing their safe name
+        for player_name in self.players.keys():
+            safe_name = player_name.replace(" ", "_").replace("'", "").lower()
+            if safe_name == player_part:
+                return player_name, army_type
+
+        raise InvalidArmyIdentifierError(army_identifier)
 
     def get_army_by_identifier(
         self, army_identifier: str
-    ) -> tuple[Optional[str], Optional[Dict[str, Any]]]:
+    ) -> tuple[str, Dict[str, Any]]:
         """
-        Get army data by identifier. Returns (player_name, army_data) or (None, None).
-        Supports both legacy ("home") and specific ("player_1_home") identifiers.
+        Get army data by identifier. Returns (player_name, army_data).
+        Raises appropriate exceptions if army cannot be found.
         """
         player_name, army_type = self.parse_army_identifier(army_identifier)
 
-        if not army_type:
-            return None, None
-
-        # If no specific player parsed, try to find by context or current player
-        if not player_name:
-            # For legacy identifiers, we need context - this is a limitation
-            # In practice, we'd need to track the current acting player
-            return None, None
-
         player_data = self.get_player_data(player_name)
         if not player_data:
-            return None, None
+            raise PlayerNotFoundError(player_name)
 
         army_data = player_data.get("armies", {}).get(army_type)
+        if not army_data:
+            raise ArmyNotFoundError(player_name, army_type)
+
         return player_name, army_data
 
     def update_army_identifiers_to_specific(self):
@@ -408,43 +453,44 @@ class GameStateManager(QObject):
     # Army management methods
     def get_unit_health(
         self, player_name: str, army_identifier: str, unit_name: str
-    ) -> Optional[int]:
+    ) -> int:
         """Get the current health of a specific unit."""
-        # Support both legacy and specific army identifiers
-        if player_name and army_identifier in ["home", "campaign", "horde"]:
-            # Legacy identifier - use provided player_name
+        # Support both direct army types and specific army identifiers
+        if army_identifier in ["home", "campaign", "horde"]:
+            # Direct army type - use provided player_name
             player_data = self.get_player_data(player_name)
             if not player_data:
-                return None
+                raise PlayerNotFoundError(player_name)
             army = player_data.get("armies", {}).get(army_identifier)
+            if not army:
+                raise ArmyNotFoundError(player_name, army_identifier)
         else:
             # Specific identifier - parse to get army
             parsed_player, army = self.get_army_by_identifier(army_identifier)
-            if not army:
-                return None
 
         for unit in army.get("units", []):
             if unit.get("name") == unit_name:
                 return unit.get("health", 0)
-        return None
+
+        raise UnitNotFoundError(unit_name, army_identifier)
 
     def update_unit_health(
         self, player_name: str, army_identifier: str, unit_name: str, new_health: int
-    ) -> bool:
+    ) -> None:
         """Update the health of a specific unit."""
-        # Support both legacy and specific army identifiers
-        if player_name and army_identifier in ["home", "campaign", "horde"]:
-            # Legacy identifier - use provided player_name
+        # Support both direct army types and specific army identifiers
+        if army_identifier in ["home", "campaign", "horde"]:
+            # Direct army type - use provided player_name
             player_data = self.get_player_data(player_name)
             if not player_data:
-                return False
+                raise PlayerNotFoundError(player_name)
             army = player_data.get("armies", {}).get(army_identifier)
+            if not army:
+                raise ArmyNotFoundError(player_name, army_identifier)
             target_player = player_name
         else:
             # Specific identifier - parse to get army
             target_player, army = self.get_army_by_identifier(army_identifier)
-            if not army or not target_player:
-                return False
 
         for unit in army.get("units", []):
             if unit.get("name") == unit_name:
@@ -453,23 +499,24 @@ class GameStateManager(QObject):
                     self._move_unit_to_dua(target_player, unit)
                     army["units"].remove(unit)
                 self.game_state_changed.emit()
-                return True
-        return False
+                return
+
+        raise UnitNotFoundError(unit_name, army_identifier)
 
     def move_unit_between_armies(
         self, player_name: str, unit_name: str, from_army: str, to_army: str
-    ) -> bool:
+    ) -> None:
         """Move a unit from one army to another."""
         player_data = self.get_player_data(player_name)
-        if not player_data:
-            return False
-
         armies = player_data.get("armies", {})
-        source_army = armies.get(from_army)
-        target_army = armies.get(to_army)
 
-        if not source_army or not target_army:
-            return False
+        source_army = armies.get(from_army)
+        if not source_army:
+            raise ArmyNotFoundError(player_name, from_army)
+
+        target_army = armies.get(to_army)
+        if not target_army:
+            raise ArmyNotFoundError(player_name, to_army)
 
         # Find and remove unit from source army
         unit_to_move = None
@@ -478,16 +525,16 @@ class GameStateManager(QObject):
                 unit_to_move = unit
                 break
 
-        if unit_to_move:
-            source_army["units"].remove(unit_to_move)
-            target_army["units"].append(unit_to_move)
-            self.game_state_changed.emit()
-            return True
-        return False
+        if not unit_to_move:
+            raise UnitNotFoundError(unit_name, from_army)
+
+        source_army["units"].remove(unit_to_move)
+        target_army["units"].append(unit_to_move)
+        self.game_state_changed.emit()
 
     def _move_unit_to_dua(self, player_name: str, unit: Dict[str, Any]):
         """Move a defeated unit to the Dead Unit Area (DUA)."""
-        player_data = self.get_player_data(player_name)
+        player_data = self.get_player_data_safe(player_name)
         if player_data:
             player_data.setdefault("dead_unit_area", []).append(unit)
 
@@ -577,41 +624,29 @@ class GameStateManager(QObject):
 
     def update_army_location(
         self, player_name: str, army_identifier: str, location: str
-    ) -> bool:
+    ) -> None:
         """Update the location of an army."""
         player_data = self.get_player_data(player_name)
-        if not player_data:
-            return False
-
         army = player_data.get("armies", {}).get(army_identifier)
         if not army:
-            return False
+            raise ArmyNotFoundError(player_name, army_identifier)
 
         army["location"] = location
         self.game_state_changed.emit()
-        return True
 
     def update_terrain_control(
         self, terrain_name: str, controlling_player: Optional[str]
-    ) -> bool:
+    ) -> None:
         """Update which player controls a terrain."""
         terrain = self.get_terrain_data(terrain_name)
-        if not terrain:
-            return False
-
         terrain["controlling_player"] = controlling_player
         self.game_state_changed.emit()
-        return True
 
-    def update_terrain_face(self, terrain_name: str, face: str) -> bool:
+    def update_terrain_face(self, terrain_name: str, face: str) -> None:
         """Update the face-up terrain."""
         terrain = self.get_terrain_data(terrain_name)
-        if not terrain:
-            return False
-
         terrain["face"] = int(face) if isinstance(face, str) else face
         self.game_state_changed.emit()
-        return True
 
     def get_armies_at_location(self, location: str) -> List[Dict[str, Any]]:
         """Get all armies at a specific location."""
@@ -686,27 +721,23 @@ class GameStateManager(QObject):
     def get_reserve_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve pool (available for deployment) for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("reserve_pool", []) if player_data else []
+        return player_data.get("reserve_pool", [])
 
     def get_reserve_area(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve area (tactical repositioning) for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("reserve_area", []) if player_data else []
+        return player_data.get("reserve_area", [])
 
     def get_summoning_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the summoning pool for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("summoning_pool", []) if player_data else []
+        return player_data.get("summoning_pool", [])
 
-    def add_to_summoning_pool(self, player_name: str, unit: Dict[str, Any]) -> bool:
+    def add_to_summoning_pool(self, player_name: str, unit: Dict[str, Any]) -> None:
         """Add a unit to the summoning pool."""
         player_data = self.get_player_data(player_name)
-        if not player_data:
-            return False
-
         player_data.setdefault("summoning_pool", []).append(unit)
         self.game_state_changed.emit()
-        return True
 
     def check_victory_conditions(self) -> Optional[str]:
         """Check if any player has won by capturing required terrains."""
@@ -730,39 +761,25 @@ class GameStateManager(QObject):
 
     def apply_damage_to_units(
         self, player_name: str, army_identifier: str, damage_amount: int
-    ):
+    ) -> None:
         """
         Applies damage to units in a specific army.
-        This is a placeholder and needs actual unit selection/damage distribution logic.
+        Distributes damage across all units in the army.
         """
-        player_data = self.get_player_data(player_name)
-        if not player_data:
-            print(
-                f"GameStateManager: Player {
-                  player_name} not found for applying damage."
-            )
-            return
-
-        # TODO: The army_identifier needs to be more specific, e.g., "home", "campaign", or a unique ID.
-        # For now, let's assume army_identifier refers to the 'active_army_type' if it's generic,
-        # or we need a way to map it to the correct army key ('home', 'campaign', 'horde').
-        # This is a simplification.
-        target_army_key = player_data.get(
-            "active_army_type", "home"
-        )  # Fallback, needs improvement
-        if (
-            army_identifier != "Placeholder_Defending_Army_ID"
-            and army_identifier in player_data.get("armies", {})
-        ):
+        # Support both direct army types and specific army identifiers
+        if army_identifier in ["home", "campaign", "horde"]:
+            # Direct army type - use provided player_name
+            player_data = self.get_player_data(player_name)
+            army = player_data.get("armies", {}).get(army_identifier)
+            if not army:
+                raise ArmyNotFoundError(player_name, army_identifier)
             target_army_key = army_identifier
-
-        army = player_data.get("armies", {}).get(target_army_key)
-        if not army:
-            print(
-                f"GameStateManager: Army '{
-                  target_army_key}' for player {player_name} not found."
-            )
-            return
+        else:
+            # Specific identifier - parse to get army
+            parsed_player, army = self.get_army_by_identifier(army_identifier)
+            player_data = self.get_player_data(parsed_player)
+            target_army_key = army_identifier
+            player_name = parsed_player  # Use the parsed player name
 
         print(
             f"GameStateManager: Applying {damage_amount} damage to {
@@ -793,35 +810,54 @@ class GameStateManager(QObject):
         if units_affected:
             self.game_state_changed.emit()
 
-    def get_player_data(self, player_name: str) -> Optional[Dict[str, Any]]:
+    def get_player_data(self, player_name: str) -> Dict[str, Any]:
+        """Get player data or raise PlayerNotFoundError if player doesn't exist."""
+        player_data = self.players.get(player_name)
+        if not player_data:
+            raise PlayerNotFoundError(player_name)
+        return player_data
+
+    def get_player_data_safe(self, player_name: str) -> Optional[Dict[str, Any]]:
+        """Get player data safely, returning None if player doesn't exist."""
         return self.players.get(player_name)
 
     def get_all_players_data(self) -> Dict[str, Dict[str, Any]]:
         return self.players
 
-    def get_terrain_data(self, terrain_name: str) -> Optional[Dict[str, Any]]:
+    def get_terrain_data(self, terrain_name: str) -> Dict[str, Any]:
+        """Get terrain data or raise TerrainNotFoundError if terrain doesn't exist."""
+        terrain_data = self.terrains.get(terrain_name)
+        if not terrain_data:
+            raise TerrainNotFoundError(terrain_name)
+        return terrain_data
+
+    def get_terrain_data_safe(self, terrain_name: str) -> Optional[Dict[str, Any]]:
+        """Get terrain data safely, returning None if terrain doesn't exist."""
         return self.terrains.get(terrain_name)
 
     def get_all_terrain_data(self) -> Dict[str, Dict[str, Any]]:
         return self.terrains
 
-    def get_player_home_terrain_name(self, player_name: str) -> Optional[str]:
+    def get_player_home_terrain_name(self, player_name: str) -> str:
+        """Get the home terrain name for a player."""
         player = self.get_player_data(player_name)
-        return player.get("home_terrain_name") if player else None
+        home_terrain = player.get("home_terrain_name")
+        if not home_terrain:
+            raise GameStateError(
+                f"Player '{player_name}' has no home terrain configured"
+            )
+        return home_terrain
 
-    def set_active_army(self, player_name: str, army_type: str) -> bool:
+    def set_active_army(self, player_name: str, army_type: str) -> None:
         """Set the active army for a player based on current game context."""
         player_data = self.get_player_data(player_name)
-        if not player_data:
-            return False
 
         # Validate that the army type exists
         if army_type not in player_data.get("armies", {}):
-            return False
+            raise ArmyNotFoundError(player_name, army_type)
 
         player_data["active_army_type"] = army_type
         self.game_state_changed.emit()
-        return True
 
     def determine_active_army_by_location(
         self, player_name: str, current_location: str
@@ -889,24 +925,21 @@ class GameStateManager(QObject):
         # Default to current active army or home
         return player_data.get("active_army_type", "home")
 
-    def get_active_army_type(self, player_name: str) -> Optional[str]:
+    def get_active_army_type(self, player_name: str) -> str:
         """Get the currently active army type for a player."""
         player_data = self.get_player_data(player_name)
-        if not player_data:
-            return None
         return player_data.get("active_army_type", "home")
 
-    def get_active_army_data(self, player_name: str) -> Optional[Dict[str, Any]]:
+    def get_active_army_data(self, player_name: str) -> Dict[str, Any]:
         """Get the data for the currently active army."""
         player_data = self.get_player_data(player_name)
-        if not player_data:
-            return None
-
         active_army_type = self.get_active_army_type(player_name)
-        if not active_army_type:
-            return None
 
-        return player_data.get("armies", {}).get(active_army_type)
+        army_data = player_data.get("armies", {}).get(active_army_type)
+        if not army_data:
+            raise ArmyNotFoundError(player_name, active_army_type)
+
+        return army_data
 
     def get_active_army_units(self, player_name: str) -> List[Dict[str, Any]]:
         """

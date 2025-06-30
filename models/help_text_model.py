@@ -72,9 +72,10 @@ This application will help you track game state, turns, and phases, but all dice
         terrain_icon = "🗺️"  # Default
         import utils.constants as constants
 
-        for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
+        for terrain_name, terrain_obj in constants.TERRAIN_DATA.items():
             if terrain_name in frontier_terrain:
-                terrain_icon = terrain_info["ICON"]
+                # Use the terrain's color string as the icon representation
+                terrain_icon = terrain_obj.get_color_string()
                 break
 
         return f"""

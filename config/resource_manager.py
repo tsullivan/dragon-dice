@@ -7,28 +7,10 @@ from config.paths import ProjectPaths
 
 
 class ResourceManager:
-    """Manages application resources like data files and names."""
+    """Manages external application resources like files and names."""
 
     def __init__(self, paths: Optional[ProjectPaths] = None):
         self.paths = paths or ProjectPaths()
-
-    def load_unit_definitions(self) -> Dict[str, List[Dict]]:
-        """Load unit definitions from JSON file."""
-        try:
-            with open(self.paths.unit_definitions_file, "r") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            error_msg = (
-                f"Unit definitions file not found at {self.paths.unit_definitions_file}"
-            )
-            print(f"ERROR: {error_msg}")
-            # Could show dialog here if we have a parent widget
-            return {}
-        except json.JSONDecodeError as e:
-            error_msg = f"Invalid JSON in unit definitions file: {e}"
-            print(f"ERROR: {error_msg}")
-            # Could show dialog here if we have a parent widget
-            return {}
 
     def load_names(self) -> Dict[str, List[str]]:
         """Load names from the names.txt file."""

@@ -1,5 +1,5 @@
 from PySide6.QtCore import QObject, Signal, QMetaObject
-from typing import Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game_logic.engine import GameEngine
@@ -9,7 +9,8 @@ from .army_model import ArmyModel
 from .unit_model import (
     UnitModel,
 )  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
-from utils.constants import TERRAIN_DATA, DEFAULT_FORCE_SIZE, calculate_required_dragons
+from utils.constants import DEFAULT_FORCE_SIZE, POINTS_PER_DRAGON
+from .terrain_model import TERRAIN_DATA
 
 
 class AppDataModel(QObject):
@@ -28,6 +29,9 @@ class AppDataModel(QObject):
 
     def __init__(self):
         super().__init__()
+        # Validate all internal data at startup
+        self._validate_internal_data()
+
         self._num_players = None
         self._force_size = DEFAULT_FORCE_SIZE
         self._player_setup_data_list: list[dict] = (
@@ -44,10 +48,8 @@ class AppDataModel(QObject):
 
     def _initialize_terrains(self):
         try:
-            for name, terrain_info in TERRAIN_DATA.items():
-                self._all_terrains.append(
-                    Terrain(name=name, colors=terrain_info["COLORS"])
-                )
+            # TERRAIN_DATA now contains Terrain objects directly
+            self._all_terrains = list(TERRAIN_DATA.values())
             self._terrain_display_options = [
                 str(terrain) for terrain in self._all_terrains
             ]
@@ -110,14 +112,27 @@ class AppDataModel(QObject):
 
     def get_terrain_display_options(self) -> list[tuple]:
         """Returns terrain display options as list of tuples (name, colors) for PlayerSetupView."""
-        return [(terrain.name, terrain.colors) for terrain in self._all_terrains]
+        return [
+            (terrain.name, terrain.element_colors) for terrain in self._all_terrains
+        ]
 
     def get_required_dragon_count(self) -> int:
         """Calculate required dragons based on current force size.
 
         Official Dragon Dice rules: 1 dragon per 24 points (or part thereof)
         """
-        return calculate_required_dragons(self._force_size)
+        return self.calculate_required_dragons(self._force_size)
+
+    @staticmethod
+    def calculate_required_dragons(force_size_points: int) -> int:
+        """Calculate required dragons based on force size points.
+
+        Official rules: 1 dragon per 24 points (or part thereof)
+        Examples: 15 pts = 1 dragon, 24 pts = 1 dragon, 30 pts = 2 dragons, 60 pts = 3 dragons
+        """
+        import math
+
+        return math.ceil(force_size_points / POINTS_PER_DRAGON)
 
     def get_proposed_frontier_terrains(self):
         """Returns a list of tuples (player_name, proposed_terrain_type)"""
@@ -164,3 +179,155 @@ class AppDataModel(QObject):
         )
         self.game_engine_initialized.emit(self._game_engine)
         return self._game_engine
+
+    @staticmethod
+    def validate_unit_die_faces() -> None:
+        """
+        Validate that all units have the correct number of die faces and that all face keys are valid.
+        Raises ValueError with accumulated list of problems if validation fails.
+        """
+        from models.die_face_model import DIE_FACES_DATA
+        from models.unit_data import UNIT_DATA
+
+        problems = []
+
+        for unit in UNIT_DATA:
+            unit_name = f"{unit.name} ({unit.unit_id})"
+
+            # Check face count
+            expected_face_count = 10 if unit.unit_type == "Monster" else 6
+            actual_face_count = len(unit.die_faces)
+
+            if actual_face_count != expected_face_count:
+                problems.append(
+                    f"{unit_name}: Expected {expected_face_count} faces, got {actual_face_count}"
+                )
+
+            # Check ID face matches health
+            if unit.die_faces:
+                expected_id_face = f"ID_{unit.health}"
+                actual_id_face = (
+                    unit.die_faces[0] if unit.die_faces[0].startswith("ID_") else None
+                )
+
+                if actual_id_face != expected_id_face:
+                    problems.append(
+                        f"{unit_name}: Expected ID face '{expected_id_face}', got '{actual_id_face}'"
+                    )
+
+            # Check all face keys are valid
+            for face_key in unit.die_faces:
+                if face_key not in DIE_FACES_DATA:
+                    problems.append(f"{unit_name}: Invalid die face key '{face_key}'")
+
+        if problems:
+            error_message = (
+                f"Die face validation failed with {len(problems)} problems:\n"
+                + "\n".join(f"  - {problem}" for problem in problems)
+            )
+            raise ValueError(error_message)
+
+        print(f"✓ Die face validation passed for {len(UNIT_DATA)} units")
+
+    def _validate_internal_data(self) -> None:
+        """
+        Comprehensive validation of all internal data at startup.
+        Calls all individual validation functions to ensure data integrity.
+        """
+        print("🔍 Validating internal data...")
+
+        try:
+            # Validate die face data
+            from models.die_face_model import validate_die_face_data
+
+            validate_die_face_data()
+
+            # Validate terrain data
+            from models.terrain_model import validate_terrain_data
+
+            validate_terrain_data()
+
+            # Validate dragon data
+            from models.dragon_model import validate_dragon_data
+
+            validate_dragon_data()
+
+            # Validate species data
+            from models.species_model import validate_species_elements
+
+            if not validate_species_elements():
+                raise ValueError("Species validation failed")
+            print("✓ All species data validated successfully")
+
+            # Validate unit data integrity
+            from models.unit_data import validate_unit_data_integrity
+
+            if not validate_unit_data_integrity():
+                raise ValueError("Unit data integrity validation failed")
+            print("✓ Unit data integrity validated successfully")
+
+            # Validate unit die face assignments
+            self.validate_unit_die_faces()
+
+            # Validate comprehensive unit data
+            from models.unit_model import UnitModel
+
+            validation_report = UnitModel.validate_all_unit_data()
+            if validation_report.get("invalid_units"):
+                invalid_count = len(validation_report["invalid_units"])
+                total_count = validation_report["valid_units"] + invalid_count
+                print(
+                    f"⚠️  Warning: {invalid_count}/{total_count} units failed validation"
+                )
+                for invalid_unit in validation_report["invalid_units"][
+                    :3
+                ]:  # Show first 3
+                    print(f"  - {invalid_unit['unit_id']}: {invalid_unit['error']}")
+                if invalid_count > 3:
+                    print(f"  ... and {invalid_count - 3} more")
+
+            print("✅ All internal data validation passed")
+
+        except Exception as e:
+            error_msg = f"Internal data validation failed: {e}"
+            print(f"❌ {error_msg}")
+            raise ValueError(error_msg)
+
+    def get_unit_definitions(self) -> Dict[str, List[Dict]]:
+        """Get unit definitions grouped by species for UI consumption."""
+        try:
+            from models.unit_data import UNIT_DATA
+
+            # Convert flat UNIT_DATA list to grouped dictionary format
+            units_by_species = {}
+            for unit_instance in UNIT_DATA:
+                species_name = unit_instance.species.name
+                if species_name not in units_by_species:
+                    units_by_species[species_name] = []
+
+                # Convert UnitModel instance to dict format expected by UnitRosterModel
+                unit_dict = {
+                    "unit_type_id": unit_instance.unit_id,
+                    "display_name": unit_instance.name,
+                    "max_health": unit_instance.max_health,
+                    "unit_class_type": unit_instance.unit_type,
+                    "abilities": unit_instance.abilities,
+                }
+                units_by_species[species_name].append(unit_dict)
+
+            return units_by_species
+        except Exception as e:
+            error_msg = f"Error getting unit definitions: {e}"
+            print(f"ERROR: {error_msg}")
+            return {}
+
+    def get_species_definitions(self) -> Dict:
+        """Get species definitions with element mappings."""
+        try:
+            from models.species_model import ALL_SPECIES
+
+            return ALL_SPECIES
+        except Exception as e:
+            error_msg = f"Error getting species definitions: {e}"
+            print(f"ERROR: {error_msg}")
+            return {}

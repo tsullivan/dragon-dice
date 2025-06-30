@@ -17,52 +17,61 @@ class TestResourceManager(unittest.TestCase):
         self.resource_manager = ResourceManager(self.mock_paths)
 
     def test_load_unit_definitions_success(self):
-        """Test successful loading of unit definitions."""
-        test_data = {
-            "Goblin": [
-                {
-                    "unit_type_id": "goblin_thug",
-                    "display_name": "Thug",
-                    "max_health": 1,
-                    "unit_class_type": "Heavy Melee",
-                }
-            ]
-        }
+        """Test successful loading of unit definitions from Python module."""
+        result = self.resource_manager.load_unit_definitions()
 
-        with patch("builtins.open", mock_open(read_data=json.dumps(test_data))):
-            result = self.resource_manager.load_unit_definitions()
+        # Should return a dict with species names as keys
+        self.assertIsInstance(result, dict)
+        self.assertGreater(len(result), 0)
 
-            self.assertEqual(result, test_data)
-            self.assertIn("Goblin", result)
-            self.assertEqual(len(result["Goblin"]), 1)
-            self.assertEqual(result["Goblin"][0]["display_name"], "Thug")
+        # Should have Goblin species from actual data
+        self.assertIn("Goblin", result)
+
+        # Each species should have a list of unit dicts
+        goblin_units = result["Goblin"]
+        self.assertIsInstance(goblin_units, list)
+        self.assertGreater(len(goblin_units), 0)
+
+        # Each unit should have the expected fields
+        first_unit = goblin_units[0]
+        required_fields = [
+            "unit_type_id",
+            "display_name",
+            "max_health",
+            "unit_class_type",
+            "abilities",
+        ]
+        for field in required_fields:
+            self.assertIn(field, first_unit)
 
     def test_load_unit_definitions_file_not_found(self):
-        """Test handling of missing unit definitions file."""
-        with patch("builtins.open", side_effect=FileNotFoundError()):
+        """Test handling of import errors (module not found)."""
+        with patch(
+            "config.resource_manager.UNIT_DATA",
+            side_effect=ImportError("Module not found"),
+        ):
             with patch("builtins.print") as mock_print:
                 result = self.resource_manager.load_unit_definitions()
 
                 self.assertEqual(result, {})
                 mock_print.assert_called()
-                # Check that error message contains file path
+                # Check that error message indicates import failure
                 error_call = mock_print.call_args[0][0]
-                self.assertIn("not found", error_call)
-                self.assertIn(self.mock_paths.unit_definitions_file, error_call)
+                self.assertIn("Failed to import", error_call)
 
     def test_load_unit_definitions_invalid_json(self):
-        """Test handling of invalid JSON in unit definitions."""
-        invalid_json = '{"Goblin": [{"invalid": json}'
-
-        with patch("builtins.open", mock_open(read_data=invalid_json)):
+        """Test handling of validation errors in unit data."""
+        with patch(
+            "config.resource_manager.validate_unit_data_integrity", return_value=False
+        ):
             with patch("builtins.print") as mock_print:
                 result = self.resource_manager.load_unit_definitions()
 
                 self.assertEqual(result, {})
                 mock_print.assert_called()
-                # Check that error message mentions JSON
+                # Check that error message indicates validation failure
                 error_call = mock_print.call_args[0][0]
-                self.assertIn("Invalid JSON", error_call)
+                self.assertIn("validation failed", error_call)
 
     def test_load_names_success(self):
         """Test successful loading of names file."""
@@ -216,26 +225,17 @@ Storm Guard
 
     def test_resource_manager_integration(self):
         """Test ResourceManager integration with both methods."""
-        # Mock both unit definitions and names
-        unit_data = {
-            "Goblin": [{"unit_type_id": "goblin_thug", "display_name": "Thug"}]
-        }
         names_content = "[Player]\nAlice\n[Army]\nTest Army\n"
 
-        def mock_open_selector(filename, mode="r"):
-            if "unit_definitions" in filename:
-                return mock_open(read_data=json.dumps(unit_data))()
-            elif "names" in filename:
-                return mock_open(read_data=names_content)()
-            else:
-                raise FileNotFoundError()
-
-        with patch("builtins.open", side_effect=mock_open_selector):
+        with patch("builtins.open", mock_open(read_data=names_content)):
             units = self.resource_manager.load_unit_definitions()
             names = self.resource_manager.load_names()
 
-            # Both should load successfully
-            self.assertEqual(units, unit_data)
+            # Unit definitions should load from Python module (real data)
+            self.assertIsInstance(units, dict)
+            self.assertGreater(len(units), 0)
+
+            # Names should load from mocked file
             self.assertIn("Alice", names["Player"])
             self.assertIn("Test Army", names["Army"])
 

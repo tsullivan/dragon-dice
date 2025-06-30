@@ -447,7 +447,9 @@ class GameEngine(QObject):
 
         if maneuvering_results >= counter_results:
             # Maneuver succeeds - maneuvering player wins ties per Dragon Dice rules
-            print("GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)")
+            print(
+                "GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)"
+            )
             self._execute_automatic_maneuver_success(location)
         else:
             # Maneuver fails - counter-maneuver beats maneuvering
@@ -891,7 +893,7 @@ class GameEngine(QObject):
                 # Calculate actual unit points instead of allocated points
                 units = army_data.get("units", [])
                 total_unit_points = sum(unit.get("max_health", 0) for unit in units)
-                
+
                 army_list.append(
                     {
                         "name": army_data.get("name", army_key.title()),
@@ -1176,13 +1178,15 @@ class GameEngine(QObject):
 
         # Set the active army type in the game state manager
         current_player = self.get_current_player_name()
-        army_type = army_data.get('army_type')
+        army_type = army_data.get("army_type")
         if army_type:
             success = self.game_state_manager.set_active_army(current_player, army_type)
             if success:
                 print(f"Set active army type to '{army_type}' for {current_player}")
             else:
-                print(f"Failed to set active army type '{army_type}' for {current_player}")
+                print(
+                    f"Failed to set active army type '{army_type}' for {current_player}"
+                )
 
         # Mark that the first turn interaction has begun
         if self._is_very_first_turn:

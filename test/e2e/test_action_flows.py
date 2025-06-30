@@ -150,7 +150,7 @@ class TestActionFlows(unittest.TestCase):
             "parse_dice_string",
             return_value=[
                 {"type": "MELEE", "count": 2},
-                {"type": "SAI", "count": 1, "sai_type": "BULLSEYE"}
+                {"type": "SAI", "count": 1, "sai_type": "BULLSEYE"},
             ],
         ):
             with patch.object(
@@ -166,12 +166,9 @@ class TestActionFlows(unittest.TestCase):
         # Step 3: Submit defender save results
         print("Step 3: Player 2 submits save dice results")
         with patch.object(
-            self.engine.action_resolver, 
-            "parse_dice_string", 
-            return_value=[
-                {"type": "SAVE", "count": 1},
-                {"type": "ID", "count": 1}
-            ]
+            self.engine.action_resolver,
+            "parse_dice_string",
+            return_value=[{"type": "SAVE", "count": 1}, {"type": "ID", "count": 1}],
         ):
             self.engine.submit_defender_save_results("S,S")
 
@@ -208,9 +205,7 @@ class TestActionFlows(unittest.TestCase):
         with patch.object(
             self.engine.action_resolver,
             "parse_dice_string",
-            return_value=[
-                {"type": "MISSILE", "count": 2}
-            ],
+            return_value=[{"type": "MISSILE", "count": 2}],
         ):
             with patch.object(
                 self.engine.action_resolver,
@@ -252,7 +247,7 @@ class TestActionFlows(unittest.TestCase):
             "parse_dice_string",
             return_value=[
                 {"type": "MAGIC", "count": 2},
-                {"type": "SAI", "count": 1, "sai_type": "MAGIC_BOLT"}
+                {"type": "SAI", "count": 1, "sai_type": "MAGIC_BOLT"},
             ],
         ):
             with patch.object(

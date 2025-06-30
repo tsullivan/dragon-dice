@@ -2,7 +2,7 @@
 from typing import List, Dict, Any, Optional
 import utils.constants as constants
 from .unit_model import UnitModel
-from config.resource_manager import ResourceManager
+from .app_data_model import AppDataModel
 
 
 class UnitRosterModel:
@@ -10,13 +10,13 @@ class UnitRosterModel:
     Holds definitions for all available unit types in the game.
     """
 
-    def __init__(self, resource_manager: Optional[ResourceManager] = None):
+    def __init__(self, app_data_model: Optional[AppDataModel] = None):
         self._unit_definitions: Dict[str, Dict[str, Any]] = {}
-        self.resource_manager = resource_manager or ResourceManager()
+        self.app_data_model = app_data_model or AppDataModel()
         self._load_default_units()
 
     def _load_default_units(self):
-        units_by_species_data = self.resource_manager.load_unit_definitions()
+        units_by_species_data = self.app_data_model.get_unit_definitions()
 
         for species_name, units_in_species_list in units_by_species_data.items():
             for unit_data in units_in_species_list:

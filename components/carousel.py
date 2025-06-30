@@ -154,16 +154,34 @@ class CarouselInputWidget(QWidget):
         self.valueChanged.emit(current_val)
 
     def _format_display_value(self, value: Any) -> str:
-        """Format display value with emoji if it's a known terrain type."""
+        """Format display value with emoji if it's a known terrain type or dragon type."""
         if not value:
             return str(value)
 
         # Import utilities locally to avoid circular imports
         try:
             from utils.display_utils import clean_terrain_name, format_terrain_type
+            from models.dragon_model import get_dragon_type
+
+            value_str = str(value)
+
+            # Try to format as dragon type first
+            try:
+                from models.dragon_model import DRAGON_TYPES
+
+                # Check if value_str matches any dragon display name
+                for dragon_key, dragon_obj in DRAGON_TYPES.items():
+                    if dragon_obj.display_name == value_str:
+                        return f"{dragon_obj.element} {dragon_obj.display_name}"
+
+                # Also check direct key lookup
+                dragon_type = get_dragon_type(value_str)
+                if dragon_type:
+                    return f"{dragon_type.element} {dragon_type.display_name}"
+            except:
+                pass
 
             # Extract clean terrain name from strings like "Coastland (Blue, Green)"
-            value_str = str(value)
             clean_name = clean_terrain_name(value_str)
 
             # Try to format as terrain/location, but gracefully fall back to plain text

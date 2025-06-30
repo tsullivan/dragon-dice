@@ -56,12 +56,21 @@ class MainWindow(QMainWindow):
         if self._current_view:
             self._current_view.hide()
             self.central_widget_layout.removeWidget(self._current_view)
-            self._current_view.deleteLater()
-            if self._current_view == self.player_setup_view_instance:
-                self.player_setup_view_instance = None
+
+            # Only delete the view if it's not the PlayerSetupView that we might need to restore
+            # This preserves state for back navigation
+            if self._current_view != self.player_setup_view_instance:
+                self._current_view.deleteLater()
+            else:
+                # Keep the PlayerSetupView instance alive for potential back navigation
+                print(
+                    "MainWindow: Preserving PlayerSetupView instance for state restoration"
+                )
+
             self._current_view = None
         self._current_view = new_view_widget
         self.central_widget_layout.addWidget(self._current_view)
+        self._current_view.show()  # Explicitly show the widget
         QApplication.processEvents()
         self.view_switched_and_ready.emit()
 
@@ -167,12 +176,16 @@ class MainWindow(QMainWindow):
 
     def _go_back_to_last_player_setup(self):
         """Navigates back to the setup screen of the last configured player."""
+        print("MainWindow: _go_back_to_last_player_setup called")
+
         if (
             self.data_model._num_players is not None
             and self.data_model._num_players > 0
         ):
             last_player_idx = self.data_model._num_players - 1
             self.data_model.current_setup_player_index = last_player_idx
+
+            print(f"MainWindow: Going back to player {last_player_idx + 1} setup")
 
             if (
                 self.data_model._num_players is None
@@ -185,7 +198,13 @@ class MainWindow(QMainWindow):
             force_size = self.data_model.get_force_size()
             player_data_to_load = self.data_model.get_player_data(last_player_idx)
 
+            print(
+                f"MainWindow: PlayerSetupView instance exists: {self.player_setup_view_instance is not None}"
+            )
+            print(f"MainWindow: Player data to load: {player_data_to_load is not None}")
+
             if not self.player_setup_view_instance:
+                print("MainWindow: Creating new PlayerSetupView instance")
                 self.player_setup_view_instance = PlayerSetupView(
                     num_players=self.data_model._num_players,
                     terrain_display_options=terrain_options,
@@ -201,17 +220,34 @@ class MainWindow(QMainWindow):
                     self.handle_player_setup_back
                 )
             else:
+                print(
+                    "MainWindow: Restoring existing PlayerSetupView instance with update_for_player"
+                )
                 self.player_setup_view_instance.update_for_player(
                     last_player_idx, player_data_to_load
                 )
+
+            print("MainWindow: Switching to PlayerSetupView")
             self.switch_view(self.player_setup_view_instance)
         else:
+            print("MainWindow: No players configured, showing welcome view")
             self.show_welcome_view()
+
+    def _cleanup_player_setup_view(self):
+        """Clean up the PlayerSetupView when we're done with the setup phase."""
+        if self.player_setup_view_instance:
+            print("MainWindow: Cleaning up PlayerSetupView instance")
+            self.player_setup_view_instance.deleteLater()
+            self.player_setup_view_instance = None
 
     def show_distance_rolls_view(self):
         print(
             f"Frontier '{self.data_model._frontier_terrain}' and first player '{self.data_model._first_player_name}' set. Transitioning to Distance Rolls..."
         )
+
+        # Clean up PlayerSetupView since we're moving past the setup phase
+        self._cleanup_player_setup_view()
+
         player_setup_data = self.data_model.get_player_setup_data()
         frontier_terrain = self.data_model._frontier_terrain
 
