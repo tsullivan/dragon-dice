@@ -1,5 +1,4 @@
 from PySide6.QtCore import QObject, Signal, Slot
-import uuid  # For generating unique effect IDs
 from typing import Optional  # Import Optional
 import utils.constants as constants
 from game_logic.turn_manager import TurnManager

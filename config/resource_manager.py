@@ -1,8 +1,5 @@
 # config/resource_manager.py
-from pathlib import Path
 from typing import Dict, List, Optional
-import json
-
 from config.paths import ProjectPaths
 
 

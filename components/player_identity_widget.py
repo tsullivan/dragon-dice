@@ -1,7 +1,6 @@
 # components/player_identity_widget.py
 from PySide6.QtWidgets import QWidget, QLineEdit
 from PySide6.QtCore import Signal, Slot
-from typing import Optional
 
 
 class PlayerIdentityWidget(QWidget):

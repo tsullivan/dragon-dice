@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QFrame,
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
+
 from typing import List, Dict, Optional
 from collections import Counter
 import utils.constants as constants

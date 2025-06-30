@@ -1,5 +1,4 @@
 from typing import Dict, List, Optional, Union
-from models.element_model import ELEMENT_ICONS
 
 
 class DieFaceModel:

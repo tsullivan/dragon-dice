@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QListWidget, QListWidgetItem
-from PySide6.QtCore import Qt
+
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:

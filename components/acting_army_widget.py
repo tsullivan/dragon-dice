@@ -9,7 +9,6 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 from typing import Optional, List, Dict, Any
-import utils.constants as constants
 from utils.display_utils import format_army_type, format_terrain_summary
 
 

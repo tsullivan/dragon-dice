@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, QMetaObject
+from PySide6.QtCore import QObject, Signal
 from typing import Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:

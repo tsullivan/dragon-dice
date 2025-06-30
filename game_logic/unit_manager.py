@@ -9,7 +9,6 @@ testability and reusability.
 from typing import List, Dict, Any, Optional, Tuple, Callable
 from dataclasses import dataclass
 from collections import defaultdict
-import utils.constants as constants
 
 
 @dataclass

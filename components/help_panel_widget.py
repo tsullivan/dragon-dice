@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QTextEdit, QWidget
-from PySide6.QtCore import Qt
 from typing import Optional
 
 

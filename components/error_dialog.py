@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QLabel, QTextEdit
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMessageBox, QWidget
 from typing import Optional
 
 

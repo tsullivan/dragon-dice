@@ -27,7 +27,6 @@ from components.tabbed_view_widget import TabbedViewWidget
 from components.active_effects_widget import ActiveEffectsWidget
 from views.maneuver_dialog import ManeuverDialog
 from views.action_dialog import ActionDialog
-import utils.constants as constants
 from utils.display_utils import format_terrain_summary, format_player_turn_label
 
 

@@ -1,6 +1,3 @@
-from typing import Dict
-
-
 class LocationModel:
     """
     Model for game location data with icon and display name.
