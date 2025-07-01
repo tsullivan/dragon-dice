@@ -89,7 +89,7 @@ def get_army_type_icon(army_type: str) -> str:
     if army_key in ARMY_DATA:
         return ARMY_DATA[army_key]["icon"]
 
-    # Try case-insensitive match for backward compatibility
+    # Try case-insensitive match
     for key in ARMY_DATA.keys():
         if key.upper() == army_type.upper():
             return ARMY_DATA[key]["icon"]
@@ -108,7 +108,7 @@ def format_army_type_display(army_type: str) -> str:
         army_info = ARMY_DATA[army_key]
         return f"{army_info['icon']} {army_info['display_name']}"
 
-    # Try case-insensitive match for backward compatibility
+    # Try case-insensitive match
     for key in ARMY_DATA.keys():
         if key.upper() == army_type.upper():
             army_info = ARMY_DATA[key]

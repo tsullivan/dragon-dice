@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 
 class ElementModel:
@@ -31,11 +31,6 @@ ELEMENT_DATA = {
     "EARTH": ElementModel(name="EARTH", icon="🟨", color_name="Yellow"),
     "IVORY": ElementModel(name="IVORY", icon="🟫", color_name="Ivory"),
     "WHITE": ElementModel(name="WHITE", icon="⬜", color_name="White"),
-}
-
-# Backward compatibility - ELEMENT_ICONS format
-ELEMENT_ICONS = {
-    name: (element.icon, element.color_name) for name, element in ELEMENT_DATA.items()
 }
 
 
@@ -106,15 +101,7 @@ def validate_element_data() -> bool:
                 print(f"ERROR: Element {element_name} missing icon or color_name")
                 return False
 
-        # Validate backward compatibility
-        for element_name, (icon, color_name) in ELEMENT_ICONS.items():
-            element = ELEMENT_DATA[element_name]
-            if element.icon != icon or element.color_name != color_name:
-                print(f"ERROR: ELEMENT_ICONS compatibility broken for {element_name}")
-                return False
-
         print(f"✓ All {len(ELEMENT_DATA)} elements validated successfully")
-        print(f"✓ ELEMENT_ICONS backward compatibility maintained")
         return True
     except Exception as e:
         print(f"ERROR: Element validation failed: {e}")

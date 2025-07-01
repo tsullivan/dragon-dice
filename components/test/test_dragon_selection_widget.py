@@ -27,23 +27,23 @@ class TestDragonSelectionWidget:
         widget = DragonSelectionWidget(dragon_number=1)
         qtbot.addWidget(widget)
 
-        # Set to Blue Dragon
-        widget.setValue({"dragon_type": "Blue Dragon", "die_type": "Dragon"})
+        # Set to Wyrm
+        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
 
         value = widget.value()
-        assert value["dragon_type"] == "Blue Dragon"
-        assert value["die_type"] == "Drake"
+        assert value["dragon_type"] == "Wyrm"
+        assert value["die_type"] == "Wyrm"
 
     def test_wyrm_selection(self, qtbot):
         """Test that wyrm can be selected."""
         widget = DragonSelectionWidget(dragon_number=1)
         qtbot.addWidget(widget)
 
-        # Set to Gold Wyrm
-        widget.setValue({"dragon_type": "Gold Dragon", "die_type": "Wyrm"})
+        # Set to Wyrm
+        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
 
         value = widget.value()
-        assert value["dragon_type"] == "Gold Dragon"
+        assert value["dragon_type"] == "Wyrm"
         assert value["die_type"] == "Wyrm"
 
     def test_display_text(self, qtbot):
@@ -52,11 +52,11 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
 
         # Test default
-        assert "Red Dragon (Drake)" in widget.get_display_text()
+        assert "Drake" in widget.get_display_text()
 
         # Test after change
-        widget.setValue({"dragon_type": "Black Dragon", "die_type": "Wyrm"})
-        assert "Black Dragon (Wyrm)" in widget.get_display_text()
+        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
+        assert "Wyrm" in widget.get_display_text()
 
     def test_clear_functionality(self, qtbot):
         """Test that clear resets to defaults."""
@@ -64,7 +64,7 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
 
         # Change values
-        widget.setValue({"dragon_type": "Ivory Dragon", "die_type": "Wyrm"})
+        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
 
         # Clear and check defaults
         widget.clear()
@@ -82,7 +82,7 @@ class TestDragonSelectionWidget:
         widget.valueChanged.connect(lambda x: signal_received.append(x))
 
         # Change value and verify signal
-        new_value = {"dragon_type": "Green Dragon", "die_type": "Wyrm"}
+        new_value = {"dragon_type": "Wyrm", "die_type": "Wyrm"}
         widget.setValue(new_value)
 
         assert len(signal_received) > 0
@@ -91,10 +91,10 @@ class TestDragonSelectionWidget:
 
 def test_dragon_constants():
     """Test that dragon constants are properly defined."""
-    # Test dragon types exist
+    # Test dragon types exist (now same as die types)
     assert len(constants.AVAILABLE_DRAGON_TYPES) > 0
-    assert "Red Dragon" in constants.AVAILABLE_DRAGON_TYPES
-    assert "Blue Dragon" in constants.AVAILABLE_DRAGON_TYPES
+    assert "Drake" in constants.AVAILABLE_DRAGON_TYPES
+    assert "Wyrm" in constants.AVAILABLE_DRAGON_TYPES
 
     # Test die types exist
     assert len(constants.AVAILABLE_DRAGON_DIE_TYPES) == 2
@@ -102,8 +102,8 @@ def test_dragon_constants():
     assert "Wyrm" in constants.AVAILABLE_DRAGON_DIE_TYPES
 
     # Test specific values
-    assert constants.DRAGON_DATA["DIE_TYPES"]["DRAKE"].display_name == "Drake"
-    assert constants.DRAGON_DATA["DIE_TYPES"]["WYRM"].display_name == "Wyrm"
+    assert constants.DRAGON_DATA["DRAKE"].display_name == "Drake"
+    assert constants.DRAGON_DATA["WYRM"].display_name == "Wyrm"
 
 
 if __name__ == "__main__":
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     print(f"✓ Default value: {widget.value()}")
 
     # Test setting values
-    widget.setValue({"dragon_type": "Blue Dragon", "die_type": "Wyrm"})
+    widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
     print(f"✓ Set value: {widget.value()}")
     print(f"✓ Display text: {widget.get_display_text()}")
 

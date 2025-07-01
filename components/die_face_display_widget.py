@@ -11,7 +11,6 @@ from PySide6.QtCore import Qt
 
 from typing import Dict, Optional, List
 import utils.constants as constants
-from models.die_face_model import DIE_FACES_DATA
 
 
 class DieFaceDisplayWidget(QWidget):
@@ -64,45 +63,23 @@ class DieFaceDisplayWidget(QWidget):
                 "background-color: #f8f8f8; border: 1px solid #ddd; color: #999;"
             )
 
-    def _get_face_display_info(self, face_key: str) -> tuple[str, str, str]:
-        """Get display information for a die face key.
+    def _get_face_display_info(
+        self, face_name: str, face_description: str
+    ) -> tuple[str, str, str]:
+        """Get display information for a die face.
 
         Returns:
             tuple: (display_text, background_color, tooltip)
         """
-        if not face_key or face_key not in DIE_FACES_DATA:
+        if not face_name:
             return "?", "#f0f0f0", "Unknown face type"
 
-        face_model = DIE_FACES_DATA[face_key]
+        # Import UnitFace here to avoid circular imports
+        from models.unit_model import UnitFace
 
-        # Create display text with face type and value
-        if face_model.value:
-            display_text = (
-                f"{face_model.icon}\n{face_model.face_type}_{face_model.value}"
-            )
-        else:
-            display_text = f"{face_model.icon}\n{face_model.face_type}"
-
-        # Get background color based on face type
-        color_map = {
-            "MELEE": "#ffeeee",  # Light red
-            "MISSILE": "#eeeeff",  # Light blue
-            "MAGIC": "#ffffee",  # Light yellow
-            "SAVE": "#eeffee",  # Light green
-            "ID": "#f0f0f0",  # Light gray
-            "MOVE": "#fff0ee",  # Light orange
-            "JAWS": "#ffe0e0",  # Dragon red
-            "CLAW": "#e0e0ff",  # Dragon blue
-            "BELLY": "#e0ffe0",  # Dragon green
-            "TAIL": "#ffffe0",  # Dragon yellow
-            "TREASURE": "#ffe0ff",  # Dragon purple
-        }
-        background_color = color_map.get(face_model.face_type, "#f0f0f0")
-
-        # Create tooltip
-        tooltip = f"{face_model.display_name}: {face_model.description}"
-
-        return display_text, background_color, tooltip
+        # Create a temporary UnitFace to get display info
+        temp_face = UnitFace(face_name, face_description)
+        return temp_face.get_display_info()
 
     def _clear_faces_layout(self):
         """Clear all face labels from the layout."""
@@ -126,10 +103,10 @@ class DieFaceDisplayWidget(QWidget):
         for i in range(num_faces):
             face_label = QLabel("?")
             face_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            face_label.setMinimumSize(50, 40)  # Larger for better readability
+            face_label.setMinimumSize(60, 50)  # Larger for emoji + text
             face_label.setFrameStyle(QFrame.Shape.Box)
             face_label.setStyleSheet(
-                "background-color: #f0f0f0; border: 1px solid #ccc; font-size: 8px; text-align: center;"
+                "background-color: #f0f0f0; border: 1px solid #ccc; font-size: 9px; text-align: center; padding: 2px;"
             )
 
             row = i // cols
@@ -137,38 +114,42 @@ class DieFaceDisplayWidget(QWidget):
             self.faces_layout.addWidget(face_label, row, col)
             self.face_labels.append(face_label)
 
-    def set_die_faces(
-        self, die_face_data: Optional[List[str]], is_monster: bool = False
-    ):
+    def set_die_faces(self, unit_faces: Optional[List], is_monster: bool = False):
         """Set the die face data to display.
 
         Args:
-            die_face_data: List of face keys (e.g., ['ID_1', 'MELEE_2', ...])
+            unit_faces: List of UnitFace objects with name and description
             is_monster: Whether this unit is a monster (affects display layout)
         """
-        self.die_face_data = die_face_data
+        self.die_face_data = unit_faces
         self.is_monster = is_monster
 
-        if not die_face_data:
+        if not unit_faces:
             self._show_empty_state()
             return
 
         # Create appropriate number of labels
-        num_faces = len(die_face_data)
+        num_faces = len(unit_faces)
         self._create_face_labels(num_faces)
 
         # Update each face label
-        for i, face_key in enumerate(die_face_data):
+        for i, face in enumerate(unit_faces):
             if i < len(self.face_labels):
                 label = self.face_labels[i]
-                display_text, background_color, tooltip = self._get_face_display_info(
-                    face_key
-                )
+
+                # Use the face's built-in display methods if it's a UnitFace object
+                if hasattr(face, "get_display_info"):
+                    display_text, background_color, tooltip = face.get_display_info()
+                else:
+                    # Fallback for legacy face data
+                    display_text, background_color, tooltip = (
+                        self._get_face_display_info(face.name, face.description)
+                    )
 
                 label.setText(display_text)
                 label.setStyleSheet(
                     f"background-color: {background_color}; border: 1px solid #ccc; "
-                    f"font-size: 8px; text-align: center; padding: 2px;"
+                    f"font-size: 9px; text-align: center; padding: 3px; line-height: 1.2;"
                 )
                 label.setToolTip(tooltip)
 

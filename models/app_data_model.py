@@ -48,12 +48,15 @@ class AppDataModel(QObject):
 
     def _initialize_terrains(self):
         try:
-            # TERRAIN_DATA now contains Terrain objects directly
+            # TERRAIN_DATA contains static Terrain objects
             self._all_terrains = list(TERRAIN_DATA.values())
             self._terrain_display_options = [
                 str(terrain) for terrain in self._all_terrains
             ]
-        except ValueError as e:
+
+            print(f"✓ Successfully initialized {len(self._all_terrains)} terrains")
+
+        except Exception as e:
             print(f"Error initializing terrains in AppDataModel: {e}")
             self._all_terrains = []
             self._terrain_display_options = []
@@ -186,7 +189,6 @@ class AppDataModel(QObject):
         Validate that all units have the correct number of die faces and that all face keys are valid.
         Raises ValueError with accumulated list of problems if validation fails.
         """
-        from models.die_face_model import DIE_FACES_DATA
         from models.unit_data import UNIT_DATA
 
         problems = []
@@ -196,29 +198,19 @@ class AppDataModel(QObject):
 
             # Check face count
             expected_face_count = 10 if unit.unit_type == "Monster" else 6
-            actual_face_count = len(unit.die_faces)
+            actual_face_count = len(unit.faces)
 
             if actual_face_count != expected_face_count:
                 problems.append(
                     f"{unit_name}: Expected {expected_face_count} faces, got {actual_face_count}"
                 )
 
-            # Check ID face matches health
-            if unit.die_faces:
-                expected_id_face = f"ID_{unit.health}"
-                actual_id_face = (
-                    unit.die_faces[0] if unit.die_faces[0].startswith("ID_") else None
-                )
-
-                if actual_id_face != expected_id_face:
-                    problems.append(
-                        f"{unit_name}: Expected ID face '{expected_id_face}', got '{actual_id_face}'"
-                    )
-
-            # Check all face keys are valid
-            for face_key in unit.die_faces:
-                if face_key not in DIE_FACES_DATA:
-                    problems.append(f"{unit_name}: Invalid die face key '{face_key}'")
+            # Basic validation that faces have names and descriptions
+            for i, face in enumerate(unit.faces):
+                if not hasattr(face, "name") or not face.name:
+                    problems.append(f"{unit_name}: Face {i+1} missing name")
+                if not hasattr(face, "description") or not face.description:
+                    problems.append(f"{unit_name}: Face {i+1} missing description")
 
         if problems:
             error_message = (
@@ -237,14 +229,15 @@ class AppDataModel(QObject):
         print("🔍 Validating internal data...")
 
         try:
-            # Validate die face data
-            from models.die_face_model import validate_die_face_data
 
-            validate_die_face_data()
+            # Validate terrain data against JSON file
+            from models.terrain_model import (
+                validate_terrain_data,
+                validate_terrain_json,
+            )
 
-            # Validate terrain data
-            from models.terrain_model import validate_terrain_data
-
+            if not validate_terrain_json():
+                raise ValueError("Terrain JSON validation failed")
             validate_terrain_data()
 
             # Validate dragon data

@@ -161,25 +161,8 @@ class CarouselInputWidget(QWidget):
         # Import utilities locally to avoid circular imports
         try:
             from utils.display_utils import clean_terrain_name, format_terrain_type
-            from models.dragon_model import get_dragon_type
 
             value_str = str(value)
-
-            # Try to format as dragon type first
-            try:
-                from models.dragon_model import DRAGON_TYPES
-
-                # Check if value_str matches any dragon display name
-                for dragon_key, dragon_obj in DRAGON_TYPES.items():
-                    if dragon_obj.display_name == value_str:
-                        return f"{dragon_obj.element} {dragon_obj.display_name}"
-
-                # Also check direct key lookup
-                dragon_type = get_dragon_type(value_str)
-                if dragon_type:
-                    return f"{dragon_type.element} {dragon_type.display_name}"
-            except:
-                pass
 
             # Extract clean terrain name from strings like "Coastland (Blue, Green)"
             clean_name = clean_terrain_name(value_str)

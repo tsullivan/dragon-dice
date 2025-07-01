@@ -1,6 +1,12 @@
 # models/species_model.py
 from typing import Dict, List, Tuple, Any
-from utils.constants import ELEMENT_ICONS
+from models.element_model import ELEMENT_DATA
+
+
+def _get_element_tuple(element_name: str):
+    """Convert element name to (icon, color_name) tuple."""
+    element = ELEMENT_DATA[element_name]
+    return (element.icon, element.color_name)
 
 
 class SpeciesModel:
@@ -62,84 +68,84 @@ SPECIES_DATA = {
         name="Amazon",
         display_name="Amazons",
         elements=["IVORY"],
-        element_colors=[ELEMENT_ICONS["IVORY"]],
+        element_colors=[_get_element_tuple("IVORY")],
         description="No elements (ivory)",
     ),
     "CORAL_ELF": SpeciesModel(
         name="Coral Elf",
         display_name="Coral Elves",
         elements=["AIR", "WATER"],
-        element_colors=[ELEMENT_ICONS["AIR"], ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("AIR"), _get_element_tuple("WATER")],
         description="Air & Water (blue & green)",
     ),
     "DWARF": SpeciesModel(
         name="Dwarf",
         display_name="Dwarves",
         elements=["FIRE", "EARTH"],
-        element_colors=[ELEMENT_ICONS["FIRE"], ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("FIRE"), _get_element_tuple("EARTH")],
         description="Fire & Earth (red & yellow)",
     ),
     "FERAL": SpeciesModel(
         name="Feral",
         display_name="Feral",
         elements=["AIR", "EARTH"],
-        element_colors=[ELEMENT_ICONS["AIR"], ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("AIR"), _get_element_tuple("EARTH")],
         description="Air & Earth (blue & yellow)",
     ),
     "FIREWALKER": SpeciesModel(
         name="Firewalker",
         display_name="Firewalkers",
         elements=["AIR", "FIRE"],
-        element_colors=[ELEMENT_ICONS["AIR"], ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("AIR"), _get_element_tuple("FIRE")],
         description="Air & Fire (blue & red)",
     ),
     "FROSTWING": SpeciesModel(
         name="Frostwing",
         display_name="Frostwings",
         elements=["DEATH", "AIR"],
-        element_colors=[ELEMENT_ICONS["DEATH"], ELEMENT_ICONS["AIR"]],
+        element_colors=[_get_element_tuple("DEATH"), _get_element_tuple("AIR")],
         description="Death & Air (black & blue)",
     ),
     "GOBLIN": SpeciesModel(
         name="Goblin",
         display_name="Goblins",
         elements=["DEATH", "EARTH"],
-        element_colors=[ELEMENT_ICONS["DEATH"], ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("DEATH"), _get_element_tuple("EARTH")],
         description="Death & Earth (black & yellow)",
     ),
     "LAVA_ELF": SpeciesModel(
         name="Lava Elf",
         display_name="Lava Elves",
         elements=["DEATH", "FIRE"],
-        element_colors=[ELEMENT_ICONS["DEATH"], ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("DEATH"), _get_element_tuple("FIRE")],
         description="Death & Fire (black & red)",
     ),
     "SCALDER": SpeciesModel(
         name="Scalder",
         display_name="Scalders",
         elements=["WATER", "FIRE"],
-        element_colors=[ELEMENT_ICONS["WATER"], ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("WATER"), _get_element_tuple("FIRE")],
         description="Water & Fire (green & red)",
     ),
     "SWAMP_STALKER": SpeciesModel(
         name="Swamp Stalker",
         display_name="Swamp Stalkers",
         elements=["DEATH", "WATER"],
-        element_colors=[ELEMENT_ICONS["DEATH"], ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("DEATH"), _get_element_tuple("WATER")],
         description="Death & Water (black & green)",
     ),
     "TREEFOLK": SpeciesModel(
         name="Treefolk",
         display_name="Treefolk",
         elements=["WATER", "EARTH"],
-        element_colors=[ELEMENT_ICONS["WATER"], ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("WATER"), _get_element_tuple("EARTH")],
         description="Water & Earth (green & yellow)",
     ),
     "UNDEAD": SpeciesModel(
         name="Undead",
         display_name="Undead",
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"]],
+        element_colors=[_get_element_tuple("DEATH")],
         description="Death only (black)",
     ),
 }
@@ -150,35 +156,35 @@ ELDARIM_SUBSPECIES = {
         name="Eldarim Air",
         display_name="Eldarim (Air)",
         elements=["AIR"],
-        element_colors=[ELEMENT_ICONS["AIR"]],
+        element_colors=[_get_element_tuple("AIR")],
         description="Single element - Air (blue)",
     ),
     "ELDARIM_DEATH": SpeciesModel(
         name="Eldarim Death",
         display_name="Eldarim (Death)",
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"]],
+        element_colors=[_get_element_tuple("DEATH")],
         description="Single element - Death (black)",
     ),
     "ELDARIM_EARTH": SpeciesModel(
         name="Eldarim Earth",
         display_name="Eldarim (Earth)",
         elements=["EARTH"],
-        element_colors=[ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("EARTH")],
         description="Single element - Earth (yellow)",
     ),
     "ELDARIM_FIRE": SpeciesModel(
         name="Eldarim Fire",
         display_name="Eldarim (Fire)",
         elements=["FIRE"],
-        element_colors=[ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("FIRE")],
         description="Single element - Fire (red)",
     ),
     "ELDARIM_WATER": SpeciesModel(
         name="Eldarim Water",
         display_name="Eldarim (Water)",
         elements=["WATER"],
-        element_colors=[ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("WATER")],
         description="Single element - Water (green)",
     ),
 }
@@ -189,21 +195,21 @@ DRAGON_SPECIES = {
         name="Dragoncrusader",
         display_name="Dragoncrusaders",
         elements=["AIR", "DEATH", "EARTH", "FIRE", "WATER"],
-        element_colors=[ELEMENT_ICONS["WHITE"]],
+        element_colors=[_get_element_tuple("WHITE")],
         description="All Elements (white)",
     ),
     "DRAGONLORD": SpeciesModel(
         name="Dragonlord",
         display_name="Dragonlords",
         elements=["AIR", "DEATH", "EARTH", "FIRE", "WATER"],
-        element_colors=[ELEMENT_ICONS["WHITE"]],
+        element_colors=[_get_element_tuple("WHITE")],
         description="All Elements (white)",
     ),
     "DRAGONSLAYER": SpeciesModel(
         name="Dragonslayer",
         display_name="Dragonslayers",
         elements=["AIR", "DEATH", "EARTH", "FIRE", "WATER"],
-        element_colors=[ELEMENT_ICONS["WHITE"]],
+        element_colors=[_get_element_tuple("WHITE")],
         description="All Elements (white)",
     ),
 }
@@ -214,140 +220,140 @@ DRAGON_SUBSPECIES = {
         name="Dragonkin Air",
         display_name="Dragonkin (Air)",
         elements=["AIR"],
-        element_colors=[ELEMENT_ICONS["AIR"]],
+        element_colors=[_get_element_tuple("AIR")],
         description="Single element - Air (blue)",
     ),
     "DRAGONKIN_DEATH": SpeciesModel(
         name="Dragonkin Death",
         display_name="Dragonkin (Death)",
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"]],
+        element_colors=[_get_element_tuple("DEATH")],
         description="Single element - Death (black)",
     ),
     "DRAGONKIN_EARTH": SpeciesModel(
         name="Dragonkin Earth",
         display_name="Dragonkin (Earth)",
         elements=["EARTH"],
-        element_colors=[ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("EARTH")],
         description="Single element - Earth (yellow)",
     ),
     "DRAGONKIN_FIRE": SpeciesModel(
         name="Dragonkin Fire",
         display_name="Dragonkin (Fire)",
         elements=["FIRE"],
-        element_colors=[ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("FIRE")],
         description="Single element - Fire (red)",
     ),
     "DRAGONKIN_WATER": SpeciesModel(
         name="Dragonkin Water",
         display_name="Dragonkin (Water)",
         elements=["WATER"],
-        element_colors=[ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("WATER")],
         description="Single element - Water (green)",
     ),
     "DRAGONMASTER_AIR": SpeciesModel(
         name="Dragonmaster Air",
         display_name="Dragonmasters (Air)",
         elements=["AIR"],
-        element_colors=[ELEMENT_ICONS["AIR"]],
+        element_colors=[_get_element_tuple("AIR")],
         description="Single element - Air (blue)",
     ),
     "DRAGONMASTER_DEATH": SpeciesModel(
         name="Dragonmaster Death",
         display_name="Dragonmasters (Death)",
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"]],
+        element_colors=[_get_element_tuple("DEATH")],
         description="Single element - Death (black)",
     ),
     "DRAGONMASTER_EARTH": SpeciesModel(
         name="Dragonmaster Earth",
         display_name="Dragonmasters (Earth)",
         elements=["EARTH"],
-        element_colors=[ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("EARTH")],
         description="Single element - Earth (yellow)",
     ),
     "DRAGONMASTER_FIRE": SpeciesModel(
         name="Dragonmaster Fire",
         display_name="Dragonmasters (Fire)",
         elements=["FIRE"],
-        element_colors=[ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("FIRE")],
         description="Single element - Fire (red)",
     ),
     "DRAGONMASTER_WATER": SpeciesModel(
         name="Dragonmaster Water",
         display_name="Dragonmasters (Water)",
         elements=["WATER"],
-        element_colors=[ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("WATER")],
         description="Single element - Water (green)",
     ),
     "DRAGONHUNTER_AIR": SpeciesModel(
         name="Dragonhunter Air",
         display_name="Dragonhunters (Air)",
         elements=["AIR"],
-        element_colors=[ELEMENT_ICONS["AIR"]],
+        element_colors=[_get_element_tuple("AIR")],
         description="Single element - Air (blue)",
     ),
     "DRAGONHUNTER_DEATH": SpeciesModel(
         name="Dragonhunter Death",
         display_name="Dragonhunters (Death)",
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"]],
+        element_colors=[_get_element_tuple("DEATH")],
         description="Single element - Death (black)",
     ),
     "DRAGONHUNTER_EARTH": SpeciesModel(
         name="Dragonhunter Earth",
         display_name="Dragonhunters (Earth)",
         elements=["EARTH"],
-        element_colors=[ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("EARTH")],
         description="Single element - Earth (yellow)",
     ),
     "DRAGONHUNTER_FIRE": SpeciesModel(
         name="Dragonhunter Fire",
         display_name="Dragonhunters (Fire)",
         elements=["FIRE"],
-        element_colors=[ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("FIRE")],
         description="Single element - Fire (red)",
     ),
     "DRAGONHUNTER_WATER": SpeciesModel(
         name="Dragonhunter Water",
         display_name="Dragonhunters (Water)",
         elements=["WATER"],
-        element_colors=[ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("WATER")],
         description="Single element - Water (green)",
     ),
     "DRAGONZEALOT_AIR": SpeciesModel(
         name="Dragonzealot Air",
         display_name="Dragonzealots (Air)",
         elements=["AIR"],
-        element_colors=[ELEMENT_ICONS["AIR"]],
+        element_colors=[_get_element_tuple("AIR")],
         description="Single element - Air (blue)",
     ),
     "DRAGONZEALOT_DEATH": SpeciesModel(
         name="Dragonzealot Death",
         display_name="Dragonzealots (Death)",
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"]],
+        element_colors=[_get_element_tuple("DEATH")],
         description="Single element - Death (black)",
     ),
     "DRAGONZEALOT_EARTH": SpeciesModel(
         name="Dragonzealot Earth",
         display_name="Dragonzealots (Earth)",
         elements=["EARTH"],
-        element_colors=[ELEMENT_ICONS["EARTH"]],
+        element_colors=[_get_element_tuple("EARTH")],
         description="Single element - Earth (yellow)",
     ),
     "DRAGONZEALOT_FIRE": SpeciesModel(
         name="Dragonzealot Fire",
         display_name="Dragonzealots (Fire)",
         elements=["FIRE"],
-        element_colors=[ELEMENT_ICONS["FIRE"]],
+        element_colors=[_get_element_tuple("FIRE")],
         description="Single element - Fire (red)",
     ),
     "DRAGONZEALOT_WATER": SpeciesModel(
         name="Dragonzealot Water",
         display_name="Dragonzealots (Water)",
         elements=["WATER"],
-        element_colors=[ELEMENT_ICONS["WATER"]],
+        element_colors=[_get_element_tuple("WATER")],
         description="Single element - Water (green)",
     ),
 }
@@ -394,8 +400,8 @@ def get_dragon_species() -> Dict[str, SpeciesModel]:
 
 
 def validate_species_elements() -> bool:
-    """Validate that all species use valid elements from ELEMENT_ICONS."""
-    valid_elements = set(ELEMENT_ICONS.keys())
+    """Validate that all species use valid elements from ELEMENT_DATA."""
+    valid_elements = set(ELEMENT_DATA.keys())
 
     for species_name, species in ALL_SPECIES.items():
         for element in species.elements:
@@ -408,14 +414,14 @@ def validate_species_elements() -> bool:
         # Validate element_colors match elements (except for multi-element species using white)
         if species.elements == ["AIR", "DEATH", "EARTH", "FIRE", "WATER"]:
             # Multi-element species should use white
-            if species.element_colors != [ELEMENT_ICONS["WHITE"]]:
+            if species.element_colors != [_get_element_tuple("WHITE")]:
                 print(
                     f"ERROR: Multi-element species '{species_name}' should use white icon"
                 )
                 return False
         else:
             # Single/dual element species should have matching colors
-            expected_colors = [ELEMENT_ICONS[elem] for elem in species.elements]
+            expected_colors = [_get_element_tuple(elem) for elem in species.elements]
             if species.element_colors != expected_colors:
                 print(f"ERROR: Species '{species_name}' has mismatched element colors")
                 return False

@@ -4,7 +4,6 @@ import utils.constants as constants
 
 # For type hinting and potential reconstruction
 from models.army_model import ArmyModel
-from models.die_model import DieModel  # Import DieModel
 
 # For type hinting and potential reconstruction
 from models.unit_model import UnitModel
@@ -435,7 +434,7 @@ class GameStateManager(QObject):
     def update_army_identifiers_to_specific(self):
         """
         Update all army references to use specific identifiers.
-        This is for migrating from legacy "home" identifiers to "player_1_home" format.
+        This is for migrating from old "home" identifiers to "player_1_home" format.
         """
         for player_name, player_data in self.players.items():
             armies = player_data.get("armies", {})

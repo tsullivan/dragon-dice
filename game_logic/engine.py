@@ -284,7 +284,7 @@ class GameEngine(QObject):
             f"WARNING: submit_maneuver_input is deprecated - maneuver should use Dragon Dice rules flow"
         )
         print(f"Details received: {details}")
-        # For backward compatibility, just proceed to action selection
+        # Proceed to action selection
         self.march_step_change_requested.emit("SELECT_ACTION")
         self._current_march_step = "SELECT_ACTION"
         self.current_phase_changed.emit(self.get_current_phase_display())

@@ -1,52 +1,104 @@
-from typing import List, Tuple
-from models.element_model import ELEMENT_ICONS
+import json
+from typing import List, Dict, Optional
+from pathlib import Path
+from models.element_model import ELEMENT_DATA
+
+
+class TerrainFace:
+    """Represents a single face on a terrain die."""
+
+    def __init__(self, name: str, description: str):
+        self.name = name
+        self.description = description
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return f"TerrainFace(name='{self.name}')"
 
 
 class Terrain:
     """
-    Represents a terrain in the Dragon Dice game.
-    Each terrain has a name, display name, elements, and element colors.
+    Represents a terrain die in the Dragon Dice game.
+    Each terrain has a name, type (major/minor), color (base terrain type),
+    subtype (variant), and faces with their effects.
     """
 
     def __init__(
         self,
         name: str,
-        display_name: str,
-        elements: List[str],
-        element_colors: List[str],
+        terrain_type: str,
+        color: str,
+        subtype: str,
+        faces: List[Dict[str, str]],
+        elements: Optional[List[str]] = None,
+        element_colors: Optional[List[str]] = None,
     ):
         self.name = name
-        self.display_name = display_name
-        self.elements = elements
-        self.element_colors = element_colors
+        self.terrain_type = terrain_type  # "major" or "minor"
+        self.color = color  # Base terrain type (Coastland, Deadland, etc.)
+        self.subtype = subtype  # Variant (Bridge, Castle, etc.)
+        self.faces = [TerrainFace(face["name"], face["description"]) for face in faces]
 
-        # Validate elements
-        if not 1 <= len(elements) <= 2:
-            raise ValueError("Terrain must have one or two elements.")
+        # Derive elements from color if not provided
+        self.elements = elements or self._derive_elements_from_color(color)
+        self.element_colors = element_colors or [
+            ELEMENT_DATA[elem].icon for elem in self.elements
+        ]
 
-        valid_elements = list(ELEMENT_ICONS.keys())
-        for element in elements:
-            if element not in valid_elements:
-                raise ValueError(
-                    f"Invalid element '{element}'. Must be one of {valid_elements}"
-                )
+        # Display name
+        self.display_name = name
 
-        # Validate element colors match elements
-        expected_colors = [ELEMENT_ICONS[elem][0] for elem in elements]
-        if element_colors != expected_colors:
-            raise ValueError(
-                f"Element colors {element_colors} don't match elements {elements}"
-            )
+        self._validate()
+
+    def _derive_elements_from_color(self, color: str) -> List[str]:
+        """Derive element list from terrain color."""
+        color_to_elements = {
+            "COASTLAND": ["AIR", "WATER"],
+            "DEADLAND": ["DEATH"],
+            "FEYLAND": ["WATER", "FIRE"],
+            "FLATLAND": ["AIR", "EARTH"],
+            "HIGHLAND": ["FIRE", "EARTH"],
+            "SWAMPLAND": ["WATER", "EARTH"],
+            "WASTELAND": ["AIR", "FIRE"],
+        }
+        return color_to_elements.get(color.upper(), [])
+
+    def _validate(self):
+        """Validate terrain data."""
+        if self.terrain_type not in ["major", "minor"]:
+            raise ValueError(f"Invalid terrain type: {self.terrain_type}")
+
+        if not self.faces:
+            raise ValueError("Terrain must have at least one face")
+
+        # Validate elements if provided
+        if self.elements:
+            if not 1 <= len(self.elements) <= 2:
+                raise ValueError("Terrain must have one or two elements.")
+
+            valid_elements = list(ELEMENT_DATA.keys())
+            for element in self.elements:
+                if element not in valid_elements:
+                    raise ValueError(
+                        f"Invalid element '{
+                            element}'. Must be one of {valid_elements}"
+                    )
 
     def __str__(self) -> str:
-        return f"{self.display_name} ({', '.join(self.get_element_names())})"
+        return f"{self.name} ({self.terrain_type})"
 
     def __repr__(self) -> str:
-        return f"Terrain(name='{self.name}', display_name='{self.display_name}', elements={self.elements})"
+        return f"Terrain(name='{self.name}', type='{self.terrain_type}', color='{self.color}', subtype='{self.subtype}')"
 
     def get_element_names(self) -> List[str]:
         """Returns the element color names."""
-        return [ELEMENT_ICONS[elem][1] for elem in self.elements]
+        return (
+            [ELEMENT_DATA[elem].color_name for elem in self.elements]
+            if self.elements
+            else []
+        )
 
     def get_element_icons(self) -> List[str]:
         """Returns the element icons."""
@@ -58,52 +110,85 @@ class Terrain:
 
     def has_element(self, element: str) -> bool:
         """Check if this terrain has a specific element."""
-        return element.upper() in self.elements
+        return element.upper() in (self.elements or [])
+
+    def is_major_terrain(self) -> bool:
+        """Check if this is a major terrain."""
+        return self.terrain_type == "major"
+
+    def is_minor_terrain(self) -> bool:
+        """Check if this is a minor terrain."""
+        return self.terrain_type == "minor"
+
+    def get_face_names(self) -> List[str]:
+        """Get all face names for this terrain."""
+        return [face.name for face in self.faces]
+
+    def get_face_by_name(self, face_name: str) -> Optional[TerrainFace]:
+        """Get a specific face by name."""
+        for face in self.faces:
+            if face.name == face_name:
+                return face
+        return None
 
 
-# Terrain instances
+# Static terrain data - define all terrain instances
 TERRAIN_DATA = {
     "COASTLAND": Terrain(
-        name="COASTLAND",
-        display_name="Coastland",
+        name="Coastland",
+        terrain_type="major",
+        color="Coastland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic coastland terrain"}],
         elements=["AIR", "WATER"],
-        element_colors=[ELEMENT_ICONS["AIR"][0], ELEMENT_ICONS["WATER"][0]],
     ),
     "DEADLAND": Terrain(
-        name="DEADLAND",
-        display_name="Deadland",
+        name="Deadland",
+        terrain_type="major",
+        color="Deadland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic deadland terrain"}],
         elements=["DEATH"],
-        element_colors=[ELEMENT_ICONS["DEATH"][0]],
     ),
     "FLATLAND": Terrain(
-        name="FLATLAND",
-        display_name="Flatland",
+        name="Flatland",
+        terrain_type="major",
+        color="Flatland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic flatland terrain"}],
         elements=["AIR", "EARTH"],
-        element_colors=[ELEMENT_ICONS["AIR"][0], ELEMENT_ICONS["EARTH"][0]],
     ),
     "HIGHLAND": Terrain(
-        name="HIGHLAND",
-        display_name="Highland",
+        name="Highland",
+        terrain_type="major",
+        color="Highland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic highland terrain"}],
         elements=["FIRE", "EARTH"],
-        element_colors=[ELEMENT_ICONS["FIRE"][0], ELEMENT_ICONS["EARTH"][0]],
     ),
     "SWAMPLAND": Terrain(
-        name="SWAMPLAND",
-        display_name="Swampland",
+        name="Swampland",
+        terrain_type="major",
+        color="Swampland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic swampland terrain"}],
         elements=["WATER", "EARTH"],
-        element_colors=[ELEMENT_ICONS["WATER"][0], ELEMENT_ICONS["EARTH"][0]],
     ),
     "FEYLAND": Terrain(
-        name="FEYLAND",
-        display_name="Feyland",
+        name="Feyland",
+        terrain_type="major",
+        color="Feyland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic feyland terrain"}],
         elements=["WATER", "FIRE"],
-        element_colors=[ELEMENT_ICONS["WATER"][0], ELEMENT_ICONS["FIRE"][0]],
     ),
     "WASTELAND": Terrain(
-        name="WASTELAND",
-        display_name="Wasteland",
+        name="Wasteland",
+        terrain_type="major",
+        color="Wasteland",
+        subtype="Basic",
+        faces=[{"name": "Basic", "description": "Basic wasteland terrain"}],
         elements=["AIR", "FIRE"],
-        element_colors=[ELEMENT_ICONS["AIR"][0], ELEMENT_ICONS["FIRE"][0]],
     ),
 }
 
@@ -120,11 +205,42 @@ def get_all_terrain_names() -> List[str]:
     return list(TERRAIN_DATA.keys())
 
 
+def get_all_terrain_objects() -> List[Terrain]:
+    """Get all terrain objects."""
+    return list(TERRAIN_DATA.values())
+
+
 def get_terrains_by_element(element: str) -> List[Terrain]:
     """Get all terrains that contain a specific element."""
     element = element.upper()
     return [
         terrain for terrain in TERRAIN_DATA.values() if terrain.has_element(element)
+    ]
+
+
+def get_terrains_by_type(terrain_type: str) -> List[Terrain]:
+    """Get all terrains of a specific type (major/minor)."""
+    return [
+        terrain
+        for terrain in TERRAIN_DATA.values()
+        if terrain.terrain_type == terrain_type.lower()
+    ]
+
+
+def get_terrains_by_color(color: str) -> List[Terrain]:
+    """Get all terrains of a specific color (base terrain type)."""
+    color = color.upper()
+    return [
+        terrain for terrain in TERRAIN_DATA.values() if terrain.color.upper() == color
+    ]
+
+
+def get_terrains_by_subtype(subtype: str) -> List[Terrain]:
+    """Get all terrains of a specific subtype."""
+    return [
+        terrain
+        for terrain in TERRAIN_DATA.values()
+        if terrain.subtype.lower() == subtype.lower()
     ]
 
 
@@ -135,14 +251,95 @@ def validate_terrain_data() -> bool:
             if not isinstance(terrain, Terrain):
                 print(f"ERROR: {terrain_name} is not a Terrain instance")
                 return False
-            if terrain.name != terrain_name:
-                print(f"ERROR: Terrain name mismatch: {terrain.name} != {terrain_name}")
-                return False
+
+            # Allow terrain names to not match keys exactly
+            # since we now use color as key but terrain.name is the full name
 
         print(f"✓ All {len(TERRAIN_DATA)} terrains validated successfully")
         return True
     except Exception as e:
         print(f"ERROR: Terrain validation failed: {e}")
+        return False
+
+
+def validate_terrain_json() -> bool:
+    """Validate static terrain data against the JSON file for consistency."""
+    try:
+        json_path = Path(__file__).parent.parent / "data" / "terrains_list.json"
+
+        if not json_path.exists():
+            print(f"ERROR: Terrain JSON file not found: {json_path}")
+            return False
+
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        if "terrains" not in data:
+            print("ERROR: JSON file missing 'terrains' key")
+            return False
+
+        json_terrain_count = len(data["terrains"])
+        static_terrain_count = len(TERRAIN_DATA)
+
+        # Validate JSON structure first
+        required_fields = ["name", "type", "color", "subtype", "faces"]
+        json_terrain_colors = set()
+
+        for i, terrain_data in enumerate(data["terrains"]):
+            # Check required fields
+            for field in required_fields:
+                if field not in terrain_data:
+                    print(f"ERROR: Terrain {i} missing required field '{field}'")
+                    return False
+
+            # Validate type
+            if terrain_data["type"] not in ["major", "minor"]:
+                print(
+                    f"ERROR: Terrain {terrain_data['name']} has invalid type: {terrain_data['type']}"
+                )
+                return False
+
+            # Validate faces
+            if not terrain_data["faces"]:
+                print(f"ERROR: Terrain {terrain_data['name']} has no faces")
+                return False
+
+            for face in terrain_data["faces"]:
+                if "name" not in face or "description" not in face:
+                    print(
+                        f"ERROR: Face in terrain {terrain_data['name']} missing name or description"
+                    )
+                    return False
+
+            # Collect colors for comparison
+            json_terrain_colors.add(terrain_data["color"].upper())
+
+        # Compare static data with JSON data
+        static_terrain_colors = set(TERRAIN_DATA.keys())
+
+        # Check if all static terrains have corresponding JSON entries
+        missing_in_json = static_terrain_colors - json_terrain_colors
+        if missing_in_json:
+            print(f"WARNING: Static terrains missing in JSON: {missing_in_json}")
+
+        # Check if JSON has terrains not in static data
+        missing_in_static = json_terrain_colors - static_terrain_colors
+        if missing_in_static:
+            print(f"WARNING: JSON terrains missing in static data: {missing_in_static}")
+
+        # Validate that each static terrain has valid data structure
+        for terrain_key, terrain in TERRAIN_DATA.items():
+            if not isinstance(terrain, Terrain):
+                print(f"ERROR: Static terrain {terrain_key} is not a Terrain instance")
+                return False
+
+        print(
+            f"✓ Terrain JSON validation passed ({json_terrain_count} JSON terrains, {static_terrain_count} static terrains)"
+        )
+        return True
+
+    except Exception as e:
+        print(f"ERROR: Terrain JSON validation failed: {e}")
         return False
 
 
@@ -152,7 +349,8 @@ def get_terrain_icon(terrain_name: str) -> str:
     terrain = get_terrain(terrain_name)
     if not terrain:
         raise KeyError(
-            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}"
+            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {
+                get_all_terrain_names()}"
         )
     return terrain.get_color_string()
 
@@ -184,6 +382,7 @@ def format_terrain_display(terrain_name: str) -> str:
     terrain = get_terrain(terrain_name)
     if not terrain:
         raise KeyError(
-            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}"
+            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {
+                get_all_terrain_names()}"
         )
     return f"{terrain.get_color_string()} {terrain.display_name}"

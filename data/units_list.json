@@ -4021,365 +4021,6 @@
     },
     {
       "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonchamp",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as two movement points."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as four melee hit points.<BR> Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as three melee hit points."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonfoal",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as one point of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as one melee hit point."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its automatic save."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonhero",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as two points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as three melee hit points."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its two automatic saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonkin Champion",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
-        },
-        {
-          "name": "Fly",
-          "description": "During any roll, Fly generates four maneuver or four save results.<BR> Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Smite",
-          "description": "During a melee attack, Smite immediately inflicts four points of damage on the defending army or unit;<BR> no saves (including those provided by spells) can stop this damage.<BR> During a dragon attack or melee avoidance roll, Smite generates four melee results<BR> SFR (Dragonkin Champion): (or old TSR icon):<BR> During any action or non-maneuver avoidance roll, may move a summoned dragon of the same color as<BR> the Dragonkin Champion from any terrain to any other terrain. A player may move a dragon that is currently<BR> controlled by a Dragonlord or Dragonmaster. In this case, the dragon becomes untamed and must<BR> be moved to a different terrain than the one the dragon is currently located. During a save roll against an<BR> individual-targeting effect, the SFR/TSR logo counts as four saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonmount",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as two points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as two movement points."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as two movement points."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its two automatic saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonscout",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as one point of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as one melee hit point."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as one melee hit point."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its automatic save."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonsentry",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as two points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as two movement points."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as two melee hit points."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its two automatic saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonspy",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as three movement points."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as three melee hit points.<BR> Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as three melee hit points."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonstallion",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
-        },
-        {
-          "name": "Fly",
-          "description": "During any roll, Fly generates four maneuver or four save results.<BR> Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Trample",
-          "description": "During any roll, Trample generates four maneuver and four melee results.<BR> SFR (Dragonkin Champion): During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another.<BR> During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonsteed",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as three melee hit points."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as three movement points.<BR> Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as three movement points."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragontroop",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as one point of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as one melee hit point."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as one melee hit point."
-        },
-        {
-          "name": "Move",
-          "description": "Counts as one movement point."
-        },
-        {
-          "name": "Melee",
-          "description": "Counts as one melee hit point."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its automatic save."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonvedette",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
-        },
-        {
-          "name": "Fly",
-          "description": "During any roll, Fly generates four maneuver or four save results.<BR> Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Smite",
-          "description": "During a melee attack, Smite inflicts four points of damage to the defending army with no save possible.<BR> During a dragon attack, Smite generates four melee results.<BR> SFR (Dragonkin Champion): During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another.<BR> During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
-      "species_type": "Dragonkin",
-      "display_name": "Dragonvictor",
-      "faces": [
-        {
-          "name": "ID(kin)",
-          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.<BR> Unlike a normal ID, it cannot be used for magic points or missile hits."
-        },
-        {
-          "name": "Belly",
-          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
-        },
-        {
-          "name": "Rend",
-          "description": "During a melee or dragon attack, Rend generates four melee results. Roll this unit again and apply the new result as well.<BR> During a maneuver roll, Rend generates four maneuver results.<BR> Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed<BR> with no save possible."
-        },
-        {
-          "name": "Counter",
-          "description": "During a save roll against a melee attack, Counter generates four save results and inflicts four damage upon the attacking army. Only save results generated by spells may reduce this damage.<BR> During any other save roll, Counter generates four save results.<BR> During a melee attack, Counter generates four melee results.<BR> During a dragon attack, Counter generates four save and four melee results.<BR> SFR (Dragonkin Champion): During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another.<BR> During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
-        }
-      ]
-    },
-    {
-      "type": "species",
       "species_type": "Dwarf",
       "display_name": "Androsphinx",
       "faces": [
@@ -13547,6 +13188,409 @@
         {
           "name": "Save",
           "description": "Counts as two save points."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonchamp",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as two movement points."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as four melee hit points. Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as three melee hit points."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonfoal",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as one point of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as one melee hit point."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its automatic save."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonhero",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as two points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as three melee hit points."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its two automatic saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonkin Champion",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
+        },
+        {
+          "name": "Fly",
+          "description": "During any roll, Fly generates four maneuver or four save results."
+        },
+        {
+          "name": "Dragonkin Breath",
+          "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Smite",
+          "description": "During a melee attack, Smite immediately inflicts four points of damage on the defending army or unit; no saves (including those provided by spells) can stop this damage. During a dragon attack or melee avoidance roll, Smite generates four melee results."
+        },
+        {
+          "name": "SFR",
+          "description": "During any action or non-maneuver avoidance roll, may move a summoned dragon of the same color as the Dragonkin Champion from any terrain to any other terrain. A player may move a dragon that is currently controlled by a Dragonlord or Dragonmaster. In this case, the dragon becomes untamed and must be moved to a different terrain than the one the dragon is currently located. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonmount",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as two points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as two movement points."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as two movement points."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its two automatic saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonscout",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as one point of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as one melee hit point."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as one melee hit point."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its automatic save."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonsentry",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as two points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as two movement points."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as two melee hit points."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its two automatic saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonspy",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as three movement points."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as three melee hit points. Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as three melee hit points."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonstallion",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
+        },
+        {
+          "name": "Fly",
+          "description": "During any roll, Fly generates four maneuver or four save results."
+        },
+        {
+          "name": "Dragonkin Breath",
+          "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Trample",
+          "description": "During any roll, Trample generates four maneuver and four melee results."
+        },
+        {
+          "name": "SFR",
+          "description": "During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonsteed",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as three melee hit points. Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as three movement points."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as three movement points."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its three automatic saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragontroop",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as one point of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as one melee hit point."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as one melee hit point."
+        },
+        {
+          "name": "Move",
+          "description": "Counts as one movement point."
+        },
+        {
+          "name": "Melee",
+          "description": "Counts as one melee hit point."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its automatic save."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonvedette",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
+        },
+        {
+          "name": "Fly",
+          "description": "During any roll, Fly generates four maneuver or four save results."
+        },
+        {
+          "name": "Dragonkin Breath",
+          "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Smite",
+          "description": "During a melee attack, Smite inflicts four points of damage to the defending army with no save possible. During a dragon attack, Smite generates four melee results."
+        },
+        {
+          "name": "SFR",
+          "description": "During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
+        }
+      ]
+    },
+    {
+      "type": "species",
+      "species_type": "Dragonkin",
+      "display_name": "Dragonvictor",
+      "faces": [
+        {
+          "name": "ID(kin)",
+          "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits."
+        },
+        {
+          "name": "Belly",
+          "description": "During any roll, the Dragonkin unit loses its four automatic saves."
+        },
+        {
+          "name": "Rend",
+          "description": "During a melee or dragon attack, Rend generates four melee results. Roll this unit again and apply the new result as well. During a maneuver roll, Rend generates four maneuver results."
+        },
+        {
+          "name": "Dragonkin Breath",
+          "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible."
+        },
+        {
+          "name": "Counter",
+          "description": "During a save roll against a melee attack, Counter generates four save results and inflicts four damage upon the attacking army. Only save results generated by spells may reduce this damage. During any other save roll, Counter generates four save results. During a melee attack, Counter generates four melee results. During a dragon attack, Counter generates four save and four melee results."
+        },
+        {
+          "name": "SFR",
+          "description": "During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves."
         }
       ]
     }

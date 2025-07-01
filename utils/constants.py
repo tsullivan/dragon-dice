@@ -7,20 +7,18 @@ DEFAULT_FORCE_SIZE = 24
 # Dragon Requirements: 1 dragon per 24 points (or part thereof)
 POINTS_PER_DRAGON = 24
 
-# Import data from models for backward compatibility
+# Import data from models
 from models.element_model import (
-    ELEMENT_ICONS,
+    ELEMENT_DATA,
     get_element_icon,
     get_element_color_name,
     format_element_display,
 )
-from models.location_model import LOCATION_DATA, get_location_icon
-from models.army_model import ARMY_DATA, get_army_type_icon, format_army_type_display
+from models.army_model import ARMY_DATA, get_army_type_icon
 from models.action_model import ACTION_DATA, get_action_icon, format_action_display
 from models.dragon_model import (
     DRAGON_DATA,
     get_available_dragon_types,
-    get_available_dragon_die_types,
 )
 from models.game_phase_model import GAME_PHASE_DATA, get_turn_phases, get_march_steps
 from models.terrain_model import (
@@ -60,19 +58,19 @@ SAI_TRIPLER = "TRIPLER"
 SAI_RECRUIT = "RECRUIT"
 SAI_MAGIC_BOLT = "MAGIC_BOLT"
 
-# Backward compatibility for dragon constants
+# Dragon constants
 AVAILABLE_DRAGON_TYPES = get_available_dragon_types()
-AVAILABLE_DRAGON_DIE_TYPES = get_available_dragon_die_types()
+AVAILABLE_DRAGON_DIE_TYPES = [dragon.display_name for dragon in DRAGON_DATA.values()]
 
-# Backward compatibility for game phase constants
+# Game phase constants
 TURN_PHASES = get_turn_phases()
 MARCH_STEPS = get_march_steps()
 
-# Backward compatibility for army constants
+# Army constants
 ARMY_TYPES_ALL = list(ARMY_DATA.keys())
 
 
-# Backward compatibility for dragon calculation function
+# Dragon calculation function
 def calculate_required_dragons(force_size_points: int) -> int:
     """Calculate required dragons based on force size points.
 
