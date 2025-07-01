@@ -271,8 +271,10 @@ class UnitSelectionDialog(QDialog):
                 unit_type_info = name_item.data(Qt.ItemDataRole.UserRole)
                 if unit_type_info:
                     # Get die face data from unit definition
-                    die_faces = unit_type_info.get("die_faces", {})
-                    self.die_face_widget.set_die_faces(die_faces)
+                    die_faces = unit_type_info.get("die_faces", [])
+                    unit_type = unit_type_info.get("unit_class_type", "")
+                    is_monster = unit_type == "Monster"
+                    self.die_face_widget.set_die_faces(die_faces, is_monster)
                     return
 
         # Clear die face display if no valid selection
@@ -286,8 +288,10 @@ class UnitSelectionDialog(QDialog):
             # Get unit definition from unit roster
             unit_def = self.unit_roster.get_unit_definition(selected_unit.unit_type)
             if unit_def:
-                die_faces = unit_def.get("die_faces", {})
-                self.die_face_widget.set_die_faces(die_faces)
+                die_faces = unit_def.get("die_faces", [])
+                unit_type = unit_def.get("unit_class_type", "")
+                is_monster = unit_type == "Monster"
+                self.die_face_widget.set_die_faces(die_faces, is_monster)
                 return
 
         # Clear die face display if no valid selection

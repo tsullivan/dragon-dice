@@ -28,9 +28,8 @@ class UnitRosterModel:
                     abilities=self._map_abilities_to_constants(
                         unit_data.get("abilities", {})
                     ),
-                    unit_class_type=unit_data.get(
-                        "unit_class_type", "Unknown"
-                    ),  # Add this line
+                    unit_class_type=unit_data.get("unit_class_type", "Unknown"),
+                    die_faces=unit_data.get("die_faces", []),
                 )
 
     def add_unit_definition(
@@ -41,6 +40,7 @@ class UnitRosterModel:
         max_health: int,
         abilities: Dict[str, Any],
         unit_class_type: str,
+        die_faces: List[str] = None,
     ):
         if unit_type_id in self._unit_definitions:
             print(f"Warning: Unit type '{unit_type_id}' already defined. Overwriting.")
@@ -50,7 +50,8 @@ class UnitRosterModel:
             "species": species,
             "max_health": max_health,
             "abilities": abilities,
-            "unit_class_type": unit_class_type,  # Add this line
+            "unit_class_type": unit_class_type,
+            "die_faces": die_faces or [],
         }
 
     def get_available_unit_types(self) -> List[Dict[str, Any]]:

@@ -642,11 +642,19 @@ class GameStateManager(QObject):
         terrain["controlling_player"] = controlling_player
         self.game_state_changed.emit()
 
-    def update_terrain_face(self, terrain_name: str, face: str) -> None:
-        """Update the face-up terrain."""
-        terrain = self.get_terrain_data(terrain_name)
-        terrain["face"] = int(face) if isinstance(face, str) else face
-        self.game_state_changed.emit()
+    def update_terrain_face(self, terrain_name: str, face: str) -> bool:
+        """Update the face-up terrain. Returns True on success, False on failure."""
+        try:
+            terrain = self.get_terrain_data(terrain_name)
+            terrain["face"] = int(face) if isinstance(face, str) else face
+            self.game_state_changed.emit()
+            return True
+        except TerrainNotFoundError as e:
+            print(f"GameStateManager: {e}")
+            return False
+        except (ValueError, TypeError) as e:
+            print(f"GameStateManager: Invalid face value '{face}': {e}")
+            return False
 
     def get_armies_at_location(self, location: str) -> List[Dict[str, Any]]:
         """Get all armies at a specific location."""

@@ -123,7 +123,7 @@ class ActionDecisionWidget(QWidget):
                 actions_text += "• No actions available at this terrain die face"
 
             self.actions_info_label.setText(actions_text)
-            
+
         except Exception as e:
             print(f"Error in ActionDecisionWidget.set_acting_army: {e}")
             # Set fallback values to prevent crashes

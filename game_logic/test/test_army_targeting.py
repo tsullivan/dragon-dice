@@ -127,49 +127,6 @@ class TestArmyTargeting(unittest.TestCase):
         # Should return the horde army ID (Player 2's horde at Player 1's home)
         self.assertEqual(defending_army_id, "player_2_horde")
 
-    @unittest.skip("Test disabled - needs refactoring for current data structure")
-    def test_determine_primary_defending_army_id_multiple_types(self):
-        """Test army priority with multiple army types at same location."""
-        # Add both campaign and horde armies at same location
-        # Find Player 2 in the list and add campaign army
-        for player in self.player_setup_data:
-            if player["name"] == "Player 2":
-                player["armies"]["campaign"] = {
-                    "name": "Campaign Army",
-                    "location": "Player 1 Highland",
-                    "units": [{"name": "Test Unit", "health": 2}],
-                    "unique_id": "player_2_campaign",
-                }
-                break
-
-        # Add a home army from Player 3 at same location for testing
-        self.player_setup_data.append(
-            {
-                "name": "Player 3",
-                "home_terrain": "Highland",
-                "armies": {
-                    "home": {
-                        "name": "Home Army",
-                        "location": "Player 1 Highland",  # Conflict scenario
-                        "units": [{"name": "Test Unit", "health": 2}],
-                        "unique_id": "player_3_home",
-                    }
-                },
-            }
-        )
-
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
-
-        defending_army_id = manager.determine_primary_defending_army_id(
-            "Player 1", "Player 1 Highland"
-        )
-
-        # Should prioritize home > campaign > horde
-        # Player 3's home should have highest priority
-        self.assertEqual(defending_army_id, "player_3_home")
-
     def test_get_armies_at_location(self):
         """Test getting all armies at a specific location."""
         armies = self.manager.get_armies_at_location("Player 1 Highland")

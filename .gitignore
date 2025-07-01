@@ -1,3 +1,5 @@
+test/e2e/screenshots/
+views/test/screenshots/
 CLAUDE.md
 assets/*txt
 .claude

@@ -481,10 +481,16 @@ class GameEngine(QObject):
         if direction == "UP":
             new_face = (current_face % 8) + 1  # Wrap from 8 to 1
         elif direction == "DOWN":
-            new_face = ((current_face - 2) % 8) + 1  # Wrap from 1 to 8
+            new_face = (
+                (current_face - 2 + 8) % 8
+            ) + 1  # Handle negative wraparound properly
         else:
             print(f"GameEngine: Invalid direction '{direction}', defaulting to UP")
             new_face = (current_face % 8) + 1
+
+        print(
+            f"GameEngine: Attempting to update terrain '{location}' from face {current_face} to {new_face}"
+        )
 
         # Apply terrain change
         success = self.game_state_manager.update_terrain_face(location, str(new_face))

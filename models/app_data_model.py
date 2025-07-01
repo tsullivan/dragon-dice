@@ -312,6 +312,7 @@ class AppDataModel(QObject):
                     "max_health": unit_instance.max_health,
                     "unit_class_type": unit_instance.unit_type,
                     "abilities": unit_instance.abilities,
+                    "die_faces": unit_instance.die_faces,
                 }
                 units_by_species[species_name].append(unit_dict)
 

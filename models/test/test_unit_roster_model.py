@@ -204,33 +204,6 @@ class TestUnitRosterModel(unittest.TestCase):
         unit_def = roster.get_unit_definition("any_unit")
         self.assertIsNone(unit_def)
 
-    @unittest.skip("Test disabled - needs unit data structure refactoring")
-    def test_unit_data_structure_validation(self):
-        """Test that unit data structure is properly validated."""
-        # Malformed unit data missing required fields
-        malformed_data = {
-            "TestSpecies": [
-                {
-                    "unit_type_id": "test_unit",
-                    # Missing display_name, max_health, etc.
-                }
-            ]
-        }
-
-        mock_app_data_model = Mock(spec=AppDataModel)
-        mock_app_data_model.get_unit_definitions.return_value = malformed_data
-
-        roster = UnitRosterModel(mock_app_data_model)
-
-        # Should handle malformed data gracefully
-        try:
-            unit_types = roster.get_available_unit_types()
-            # Should not crash, but may have incomplete data
-            self.assertIsInstance(unit_types, list)
-        except Exception as e:
-            # If it does fail, it should be a controlled failure
-            self.assertIsInstance(e, (KeyError, AttributeError))
-
     def test_unit_roster_caching(self):
         """Test that unit roster data is cached properly."""
         mock_app_data_model = Mock(spec=AppDataModel)

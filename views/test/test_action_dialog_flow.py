@@ -120,37 +120,6 @@ class TestActionDialogFlow(unittest.TestCase):
         self.assertEqual(dialog.current_step, "results")
         self.assertEqual(dialog.defender_results, "S,S")
 
-    @unittest.skip("Test disabled - needs UI flow refactoring")
-    def test_action_dialog_back_navigation(self):
-        """Test back button navigation in action dialog."""
-        dialog = ActionDialog(
-            action_type="MELEE",
-            current_player_name="Player 1",
-            acting_army=self.sample_acting_army,
-            all_players_data=self.sample_player_data,
-            terrain_data=self.sample_terrain_data,
-            parent=self.parent_widget,
-        )
-
-        # Progress to defender_saves step
-        dialog.attacker_dice_input.setText("MM,S")
-        dialog._on_next()
-        self.assertEqual(dialog.current_step, "defender_saves")
-
-        # Go back
-        dialog._on_back()
-        self.assertEqual(dialog.current_step, "attacker_roll")
-
-        # Progress to results step
-        dialog._on_next()  # Back to defender_saves
-        dialog.defender_dice_input.setText("S")
-        dialog._on_next()  # To results
-        self.assertEqual(dialog.current_step, "results")
-
-        # Go back from results
-        dialog._on_back()
-        self.assertEqual(dialog.current_step, "defender_saves")
-
     @patch("components.error_dialog.ErrorDialog.show_warning")
     def test_action_dialog_validation_empty_attacker_input(self, mock_show_warning):
         """Test validation for empty attacker input."""
