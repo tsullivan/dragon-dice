@@ -1,8 +1,6 @@
 # Unit data for Dragon Dice species
-# Each unit defined as a Unit instance based on units_list.json
+# Each unit defined as a UnitModel instance
 
-import json
-from pathlib import Path
 from models.species_model import SPECIES_DATA, ALL_SPECIES
 from models.unit_model import UnitModel
 
@@ -2743,18 +2741,19 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {"name": "Move", "description": "Counts as two movement points."},
             {
                 "name": "Melee",
-                "description": "Counts as four melee hit points.  Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed  with no save possible.",
+                "description": "Counts as four melee hit points. Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed with no save possible.",
             },
             {"name": "Melee", "description": "Counts as three melee hit points."},
             {
                 "name": "Belly",
                 "description": "During any roll, the Dragonkin unit loses its three automatic saves.",
             },
+            {"name": "Melee", "description": "Counts as three melee hit points."},
         ],
     ),
     UnitModel(
@@ -2814,7 +2813,7 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {
                 "name": "Belly",
@@ -2822,11 +2821,19 @@ UNIT_DATA = [
             },
             {
                 "name": "Fly",
-                "description": "During any roll, Fly generates four maneuver or four save results.  Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed  with no save possible.",
+                "description": "During any roll, Fly generates four maneuver or four save results.",
+            },
+            {
+                "name": "Dragonkin Breath (Champion)",
+                "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible.",
             },
             {
                 "name": "Smite",
-                "description": "During a melee attack, Smite immediately inflicts four points of damage on the defending army or unit;  no saves (including those provided by spells) can stop this damage.  During a dragon attack or melee avoidance roll, Smite generates four melee results  SFR (Dragonkin Champion): (or old TSR icon):  During any action or non-maneuver avoidance roll, may move a summoned dragon of the same color as  the Dragonkin Champion from any terrain to any other terrain. A player may move a dragon that is currently  controlled by a Dragonlord or Dragonmaster. In this case, the dragon becomes untamed and must  be moved to a different terrain than the one the dragon is currently located. During a save roll against an  individual-targeting effect, the SFR/TSR logo counts as four saves.",
+                "description": "During a melee attack, Smite immediately inflicts four points of damage on the defending army or unit; no saves (including those provided by spells) can stop this damage. During a dragon attack or melee avoidance roll, Smite generates four melee results",
+            },
+            {
+                "name": "SFR (Dragonkin Champion)",
+                "description": "During any action or non-maneuver avoidance roll, may move a summoned dragon of the same color as the Dragonkin Champion from any terrain to any other terrain. A player may move a dragon that is currently controlled by a Dragonlord or Dragonmaster. In this case, the dragon becomes untamed and must be moved to a different terrain than the one the dragon is currently located. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
             },
         ],
     ),
@@ -2910,12 +2917,13 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {"name": "Move", "description": "Counts as three movement points."},
+            {"name": "Melee", "description": "Counts as three melee hit points."},
             {
-                "name": "Melee",
-                "description": "Counts as three melee hit points.  Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed  with no save possible.",
+                "name": "Dragonkin Breath (rare)",
+                "description": "During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed with no save possible.",
             },
             {"name": "Melee", "description": "Counts as three melee hit points."},
             {
@@ -2935,7 +2943,7 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {
                 "name": "Belly",
@@ -2943,11 +2951,19 @@ UNIT_DATA = [
             },
             {
                 "name": "Fly",
-                "description": "During any roll, Fly generates four maneuver or four save results.  Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed  with no save possible.",
+                "description": "During any roll, Fly generates four maneuver or four save results.",
+            },
+            {
+                "name": "Dragonkin Breath (Champion)",
+                "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible.",
             },
             {
                 "name": "Trample",
-                "description": "During any roll, Trample generates four maneuver and four melee results.  SFR (Dragonkin Champion): During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another.  During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
+                "description": "During any roll, Trample generates four maneuver and four melee results.",
+            },
+            {
+                "name": "SFR (Dragonkin Champion)",
+                "description": "During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
             },
         ],
     ),
@@ -2962,12 +2978,13 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as three points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {"name": "Melee", "description": "Counts as three melee hit points."},
+            {"name": "Move", "description": "Counts as three movement points."},
             {
-                "name": "Move",
-                "description": "Counts as three movement points.  Dragonkin Breath (rare): During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed  with no save possible.",
+                "name": "Dragonkin Breath (rare)",
+                "description": "During a melee attack, targeted player chooses three health-worth of units in the defending army to be killed with no save possible.",
             },
             {"name": "Move", "description": "Counts as three movement points."},
             {
@@ -3010,7 +3027,7 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {
                 "name": "Belly",
@@ -3018,11 +3035,19 @@ UNIT_DATA = [
             },
             {
                 "name": "Fly",
-                "description": "During any roll, Fly generates four maneuver or four save results.  Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed  with no save possible.",
+                "description": "During any roll, Fly generates four maneuver or four save results.",
+            },
+            {
+                "name": "Dragonkin Breath (Champion)",
+                "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible.",
             },
             {
                 "name": "Smite",
-                "description": "During a melee attack, Smite inflicts four points of damage to the defending army with no save possible.  During a dragon attack, Smite generates four melee results.  SFR (Dragonkin Champion): During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another.  During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
+                "description": "During a melee attack, Smite inflicts four points of damage to the defending army with no save possible. During a dragon attack, Smite generates four melee results.",
+            },
+            {
+                "name": "SFR (Dragonkin Champion)",
+                "description": "During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
             },
         ],
     ),
@@ -3037,7 +3062,7 @@ UNIT_DATA = [
         faces=[
             {
                 "name": "ID(kin)",
-                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for.  Unlike a normal ID, it cannot be used for magic points or missile hits.",
+                "description": "Counts as four points of saves, maneuvers, or melee hits, whatever the owning army is rolling for. Unlike a normal ID, it cannot be used for magic points or missile hits.",
             },
             {
                 "name": "Belly",
@@ -3045,11 +3070,19 @@ UNIT_DATA = [
             },
             {
                 "name": "Rend",
-                "description": "During a melee or dragon attack, Rend generates four melee results. Roll this unit again and apply the new result as well.  During a maneuver roll, Rend generates four maneuver results.  Dragonkin Breath (Champion): During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed  with no save possible.",
+                "description": "During a melee or dragon attack, Rend generates four melee results. Roll this unit again and apply the new result as well. During a maneuver roll, Rend generates four maneuver results.",
+            },
+            {
+                "name": "Dragonkin Breath (Champion)",
+                "description": "During a melee attack, attacking player chooses four health-worth of units in the defending army to be killed with no save possible.",
             },
             {
                 "name": "Counter",
-                "description": "During a save roll against a melee attack, Counter generates four save results and inflicts four damage upon the attacking army. Only save results generated by spells may reduce this damage.  During any other save roll, Counter generates four save results.  During a melee attack, Counter generates four melee results.  During a dragon attack, Counter generates four save and four melee results.  SFR (Dragonkin Champion): During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another.  During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
+                "description": "During a save roll against a melee attack, Counter generates four save results and inflicts four damage upon the attacking army. Only save results generated by spells may reduce this damage. During any other save roll, Counter generates four save results. During a melee attack, Counter generates four melee results. During a dragon attack, Counter generates four save and four melee results.",
+            },
+            {
+                "name": "SFR (Dragonkin Champion)",
+                "description": "During a melee attack, you may move a summoned dragon that contains the same color as this Dragonkin Champion from one terrain to another. During a save roll against an individual-targeting effect, the SFR/TSR logo counts as four saves.",
             },
         ],
     ),
@@ -9229,86 +9262,3 @@ def validate_unit_data_integrity() -> bool:
     return True
 
 
-def validate_unit_json() -> bool:
-    """Validate static unit data against the JSON file for consistency."""
-    try:
-        json_path = Path(__file__).parent.parent / "data" / "units_list.json"
-
-        if not json_path.exists():
-            print(f"ERROR: Units JSON file not found: {json_path}")
-            return False
-
-        with open(json_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        if "units" not in data:
-            print("ERROR: JSON file missing 'units' key")
-            return False
-
-        # Find species units in JSON
-        json_species_units = [
-            unit for unit in data["units"] if unit.get("type") == "species"
-        ]
-
-        if not json_species_units:
-            print("ERROR: No species units found in JSON")
-            return False
-
-        # Get static units
-        static_units = [unit for unit in UNIT_DATA if isinstance(unit, UnitModel)]
-
-        json_unit_keys = {
-            f"{unit['species_type']}_{unit['display_name']}"
-            for unit in json_species_units
-        }
-        static_unit_keys = {
-            f"{unit.species_type}_{unit.display_name}" for unit in static_units
-        }
-
-        # Compare JSON with static data
-        missing_in_static = json_unit_keys - static_unit_keys
-        if missing_in_static:
-            print(
-                f"WARNING: JSON units missing in static data: {len(missing_in_static)} units"
-            )
-            # Show first few examples
-            for i, missing in enumerate(list(missing_in_static)[:3]):
-                print(f"  - {missing}")
-            if len(missing_in_static) > 3:
-                print(f"  ... and {len(missing_in_static) - 3} more")
-
-        missing_in_json = static_unit_keys - json_unit_keys
-        if missing_in_json:
-            print(f"WARNING: Static units missing in JSON: {missing_in_json}")
-
-        # Validate each unit structure
-        for json_unit in json_species_units[:5]:  # Check first 5 for validation
-            species_type = json_unit["species_type"]
-            display_name = json_unit["display_name"]
-
-            static_unit = next(
-                (
-                    u
-                    for u in static_units
-                    if u.species_type == species_type and u.display_name == display_name
-                ),
-                None,
-            )
-
-            if static_unit:
-                json_face_count = len(json_unit.get("faces", []))
-                static_face_count = len(static_unit.faces)
-
-                if json_face_count != static_face_count:
-                    print(
-                        f"WARNING: Unit {species_type} {display_name} face count mismatch: JSON has {json_face_count}, static has {static_face_count}"
-                    )
-
-        print(
-            f"✓ Unit JSON validation passed ({len(json_species_units)} JSON species units, {len(static_units)} static units)"
-        )
-        return True
-
-    except Exception as e:
-        print(f"ERROR: Unit JSON validation failed: {e}")
-        return False

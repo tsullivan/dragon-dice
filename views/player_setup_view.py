@@ -32,6 +32,7 @@ from models.unit_roster_model import UnitRosterModel
 from models.unit_model import UnitModel
 from config.resource_manager import ResourceManager
 import utils.constants as constants
+from models.army_model import get_all_army_types
 
 
 class PlayerSetupView(QWidget):
@@ -162,7 +163,7 @@ class PlayerSetupView(QWidget):
         self.army_detailed_units_labels = {}
         self.army_group_boxes = {}  # Track the QGroupBox widgets for visibility control
 
-        for army_type in constants.ARMY_TYPES_ALL:
+        for army_type in get_all_army_types():
             # Create fieldset for each army
             army_group = QGroupBox(
                 f"{constants.format_army_type_display(army_type)} Army"
@@ -289,7 +290,7 @@ class PlayerSetupView(QWidget):
             ],
             "armies": {},
         }
-        for army_type in constants.ARMY_TYPES_ALL:
+        for army_type in get_all_army_types():
             army_key = army_type.lower()
             if army_key == "horde" and self.num_players <= 1:
                 continue
@@ -329,7 +330,7 @@ class PlayerSetupView(QWidget):
         # 50% of total force size (rounded down)
         max_magic_points = self.force_size // 2
 
-        for army_type in constants.ARMY_TYPES_ALL:
+        for army_type in get_all_army_types():
             # Skip horde army for single player games
             if army_type.lower() == "horde" and self.num_players <= 1:
                 continue
@@ -568,7 +569,7 @@ class PlayerSetupView(QWidget):
             for widget in self.dragon_selection_widgets:
                 widget.clear()
 
-            for army_type in constants.ARMY_TYPES_ALL:
+            for army_type in get_all_army_types():
                 army_widget = self.army_setup_widgets[army_type]
                 army_widget.load_units_from_dicts([])  # Clear units
                 army_widget._update_units_summary()

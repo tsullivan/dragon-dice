@@ -1,6 +1,4 @@
-import json
 from typing import List, Dict, Optional
-from pathlib import Path
 from models.element_model import ELEMENT_DATA
 
 
@@ -261,86 +259,6 @@ def validate_terrain_data() -> bool:
         print(f"ERROR: Terrain validation failed: {e}")
         return False
 
-
-def validate_terrain_json() -> bool:
-    """Validate static terrain data against the JSON file for consistency."""
-    try:
-        json_path = Path(__file__).parent.parent / "data" / "terrains_list.json"
-
-        if not json_path.exists():
-            print(f"ERROR: Terrain JSON file not found: {json_path}")
-            return False
-
-        with open(json_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        if "terrains" not in data:
-            print("ERROR: JSON file missing 'terrains' key")
-            return False
-
-        json_terrain_count = len(data["terrains"])
-        static_terrain_count = len(TERRAIN_DATA)
-
-        # Validate JSON structure first
-        required_fields = ["name", "type", "color", "subtype", "faces"]
-        json_terrain_colors = set()
-
-        for i, terrain_data in enumerate(data["terrains"]):
-            # Check required fields
-            for field in required_fields:
-                if field not in terrain_data:
-                    print(f"ERROR: Terrain {i} missing required field '{field}'")
-                    return False
-
-            # Validate type
-            if terrain_data["type"] not in ["major", "minor"]:
-                print(
-                    f"ERROR: Terrain {terrain_data['name']} has invalid type: {terrain_data['type']}"
-                )
-                return False
-
-            # Validate faces
-            if not terrain_data["faces"]:
-                print(f"ERROR: Terrain {terrain_data['name']} has no faces")
-                return False
-
-            for face in terrain_data["faces"]:
-                if "name" not in face or "description" not in face:
-                    print(
-                        f"ERROR: Face in terrain {terrain_data['name']} missing name or description"
-                    )
-                    return False
-
-            # Collect colors for comparison
-            json_terrain_colors.add(terrain_data["color"].upper())
-
-        # Compare static data with JSON data
-        static_terrain_colors = set(TERRAIN_DATA.keys())
-
-        # Check if all static terrains have corresponding JSON entries
-        missing_in_json = static_terrain_colors - json_terrain_colors
-        if missing_in_json:
-            print(f"WARNING: Static terrains missing in JSON: {missing_in_json}")
-
-        # Check if JSON has terrains not in static data
-        missing_in_static = json_terrain_colors - static_terrain_colors
-        if missing_in_static:
-            print(f"WARNING: JSON terrains missing in static data: {missing_in_static}")
-
-        # Validate that each static terrain has valid data structure
-        for terrain_key, terrain in TERRAIN_DATA.items():
-            if not isinstance(terrain, Terrain):
-                print(f"ERROR: Static terrain {terrain_key} is not a Terrain instance")
-                return False
-
-        print(
-            f"✓ Terrain JSON validation passed ({json_terrain_count} JSON terrains, {static_terrain_count} static terrains)"
-        )
-        return True
-
-    except Exception as e:
-        print(f"ERROR: Terrain JSON validation failed: {e}")
-        return False
 
 
 # Terrain utility functions

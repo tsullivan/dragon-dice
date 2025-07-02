@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject, Signal
 from typing import Optional
 
 import utils.constants as constants
+from models.game_phase_model import get_turn_phases
 
 
 class TurnManager(QObject):
@@ -26,7 +27,7 @@ class TurnManager(QObject):
         )
 
         # Start with First March phase for the very first turn of the game
-        self.current_phase_idx = constants.TURN_PHASES.index("FIRST_MARCH")
+        self.current_phase_idx = get_turn_phases().index("FIRST_MARCH")
         self.current_phase = "FIRST_MARCH"
         self.current_march_step = ""
         self.current_action_step = ""  # For sub-steps within Melee, Missile, Magic
@@ -52,7 +53,7 @@ class TurnManager(QObject):
             )
         else:
             # Dragon Dice Rule: Each player's turn starts with First March
-            self.current_phase_idx = constants.TURN_PHASES.index("FIRST_MARCH")
+            self.current_phase_idx = get_turn_phases().index("FIRST_MARCH")
             self.current_phase = "FIRST_MARCH"
             print(
                 f"TurnManager: Initializing turn for {self.player_names[self.current_player_idx]}. Phase: {self.current_phase}"
@@ -75,10 +76,10 @@ class TurnManager(QObject):
         else:
             # Normal phase advancement within a player's turn
             self.current_phase_idx += 1
-            if self.current_phase_idx >= len(constants.TURN_PHASES):
+            if self.current_phase_idx >= len(get_turn_phases()):
                 self.advance_player()
             else:
-                self.current_phase = constants.TURN_PHASES[self.current_phase_idx]
+                self.current_phase = get_turn_phases()[self.current_phase_idx]
                 self.current_march_step = ""  # Reset march step when advancing phase
                 self.current_action_step = ""  # Reset action step
                 print(

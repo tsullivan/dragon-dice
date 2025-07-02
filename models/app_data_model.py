@@ -9,7 +9,7 @@ from .army_model import ArmyModel
 from .unit_model import (
     UnitModel,
 )  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
-from utils.constants import DEFAULT_FORCE_SIZE, POINTS_PER_DRAGON
+from models.dragon_model import calculate_required_dragons
 from .terrain_model import TERRAIN_DATA
 
 
@@ -33,7 +33,7 @@ class AppDataModel(QObject):
         self._validate_internal_data()
 
         self._num_players = None
-        self._force_size = DEFAULT_FORCE_SIZE
+        self._force_size = 24  # DEFAULT_FORCE_SIZE
         self._player_setup_data_list: list[dict] = (
             []
         )  # Will be initialized based on num_players
@@ -124,18 +124,7 @@ class AppDataModel(QObject):
 
         Official Dragon Dice rules: 1 dragon per 24 points (or part thereof)
         """
-        return self.calculate_required_dragons(self._force_size)
-
-    @staticmethod
-    def calculate_required_dragons(force_size_points: int) -> int:
-        """Calculate required dragons based on force size points.
-
-        Official rules: 1 dragon per 24 points (or part thereof)
-        Examples: 15 pts = 1 dragon, 24 pts = 1 dragon, 30 pts = 2 dragons, 60 pts = 3 dragons
-        """
-        import math
-
-        return math.ceil(force_size_points / POINTS_PER_DRAGON)
+        return calculate_required_dragons(self._force_size)
 
     def get_proposed_frontier_terrains(self):
         """Returns a list of tuples (player_name, proposed_terrain_type)"""
@@ -230,14 +219,9 @@ class AppDataModel(QObject):
 
         try:
 
-            # Validate terrain data against JSON file
-            from models.terrain_model import (
-                validate_terrain_data,
-                validate_terrain_json,
-            )
-
-            if not validate_terrain_json():
-                raise ValueError("Terrain JSON validation failed")
+            # Validate terrain data
+            from models.terrain_model import validate_terrain_data
+            
             validate_terrain_data()
 
             # Validate dragon data

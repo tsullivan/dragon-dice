@@ -5,6 +5,26 @@ from typing import Dict, Any, List, Optional
 class UnitFace:
     """Represents a single face on a unit die."""
 
+    # Face type constants for compatibility with legacy code
+    ICON_MELEE = "MELEE"
+    ICON_MISSILE = "MISSILE"
+    ICON_MAGIC = "MAGIC"
+    ICON_SAVE = "SAVE"
+    ICON_ID = "ID"
+    ICON_SAI = "SAI"
+    ICON_MANEUVER = "MANEUVER"
+    ICON_DRAGON_ATTACK_CLAW = "DRAGON_CLAW"
+    ICON_DRAGON_ATTACK_BITE = "DRAGON_BITE"
+    ICON_DRAGON_ATTACK_TAIL = "DRAGON_TAIL"
+    ICON_DRAGON_BREATH = "DRAGON_BREATH"
+    
+    # SAI constants
+    SAI_BULLSEYE = "BULLSEYE"
+    SAI_DOUBLER = "DOUBLER"
+    SAI_TRIPLER = "TRIPLER"
+    SAI_RECRUIT = "RECRUIT"
+    SAI_MAGIC_BOLT = "MAGIC_BOLT"
+
     # Face emoji and color mappings for display
     _FACE_INFO_MAP = {
         # Basic combat faces
@@ -67,6 +87,11 @@ class UnitFace:
         "SFR (Dragonhunter)": {"emoji": "🗡️", "color": "#ffeeee"},  # Sword
         "SFR (Dragonzealot)": {"emoji": "⚔️", "color": "#ffeeee"},  # Crossed swords
         "TSR (Dragonmaster)": {"emoji": "🔮", "color": "#eeeeff"},  # Crystal ball
+        # Dragonkin-specific abilities
+        "SFR (Dragonkin Champion)": {"emoji": "🗡️", "color": "#ffeeee"},  # Sword (similar to Dragonhunter)
+        "Dragonkin Breath (Champion)": {"emoji": "🐉", "color": "#ffe0e0"},  # Dragon breath
+        "Dragonkin Breath (rare)": {"emoji": "🐉", "color": "#ffe0e0"},  # Dragon breath
+        "Counter": {"emoji": "🔄", "color": "#fff0f0"},  # Counter-attack
         # Capture abilities
         "Seize": {"emoji": "🤗", "color": "#fff0f0"},  # Hugging face (capturing)
     }

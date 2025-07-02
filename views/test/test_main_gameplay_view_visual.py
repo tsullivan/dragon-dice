@@ -5,6 +5,7 @@ from views.main_gameplay_view import MainGameplayView
 from game_logic.engine import GameEngine  # To instantiate the game engine for the view
 from test.utils.visual_test_helpers import capture_widget_screenshot
 import utils.constants as constants
+from models.game_phase_model import get_turn_phases
 
 
 def setup_game_engine():
@@ -55,7 +56,7 @@ def test_main_gameplay_view_initial_state(qtbot):
 def test_main_gameplay_view_eighth_face_phase(qtbot):
     game_engine = setup_game_engine()
     # Manually set the game engine to the EIGHTH_FACE phase
-    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index(
+    game_engine.turn_manager.current_phase_idx = get_turn_phases().index(
         "EIGHTH_FACE"
     )
     game_engine.turn_manager.current_phase = "EIGHTH_FACE"
@@ -72,7 +73,7 @@ def test_main_gameplay_view_eighth_face_phase(qtbot):
 
 def test_main_gameplay_view_dragon_attack_phase(qtbot):
     game_engine = setup_game_engine()
-    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index(
+    game_engine.turn_manager.current_phase_idx = get_turn_phases().index(
         "DRAGON_ATTACK"
     )
     game_engine.turn_manager.current_phase = "DRAGON_ATTACK"
@@ -157,7 +158,7 @@ def test_main_gameplay_view_expire_effects_phase_auto_advances(qtbot):
     """
     game_engine = setup_game_engine()
     # Manually set to EXPIRE_EFFECTS. _handle_phase_entry for EXPIRE_EFFECTS calls advance_phase()
-    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index(
+    game_engine.turn_manager.current_phase_idx = get_turn_phases().index(
         "EXPIRE_EFFECTS"
     )
     game_engine.turn_manager.current_phase = "EXPIRE_EFFECTS"
@@ -180,7 +181,7 @@ def test_main_gameplay_view_species_abilities_phase(qtbot):
     """Tests the SPECIES_ABILITIES phase display."""
     game_engine = setup_game_engine()
     # Set to SPECIES_ABILITIES phase
-    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index(
+    game_engine.turn_manager.current_phase_idx = get_turn_phases().index(
         "SPECIES_ABILITIES"
     )
     game_engine.turn_manager.current_phase = "SPECIES_ABILITIES"
@@ -199,7 +200,7 @@ def test_main_gameplay_view_reserves_phase(qtbot):
     """Tests the RESERVES phase display."""
     game_engine = setup_game_engine()
     # Set to RESERVES phase
-    game_engine.turn_manager.current_phase_idx = constants.TURN_PHASES.index("RESERVES")
+    game_engine.turn_manager.current_phase_idx = get_turn_phases().index("RESERVES")
     game_engine.turn_manager.current_phase = "RESERVES"
     game_engine.turn_manager.current_march_step = ""
     game_engine.turn_manager.current_action_step = ""

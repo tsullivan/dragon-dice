@@ -8,13 +8,6 @@ class ProjectPaths:
     def __init__(self, project_root: Path = None):
         self.project_root = project_root or Path(__file__).parent.parent
 
-    @property
-    def data_dir(self) -> Path:
-        return self.project_root / "data"
-
-    @property
-    def unit_definitions_file(self) -> Path:
-        return self.data_dir / "unit_definitions.json"
 
     @property
     def names_file(self) -> Path:

@@ -11,7 +11,6 @@ class TestResourceManager(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.mock_paths = Mock(spec=ProjectPaths)
-        self.mock_paths.unit_definitions_file = "/test/path/unit_definitions.json"
         self.mock_paths.names_file = "/test/path/names.txt"
 
         self.resource_manager = ResourceManager(self.mock_paths)

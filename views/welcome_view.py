@@ -16,6 +16,7 @@ from PySide6.QtCore import Qt, Signal, Slot
 from models.help_text_model import HelpTextModel
 from components.tabbed_view_widget import TabbedViewWidget
 import utils.constants as constants
+from models.dragon_model import calculate_required_dragons
 
 
 class WelcomeView(QWidget):
@@ -75,7 +76,7 @@ class WelcomeView(QWidget):
         self.force_size_button_group = QButtonGroup(self)
         for size in constants.FORCE_SIZE_OPTIONS:
             # Calculate required dragons for display
-            required_dragons = constants.calculate_required_dragons(size)
+            required_dragons = calculate_required_dragons(size)
             radio_button = QRadioButton(
                 f"{size} pts ({required_dragons} dragon{
                                         's' if required_dragons > 1 else ''})"

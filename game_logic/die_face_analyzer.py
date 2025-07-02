@@ -10,6 +10,7 @@ from typing import List, Dict, Any, Optional, Tuple
 from collections import Counter
 from dataclasses import dataclass
 import utils.constants as constants
+from models.unit_model import UnitFace
 
 
 @dataclass
@@ -36,27 +37,27 @@ class DieFaceAnalyzer:
 
     # Priority order for displaying die faces (most important first)
     FACE_PRIORITY_ORDER = [
-        constants.ICON_MELEE,
-        constants.ICON_MISSILE,
-        constants.ICON_MAGIC,
-        constants.ICON_SAVE,
-        constants.ICON_MANEUVER,
-        constants.ICON_SAI,
+        UnitFace.ICON_MELEE,
+        UnitFace.ICON_MISSILE,
+        UnitFace.ICON_MAGIC,
+        UnitFace.ICON_SAVE,
+        UnitFace.ICON_MANEUVER,
+        UnitFace.ICON_SAI,
     ]
 
     # Icon mappings for different face types
     FACE_ICONS = {
-        constants.ICON_MELEE: "⚔️",
-        constants.ICON_MISSILE: "🏹",
-        constants.ICON_MAGIC: "✨",
-        constants.ICON_SAVE: "🛡️",
-        constants.ICON_ID: "—",
-        constants.ICON_SAI: "💎",
-        constants.ICON_MANEUVER: "🏃",
-        constants.ICON_DRAGON_ATTACK_CLAW: "🐉",
-        constants.ICON_DRAGON_ATTACK_BITE: "🦷",
-        constants.ICON_DRAGON_ATTACK_TAIL: "🐉",
-        constants.ICON_DRAGON_BREATH: "🔥",
+        UnitFace.ICON_MELEE: "⚔️",
+        UnitFace.ICON_MISSILE: "🏹",
+        UnitFace.ICON_MAGIC: "✨",
+        UnitFace.ICON_SAVE: "🛡️",
+        UnitFace.ICON_ID: "—",
+        UnitFace.ICON_SAI: "💎",
+        UnitFace.ICON_MANEUVER: "🏃",
+        UnitFace.ICON_DRAGON_ATTACK_CLAW: "🐉",
+        UnitFace.ICON_DRAGON_ATTACK_BITE: "🦷",
+        UnitFace.ICON_DRAGON_ATTACK_TAIL: "🐉",
+        UnitFace.ICON_DRAGON_BREATH: "🔥",
     }
 
     def __init__(self, unit_roster=None):
@@ -104,13 +105,13 @@ class DieFaceAnalyzer:
                 "face_6",
             ]:
                 face_type = die_faces.get(face_key)
-                if face_type and face_type != constants.ICON_ID:  # Don't count ID faces
+                if face_type and face_type != UnitFace.ICON_ID:  # Don't count ID faces
                     face_counts[face_type] += 1
 
             # Count eighth faces
             for face_key in ["eighth_face_1", "eighth_face_2"]:
                 face_type = die_faces.get(face_key)
-                if face_type and face_type != constants.ICON_ID:  # Don't count ID faces
+                if face_type and face_type != UnitFace.ICON_ID:  # Don't count ID faces
                     face_counts[face_type] += 1
 
         return dict(face_counts)
@@ -255,18 +256,18 @@ class DieFaceAnalyzer:
 
         # Define tactical categories
         offensive_faces = [
-            constants.ICON_MELEE,
-            constants.ICON_MISSILE,
-            constants.ICON_MAGIC,
+            UnitFace.ICON_MELEE,
+            UnitFace.ICON_MISSILE,
+            UnitFace.ICON_MAGIC,
         ]
-        defensive_faces = [constants.ICON_SAVE]
-        utility_faces = [constants.ICON_MANEUVER, constants.ICON_SAI]
+        defensive_faces = [UnitFace.ICON_SAVE]
+        utility_faces = [UnitFace.ICON_MANEUVER, UnitFace.ICON_SAI]
 
         analysis = {
             "offensive_strength": sum(
                 face_counts.get(face, 0) for face in offensive_faces
             ),
-            "defensive_strength": face_counts.get(constants.ICON_SAVE, 0),
+            "defensive_strength": face_counts.get(UnitFace.ICON_SAVE, 0),
             "utility_strength": sum(face_counts.get(face, 0) for face in utility_faces),
             "total_combat_faces": sum(
                 face_counts.get(face, 0) for face in offensive_faces + defensive_faces
@@ -403,13 +404,13 @@ class UnitDieFaceExtractor:
 
         # Check for valid face types
         valid_face_types = [
-            constants.ICON_MELEE,
-            constants.ICON_MISSILE,
-            constants.ICON_MAGIC,
-            constants.ICON_SAVE,
-            constants.ICON_ID,
-            constants.ICON_SAI,
-            constants.ICON_MANEUVER,
+            UnitFace.ICON_MELEE,
+            UnitFace.ICON_MISSILE,
+            UnitFace.ICON_MAGIC,
+            UnitFace.ICON_SAVE,
+            UnitFace.ICON_ID,
+            UnitFace.ICON_SAI,
+            UnitFace.ICON_MANEUVER,
         ]
 
         for position, face_type in die_faces.items():
