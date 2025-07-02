@@ -1,8 +1,9 @@
-import pytest
 from unittest.mock import Mock
 
-from views.welcome_view import WelcomeView
+import pytest
+
 import utils.constants as constants
+from views.welcome_view import WelcomeView
 
 
 class TestWelcomeViewCoreFunctionality:
@@ -19,9 +20,7 @@ class TestWelcomeViewCoreFunctionality:
 
         # Verify force size selection exists
         assert hasattr(welcome_view, "force_size_button_group")
-        assert len(welcome_view.force_size_button_group.buttons()) == len(
-            constants.FORCE_SIZE_OPTIONS
-        )
+        assert len(welcome_view.force_size_button_group.buttons()) == len(constants.FORCE_SIZE_OPTIONS)
 
         # Verify proceed button exists
         assert hasattr(welcome_view, "proceed_button")
@@ -32,9 +31,7 @@ class TestWelcomeViewCoreFunctionality:
         welcome_view = WelcomeView()
         qtbot.addWidget(welcome_view)
 
-        button_texts = [
-            btn.text() for btn in welcome_view.player_count_button_group.buttons()
-        ]
+        button_texts = [btn.text() for btn in welcome_view.player_count_button_group.buttons()]
         expected_texts = ["2", "3", "4"]
 
         for expected in expected_texts:
@@ -45,9 +42,7 @@ class TestWelcomeViewCoreFunctionality:
         welcome_view = WelcomeView()
         qtbot.addWidget(welcome_view)
 
-        button_texts = [
-            btn.text() for btn in welcome_view.force_size_button_group.buttons()
-        ]
+        button_texts = [btn.text() for btn in welcome_view.force_size_button_group.buttons()]
 
         for expected_size in constants.FORCE_SIZE_OPTIONS:
             # Check that the button contains the points value and dragon info
@@ -64,20 +59,12 @@ class TestWelcomeViewCoreFunctionality:
         qtbot.addWidget(welcome_view)
 
         # Check player count default (should be 2)
-        player_checked = [
-            btn
-            for btn in welcome_view.player_count_button_group.buttons()
-            if btn.isChecked()
-        ]
+        player_checked = [btn for btn in welcome_view.player_count_button_group.buttons() if btn.isChecked()]
         assert len(player_checked) == 1
         assert player_checked[0].text() == "2"
 
         # Check force size default (should be DEFAULT_FORCE_SIZE)
-        force_checked = [
-            btn
-            for btn in welcome_view.force_size_button_group.buttons()
-            if btn.isChecked()
-        ]
+        force_checked = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()]
         assert len(force_checked) == 1
         assert f"{constants.DEFAULT_FORCE_SIZE} pts" in force_checked[0].text()
 
@@ -107,9 +94,7 @@ class TestWelcomeViewCoreFunctionality:
 
         # Verify correct values were emitted
         player_count_mock.assert_called_with(2)  # Default player count
-        force_size_mock.assert_called_with(
-            constants.DEFAULT_FORCE_SIZE
-        )  # Default force size
+        force_size_mock.assert_called_with(constants.DEFAULT_FORCE_SIZE)  # Default force size
 
     def test_proceed_signal_can_be_triggered(self, qtbot):
         """Test that proceed signal can be triggered."""
@@ -139,19 +124,13 @@ class TestWelcomeViewCoreFunctionality:
                     target_button = button
                     break
 
-            assert (
-                target_button is not None
-            ), f"Could not find button for {expected_count} players"
+            assert target_button is not None, f"Could not find button for {expected_count} players"
 
             # Set it as checked (simulates user selection)
             target_button.setChecked(True)
 
             # Verify it's the only checked button
-            checked_buttons = [
-                btn
-                for btn in welcome_view.player_count_button_group.buttons()
-                if btn.isChecked()
-            ]
+            checked_buttons = [btn for btn in welcome_view.player_count_button_group.buttons() if btn.isChecked()]
             assert len(checked_buttons) == 1
             assert checked_buttons[0] == target_button
 
@@ -170,19 +149,13 @@ class TestWelcomeViewCoreFunctionality:
                     target_button = button
                     break
 
-            assert (
-                target_button is not None
-            ), f"Could not find button for {expected_size} pts"
+            assert target_button is not None, f"Could not find button for {expected_size} pts"
 
             # Set it as checked (simulates user selection)
             target_button.setChecked(True)
 
             # Verify it's the only checked button
-            checked_buttons = [
-                btn
-                for btn in welcome_view.force_size_button_group.buttons()
-                if btn.isChecked()
-            ]
+            checked_buttons = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()]
             assert len(checked_buttons) == 1
             assert checked_buttons[0] == target_button
 
@@ -195,36 +168,22 @@ class TestWelcomeViewCoreFunctionality:
         qtbot.addWidget(welcome_view)
 
         # Test 1: User can see all player count options
-        player_options = [
-            btn.text() for btn in welcome_view.player_count_button_group.buttons()
-        ]
+        player_options = [btn.text() for btn in welcome_view.player_count_button_group.buttons()]
         assert "2" in player_options
         assert "3" in player_options
         assert "4" in player_options
 
         # Test 2: User can see all force size options
-        force_options = [
-            btn.text() for btn in welcome_view.force_size_button_group.buttons()
-        ]
+        force_options = [btn.text() for btn in welcome_view.force_size_button_group.buttons()]
         for size in constants.FORCE_SIZE_OPTIONS:
             found_option = any(f"{size} pts" in option for option in force_options)
-            assert (
-                found_option
-            ), f"Force size {size} pts not found in options: {force_options}"
+            assert found_option, f"Force size {size} pts not found in options: {force_options}"
 
         # Test 3: User has sensible defaults
-        default_player_count = [
-            btn
-            for btn in welcome_view.player_count_button_group.buttons()
-            if btn.isChecked()
-        ][0]
+        default_player_count = [btn for btn in welcome_view.player_count_button_group.buttons() if btn.isChecked()][0]
         assert default_player_count.text() == "2"
 
-        default_force_size = [
-            btn
-            for btn in welcome_view.force_size_button_group.buttons()
-            if btn.isChecked()
-        ][0]
+        default_force_size = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()][0]
         assert f"{constants.DEFAULT_FORCE_SIZE} pts" in default_force_size.text()
 
         # Test 4: User can change selections

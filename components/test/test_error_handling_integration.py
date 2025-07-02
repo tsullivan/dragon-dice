@@ -1,8 +1,10 @@
-import unittest
-from unittest.mock import Mock, patch, MagicMock
-from PySide6.QtWidgets import QWidget, QApplication
-from components.error_dialog import ErrorDialog, GameError, ErrorHandler
 import sys
+import unittest
+from unittest.mock import MagicMock, Mock, patch
+
+from PySide6.QtWidgets import QApplication, QWidget
+
+from components.error_dialog import ErrorDialog, ErrorHandler, GameError
 
 
 class TestErrorHandlingIntegration(unittest.TestCase):
@@ -50,9 +52,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         handler = ErrorHandler(self.parent_widget, show_dialogs=True)
 
         with patch.object(ErrorDialog, "show_error") as mock_show_error:
-            handler.handle_error(
-                GameError("Test error", "Test details"), "Test Context"
-            )
+            handler.handle_error(GameError("Test error", "Test details"), "Test Context")
 
             mock_show_error.assert_called_once_with(
                 self.parent_widget,
@@ -66,9 +66,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         handler = ErrorHandler(self.parent_widget, show_dialogs=False)
 
         with patch("builtins.print") as mock_print:
-            handler.handle_error(
-                GameError("Test error", "Test details"), "Test Context"
-            )
+            handler.handle_error(GameError("Test error", "Test details"), "Test Context")
 
             mock_print.assert_called()
 
@@ -149,9 +147,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         mock_box = Mock()
         mock_msgbox.return_value = mock_box
 
-        ErrorDialog.show_warning(
-            self.parent_widget, "Test Warning Title", "Test warning message"
-        )
+        ErrorDialog.show_warning(self.parent_widget, "Test Warning Title", "Test warning message")
 
         mock_msgbox.assert_called_once_with(self.parent_widget)
         mock_box.setIcon.assert_called_once()
@@ -175,9 +171,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         )
 
         self.assertTrue(result)
-        mock_box.setDetailedText.assert_called_once_with(
-            "This action cannot be undone."
-        )
+        mock_box.setDetailedText.assert_called_once_with("This action cannot be undone.")
 
     @patch("components.error_dialog.QMessageBox")
     def test_error_dialog_ask_question_no(self, mock_msgbox):
@@ -186,9 +180,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         mock_msgbox.return_value = mock_box
         mock_box.exec.return_value = mock_msgbox.StandardButton.No
 
-        result = ErrorDialog.ask_question(
-            self.parent_widget, "Confirm Action", "Are you sure you want to proceed?"
-        )
+        result = ErrorDialog.ask_question(self.parent_widget, "Confirm Action", "Are you sure you want to proceed?")
 
         self.assertFalse(result)
 
@@ -196,10 +188,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         """Test ErrorHandler with non-user-friendly GameError."""
         handler = ErrorHandler(self.parent_widget, show_dialogs=True)
 
-        with patch("builtins.print") as mock_print, patch.object(
-            ErrorDialog, "show_error"
-        ) as mock_show_error:
-
+        with patch("builtins.print") as mock_print, patch.object(ErrorDialog, "show_error") as mock_show_error:
             handler.handle_error(
                 GameError("Internal error", "Debug info", user_friendly=False),
                 "Internal",

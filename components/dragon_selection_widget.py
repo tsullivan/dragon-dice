@@ -1,10 +1,12 @@
 # components/dragon_selection_widget.py
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGroupBox
+from typing import Any, Dict
+
 from PySide6.QtCore import Qt, Signal
-from typing import Dict, Any
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from components.carousel import CarouselInputWidget
-import utils.constants as constants
+from models.dragon_model import get_available_dragon_types
+from models.element_model import ELEMENT_DATA, get_all_element_names
 
 
 class DragonSelectionWidget(QWidget):
@@ -17,8 +19,8 @@ class DragonSelectionWidget(QWidget):
         self.dragon_number = dragon_number
 
         # Initialize with default values
-        self._current_dragon_type = constants.AVAILABLE_DRAGON_TYPES[0]
-        self._current_die_type = "Drake"
+        self._current_dragon_type = get_all_element_names()[0]  # Start with first element
+        self._current_die_type = get_available_dragon_types()[0]  # Drake or Wyrm
 
         self._setup_ui()
         self._connect_signals()
@@ -36,13 +38,15 @@ class DragonSelectionWidget(QWidget):
         title_label.setFont(font)
         main_layout.addWidget(title_label)
 
-        # Dragon type selection
+        # Dragon element/color selection
         dragon_type_layout = QHBoxLayout()
-        dragon_type_label = QLabel("Type:")
+        dragon_type_label = QLabel("Color:")
         dragon_type_label.setMinimumWidth(40)
+        # Create element display values with icons
+        element_display_values = [ELEMENT_DATA[elem].get_display_format() for elem in get_all_element_names()]
         self.dragon_type_carousel = CarouselInputWidget(
-            allowed_values=constants.AVAILABLE_DRAGON_TYPES,
-            initial_value=self._current_dragon_type,
+            allowed_values=element_display_values,
+            initial_value=ELEMENT_DATA[self._current_dragon_type].get_display_format(),
         )
         dragon_type_layout.addWidget(dragon_type_label)
         dragon_type_layout.addWidget(self.dragon_type_carousel, 1)
@@ -53,7 +57,7 @@ class DragonSelectionWidget(QWidget):
         die_type_label = QLabel("Die:")
         die_type_label.setMinimumWidth(40)
         self.die_type_carousel = CarouselInputWidget(
-            allowed_values=constants.AVAILABLE_DRAGON_DIE_TYPES,
+            allowed_values=get_available_dragon_types(),
             initial_value=self._current_die_type,
         )
         die_type_layout.addWidget(die_type_label)
@@ -65,7 +69,11 @@ class DragonSelectionWidget(QWidget):
         self.die_type_carousel.valueChanged.connect(self._on_die_type_changed)
 
     def _on_dragon_type_changed(self, new_type):
-        self._current_dragon_type = new_type
+        # Convert from display format back to element name
+        for element_name in get_all_element_names():
+            if ELEMENT_DATA[element_name].get_display_format() == new_type:
+                self._current_dragon_type = element_name
+                break
         self._emit_current_value()
 
     def _on_die_type_changed(self, new_type):
@@ -93,13 +101,13 @@ class DragonSelectionWidget(QWidget):
 
         # Update dragon type if provided
         dragon_type = dragon_data.get("dragon_type")
-        if dragon_type and dragon_type in constants.AVAILABLE_DRAGON_TYPES:
+        if dragon_type and dragon_type in get_all_element_names():
             self._current_dragon_type = dragon_type
-            self.dragon_type_carousel.setValue(dragon_type)
+            self.dragon_type_carousel.setValue(ELEMENT_DATA[dragon_type].get_display_format())
 
         # Update die type if provided
         die_type = dragon_data.get("die_type")
-        if die_type and die_type in constants.AVAILABLE_DRAGON_DIE_TYPES:
+        if die_type and die_type in get_available_dragon_types():
             self._current_die_type = die_type
             self.die_type_carousel.setValue(die_type)
 
@@ -107,9 +115,9 @@ class DragonSelectionWidget(QWidget):
 
     def clear(self):
         """Reset to default values."""
-        self._current_dragon_type = constants.AVAILABLE_DRAGON_TYPES[0]
-        self._current_die_type = "Drake"
-        self.dragon_type_carousel.setValue(self._current_dragon_type)
+        self._current_dragon_type = get_all_element_names()[0]
+        self._current_die_type = get_available_dragon_types()[0]
+        self.dragon_type_carousel.setValue(ELEMENT_DATA[self._current_dragon_type].get_display_format())
         self.die_type_carousel.setValue(self._current_die_type)
         self._emit_current_value()
 

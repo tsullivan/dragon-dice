@@ -1,22 +1,21 @@
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QButtonGroup,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QGroupBox,
     QRadioButton,
-    QButtonGroup,
     QSizePolicy,
     QSpacerItem,
-    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt, Signal, Slot
 
-from models.help_text_model import HelpTextModel
-from components.tabbed_view_widget import TabbedViewWidget
 import utils.constants as constants
+from components.tabbed_view_widget import TabbedViewWidget
 from models.dragon_model import calculate_required_dragons
+from models.help_text_model import HelpTextModel
 
 
 class WelcomeView(QWidget):
@@ -77,18 +76,13 @@ class WelcomeView(QWidget):
         for size in constants.FORCE_SIZE_OPTIONS:
             # Calculate required dragons for display
             required_dragons = calculate_required_dragons(size)
-            radio_button = QRadioButton(
-                f"{size} pts ({required_dragons} dragon{
-                                        's' if required_dragons > 1 else ''})"
-            )
+            radio_button = QRadioButton(f"{size} pts ({required_dragons} dragon{'s' if required_dragons > 1 else ''})")
             self.force_size_button_group.addButton(radio_button, size)
             force_size_hbox.addWidget(radio_button)
             if size == constants.DEFAULT_FORCE_SIZE:
                 radio_button.setChecked(True)
         force_size_group.setLayout(force_size_hbox)
-        self.force_size_button_group.idClicked.connect(
-            self.force_size_selected_signal.emit
-        )
+        self.force_size_button_group.idClicked.connect(self.force_size_selected_signal.emit)
         selections_layout.addWidget(force_size_group)
 
         # Add selections to Game tab
@@ -119,11 +113,7 @@ class WelcomeView(QWidget):
         self.validation_error_label.hide()  # Hidden by default
         main_layout.addWidget(self.validation_error_label)
 
-        main_layout.addSpacerItem(
-            QSpacerItem(
-                20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
-            )
-        )
+        main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         # Proceed Button
         self.proceed_button = QPushButton("Proceed to Player Setup")
@@ -141,23 +131,17 @@ class WelcomeView(QWidget):
         # Emit player count
         selected_player_button = self.player_count_button_group.checkedButton()
         if selected_player_button:
-            self.player_count_selected_signal.emit(
-                self.player_count_button_group.id(selected_player_button)
-            )
+            self.player_count_selected_signal.emit(self.player_count_button_group.id(selected_player_button))
         else:
             if self.player_count_button_group.buttons():
                 self.player_count_selected_signal.emit(
-                    self.player_count_button_group.id(
-                        self.player_count_button_group.buttons()[0]
-                    )
+                    self.player_count_button_group.id(self.player_count_button_group.buttons()[0])
                 )
 
         # Emit force size
         selected_force_button = self.force_size_button_group.checkedButton()
         if selected_force_button:
-            self.force_size_selected_signal.emit(
-                self.force_size_button_group.id(selected_force_button)
-            )
+            self.force_size_selected_signal.emit(self.force_size_button_group.id(selected_force_button))
         else:
             if self.force_size_button_group.buttons():
                 self.force_size_selected_signal.emit(constants.DEFAULT_FORCE_SIZE)
@@ -178,9 +162,7 @@ class WelcomeView(QWidget):
         if not selected_player_button:
             return True  # No selection yet, don't show error
 
-        selected_player_count = self.player_count_button_group.id(
-            selected_player_button
-        )
+        selected_player_count = self.player_count_button_group.id(selected_player_button)
 
         if selected_player_count != 2:
             # Show validation error
@@ -196,11 +178,10 @@ class WelcomeView(QWidget):
             self.validation_error_label.show()
             self.proceed_button.setEnabled(False)
             return False
-        else:
-            # Hide validation error
-            self.validation_error_label.hide()
-            self.proceed_button.setEnabled(True)
-            return True
+        # Hide validation error
+        self.validation_error_label.hide()
+        self.proceed_button.setEnabled(True)
+        return True
 
     def _set_welcome_help_text(self):
         self.tabbed_widget.set_help_text(self.help_model.get_welcome_help())

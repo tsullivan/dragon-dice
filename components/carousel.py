@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
+from typing import Any, List, Optional
+
 from PySide6.QtCore import Qt, Signal
-from typing import List, Any, Union, Optional
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget
 
 
 class CarouselInputWidget(QWidget):
@@ -30,10 +31,7 @@ class CarouselInputWidget(QWidget):
                     and len(original_item) > 0
                     and any(isinstance(el, list) for el in original_item)
                 ):
-                    hashable_item = tuple(
-                        tuple(el) if isinstance(el, list) else el
-                        for el in original_item
-                    )
+                    hashable_item = tuple(tuple(el) if isinstance(el, list) else el for el in original_item)
                 else:
                     hashable_item = original_item  # Assume it's already hashable or a primitive type
 
@@ -42,16 +40,12 @@ class CarouselInputWidget(QWidget):
                     seen_hashable_representations.add(hashable_item)
             try:  # Try sorting, will work for numbers and strings
                 self._allowed_values = sorted(temp_values)
-            except (
-                TypeError
-            ):  # If values are not sortable (e.g. mixed types, though not expected here)
+            except TypeError:  # If values are not sortable (e.g. mixed types, though not expected here)
                 self._allowed_values = temp_values
         else:
             self._allowed_values = list(range(min_val, max_val + 1, step))
 
-        if (
-            not self._allowed_values
-        ):  # Ensure there's at least one value to prevent errors
+        if not self._allowed_values:  # Ensure there's at least one value to prevent errors
             self._allowed_values = [initial_value if initial_value is not None else 0]
 
         self._current_index = 0
@@ -90,16 +84,8 @@ class CarouselInputWidget(QWidget):
         if not self._allowed_values:
             return
         try:
-            current_index = (
-                self._allowed_values.index(self.value())
-                if self.value() in self._allowed_values
-                else -1
-            )
-            if (
-                current_index == -1 and self._allowed_values
-            ):  # If current value is not in list, start from last
-                new_index = len(self._allowed_values) - 1
-            elif current_index == 0:  # If at the beginning, loop to the end
+            current_index = self._allowed_values.index(self.value()) if self.value() in self._allowed_values else -1
+            if current_index == -1 and self._allowed_values or current_index == 0:  # If current value is not in list, start from last
                 new_index = len(self._allowed_values) - 1
             else:
                 new_index = current_index - 1
@@ -113,18 +99,12 @@ class CarouselInputWidget(QWidget):
         if not self._allowed_values:
             return
         try:
-            current_index = (
-                self._allowed_values.index(self.value())
-                if self.value() in self._allowed_values
-                else -1
-            )
+            current_index = self._allowed_values.index(self.value()) if self.value() in self._allowed_values else -1
             if (
                 current_index == -1 and self._allowed_values
             ):  # If current value is not in list (e.g. None), start from first
                 new_index = 0
-            elif (
-                current_index == len(self._allowed_values) - 1
-            ):  # If at the end, loop to the beginning
+            elif current_index == len(self._allowed_values) - 1:  # If at the end, loop to the beginning
                 new_index = 0
             else:
                 new_index = current_index + 1
@@ -138,9 +118,7 @@ class CarouselInputWidget(QWidget):
                 self.setValue(self._allowed_values[0])
 
     def _update_display_and_emit(self):
-        if (
-            not self._allowed_values
-        ):  # Should not happen if constructor ensures _allowed_values is never empty
+        if not self._allowed_values:  # Should not happen if constructor ensures _allowed_values is never empty
             self.value_label.setText("")
             self._update_button_states()
             self.valueChanged.emit(None)  # Or some other indicator of no value
@@ -207,9 +185,7 @@ class CarouselInputWidget(QWidget):
         if new_value in self._allowed_values:
             self._current_index = self._allowed_values.index(new_value)
             self._update_display_and_emit()
-        elif (
-            new_value is None and self._allowed_values
-        ):  # Handle setting to None explicitly
+        elif new_value is None and self._allowed_values:  # Handle setting to None explicitly
             # This case might mean "no selection" or reset to default.
             # For now, let's reset to the first item if None is not an allowed value.
             # If None *is* an allowed value, the above `if new_value in self._allowed_values` handles it.

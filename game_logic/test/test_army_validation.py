@@ -7,11 +7,12 @@ to ensure rules are correctly enforced independently of UI components.
 
 import unittest
 from unittest.mock import Mock
+
 from game_logic.army_validation import (
-    DragonDiceArmyValidator,
     ArmyComposition,
-    ValidationResult,
     ArmyCompositionBuilder,
+    DragonDiceArmyValidator,
+    ValidationResult,
 )
 
 
@@ -45,9 +46,7 @@ class TestArmyComposition(unittest.TestCase):
 
     def test_get_total_points_with_dict_units(self):
         """Test point calculation with dictionary-style units."""
-        army = ArmyComposition(
-            army_type="Campaign", units=[self.dict_unit_1pt, self.dict_unit_2pt]
-        )
+        army = ArmyComposition(army_type="Campaign", units=[self.dict_unit_1pt, self.dict_unit_2pt])
 
         self.assertEqual(army.get_total_points(), 3)
 
@@ -58,9 +57,7 @@ class TestArmyComposition(unittest.TestCase):
 
     def test_get_unit_count(self):
         """Test unit count calculation."""
-        army = ArmyComposition(
-            army_type="Home", units=[self.mock_unit_1pt, self.mock_unit_2pt]
-        )
+        army = ArmyComposition(army_type="Home", units=[self.mock_unit_1pt, self.mock_unit_2pt])
 
         self.assertEqual(army.get_unit_count(), 2)
 
@@ -77,9 +74,7 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
         """Set up test fixtures."""
         # Mock unit roster
         self.mock_unit_roster = Mock()
-        self.mock_unit_roster.get_unit_definition.return_value = {
-            "unit_class_type": "Heavy Melee"
-        }
+        self.mock_unit_roster.get_unit_definition.return_value = {"unit_class_type": "Heavy Melee"}
 
         self.validator = DragonDiceArmyValidator(self.mock_unit_roster)
 
@@ -104,22 +99,14 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
     def test_valid_army_composition(self):
         """Test a valid army composition that should pass all rules."""
         armies = [
-            ArmyComposition(
-                "Home", [self.unit_2pt, self.unit_2pt]
-            ),  # 4 pts (within 50% of 12)
-            ArmyComposition(
-                "Campaign", [self.unit_2pt, self.unit_2pt, self.unit_2pt]
-            ),  # 6 pts (within 50% of 12)
+            ArmyComposition("Home", [self.unit_2pt, self.unit_2pt]),  # 4 pts (within 50% of 12)
+            ArmyComposition("Campaign", [self.unit_2pt, self.unit_2pt, self.unit_2pt]),  # 6 pts (within 50% of 12)
             ArmyComposition("Horde", [self.unit_1pt, self.unit_1pt]),  # 2 pts
         ]
 
-        result = self.validator.validate_army_composition(
-            armies, force_size=12, num_players=2
-        )
+        result = self.validator.validate_army_composition(armies, force_size=12, num_players=2)
 
-        self.assertTrue(
-            result.is_valid, f"Expected valid but got errors: {result.errors}"
-        )
+        self.assertTrue(result.is_valid, f"Expected valid but got errors: {result.errors}")
         self.assertEqual(len(result.errors), 0)
         self.assertEqual(result.total_force_points, 12)
 
@@ -130,9 +117,7 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
             ArmyComposition("Campaign", [self.unit_4pt]),
         ]
 
-        result = self.validator.validate_army_composition(
-            armies, force_size=10, num_players=2
-        )
+        result = self.validator.validate_army_composition(armies, force_size=10, num_players=2)
 
         self.assertFalse(result.is_valid)
         self.assertIn("Home Army must have at least 1 unit", result.errors)
@@ -140,20 +125,14 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
     def test_rule_2_army_exceeds_50_percent_fails(self):
         """Test Rule 2: No army can exceed 50% of total force points."""
         armies = [
-            ArmyComposition(
-                "Home", [self.unit_4pt, self.unit_4pt, self.unit_4pt]
-            ),  # 12 pts > 50% of 20
+            ArmyComposition("Home", [self.unit_4pt, self.unit_4pt, self.unit_4pt]),  # 12 pts > 50% of 20
             ArmyComposition("Campaign", [self.unit_2pt]),  # 2 pts
         ]
 
-        result = self.validator.validate_army_composition(
-            armies, force_size=20, num_players=2
-        )
+        result = self.validator.validate_army_composition(armies, force_size=20, num_players=2)
 
         self.assertFalse(result.is_valid)
-        self.assertTrue(
-            any("exceeds maximum 10 pts" in error for error in result.errors)
-        )
+        self.assertTrue(any("exceeds maximum 10 pts" in error for error in result.errors))
 
     def test_rule_3_magic_units_exceed_50_percent_fails(self):
         """Test Rule 3: Magic units cannot exceed 50% of total force points."""
@@ -167,26 +146,17 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
         self.mock_unit_roster.get_unit_definition.side_effect = mock_get_unit_definition
 
         armies = [
-            ArmyComposition(
-                "Home", [self.magic_unit_2pt, self.magic_unit_2pt]
-            ),  # 4 pts magic (within army limit)
+            ArmyComposition("Home", [self.magic_unit_2pt, self.magic_unit_2pt]),  # 4 pts magic (within army limit)
             ArmyComposition(
                 "Campaign", [self.magic_unit_2pt, self.unit_2pt, self.unit_2pt]
             ),  # 2 pts magic + 4 pts non-magic = 6 pts total
         ]
         # Total: 10 pts, Magic: 6 pts (exceeds 50% limit of 5 pts)
 
-        result = self.validator.validate_army_composition(
-            armies, force_size=10, num_players=2
-        )
+        result = self.validator.validate_army_composition(armies, force_size=10, num_players=2)
 
         self.assertFalse(result.is_valid)
-        self.assertTrue(
-            any(
-                "Magic units (6 pts) exceed maximum 5 pts" in error
-                for error in result.errors
-            )
-        )
+        self.assertTrue(any("Magic units (6 pts) exceed maximum 5 pts" in error for error in result.errors))
 
     def test_rule_4_total_points_not_equal_force_size_fails(self):
         """Test Rule 4: Total army points must equal selected force size."""
@@ -196,41 +166,29 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
         ]
         # Total = 3 pts, but force size = 10
 
-        result = self.validator.validate_army_composition(
-            armies, force_size=10, num_players=2
-        )
+        result = self.validator.validate_army_composition(armies, force_size=10, num_players=2)
 
         self.assertFalse(result.is_valid)
         self.assertTrue(
-            any(
-                "Total army points (3 pts) must equal selected force size (10 pts)"
-                in error
-                for error in result.errors
-            )
+            any("Total army points (3 pts) must equal selected force size (10 pts)" in error for error in result.errors)
         )
 
     def test_horde_army_skipped_for_single_player(self):
         """Test that horde army validation is skipped for single player games."""
         armies = [
             ArmyComposition("Home", [self.unit_2pt, self.unit_2pt]),  # 4 pts
-            ArmyComposition(
-                "Campaign", [self.unit_2pt, self.unit_2pt, self.unit_2pt]
-            ),  # 6 pts
+            ArmyComposition("Campaign", [self.unit_2pt, self.unit_2pt, self.unit_2pt]),  # 6 pts
             ArmyComposition("Horde", []),  # Empty horde army - should be skipped
         ]
 
         # Use force size 20 so both armies are within 50% limit (10 pts each max)
-        result = self.validator.validate_army_composition(
-            armies, force_size=20, num_players=1
-        )
+        result = self.validator.validate_army_composition(armies, force_size=20, num_players=1)
 
         # Should fail due to total points mismatch (10 != 20), but horde army error should not appear
         self.assertFalse(result.is_valid)
         # Check that horde army error is NOT in the errors (it should be skipped)
         horde_errors = [error for error in result.errors if "Horde" in error]
-        self.assertEqual(
-            len(horde_errors), 0, "Horde army should be skipped for single player"
-        )
+        self.assertEqual(len(horde_errors), 0, "Horde army should be skipped for single player")
 
     def test_validate_single_army_valid(self):
         """Test validation of a single army within limits."""

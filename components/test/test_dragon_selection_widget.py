@@ -2,11 +2,14 @@
 """
 Tests for DragonSelectionWidget functionality
 """
+
 import pytest
 from PySide6.QtWidgets import QApplication
 
-from components.dragon_selection_widget import DragonSelectionWidget
 import utils.constants as constants
+from components.dragon_selection_widget import DragonSelectionWidget
+from models.dragon_model import DRAGON_DATA, get_available_dragon_types
+from models.element_model import get_all_element_names
 
 
 class TestDragonSelectionWidget:
@@ -19,19 +22,19 @@ class TestDragonSelectionWidget:
 
         # Check default values
         value = widget.value()
-        assert value["dragon_type"] == constants.AVAILABLE_DRAGON_TYPES[0]
-        assert value["die_type"] == "Drake"
+        assert value["dragon_type"] == get_all_element_names()[0]  # Should be first element
+        assert value["die_type"] == get_available_dragon_types()[0]  # Should be "Drake"
 
     def test_dragon_type_selection(self, qtbot):
         """Test that dragon type can be changed."""
         widget = DragonSelectionWidget(dragon_number=1)
         qtbot.addWidget(widget)
 
-        # Set to Wyrm
-        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
+        # Set to FIRE element with Wyrm die
+        widget.setValue({"dragon_type": "FIRE", "die_type": "Wyrm"})
 
         value = widget.value()
-        assert value["dragon_type"] == "Wyrm"
+        assert value["dragon_type"] == "FIRE"
         assert value["die_type"] == "Wyrm"
 
     def test_wyrm_selection(self, qtbot):
@@ -39,11 +42,11 @@ class TestDragonSelectionWidget:
         widget = DragonSelectionWidget(dragon_number=1)
         qtbot.addWidget(widget)
 
-        # Set to Wyrm
-        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
+        # Set to AIR element with Wyrm die
+        widget.setValue({"dragon_type": "AIR", "die_type": "Wyrm"})
 
         value = widget.value()
-        assert value["dragon_type"] == "Wyrm"
+        assert value["dragon_type"] == "AIR"
         assert value["die_type"] == "Wyrm"
 
     def test_display_text(self, qtbot):
@@ -64,13 +67,13 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
 
         # Change values
-        widget.setValue({"dragon_type": "Wyrm", "die_type": "Wyrm"})
+        widget.setValue({"dragon_type": "FIRE", "die_type": "Wyrm"})
 
         # Clear and check defaults
         widget.clear()
         value = widget.value()
-        assert value["dragon_type"] == constants.AVAILABLE_DRAGON_TYPES[0]
-        assert value["die_type"] == "Drake"
+        assert value["dragon_type"] == get_all_element_names()[0]
+        assert value["die_type"] == get_available_dragon_types()[0]
 
     def test_signal_emission(self, qtbot):
         """Test that valueChanged signal is emitted properly."""
@@ -82,7 +85,7 @@ class TestDragonSelectionWidget:
         widget.valueChanged.connect(lambda x: signal_received.append(x))
 
         # Change value and verify signal
-        new_value = {"dragon_type": "Wyrm", "die_type": "Wyrm"}
+        new_value = {"dragon_type": "WATER", "die_type": "Wyrm"}
         widget.setValue(new_value)
 
         assert len(signal_received) > 0
@@ -92,18 +95,18 @@ class TestDragonSelectionWidget:
 def test_dragon_constants():
     """Test that dragon constants are properly defined."""
     # Test dragon types exist (now same as die types)
-    assert len(constants.AVAILABLE_DRAGON_TYPES) > 0
-    assert "Drake" in constants.AVAILABLE_DRAGON_TYPES
-    assert "Wyrm" in constants.AVAILABLE_DRAGON_TYPES
+    assert len(get_available_dragon_types()) > 0
+    assert "Drake" in get_available_dragon_types()
+    assert "Wyrm" in get_available_dragon_types()
 
     # Test die types exist
-    assert len(constants.AVAILABLE_DRAGON_DIE_TYPES) == 2
-    assert "Drake" in constants.AVAILABLE_DRAGON_DIE_TYPES
-    assert "Wyrm" in constants.AVAILABLE_DRAGON_DIE_TYPES
+    assert len(get_available_dragon_types()) == 2
+    assert "Drake" in get_available_dragon_types()
+    assert "Wyrm" in get_available_dragon_types()
 
     # Test specific values
-    assert constants.DRAGON_DATA["DRAKE"].display_name == "Drake"
-    assert constants.DRAGON_DATA["WYRM"].display_name == "Wyrm"
+    assert DRAGON_DATA["DRAKE"].display_name == "Drake"
+    assert DRAGON_DATA["WYRM"].display_name == "Wyrm"
 
 
 if __name__ == "__main__":

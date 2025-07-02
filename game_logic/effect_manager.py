@@ -1,6 +1,8 @@
-from PySide6.QtCore import QObject, Signal
 import uuid
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
+
+from PySide6.QtCore import QObject, Signal
+
 import utils.constants as constants
 
 
@@ -18,9 +20,7 @@ class EffectManager(QObject):
         for effect in self.active_effects:
             if effect.get("id") == effect_id:
                 self.active_effects.remove(effect)
-                print(
-                    f"EffectManager: Removed effect: {effect.get('description', 'Unknown')}"
-                )
+                print(f"EffectManager: Removed effect: {effect.get('description', 'Unknown')}")
                 self.effects_changed.emit()
                 return True
         return False
@@ -34,19 +34,11 @@ class EffectManager(QObject):
 
     def get_effects_by_player(self, player_name: str) -> List[Dict[str, Any]]:
         """Get all effects affecting a specific player."""
-        return [
-            effect
-            for effect in self.active_effects
-            if effect.get("affected_player_name") == player_name
-        ]
+        return [effect for effect in self.active_effects if effect.get("affected_player_name") == player_name]
 
     def get_effects_by_caster(self, caster_name: str) -> List[Dict[str, Any]]:
         """Get all effects cast by a specific player."""
-        return [
-            effect
-            for effect in self.active_effects
-            if effect.get("caster_player_name") == caster_name
-        ]
+        return [effect for effect in self.active_effects if effect.get("caster_player_name") == caster_name]
 
     def _generate_unique_effect_id(self):
         return str(uuid.uuid4())
@@ -75,15 +67,11 @@ class EffectManager(QObject):
             "affected_player_name": affected_player_name or caster_player_name,
         }
         self.active_effects.append(effect)
-        print(
-            f"EffectManager: Effect added - {description} on {target_identifier} (duration: {duration_type})"
-        )
+        print(f"EffectManager: Effect added - {description} on {target_identifier} (duration: {duration_type})")
         self.effects_changed.emit()
         return effect["id"]  # Return effect ID for potential removal
 
-    def process_effect_expirations(
-        self, current_player_name: str, current_phase: str = None
-    ):
+    def process_effect_expirations(self, current_player_name: str, current_phase: str = None):
         """Processes effects that might expire at the start of a player's turn or round."""
         effects_to_remove = []
 
@@ -98,24 +86,18 @@ class EffectManager(QObject):
                 # Expires at the start of the caster's next turn
                 if current_player_name == caster_name:
                     should_expire = True
-                    print(
-                        f"EffectManager: Effect '{effect['description']}' expires (caster's turn)"
-                    )
+                    print(f"EffectManager: Effect '{effect['description']}' expires (caster's turn)")
 
             elif duration_type == constants.EFFECT_DURATION_NEXT_TURN_TARGET:
                 # Expires at the start of the target's next turn
                 if current_player_name == affected_name:
                     should_expire = True
-                    print(
-                        f"EffectManager: Effect '{effect['description']}' expires (target's turn)"
-                    )
+                    print(f"EffectManager: Effect '{effect['description']}' expires (target's turn)")
 
             elif duration_type == "END_OF_TURN":
                 # Expires at the end of the current turn (processed at start of next turn)
                 should_expire = True
-                print(
-                    f"EffectManager: Effect '{effect['description']}' expires (end of turn)"
-                )
+                print(f"EffectManager: Effect '{effect['description']}' expires (end of turn)")
 
             elif duration_type == "PERMANENT":
                 # Never expires
@@ -126,14 +108,10 @@ class EffectManager(QObject):
                 duration_value = effect.get("duration_value", 0)
                 if duration_value <= 1:
                     should_expire = True
-                    print(
-                        f"EffectManager: Effect '{effect['description']}' expires (counter reached 0)"
-                    )
+                    print(f"EffectManager: Effect '{effect['description']}' expires (counter reached 0)")
                 else:
                     effect["duration_value"] = duration_value - 1
-                    print(
-                        f"EffectManager: Effect '{effect['description']}' duration decreased to {duration_value - 1}"
-                    )
+                    print(f"EffectManager: Effect '{effect['description']}' duration decreased to {duration_value - 1}")
 
             if should_expire:
                 effects_to_remove.append(effect)
@@ -217,16 +195,11 @@ class EffectManager(QObject):
             if target_type == constants.EFFECT_TARGET_ARMY:
                 # Effect targets a specific army
                 if affected_player == target_player_name:
-                    if (
-                        target_army_identifier is None
-                        or target_id == target_army_identifier
-                    ):
+                    if target_army_identifier is None or target_id == target_army_identifier:
                         effect_applies = True
             elif target_type == constants.EFFECT_TARGET_TERRAIN:
                 # Effect targets terrain (affects all units on that terrain)
-                effect_applies = (
-                    True  # Simplified - would need terrain location checking
-                )
+                effect_applies = True  # Simplified - would need terrain location checking
             elif target_type == "PLAYER":
                 # Effect targets the entire player
                 if affected_player == target_player_name:
@@ -238,16 +211,12 @@ class EffectManager(QObject):
 
         if applicable_effects:
             effect_names = [e.get("description", "Unknown") for e in applicable_effects]
-            print(
-                f"EffectManager: Applied effects {effect_names} to {target_player_name} ({action_type})"
-            )
+            print(f"EffectManager: Applied effects {effect_names} to {target_player_name} ({action_type})")
             print(f"EffectManager: Final modifiers: {modifiers}")
 
         return modifiers
 
-    def _apply_effect_modifiers(
-        self, effect: Dict[str, Any], action_type: str, modifiers: Dict[str, Any]
-    ):
+    def _apply_effect_modifiers(self, effect: Dict[str, Any], action_type: str, modifiers: Dict[str, Any]):
         """Apply a single effect's modifiers to the modifiers dictionary."""
         description = effect.get("description", "").lower()
 

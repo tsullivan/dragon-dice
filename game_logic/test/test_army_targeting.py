@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch
+
 from game_logic.game_state_manager import GameStateManager
 
 
@@ -50,16 +51,12 @@ class TestArmyTargeting(unittest.TestCase):
         self.frontier_terrain = "Swampland (Green, Yellow)"
         self.distance_rolls = [("Player 1", 5), ("Player 2", 3)]
 
-        self.manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        self.manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
     def test_find_defending_armies_at_location_with_enemies(self):
         """Test finding defending armies when enemies are present."""
         # Player 1 attacking at their home where Player 2 has a horde
-        defending_armies = self.manager.find_defending_armies_at_location(
-            "Player 1", "Player 1 Highland"
-        )
+        defending_armies = self.manager.find_defending_armies_at_location("Player 1", "Player 1 Highland")
 
         self.assertEqual(len(defending_armies), 1)
         self.assertEqual(defending_armies[0]["player"], "Player 2")
@@ -68,9 +65,7 @@ class TestArmyTargeting(unittest.TestCase):
     def test_find_defending_armies_at_location_no_enemies(self):
         """Test finding defending armies when no enemies are present."""
         # Player 1 attacking at their own location with no enemies
-        defending_armies = self.manager.find_defending_armies_at_location(
-            "Player 1", "Player 2 Coastland"
-        )
+        defending_armies = self.manager.find_defending_armies_at_location("Player 1", "Player 2 Coastland")
 
         self.assertEqual(len(defending_armies), 1)
         self.assertEqual(defending_armies[0]["player"], "Player 2")
@@ -78,9 +73,7 @@ class TestArmyTargeting(unittest.TestCase):
 
     def test_find_defending_armies_empty_location(self):
         """Test finding defending armies at an empty location."""
-        defending_armies = self.manager.find_defending_armies_at_location(
-            "Player 1", "Empty Location"
-        )
+        defending_armies = self.manager.find_defending_armies_at_location("Player 1", "Empty Location")
 
         self.assertEqual(len(defending_armies), 0)
 
@@ -98,31 +91,23 @@ class TestArmyTargeting(unittest.TestCase):
                 }
                 break
 
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         # Should prefer horde over campaign (home > campaign > horde)
         # In this case, horde is the highest priority present
-        defending_player = manager.determine_primary_defending_player(
-            "Player 1", "Player 1 Highland"
-        )
+        defending_player = manager.determine_primary_defending_player("Player 1", "Player 1 Highland")
 
         self.assertEqual(defending_player, "Player 2")
 
     def test_determine_primary_defending_player_no_enemies(self):
         """Test determining defending player when no enemies present."""
-        defending_player = self.manager.determine_primary_defending_player(
-            "Player 1", "Empty Location"
-        )
+        defending_player = self.manager.determine_primary_defending_player("Player 1", "Empty Location")
 
         self.assertIsNone(defending_player)
 
     def test_determine_primary_defending_army_id_with_priority(self):
         """Test determining defending army ID with Dragon Dice priority rules."""
-        defending_army_id = self.manager.determine_primary_defending_army_id(
-            "Player 1", "Player 1 Highland"
-        )
+        defending_army_id = self.manager.determine_primary_defending_army_id("Player 1", "Player 1 Highland")
 
         # Should return the horde army ID (Player 2's horde at Player 1's home)
         self.assertEqual(defending_army_id, "player_2_horde")
@@ -149,21 +134,15 @@ class TestArmyTargeting(unittest.TestCase):
         location = "Swampland (Green, Yellow)"
 
         # Should find Player 1's campaign army as the only army there
-        defending_player = self.manager.determine_primary_defending_player(
-            attacking_player, location
-        )
+        defending_player = self.manager.determine_primary_defending_player(attacking_player, location)
 
         # No defending armies since only Player 1's army is there
         self.assertIsNone(defending_player)
 
         # Now test at Player 1's home where Player 2 has horde
         location = "Player 1 Highland"
-        defending_player = self.manager.determine_primary_defending_player(
-            attacking_player, location
-        )
-        defending_army_id = self.manager.determine_primary_defending_army_id(
-            attacking_player, location
-        )
+        defending_player = self.manager.determine_primary_defending_player(attacking_player, location)
+        defending_army_id = self.manager.determine_primary_defending_army_id(attacking_player, location)
 
         self.assertEqual(defending_player, "Player 2")
         self.assertEqual(defending_army_id, "player_2_horde")

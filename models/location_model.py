@@ -1,3 +1,6 @@
+from typing import List, Optional
+
+
 class LocationModel:
     """
     Model for game location data with icon and display name.
@@ -22,20 +25,18 @@ LOCATION_DATA = {
     "DUA": LocationModel(name="DUA", icon="⚡", display_name="Dead Units Area"),
     "BUA": LocationModel(name="BUA", icon="⚰️", display_name="Buried Units Area"),
     "RESERVES": LocationModel(name="RESERVES", icon="🏰", display_name="Reserves"),
-    "SUMMONING_POOL": LocationModel(
-        name="SUMMONING_POOL", icon="🌀", display_name="Summoning Pool"
-    ),
+    "SUMMONING_POOL": LocationModel(name="SUMMONING_POOL", icon="🌀", display_name="Summoning Pool"),
 }
 
 
 # Helper functions
-def get_location(location_name: str) -> LocationModel:
+def get_location(location_name: str) -> Optional[LocationModel]:
     """Get a location by name."""
     location_key = location_name.upper()
     return LOCATION_DATA.get(location_key)
 
 
-def get_all_location_names() -> list[str]:
+def get_all_location_names() -> List[str]:
     """Get all location names."""
     return list(LOCATION_DATA.keys())
 
@@ -44,9 +45,7 @@ def get_location_icon(location_name: str) -> str:
     """Get location icon. Raises KeyError if location not found."""
     location_key = location_name.upper()
     if location_key not in LOCATION_DATA:
-        raise KeyError(
-            f"Unknown location: '{location_name}'. Valid locations: {list(LOCATION_DATA.keys())}"
-        )
+        raise KeyError(f"Unknown location: '{location_name}'. Valid locations: {list(LOCATION_DATA.keys())}")
     return LOCATION_DATA[location_key].icon
 
 
@@ -58,9 +57,7 @@ def validate_location_data() -> bool:
                 print(f"ERROR: {location_name} is not a LocationModel instance")
                 return False
             if location.name != location_name:
-                print(
-                    f"ERROR: Location name mismatch: {location.name} != {location_name}"
-                )
+                print(f"ERROR: Location name mismatch: {location.name} != {location_name}")
                 return False
 
         print(f"✓ All {len(LOCATION_DATA)} locations validated successfully")

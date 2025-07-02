@@ -1,16 +1,13 @@
+from typing import TYPE_CHECKING, Dict, List, Optional
+
 from PySide6.QtCore import QObject, Signal
-from typing import Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game_logic.engine import GameEngine
 
-from .terrain_model import Terrain
-from .army_model import ArmyModel
-from .unit_model import (
-    UnitModel,
-)  # Import UnitModel (though AppDataModel might deal with ArmyModel dicts)
 from models.dragon_model import calculate_required_dragons
-from .terrain_model import TERRAIN_DATA
+
+from .terrain_model import TERRAIN_DATA, Terrain
 
 
 class AppDataModel(QObject):
@@ -34,13 +31,11 @@ class AppDataModel(QObject):
 
         self._num_players = None
         self._force_size = 24  # DEFAULT_FORCE_SIZE
-        self._player_setup_data_list: list[dict] = (
-            []
-        )  # Will be initialized based on num_players
+        self._player_setup_data_list: list[dict] = []  # Will be initialized based on num_players
         self._first_player_name = None
         self._frontier_terrain = None
         self._distance_rolls = []  # List of tuples: (player_name, distance)
-        self._game_engine: Optional["GameEngine"] = None
+        self._game_engine: Optional[GameEngine] = None
         self._all_terrains: list[Terrain] = []
         self.current_setup_player_index: int = 0  # Track current player being set up
         self._terrain_display_options: list[str] = []
@@ -50,9 +45,7 @@ class AppDataModel(QObject):
         try:
             # TERRAIN_DATA contains static Terrain objects
             self._all_terrains = list(TERRAIN_DATA.values())
-            self._terrain_display_options = [
-                str(terrain) for terrain in self._all_terrains
-            ]
+            self._terrain_display_options = [str(terrain) for terrain in self._all_terrains]
 
             print(f"✓ Successfully initialized {len(self._all_terrains)} terrains")
 
@@ -80,32 +73,23 @@ class AppDataModel(QObject):
     def add_player_setup_data(self, player_index: int, player_data: dict):
         """Stores setup data for a specific player index."""
         if self._num_players is None or not (0 <= player_index < self._num_players):
-            print(
-                f"Error: Cannot add player data. Invalid player_index ({player_index}) or num_players not set."
-            )
+            print(f"Error: Cannot add player data. Invalid player_index ({player_index}) or num_players not set.")
             return
 
         self._player_setup_data_list[player_index] = player_data
-        self.player_setup_data_added.emit(
-            player_data
-        )  # Consider emitting (player_index, player_data)
+        self.player_setup_data_added.emit(player_data)  # Consider emitting (player_index, player_data)
 
         # Check if all players have submitted their data (i.e., no empty dicts left)
         if len([pd for pd in self._player_setup_data_list if pd]) == self._num_players:
             self.all_player_setups_complete.emit()
 
     def get_player_data(self, player_index: int) -> Optional[dict]:
-        if self._num_players is not None and 0 <= player_index < len(
-            self._player_setup_data_list
-        ):
+        if self._num_players is not None and 0 <= player_index < len(self._player_setup_data_list):
             return self._player_setup_data_list[player_index]
         return None
 
     def get_player_names(self):
-        return [
-            p_data.get("name", f"Player {i+1}")
-            for i, p_data in enumerate(self._player_setup_data_list)
-        ]
+        return [p_data.get("name", f"Player {i + 1}") for i, p_data in enumerate(self._player_setup_data_list)]
 
     def get_player_setup_data(self):
         return self._player_setup_data_list
@@ -115,9 +99,7 @@ class AppDataModel(QObject):
 
     def get_terrain_display_options(self) -> list[tuple]:
         """Returns terrain display options as list of tuples (name, colors) for PlayerSetupView."""
-        return [
-            (terrain.name, terrain.element_colors) for terrain in self._all_terrains
-        ]
+        return [(terrain.name, terrain.element_colors) for terrain in self._all_terrains]
 
     def get_required_dragon_count(self) -> int:
         """Calculate required dragons based on current force size.
@@ -155,9 +137,7 @@ class AppDataModel(QObject):
             or self._frontier_terrain is None
             or not self._distance_rolls
         ):
-            print(
-                "Error: Cannot initialize GameEngine. Required setup data is missing."
-            )
+            print("Error: Cannot initialize GameEngine. Required setup data is missing.")
             return None
 
         # Import GameEngine here to avoid circular import
@@ -190,21 +170,18 @@ class AppDataModel(QObject):
             actual_face_count = len(unit.faces)
 
             if actual_face_count != expected_face_count:
-                problems.append(
-                    f"{unit_name}: Expected {expected_face_count} faces, got {actual_face_count}"
-                )
+                problems.append(f"{unit_name}: Expected {expected_face_count} faces, got {actual_face_count}")
 
             # Basic validation that faces have names and descriptions
             for i, face in enumerate(unit.faces):
                 if not hasattr(face, "name") or not face.name:
-                    problems.append(f"{unit_name}: Face {i+1} missing name")
+                    problems.append(f"{unit_name}: Face {i + 1} missing name")
                 if not hasattr(face, "description") or not face.description:
-                    problems.append(f"{unit_name}: Face {i+1} missing description")
+                    problems.append(f"{unit_name}: Face {i + 1} missing description")
 
         if problems:
-            error_message = (
-                f"Die face validation failed with {len(problems)} problems:\n"
-                + "\n".join(f"  - {problem}" for problem in problems)
+            error_message = f"Die face validation failed with {len(problems)} problems:\n" + "\n".join(
+                f"  - {problem}" for problem in problems
             )
             raise ValueError(error_message)
 
@@ -218,10 +195,9 @@ class AppDataModel(QObject):
         print("🔍 Validating internal data...")
 
         try:
-
             # Validate terrain data
             from models.terrain_model import validate_terrain_data
-            
+
             validate_terrain_data()
 
             # Validate dragon data
@@ -253,12 +229,8 @@ class AppDataModel(QObject):
             if validation_report.get("invalid_units"):
                 invalid_count = len(validation_report["invalid_units"])
                 total_count = validation_report["valid_units"] + invalid_count
-                print(
-                    f"⚠️  Warning: {invalid_count}/{total_count} units failed validation"
-                )
-                for invalid_unit in validation_report["invalid_units"][
-                    :3
-                ]:  # Show first 3
+                print(f"⚠️  Warning: {invalid_count}/{total_count} units failed validation")
+                for invalid_unit in validation_report["invalid_units"][:3]:  # Show first 3
                     print(f"  - {invalid_unit['unit_id']}: {invalid_unit['error']}")
                 if invalid_count > 3:
                     print(f"  ... and {invalid_count - 3} more")
@@ -289,7 +261,7 @@ class AppDataModel(QObject):
                     "max_health": unit_instance.max_health,
                     "unit_class_type": unit_instance.unit_type,
                     "abilities": unit_instance.abilities,
-                    "die_faces": unit_instance.die_faces,
+                    "die_faces": unit_instance.faces,  # Provide face objects, not just names
                 }
                 units_by_species[species_name].append(unit_dict)
 

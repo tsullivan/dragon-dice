@@ -1,13 +1,13 @@
 # config/paths.py
 from pathlib import Path
+from typing import Optional
 
 
 class ProjectPaths:
     """Centralized path management for the Dragon Dice project."""
 
-    def __init__(self, project_root: Path = None):
+    def __init__(self, project_root: Optional[Path] = None):
         self.project_root = project_root or Path(__file__).parent.parent
-
 
     @property
     def names_file(self) -> Path:

@@ -1,8 +1,9 @@
-import unittest
-from unittest.mock import Mock, patch, mock_open
 import json
-from config.resource_manager import ResourceManager
+import unittest
+from unittest.mock import Mock, mock_open, patch
+
 from config.paths import ProjectPaths
+from config.resource_manager import ResourceManager
 
 
 class TestResourceManager(unittest.TestCase):
@@ -26,11 +27,7 @@ class TestResourceManager(unittest.TestCase):
         """Test that ResourceManager only handles external file operations."""
         # ResourceManager methods should only deal with file I/O
         # Unit data processing is now handled by AppDataModel
-        methods = [
-            method
-            for method in dir(self.resource_manager)
-            if not method.startswith("_")
-        ]
+        methods = [method for method in dir(self.resource_manager) if not method.startswith("_")]
         expected_methods = ["load_names"]  # Only file I/O methods
         file_io_methods = [method for method in methods if method.startswith("load_")]
 
@@ -77,12 +74,8 @@ Fire Brigade
                 self.assertIn("Player", result)
                 self.assertIn("Army", result)
 
-                self.assertEqual(
-                    result["Player"], ["Player 1", "Player 2", "Player 3", "Player 4"]
-                )
-                self.assertEqual(
-                    result["Army"], ["Army 1", "Army 2", "Army 3", "Army 4"]
-                )
+                self.assertEqual(result["Player"], ["Player 1", "Player 2", "Player 3", "Player 4"])
+                self.assertEqual(result["Army"], ["Army 1", "Army 2", "Army 3", "Army 4"])
 
                 mock_print.assert_called()
                 warning_call = mock_print.call_args[0][0]
@@ -101,9 +94,7 @@ Single Army
                 result = self.resource_manager.load_names()
 
                 # Player category should get default names
-                self.assertEqual(
-                    result["Player"], ["Player 1", "Player 2", "Player 3", "Player 4"]
-                )
+                self.assertEqual(result["Player"], ["Player 1", "Player 2", "Player 3", "Player 4"])
 
                 # Army category should have the provided name
                 self.assertEqual(len(result["Army"]), 1)

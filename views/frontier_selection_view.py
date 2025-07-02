@@ -1,22 +1,21 @@
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QButtonGroup,
+    QGroupBox,
+    QHBoxLayout,
     QLabel,
     QPushButton,
-    QSpacerItem,
-    QSizePolicy,
-    QHBoxLayout,
-    QButtonGroup,
-    QTextEdit,
-    QGroupBox,
     QRadioButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont  # Added for QFont
+
+from components.tabbed_view_widget import TabbedViewWidget
 
 # No change, good comment
 from models.help_text_model import HelpTextModel
-from components.tabbed_view_widget import TabbedViewWidget
 from utils.display_utils import format_terrain_type
 
 
@@ -36,9 +35,7 @@ class FrontierSelectionView(QWidget):
         self.setWindowTitle("Determine Frontier and First Player")
 
         main_layout = QVBoxLayout(self)
-        main_layout.setAlignment(
-            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter
-        )
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
 
         # Title
         title_label = QLabel("Determine Frontier and First Player")
@@ -85,9 +82,7 @@ class FrontierSelectionView(QWidget):
         self.frontier_terrain_button_group = QButtonGroup(self)
         terrain_buttons_internal_v_layout = QVBoxLayout()
         if self.proposed_frontier_terrains:
-            for i, (player_name, terrain_type) in enumerate(
-                self.proposed_frontier_terrains
-            ):
+            for i, (player_name, terrain_type) in enumerate(self.proposed_frontier_terrains):
                 formatted_terrain = format_terrain_type(terrain_type)
                 button_text = f"{formatted_terrain} - Proposed by {player_name}"
                 radio_button = QRadioButton(button_text)
@@ -111,11 +106,7 @@ class FrontierSelectionView(QWidget):
         self._set_frontier_help_text()
 
         main_layout.addWidget(self.tabbed_widget)
-        main_layout.addSpacerItem(
-            QSpacerItem(
-                20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
-            )
-        )
+        main_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         # Navigation Buttons (Bottom)
         navigation_layout = QHBoxLayout()
@@ -144,9 +135,7 @@ class FrontierSelectionView(QWidget):
         selected_frontier_button = self.frontier_terrain_button_group.checkedButton()
 
         if not selected_player_button or not selected_frontier_button:
-            print(
-                "Error: A selection for first player and frontier terrain must be made."
-            )
+            print("Error: A selection for first player and frontier terrain must be made.")
             return
 
         selected_player_name = selected_player_button.text()

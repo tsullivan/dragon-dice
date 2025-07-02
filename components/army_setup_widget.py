@@ -1,19 +1,20 @@
 # components/army_setup_widget.py
+from typing import List, Optional
+
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QVBoxLayout,
+    QWidget,
 )  # Removed QComboBox
-from PySide6.QtCore import Qt, Signal, Slot
-from typing import List, Optional
 
-from models.unit_roster_model import UnitRosterModel  # For type hinting
-from models.unit_model import UnitModel  # For type hinting
-from views.unit_selection_dialog import UnitSelectionDialog
-from components.army_die_face_summary_widget import ArmyDieFaceSummaryWidget
 import utils.constants as constants  # Import constants
+from components.army_die_face_summary_widget import ArmyDieFaceSummaryWidget
+from models.unit_model import UnitModel  # For type hinting
+from models.unit_roster_model import UnitRosterModel  # For type hinting
+from views.unit_selection_dialog import UnitSelectionDialog
 
 
 class ArmySetupWidget(QWidget):
@@ -21,14 +22,10 @@ class ArmySetupWidget(QWidget):
     A widget for setting up a single army (points and units). The name is implicit by its type.
     """
 
-    name_changed = Signal(
-        str
-    )  # This signal is no longer actively used by this widget for its own name
+    name_changed = Signal(str)  # This signal is no longer actively used by this widget for its own name
     # points_changed = Signal(str, int) # No longer needed as points are derived from units
     # Signal to emit the list of UnitModel instances (as dicts) for this army
-    units_updated_signal = Signal(
-        str, list
-    )  # Emit army_type_name and list of units (as dicts)
+    units_updated_signal = Signal(str, list)  # Emit army_type_name and list of units (as dicts)
 
     def __init__(
         self,
@@ -39,9 +36,7 @@ class ArmySetupWidget(QWidget):
         super().__init__(parent)
         self.army_type_name = army_type_name
         self.unit_roster = unit_roster
-        self.current_units: List[UnitModel] = (
-            []
-        )  # Store UnitModel instances for this army
+        self.current_units: List[UnitModel] = []  # Store UnitModel instances for this army
 
         # Main horizontal layout: Button on the left, summary info on the right
         main_layout = QHBoxLayout(self)
@@ -102,9 +97,7 @@ class ArmySetupWidget(QWidget):
     def _open_unit_selection_dialog(self):
         if not self.unit_roster:
             return
-        dialog = UnitSelectionDialog(
-            self.army_type_name, self.unit_roster, self.current_units, self
-        )
+        dialog = UnitSelectionDialog(self.army_type_name, self.unit_roster, self.current_units, self)
         dialog.units_selected_signal.connect(self._handle_units_selected_from_dialog)
         dialog.exec()
 
@@ -115,9 +108,7 @@ class ArmySetupWidget(QWidget):
         """
         self.current_units = selected_units
         self._update_units_summary()
-        self.units_updated_signal.emit(
-            self.army_type_name.lower(), self.get_current_units_as_dicts()
-        )
+        self.units_updated_signal.emit(self.army_type_name.lower(), self.get_current_units_as_dicts())
 
     def get_current_units_as_dicts(self) -> List[dict]:
         return [unit.to_dict() for unit in self.current_units]
@@ -132,8 +123,6 @@ class ArmySetupWidget(QWidget):
 
         # Update die face summary
         if self.unit_roster:
-            self.die_face_summary.set_units_and_roster(
-                self.current_units, self.unit_roster
-            )
+            self.die_face_summary.set_units_and_roster(self.current_units, self.unit_roster)
         else:
             self.die_face_summary.clear()

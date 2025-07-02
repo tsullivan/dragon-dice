@@ -6,14 +6,15 @@ Dragon Dice units independently of UI components.
 """
 
 import unittest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
+
 from game_logic.unit_manager import (
-    UnitSorter,
-    UnitOrganizer,
-    UnitInstanceManager,
-    UnitCollectionManager,
     SortCriteria,
+    UnitCollectionManager,
     UnitInstanceConfig,
+    UnitInstanceManager,
+    UnitOrganizer,
+    UnitSorter,
 )
 
 
@@ -33,9 +34,7 @@ class TestSortCriteria(unittest.TestCase):
 
     def test_custom_creation(self):
         """Test creating SortCriteria with custom values."""
-        criteria = SortCriteria(
-            primary_key="display_name", reverse_primary=True, reverse_secondary=True
-        )
+        criteria = SortCriteria(primary_key="display_name", reverse_primary=True, reverse_secondary=True)
 
         self.assertEqual(criteria.primary_key, "display_name")
         self.assertTrue(criteria.reverse_primary)
@@ -48,9 +47,7 @@ class TestUnitInstanceConfig(unittest.TestCase):
 
     def test_generate_instance_id_default(self):
         """Test generating instance ID with default pattern."""
-        config = UnitInstanceConfig(
-            army_name="Home Guard", unit_type_id="goblin_thug", instance_count=2
-        )
+        config = UnitInstanceConfig(army_name="Home Guard", unit_type_id="goblin_thug", instance_count=2)
 
         instance_id = config.generate_instance_id()
         self.assertEqual(instance_id, "home_guard_goblin_thug_3")
@@ -146,9 +143,7 @@ class TestUnitSorter(unittest.TestCase):
     def test_sort_units_custom(self):
         """Test sorting with custom key function."""
         # Sort by name length descending
-        sorted_units = UnitSorter.sort_units_custom(
-            self.test_units, lambda unit: -len(unit["display_name"])
-        )
+        sorted_units = UnitSorter.sort_units_custom(self.test_units, lambda unit: -len(unit["display_name"]))
 
         expected_order = ["Cutthroat", "Berserker", "Archer", "Wizard", "Thug"]
         actual_order = [unit["display_name"] for unit in sorted_units]
@@ -350,16 +345,12 @@ class TestUnitInstanceManager(unittest.TestCase):
 
     def test_create_unit_instance(self):
         """Test creating a unit instance."""
-        config = UnitInstanceConfig(
-            army_name="Home Guard", unit_type_id="goblin_thug", instance_count=0
-        )
+        config = UnitInstanceConfig(army_name="Home Guard", unit_type_id="goblin_thug", instance_count=0)
 
         unit = self.manager.create_unit_instance(config)
 
         self.assertIsNotNone(unit)
-        self.mock_roster.create_unit_instance.assert_called_once_with(
-            "goblin_thug", "home_guard_goblin_thug_1"
-        )
+        self.mock_roster.create_unit_instance.assert_called_once_with("goblin_thug", "home_guard_goblin_thug_1")
 
     def test_create_unit_instance_with_existing_units(self):
         """Test creating unit instance with existing units count."""
@@ -370,9 +361,7 @@ class TestUnitInstanceManager(unittest.TestCase):
         unit = self.manager.create_unit_instance(config, existing_units)
 
         # Should create instance with count 3 (2 existing + 1)
-        self.mock_roster.create_unit_instance.assert_called_once_with(
-            "goblin_thug", "home_guard_goblin_thug_3"
-        )
+        self.mock_roster.create_unit_instance.assert_called_once_with("goblin_thug", "home_guard_goblin_thug_3")
 
     def test_create_unit_instance_no_roster(self):
         """Test creating unit instance without roster."""
@@ -404,12 +393,8 @@ class TestUnitInstanceManager(unittest.TestCase):
         # Reset only Home Guard counts
         self.manager.reset_instance_counts("Home Guard")
 
-        self.assertEqual(
-            self.manager.get_instance_count("Home Guard", "goblin_thug"), 0
-        )
-        self.assertEqual(
-            self.manager.get_instance_count("Campaign Army", "orc_warrior"), 1
-        )
+        self.assertEqual(self.manager.get_instance_count("Home Guard", "goblin_thug"), 0)
+        self.assertEqual(self.manager.get_instance_count("Campaign Army", "orc_warrior"), 1)
 
     def test_reset_instance_counts_all(self):
         """Test resetting all instance counts."""
@@ -422,12 +407,8 @@ class TestUnitInstanceManager(unittest.TestCase):
         # Reset all counts
         self.manager.reset_instance_counts()
 
-        self.assertEqual(
-            self.manager.get_instance_count("Home Guard", "goblin_thug"), 0
-        )
-        self.assertEqual(
-            self.manager.get_instance_count("Campaign Army", "orc_warrior"), 0
-        )
+        self.assertEqual(self.manager.get_instance_count("Home Guard", "goblin_thug"), 0)
+        self.assertEqual(self.manager.get_instance_count("Campaign Army", "orc_warrior"), 0)
 
     def test_bulk_create_instances(self):
         """Test creating multiple instances in bulk."""

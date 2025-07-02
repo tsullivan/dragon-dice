@@ -1,20 +1,20 @@
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QLabel,
-    QPushButton,
-    QApplication,
-)
-from PySide6.QtCore import Signal
+from typing import Optional
 
-from views.welcome_view import WelcomeView
-from views.player_setup_view import PlayerSetupView
-from views.frontier_selection_view import FrontierSelectionView
-from views.distance_rolls_view import DistanceRollsView
-from views.main_gameplay_view import MainGameplayView
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QVBoxLayout,
+    QWidget,
+)
+
 from controllers.gameplay_controller import GameplayController
 from models.app_data_model import AppDataModel
+from views.distance_rolls_view import DistanceRollsView
+from views.frontier_selection_view import FrontierSelectionView
+from views.main_gameplay_view import MainGameplayView
+from views.player_setup_view import PlayerSetupView
+from views.welcome_view import WelcomeView
 
 
 class MainWindow(QMainWindow):
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 1280, 720)
         self.data_model = AppDataModel()
         self.current_controller = None
-        self.player_setup_view_instance: PlayerSetupView | None = None
+        self.player_setup_view_instance: Optional[PlayerSetupView] = None
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
@@ -42,13 +42,9 @@ class MainWindow(QMainWindow):
 
         # Connect data_model signals that trigger view changes once
         # This avoids reconnecting them every time a view is shown.
-        self.data_model.all_player_setups_complete.connect(
-            self.show_frontier_selection_view
-        )
+        self.data_model.all_player_setups_complete.connect(self.show_frontier_selection_view)
         self.data_model.frontier_set.connect(self.show_distance_rolls_view)
-        self.data_model.all_distance_rolls_submitted.connect(
-            self.data_model.initialize_game_engine
-        )
+        self.data_model.all_distance_rolls_submitted.connect(self.data_model.initialize_game_engine)
         self.data_model.game_engine_initialized.connect(self.show_main_gameplay_view)
 
     def switch_view(self, new_view_widget):
@@ -63,9 +59,7 @@ class MainWindow(QMainWindow):
                 self._current_view.deleteLater()
             else:
                 # Keep the PlayerSetupView instance alive for potential back navigation
-                print(
-                    "MainWindow: Preserving PlayerSetupView instance for state restoration"
-                )
+                print("MainWindow: Preserving PlayerSetupView instance for state restoration")
 
             self._current_view = None
         self._current_view = new_view_widget
@@ -77,12 +71,8 @@ class MainWindow(QMainWindow):
     def show_welcome_view(self):
         welcome_widget = WelcomeView()
         welcome_widget.proceed_signal.connect(self.show_player_setup_view)
-        welcome_widget.player_count_selected_signal.connect(
-            self.data_model.set_num_players
-        )
-        welcome_widget.force_size_selected_signal.connect(
-            self.data_model.set_force_size
-        )
+        welcome_widget.player_count_selected_signal.connect(self.data_model.set_num_players)
+        welcome_widget.force_size_selected_signal.connect(self.data_model.set_force_size)
         welcome_widget.emit_current_selections()
         if self.player_setup_view_instance:
             self.player_setup_view_instance = None
@@ -90,9 +80,7 @@ class MainWindow(QMainWindow):
 
     def show_player_setup_view(self):
         if self.data_model._num_players is None:  # _point_value check removed
-            print(
-                "Error: Number of players or point value not set before proceeding to player setup."
-            )
+            print("Error: Number of players or point value not set before proceeding to player setup.")
             return
 
         terrain_options = self.data_model.get_terrain_display_options()
@@ -113,16 +101,10 @@ class MainWindow(QMainWindow):
                 current_player_index=0,
                 initial_player_data=initial_data_for_player_1,
             )
-            self.player_setup_view_instance.player_data_finalized.connect(
-                self.handle_player_data_finalized
-            )
-            self.player_setup_view_instance.back_signal.connect(
-                self.handle_player_setup_back
-            )
+            self.player_setup_view_instance.player_data_finalized.connect(self.handle_player_data_finalized)
+            self.player_setup_view_instance.back_signal.connect(self.handle_player_setup_back)
         else:
-            self.player_setup_view_instance.update_for_player(
-                0, initial_data_for_player_1
-            )
+            self.player_setup_view_instance.update_for_player(0, initial_data_for_player_1)
 
         self.switch_view(self.player_setup_view_instance)
 
@@ -136,9 +118,7 @@ class MainWindow(QMainWindow):
             self.data_model.current_setup_player_index = next_player_index
             data_for_next_player = self.data_model.get_player_data(next_player_index)
             if self.player_setup_view_instance:
-                self.player_setup_view_instance.update_for_player(
-                    next_player_index, data_for_next_player
-                )
+                self.player_setup_view_instance.update_for_player(next_player_index, data_for_next_player)
 
     def handle_player_setup_back(self, emitted_player_index: int):
         if emitted_player_index > 0:  # Coming from Player 2 (index 1) or higher
@@ -146,9 +126,7 @@ class MainWindow(QMainWindow):
             self.data_model.current_setup_player_index = previous_player_index
             player_data_to_load = self.data_model.get_player_data(previous_player_index)
             if self.player_setup_view_instance:
-                self.player_setup_view_instance.update_for_player(
-                    previous_player_index, player_data_to_load
-                )
+                self.player_setup_view_instance.update_for_player(previous_player_index, player_data_to_load)
                 QApplication.processEvents()
         else:  # Coming from Player 1 (index 0)
             self.show_welcome_view()
@@ -159,38 +137,27 @@ class MainWindow(QMainWindow):
         proposed_terrains = self.data_model.get_proposed_frontier_terrains()
 
         if not player_names or not proposed_terrains:
-            print(
-                "Error: No player names or proposed terrains available for frontier selection."
-            )
+            print("Error: No player names or proposed terrains available for frontier selection.")
             return
-        frontier_view = FrontierSelectionView(
-            player_names=player_names, proposed_frontier_terrains=proposed_terrains
-        )
+        frontier_view = FrontierSelectionView(player_names=player_names, proposed_frontier_terrains=proposed_terrains)
         frontier_view.frontier_data_submitted.connect(self.handle_frontier_submission)
         frontier_view.back_signal.connect(self._go_back_to_last_player_setup)
         self.switch_view(frontier_view)
 
     def handle_frontier_submission(self, first_player_name, frontier_terrain):
-        self.data_model.set_frontier_and_first_player(
-            first_player_name, frontier_terrain
-        )
+        self.data_model.set_frontier_and_first_player(first_player_name, frontier_terrain)
 
     def _go_back_to_last_player_setup(self):
         """Navigates back to the setup screen of the last configured player."""
         print("MainWindow: _go_back_to_last_player_setup called")
 
-        if (
-            self.data_model._num_players is not None
-            and self.data_model._num_players > 0
-        ):
+        if self.data_model._num_players is not None and self.data_model._num_players > 0:
             last_player_idx = self.data_model._num_players - 1
             self.data_model.current_setup_player_index = last_player_idx
 
             print(f"MainWindow: Going back to player {last_player_idx + 1} setup")
 
-            if (
-                self.data_model._num_players is None
-            ):  # Check num_players instead of point_value
+            if self.data_model._num_players is None:  # Check num_players instead of point_value
                 self.show_welcome_view()
                 return
 
@@ -199,9 +166,7 @@ class MainWindow(QMainWindow):
             force_size = self.data_model.get_force_size()
             player_data_to_load = self.data_model.get_player_data(last_player_idx)
 
-            print(
-                f"MainWindow: PlayerSetupView instance exists: {self.player_setup_view_instance is not None}"
-            )
+            print(f"MainWindow: PlayerSetupView instance exists: {self.player_setup_view_instance is not None}")
             print(f"MainWindow: Player data to load: {player_data_to_load is not None}")
 
             if not self.player_setup_view_instance:
@@ -215,19 +180,11 @@ class MainWindow(QMainWindow):
                     current_player_index=last_player_idx,
                     initial_player_data=player_data_to_load,
                 )
-                self.player_setup_view_instance.player_data_finalized.connect(
-                    self.handle_player_data_finalized
-                )
-                self.player_setup_view_instance.back_signal.connect(
-                    self.handle_player_setup_back
-                )
+                self.player_setup_view_instance.player_data_finalized.connect(self.handle_player_data_finalized)
+                self.player_setup_view_instance.back_signal.connect(self.handle_player_setup_back)
             else:
-                print(
-                    "MainWindow: Restoring existing PlayerSetupView instance with update_for_player"
-                )
-                self.player_setup_view_instance.update_for_player(
-                    last_player_idx, player_data_to_load
-                )
+                print("MainWindow: Restoring existing PlayerSetupView instance with update_for_player")
+                self.player_setup_view_instance.update_for_player(last_player_idx, player_data_to_load)
 
             print("MainWindow: Switching to PlayerSetupView")
             self.switch_view(self.player_setup_view_instance)
@@ -265,9 +222,7 @@ class MainWindow(QMainWindow):
             return
 
         first_player_name = self.data_model._first_player_name
-        distance_view = DistanceRollsView(
-            player_setup_data, frontier_terrain, first_player_name
-        )
+        distance_view = DistanceRollsView(player_setup_data, frontier_terrain, first_player_name)
         distance_view.rolls_submitted.connect(self.data_model.set_distance_rolls)
         distance_view.back_signal.connect(self.show_frontier_selection_view)
         self.switch_view(distance_view)
@@ -289,44 +244,22 @@ class MainWindow(QMainWindow):
 
         self.current_controller = GameplayController(game_engine_instance)
         gameplay_view = MainGameplayView(game_engine_instance)
-        gameplay_view.maneuver_decision_signal.connect(
-            self.current_controller.handle_maneuver_decision
-        )
-        gameplay_view.maneuver_input_submitted_signal.connect(
-            self.current_controller.handle_maneuver_input_submission
-        )
-        gameplay_view.melee_action_selected_signal.connect(
-            self.current_controller.handle_melee_action_selected
-        )
-        gameplay_view.missile_action_selected_signal.connect(
-            self.current_controller.handle_missile_action_selected
-        )
-        gameplay_view.magic_action_selected_signal.connect(
-            self.current_controller.handle_magic_action_selected
-        )
-        gameplay_view.skip_action_selected_signal.connect(
-            self.current_controller.handle_skip_action_selected
-        )
-        gameplay_view.attacker_melee_results_submitted.connect(
-            self.current_controller.handle_attacker_melee_submission
-        )
-        gameplay_view.defender_save_results_submitted.connect(
-            self.current_controller.handle_defender_save_submission
-        )
-        gameplay_view.continue_to_next_phase_signal.connect(
-            self.current_controller.handle_continue_to_next_phase
-        )
+        gameplay_view.maneuver_decision_signal.connect(self.current_controller.handle_maneuver_decision)
+        gameplay_view.maneuver_input_submitted_signal.connect(self.current_controller.handle_maneuver_input_submission)
+        gameplay_view.melee_action_selected_signal.connect(self.current_controller.handle_melee_action_selected)
+        gameplay_view.missile_action_selected_signal.connect(self.current_controller.handle_missile_action_selected)
+        gameplay_view.magic_action_selected_signal.connect(self.current_controller.handle_magic_action_selected)
+        gameplay_view.skip_action_selected_signal.connect(self.current_controller.handle_skip_action_selected)
+        gameplay_view.attacker_melee_results_submitted.connect(self.current_controller.handle_attacker_melee_submission)
+        gameplay_view.defender_save_results_submitted.connect(self.current_controller.handle_defender_save_submission)
+        gameplay_view.continue_to_next_phase_signal.connect(self.current_controller.handle_continue_to_next_phase)
 
         # Connect critical GameEngine signals to controller for debug logging
-        game_engine_instance.unit_selection_required.connect(
-            self.current_controller.handle_unit_selection_required
-        )
+        game_engine_instance.unit_selection_required.connect(self.current_controller.handle_unit_selection_required)
         game_engine_instance.damage_allocation_completed.connect(
             self.current_controller.handle_damage_allocation_completed
         )
-        game_engine_instance.counter_maneuver_requested.connect(
-            self.current_controller.handle_counter_maneuver_request
-        )
+        game_engine_instance.counter_maneuver_requested.connect(self.current_controller.handle_counter_maneuver_request)
         game_engine_instance.simultaneous_maneuver_rolls_requested.connect(
             self.current_controller.handle_simultaneous_maneuver_rolls_request
         )

@@ -4,19 +4,19 @@ This shows the recommended pattern for integrating the tabbed interface
 into existing or new views.
 """
 
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QButtonGroup,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QGroupBox,
     QRadioButton,
-    QButtonGroup,
     QSizePolicy,
     QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt, Signal
 
 from components.tabbed_view_widget import TabbedViewWidget
 from models.help_text_model import HelpTextModel
@@ -95,9 +95,7 @@ class ExampleTabbedView(QWidget):
         self.tabbed_widget.add_game_content(controls_group)
 
         # Add a spacer to push content to the top
-        spacer = QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
-        )
+        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         self.tabbed_widget.get_game_layout().addSpacerItem(spacer)
 
     def _setup_help_content(self):
@@ -197,6 +195,7 @@ if __name__ == "__main__":
     Run this file directly to see the tabbed widget in action.
     """
     import sys
+
     from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)

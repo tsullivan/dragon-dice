@@ -1,10 +1,13 @@
-from PySide6.QtCore import QObject, Signal, Slot
 from typing import Optional  # Import Optional
+
+from PySide6.QtCore import QObject, Signal, Slot
+
 import utils.constants as constants
-from game_logic.turn_manager import TurnManager
 from game_logic.action_resolver import ActionResolver
 from game_logic.effect_manager import EffectManager
 from game_logic.game_state_manager import GameStateManager
+from game_logic.turn_manager import TurnManager
+from models.terrain_model import get_terrain_icon
 
 
 class GameEngine(QObject):
@@ -15,9 +18,7 @@ class GameEngine(QObject):
     game_state_updated = Signal()  # Emitted when significant game state changes
     current_player_changed = Signal(str)
     current_phase_changed = Signal(str)
-    unit_selection_required = Signal(
-        str, int, list
-    )  # player_name, damage_amount, available_units
+    unit_selection_required = Signal(str, int, list)  # player_name, damage_amount, available_units
     damage_allocation_completed = Signal(str, int)  # player_name, total_damage_applied
 
     # New signals to replace direct calls
@@ -26,12 +27,8 @@ class GameEngine(QObject):
     phase_advance_requested = Signal()
     player_advance_requested = Signal()
     effect_expiration_requested = Signal(str)  # player_name
-    dice_roll_submitted = Signal(
-        str, str, str
-    )  # roll_type, results_string, player_name
-    damage_allocation_requested = Signal(
-        str, str, str, int
-    )  # player_name, army_id, unit_name, new_health
+    dice_roll_submitted = Signal(str, str, str)  # roll_type, results_string, player_name
+    damage_allocation_requested = Signal(str, str, str, int)  # player_name, army_id, unit_name, new_health
 
     # Maneuver-related signals for Dragon Dice rules compliance
     counter_maneuver_requested = Signal(str, list)  # location, opposing_armies
@@ -51,10 +48,7 @@ class GameEngine(QObject):
         super().__init__(parent)
         self.player_setup_data = player_setup_data
         # Extract player names and create a simple list of player objects or dicts if needed
-        self.players_info = [
-            {"name": p["name"], "home_terrain": p["home_terrain"]}
-            for p in player_setup_data
-        ]
+        self.players_info = [{"name": p["name"], "home_terrain": p["home_terrain"]} for p in player_setup_data]
         self.player_names = [p["name"] for p in self.players_info]
         self.num_players = len(self.player_names)
 
@@ -67,36 +61,22 @@ class GameEngine(QObject):
         self._current_march_step = ""
         self._current_action_step = ""
         self._current_player_name = first_player_name
-        self._is_very_first_turn = (
-            True  # Track if this is the very first turn of the game
-        )
+        self._is_very_first_turn = True  # Track if this is the very first turn of the game
         self._current_acting_army = None  # Store the acting army for the current march
 
         # Instantiate managers
-        self.turn_manager = TurnManager(
-            self.player_names, self.first_player_name, parent=self
-        )
+        self.turn_manager = TurnManager(self.player_names, self.first_player_name, parent=self)
         self.effect_manager = EffectManager(parent=self)
-        self.game_state_manager = GameStateManager(
-            player_setup_data, frontier_terrain, distance_rolls, parent=self
-        )
-        self.action_resolver = ActionResolver(
-            self.game_state_manager, self.effect_manager, parent=self
-        )
+        self.game_state_manager = GameStateManager(player_setup_data, frontier_terrain, distance_rolls, parent=self)
+        self.action_resolver = ActionResolver(self.game_state_manager, self.effect_manager, parent=self)
 
         # Connect signals from managers to GameEngine signals or slots
-        self.turn_manager.current_player_changed.connect(
-            self._sync_player_state_from_turn_manager
-        )
+        self.turn_manager.current_player_changed.connect(self._sync_player_state_from_turn_manager)
         self.turn_manager.current_phase_changed.connect(
             self._sync_phase_state_from_turn_manager
         )  # Sync cached state when TurnManager changes phases
-        self.action_resolver.next_action_step_determined.connect(
-            self._set_next_action_step
-        )  # Connect new signal
-        self.action_resolver.action_resolved.connect(
-            self._handle_action_resolution
-        )  # Connect action resolution signal
+        self.action_resolver.next_action_step_determined.connect(self._set_next_action_step)  # Connect new signal
+        self.action_resolver.action_resolved.connect(self._handle_action_resolution)  # Connect action resolution signal
         self.game_state_manager.game_state_changed.connect(
             self.game_state_updated.emit
         )  # If game state changes, emit general update
@@ -106,9 +86,7 @@ class GameEngine(QObject):
         self.action_step_change_requested.connect(self.turn_manager.set_action_step)
         self.phase_advance_requested.connect(self.turn_manager.advance_phase)
         self.player_advance_requested.connect(self.turn_manager.advance_player)
-        self.effect_expiration_requested.connect(
-            self.effect_manager.process_effect_expirations
-        )
+        self.effect_expiration_requested.connect(self.effect_manager.process_effect_expirations)
         self.effect_manager.effects_changed.connect(
             self.game_state_updated.emit
         )  # If effects change, game state is updated
@@ -146,9 +124,7 @@ class GameEngine(QObject):
             # Request effect expiration processing through signal
             self.effect_expiration_requested.emit(self.get_current_player_name())
             self.phase_advance_requested.emit()
-        elif current_phase == "EIGHTH_FACE":
-            print(f"Phase: {current_phase} for {self.get_current_player_name()}")
-        elif current_phase == "DRAGON_ATTACK":
+        elif current_phase == "EIGHTH_FACE" or current_phase == "DRAGON_ATTACK":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
         else:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
@@ -235,9 +211,7 @@ class GameEngine(QObject):
 
     def decide_maneuver(self, wants_to_maneuver: bool):
         """Process maneuver decision according to Dragon Dice rules."""
-        print(
-            f"Player {self.get_current_player_name()} decided maneuver: {wants_to_maneuver}"
-        )
+        print(f"Player {self.get_current_player_name()} decided maneuver: {wants_to_maneuver}")
 
         # Mark that the first turn interaction has begun
         if self._is_very_first_turn:
@@ -273,16 +247,12 @@ class GameEngine(QObject):
             self._execute_automatic_maneuver_success(location)
         else:
             # Opposition exists - initiate counter-maneuver process
-            print(
-                f"GameEngine: Found {len(opposing_armies)} opposing armies - requesting counter-maneuver decisions"
-            )
+            print(f"GameEngine: Found {len(opposing_armies)} opposing armies - requesting counter-maneuver decisions")
             self._initiate_counter_maneuver_process(location, opposing_armies)
 
     def submit_maneuver_input(self, details: str):
         """DEPRECATED: Old maneuver system - use new Dragon Dice compliant flow instead."""
-        print(
-            f"WARNING: submit_maneuver_input is deprecated - maneuver should use Dragon Dice rules flow"
-        )
+        print("WARNING: submit_maneuver_input is deprecated - maneuver should use Dragon Dice rules flow")
         print(f"Details received: {details}")
         # Proceed to action selection
         self.march_step_change_requested.emit("SELECT_ACTION")
@@ -296,7 +266,7 @@ class GameEngine(QObject):
 
         if not maneuver_result.get("success", False):
             print("GameEngine: Maneuver failed, no terrain changes to apply")
-            return
+            return None
 
         # Extract terrain change information
         location = maneuver_result.get("location")
@@ -307,7 +277,7 @@ class GameEngine(QObject):
 
         if not location or new_face is None:
             print("GameEngine: Missing terrain change information in maneuver result")
-            return
+            return None
 
         # Apply terrain face change to game state
         success = self.game_state_manager.update_terrain_face(location, str(new_face))
@@ -371,15 +341,11 @@ class GameEngine(QObject):
             print("GameEngine: No pending maneuver for counter-maneuver decision")
             return
 
-        print(
-            f"GameEngine: Player {player_name} counter-maneuver decision: {will_counter}"
-        )
+        print(f"GameEngine: Player {player_name} counter-maneuver decision: {will_counter}")
         self._pending_maneuver["counter_maneuver_responses"][player_name] = will_counter
 
         # Check if we have all responses
-        opposing_players = {
-            army["player"] for army in self._pending_maneuver["opposing_armies"]
-        }
+        opposing_players = {army["player"] for army in self._pending_maneuver["opposing_armies"]}
         responses = self._pending_maneuver["counter_maneuver_responses"]
 
         if set(responses.keys()) >= opposing_players:
@@ -396,18 +362,14 @@ class GameEngine(QObject):
 
         if not any_opposition:
             # No one chose to counter-maneuver - automatic success
-            print(
-                "GameEngine: No players chose to counter-maneuver - automatic success"
-            )
+            print("GameEngine: No players chose to counter-maneuver - automatic success")
             location = self._pending_maneuver["location"]
             self._execute_automatic_maneuver_success(location)
             # Clear pending maneuver after automatic success
             self._pending_maneuver = None
         else:
             # At least one player chose to counter-maneuver - initiate simultaneous rolls
-            print(
-                "GameEngine: Counter-maneuver detected - initiating simultaneous rolls"
-            )
+            print("GameEngine: Counter-maneuver detected - initiating simultaneous rolls")
             self._execute_simultaneous_maneuver_rolls()
             # DON'T clear pending maneuver yet - wait for roll results
 
@@ -425,15 +387,11 @@ class GameEngine(QObject):
             self._pending_maneuver["counter_maneuver_responses"],
         )
 
-    def submit_maneuver_roll_results(
-        self, maneuvering_results: int, counter_results: int
-    ):
+    def submit_maneuver_roll_results(self, maneuvering_results: int, counter_results: int):
         """Process the results of simultaneous maneuver rolls."""
         if not hasattr(self, "_pending_maneuver") or not self._pending_maneuver:
             print("GameEngine: ERROR - No pending maneuver for roll results")
-            print(
-                f"GameEngine: Has _pending_maneuver attr: {hasattr(self, '_pending_maneuver')}"
-            )
+            print(f"GameEngine: Has _pending_maneuver attr: {hasattr(self, '_pending_maneuver')}")
             if hasattr(self, "_pending_maneuver"):
                 print(f"GameEngine: _pending_maneuver value: {self._pending_maneuver}")
             return
@@ -446,9 +404,7 @@ class GameEngine(QObject):
 
         if maneuvering_results >= counter_results:
             # Maneuver succeeds - maneuvering player wins ties per Dragon Dice rules
-            print(
-                "GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)"
-            )
+            print("GameEngine: Maneuver successful (maneuvering >= counter-maneuvering)")
             self._execute_automatic_maneuver_success(location)
         else:
             # Maneuver fails - counter-maneuver beats maneuvering
@@ -465,10 +421,7 @@ class GameEngine(QObject):
 
     def submit_terrain_direction_choice(self, direction: str):
         """Process the player's terrain direction choice."""
-        if (
-            not hasattr(self, "_pending_terrain_change")
-            or not self._pending_terrain_change
-        ):
+        if not hasattr(self, "_pending_terrain_change") or not self._pending_terrain_change:
             print("GameEngine: No pending terrain change for direction choice")
             return
 
@@ -481,16 +434,12 @@ class GameEngine(QObject):
         if direction == "UP":
             new_face = (current_face % 8) + 1  # Wrap from 8 to 1
         elif direction == "DOWN":
-            new_face = (
-                (current_face - 2 + 8) % 8
-            ) + 1  # Handle negative wraparound properly
+            new_face = ((current_face - 2 + 8) % 8) + 1  # Handle negative wraparound properly
         else:
             print(f"GameEngine: Invalid direction '{direction}', defaulting to UP")
             new_face = (current_face % 8) + 1
 
-        print(
-            f"GameEngine: Attempting to update terrain '{location}' from face {current_face} to {new_face}"
-        )
+        print(f"GameEngine: Attempting to update terrain '{location}' from face {current_face} to {new_face}")
 
         # Apply terrain change
         success = self.game_state_manager.update_terrain_face(location, str(new_face))
@@ -520,7 +469,7 @@ class GameEngine(QObject):
             # Skip action - advance to next phase
             self.advance_phase()
             return
-        elif action_type == "MELEE":
+        if action_type == "MELEE":
             action_step = "AWAITING_ATTACKER_MELEE_ROLL"
         elif action_type == "MISSILE":
             action_step = "AWAITING_ATTACKER_MISSILE_ROLL"
@@ -542,39 +491,23 @@ class GameEngine(QObject):
         if self._current_action_step != "AWAITING_ATTACKER_MELEE_ROLL":
             print("Error: Not expecting attacker melee results now.")
             return
-        print(
-            f"Player {self.get_current_player_name()} (Attacker) submitted melee results: {results}"
-        )
+        print(f"Player {self.get_current_player_name()} (Attacker) submitted melee results: {results}")
 
         # TODO: Replace direct calls with signals to ActionResolver
         # For now, use direct calls until signal system is fully implemented
-        parsed_results = self.action_resolver.parse_dice_string(
-            results, roll_type="MELEE"
-        )
+        parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MELEE")
         if not parsed_results:
-            error_msg = (
-                "Could not parse the dice roll results. Please check the format."
-            )
+            error_msg = "Could not parse the dice roll results. Please check the format."
             details = f"Input received: '{results}'\nExpected format: 'MM,S,SAI' or '2 melee, 1 save, 1 SAI'"
-            print(
-                f"GameEngine: Error: Could not parse attacker melee results via ActionResolver."
-            )
+            print("GameEngine: Error: Could not parse attacker melee results via ActionResolver.")
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
             parsed_results = {"melee": 0, "saves": 0, "sais": []}
         print(f"GameEngine: Parsed attacker melee via ActionResolver: {parsed_results}")
 
         # Set combat context for proper army targeting
-        attacking_location = (
-            self._current_acting_army.get("location")
-            if self._current_acting_army
-            else None
-        )
-        attacking_army_id = (
-            self._current_acting_army.get("unique_id")
-            if self._current_acting_army
-            else None
-        )
+        attacking_location = self._current_acting_army.get("location") if self._current_acting_army else None
+        attacking_army_id = self._current_acting_army.get("unique_id") if self._current_acting_army else None
 
         # Note: determine_primary_defending_army_id expects the defending player name,
         # but we want to find the defending player. Let's use the more general method.
@@ -592,10 +525,8 @@ class GameEngine(QObject):
             for priority_type in ["home", "campaign", "horde"]:
                 for army_info in defending_armies:
                     if army_info["army_id"] == priority_type:
-                        defending_army_id = (
-                            self.game_state_manager.generate_army_identifier(
-                                army_info["player"], priority_type
-                            )
+                        defending_army_id = self.game_state_manager.generate_army_identifier(
+                            army_info["player"], priority_type
                         )
                         break
                 if defending_army_id:
@@ -619,9 +550,7 @@ class GameEngine(QObject):
             parsed_dice_results=parsed_results,
         )
         self.pending_attacker_outcome = attacker_outcome
-        print(
-            f"GameEngine: Attacker melee outcome from ActionResolver: {attacker_outcome}"
-        )
+        print(f"GameEngine: Attacker melee outcome from ActionResolver: {attacker_outcome}")
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
 
@@ -637,35 +566,22 @@ class GameEngine(QObject):
         if self._current_action_step != "AWAITING_DEFENDER_SAVES":
             print("Error: Not expecting defender save results now.")
             return
-        print(
-            f"Player {self.get_current_player_name()}'s Opponent (Defender) submitted save results: {results}"
-        )
+        print(f"Player {self.get_current_player_name()}'s Opponent (Defender) submitted save results: {results}")
 
         # TODO: Replace direct calls with signals to ActionResolver
         # For now, use direct calls until signal system is fully implemented
-        parsed_save_results = self.action_resolver.parse_dice_string(
-            results, roll_type="SAVE"
-        )
+        parsed_save_results = self.action_resolver.parse_dice_string(results, roll_type="SAVE")
         if not parsed_save_results:
             print("Error: Could not parse defender save results.")
             return
         print(f"Parsed defender saves: {parsed_save_results}")
 
-        if (
-            not hasattr(self, "pending_attacker_outcome")
-            or not self.pending_attacker_outcome
-        ):
-            print(
-                "Error: No pending attacker outcome to resolve defender saves against."
-            )
+        if not hasattr(self, "pending_attacker_outcome") or not self.pending_attacker_outcome:
+            print("Error: No pending attacker outcome to resolve defender saves against.")
             return
 
         # Determine the defending player based on the attacking army's location
-        attacking_location = (
-            self._current_acting_army.get("location")
-            if self._current_acting_army
-            else None
-        )
+        attacking_location = self._current_acting_army.get("location") if self._current_acting_army else None
         defending_player_name = (
             self.game_state_manager.determine_primary_defending_player(
                 self.get_current_player_name(), attacking_location
@@ -678,9 +594,7 @@ class GameEngine(QObject):
             parsed_save_dice=parsed_save_results,
             attacker_outcome=self.pending_attacker_outcome,
         )
-        print(
-            f"GameEngine: Defender save outcome from ActionResolver: {defender_outcome}"
-        )
+        print(f"GameEngine: Defender save outcome from ActionResolver: {defender_outcome}")
         del self.pending_attacker_outcome
 
         # Check if action is complete using cached state
@@ -696,23 +610,15 @@ class GameEngine(QObject):
         if self._current_action_step != "AWAITING_MAGIC_ROLL":
             print("Error: Not expecting magic results now.")
             return
-        print(
-            f"Player {self.get_current_player_name()} submitted magic results: {results}"
-        )
+        print(f"Player {self.get_current_player_name()} submitted magic results: {results}")
 
         # TODO: Replace direct calls with signals to ActionResolver
         # For now, use direct calls until signal system is fully implemented
-        parsed_results = self.action_resolver.parse_dice_string(
-            results, roll_type="MAGIC"
-        )
+        parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MAGIC")
         if not parsed_results:
-            error_msg = (
-                "Could not parse the dice roll results. Please check the format."
-            )
+            error_msg = "Could not parse the dice roll results. Please check the format."
             details = f"Input received: '{results}'\nExpected format: 'MA,MA,SAI' or '2 magic, 1 SAI'"
-            print(
-                f"GameEngine: Error: Could not parse magic results via ActionResolver."
-            )
+            print("GameEngine: Error: Could not parse magic results via ActionResolver.")
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
             parsed_results = {"magic": 0, "sais": []}
@@ -735,29 +641,19 @@ class GameEngine(QObject):
         if self._current_action_step != "AWAITING_ATTACKER_MISSILE_ROLL":
             print("Error: Not expecting attacker missile results now.")
             return
-        print(
-            f"Player {self.get_current_player_name()} (Attacker) submitted missile results: {results}"
-        )
+        print(f"Player {self.get_current_player_name()} (Attacker) submitted missile results: {results}")
 
         # TODO: Replace direct calls with signals to ActionResolver
         # For now, use direct calls until signal system is fully implemented
-        parsed_results = self.action_resolver.parse_dice_string(
-            results, roll_type="MISSILE"
-        )
+        parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MISSILE")
         if not parsed_results:
-            error_msg = (
-                "Could not parse the dice roll results. Please check the format."
-            )
+            error_msg = "Could not parse the dice roll results. Please check the format."
             details = f"Input received: '{results}'\nExpected format: 'MI,MI,SAI' or '2 missile, 1 SAI'"
-            print(
-                f"GameEngine: Error: Could not parse attacker missile results via ActionResolver."
-            )
+            print("GameEngine: Error: Could not parse attacker missile results via ActionResolver.")
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
             parsed_results = {"missile": 0, "saves": 0, "sais": []}
-        print(
-            f"GameEngine: Parsed attacker missile via ActionResolver: {parsed_results}"
-        )
+        print(f"GameEngine: Parsed attacker missile via ActionResolver: {parsed_results}")
 
         # Process missile attack
         missile_outcome = self.action_resolver.resolve_attacker_missile(parsed_results)
@@ -788,9 +684,7 @@ class GameEngine(QObject):
         self._current_action_step = self.turn_manager.get_current_action_step()
 
         print(f"GameEngine: Synced phase state - {old_phase} → {self._current_phase}")
-        print(
-            f"GameEngine: Synced action step - {old_action_step} → {self._current_action_step}"
-        )
+        print(f"GameEngine: Synced action step - {old_action_step} → {self._current_action_step}")
 
         # Re-emit the corrected phase display
         self.current_phase_changed.emit(self.get_current_phase_display())
@@ -802,9 +696,7 @@ class GameEngine(QObject):
         old_player = self._current_player_name
         self._current_player_name = self.turn_manager.get_current_player()
 
-        print(
-            f"GameEngine: Synced player state - {old_player} → {self._current_player_name}"
-        )
+        print(f"GameEngine: Synced player state - {old_player} → {self._current_player_name}")
 
         # Re-emit the corrected player name
         self.current_player_changed.emit(self._current_player_name)
@@ -839,9 +731,7 @@ class GameEngine(QObject):
         elif action_type == "melee_attacker_complete":
             # Intermediate step - attacker finished, now defender needs to save
             hits = action_result.get("hits", 0)
-            print(
-                f"GameEngine: Attacker melee complete, {hits} hits scored, awaiting defender saves"
-            )
+            print(f"GameEngine: Attacker melee complete, {hits} hits scored, awaiting defender saves")
             # Update action step is handled by ActionResolver via signal
 
         self.game_state_updated.emit()
@@ -861,9 +751,7 @@ class GameEngine(QObject):
         affected_player_name: Optional[str] = None,
     ):
         """Placeholder for resolving spell effects and adding active effects."""
-        print(
-            f"Resolving spell: {spell_name} by {caster_player_name} on {target_identifier}"
-        )
+        print(f"Resolving spell: {spell_name} by {caster_player_name} on {target_identifier}")
         if spell_name == "Blizzard":  # Example from rulebook (pg. 46)
             self.effect_manager.add_effect(
                 description="Melee results -3 for armies at this terrain",
@@ -904,9 +792,7 @@ class GameEngine(QObject):
                         "name": army_data.get("name", army_key.title()),
                         "army_type": army_key,  # Include army type (home, campaign, horde)
                         "points": total_unit_points,  # Show actual unit points, not allocated points
-                        "location": army_data.get(
-                            "location", constants.DEFAULT_UNKNOWN_VALUE
-                        ),
+                        "location": army_data.get("location", constants.DEFAULT_UNKNOWN_VALUE),
                     }
                 )
 
@@ -946,7 +832,7 @@ class GameEngine(QObject):
             face_number = terrain_data.get("face", 1)
             details = f"Face {face_number}"
             try:
-                icon = constants.get_terrain_icon(terrain_name)
+                icon = get_terrain_icon(terrain_name)
             except KeyError:
                 icon = "❓"  # Default to question mark
             if controller and controller != "None":
@@ -958,9 +844,7 @@ class GameEngine(QObject):
                     "name": terrain_name,
                     "type": terrain_data.get("type", constants.DEFAULT_UNKNOWN_VALUE),
                     "face": face_number,  # Add face field for UI access
-                    "controller": (
-                        controller if controller != "None" else None
-                    ),  # Add controller field for UI access
+                    "controller": (controller if controller != "None" else None),  # Add controller field for UI access
                     "details": details,
                 }
             )
@@ -974,9 +858,7 @@ class GameEngine(QObject):
         target_army_player_name: Optional[str],
     ):
         """Placeholder for resolving SAI effects and adding active effects."""
-        print(
-            f"Resolving SAI: {sai_name} by {rolling_player_name} on {target_army_identifier}"
-        )
+        print(f"Resolving SAI: {sai_name} by {rolling_player_name} on {target_army_identifier}")
         if sai_name == "Frost Breath":  # Example from rulebook (pg. 36)
             self.effect_manager.add_effect(
                 description="All results halved",
@@ -1014,9 +896,7 @@ class GameEngine(QObject):
         """Returns a list of strings representing active effects for UI display."""
         return self.effect_manager.get_displayable_effects()
 
-    def get_available_units_for_damage(
-        self, player_name: str, army_identifier: str = None
-    ) -> list:
+    def get_available_units_for_damage(self, player_name: str, army_identifier: str = None) -> list:
         """Get units that can receive damage for a specific player/army."""
         if army_identifier:
             # Get units from specific army
@@ -1035,13 +915,9 @@ class GameEngine(QObject):
 
         return available_units
 
-    def request_unit_damage_allocation(
-        self, player_name: str, damage_amount: int, army_identifier: str = None
-    ):
+    def request_unit_damage_allocation(self, player_name: str, damage_amount: int, army_identifier: str = None):
         """Request that the player allocate damage to specific units."""
-        available_units = self.get_available_units_for_damage(
-            player_name, army_identifier
-        )
+        available_units = self.get_available_units_for_damage(player_name, army_identifier)
 
         if not available_units:
             print(f"GameEngine: No units available to take damage for {player_name}")
@@ -1060,9 +936,7 @@ class GameEngine(QObject):
         # Emit signal for UI to handle unit selection
         self.unit_selection_required.emit(player_name, damage_amount, available_units)
 
-    def allocate_damage_to_units(
-        self, player_name: str, damage_allocations: dict, army_identifier: str = None
-    ):
+    def allocate_damage_to_units(self, player_name: str, damage_allocations: dict, army_identifier: str = None):
         """Apply damage allocation decisions to specific units."""
         """
         damage_allocations format: {
@@ -1074,30 +948,22 @@ class GameEngine(QObject):
         total_damage_applied = 0
         army_id = army_identifier or "home"  # Default to home army
 
-        print(
-            f"GameEngine: Allocating damage to {player_name}'s units: {damage_allocations}"
-        )
+        print(f"GameEngine: Allocating damage to {player_name}'s units: {damage_allocations}")
 
         for unit_name, damage_amount in damage_allocations.items():
             if damage_amount <= 0:
                 continue
 
             # Get current unit health first
-            current_health = self.game_state_manager.get_unit_health(
-                player_name, army_id, unit_name
-            )
+            current_health = self.game_state_manager.get_unit_health(player_name, army_id, unit_name)
             if current_health is None:
-                print(
-                    f"GameEngine: Could not find unit {unit_name} for damage allocation"
-                )
+                print(f"GameEngine: Could not find unit {unit_name} for damage allocation")
                 continue
 
             # Calculate new health after damage
             new_health = max(0, current_health - damage_amount)
 
-            success = self.game_state_manager.update_unit_health(
-                player_name, army_id, unit_name, new_health
-            )
+            success = self.game_state_manager.update_unit_health(player_name, army_id, unit_name, new_health)
 
             if success:
                 total_damage_applied += damage_amount
@@ -1109,13 +975,9 @@ class GameEngine(QObject):
         self.damage_allocation_completed.emit(player_name, total_damage_applied)
         self.game_state_updated.emit()
 
-    def auto_allocate_damage(
-        self, player_name: str, damage_amount: int, army_identifier: str = None
-    ):
+    def auto_allocate_damage(self, player_name: str, damage_amount: int, army_identifier: str = None):
         """Automatically allocate damage to units (for AI or quick resolution)."""
-        available_units = self.get_available_units_for_damage(
-            player_name, army_identifier
-        )
+        available_units = self.get_available_units_for_damage(player_name, army_identifier)
 
         if not available_units or damage_amount <= 0:
             self.damage_allocation_completed.emit(player_name, 0)
@@ -1177,9 +1039,7 @@ class GameEngine(QObject):
     def choose_acting_army(self, army_data: dict):
         """Set the acting army for the current march phase."""
         self._current_acting_army = army_data
-        print(
-            f"Acting army chosen: {army_data.get('name')} at {army_data.get('location')}"
-        )
+        print(f"Acting army chosen: {army_data.get('name')} at {army_data.get('location')}")
 
         # Set the active army type in the game state manager
         current_player = self.get_current_player_name()
@@ -1189,9 +1049,7 @@ class GameEngine(QObject):
                 self.game_state_manager.set_active_army(current_player, army_type)
                 print(f"Set active army type to '{army_type}' for {current_player}")
             except Exception as e:
-                print(
-                    f"Failed to set active army type '{army_type}' for {current_player}: {e}"
-                )
+                print(f"Failed to set active army type '{army_type}' for {current_player}: {e}")
 
         # Mark that the first turn interaction has begun
         if self._is_very_first_turn:
@@ -1209,9 +1067,7 @@ class GameEngine(QObject):
 
     def decide_action(self, wants_to_take_action: bool):
         """Handle the decision whether to take an action with the acting army."""
-        print(
-            f"Player {self.get_current_player_name()} decided action: {wants_to_take_action}"
-        )
+        print(f"Player {self.get_current_player_name()} decided action: {wants_to_take_action}")
 
         if wants_to_take_action:
             self.march_step_change_requested.emit("SELECT_ACTION")

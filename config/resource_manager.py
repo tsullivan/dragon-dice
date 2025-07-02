@@ -1,5 +1,6 @@
 # config/resource_manager.py
 from typing import Dict, List, Optional
+
 from config.paths import ProjectPaths
 
 
@@ -11,11 +12,11 @@ class ResourceManager:
 
     def load_names(self) -> Dict[str, List[str]]:
         """Load names from the names.txt file."""
-        names_by_category = {"Player": [], "Army": []}
+        names_by_category: Dict[str, List[str]] = {"Player": [], "Army": []}
         current_category = None
 
         try:
-            with open(self.paths.names_file, "r") as f:
+            with open(self.paths.names_file) as f:
                 for line in f:
                     line = line.strip()
                     if not line:
@@ -26,9 +27,7 @@ class ResourceManager:
                             current_category = category
                         else:
                             current_category = None
-                            print(
-                                f"Warning: Unknown category '{category}' in names.txt."
-                            )
+                            print(f"Warning: Unknown category '{category}' in names.txt.")
                     elif current_category:
                         names_by_category[current_category].append(line)
 

@@ -20,9 +20,7 @@ This application will help you track game state, turns, and phases, but all dice
 <p>You are at the very beginning of setting up your Dragon Dice game. The choices made here will determine the number of players and the scale of the armies involved.</p>
 """
 
-    def get_player_setup_help(
-        self, player_num: int, num_players: int, force_size: int = 24
-    ) -> str:
+    def get_player_setup_help(self, player_num: int, num_players: int, force_size: int = 24) -> str:
         horde_army_help = ""
         if num_players > 1:
             horde_army_help = "<li><b>Horde Army:</b> This army will start at an opponent's Home Terrain. It must have at least one unit.</li>"
@@ -70,9 +68,9 @@ This application will help you track game state, turns, and phases, but all dice
     def get_distance_rolls_help(self, frontier_terrain: str) -> str:
         # Get terrain icon for the frontier terrain
         terrain_icon = "🗺️"  # Default
-        import utils.constants as constants
+        from models.terrain_model import TERRAIN_DATA
 
-        for terrain_name, terrain_obj in constants.TERRAIN_DATA.items():
+        for terrain_name, terrain_obj in TERRAIN_DATA.items():
             if terrain_name in frontier_terrain:
                 # Use the terrain's color string as the icon representation
                 terrain_icon = terrain_obj.get_color_string()

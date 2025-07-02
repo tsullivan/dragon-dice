@@ -1,10 +1,11 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QRadioButton
 
-from views.welcome_view import WelcomeView
 import utils.constants as constants
+from views.welcome_view import WelcomeView
 
 
 class TestWelcomeViewFunctional:
@@ -16,11 +17,7 @@ class TestWelcomeViewFunctional:
         qtbot.addWidget(welcome_view)
 
         # Check that exactly one button is selected and it's the default (2)
-        checked_buttons = [
-            btn
-            for btn in welcome_view.player_count_button_group.buttons()
-            if btn.isChecked()
-        ]
+        checked_buttons = [btn for btn in welcome_view.player_count_button_group.buttons() if btn.isChecked()]
         assert len(checked_buttons) == 1
         assert checked_buttons[0].text() == "2"
 
@@ -30,11 +27,7 @@ class TestWelcomeViewFunctional:
         qtbot.addWidget(welcome_view)
 
         # Check that exactly one button is selected and it's the default
-        checked_buttons = [
-            btn
-            for btn in welcome_view.force_size_button_group.buttons()
-            if btn.isChecked()
-        ]
+        checked_buttons = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()]
         assert len(checked_buttons) == 1
         assert f"{constants.DEFAULT_FORCE_SIZE} pts" in checked_buttons[0].text()
 
@@ -44,9 +37,7 @@ class TestWelcomeViewFunctional:
         qtbot.addWidget(welcome_view)
 
         # Get all force size button texts
-        button_texts = [
-            button.text() for button in welcome_view.force_size_button_group.buttons()
-        ]
+        button_texts = [button.text() for button in welcome_view.force_size_button_group.buttons()]
 
         # Verify all expected options are present
         for size in constants.FORCE_SIZE_OPTIONS:
@@ -59,9 +50,7 @@ class TestWelcomeViewFunctional:
         qtbot.addWidget(welcome_view)
 
         # Get all player count button texts
-        button_texts = [
-            button.text() for button in welcome_view.player_count_button_group.buttons()
-        ]
+        button_texts = [button.text() for button in welcome_view.player_count_button_group.buttons()]
 
         # Verify expected player counts are present (2, 3, 4)
         expected_counts = ["2", "3", "4"]
@@ -91,11 +80,7 @@ class TestWelcomeViewFunctional:
         assert target_button.isChecked()
 
         # Verify only one button is checked
-        checked_buttons = [
-            btn
-            for btn in welcome_view.player_count_button_group.buttons()
-            if btn.isChecked()
-        ]
+        checked_buttons = [btn for btn in welcome_view.player_count_button_group.buttons() if btn.isChecked()]
         assert len(checked_buttons) == 1
         assert checked_buttons[0] == target_button
 
@@ -122,11 +107,7 @@ class TestWelcomeViewFunctional:
         assert target_button.isChecked()
 
         # Verify only one button is checked
-        checked_buttons = [
-            btn
-            for btn in welcome_view.force_size_button_group.buttons()
-            if btn.isChecked()
-        ]
+        checked_buttons = [btn for btn in welcome_view.force_size_button_group.buttons() if btn.isChecked()]
         assert len(checked_buttons) == 1
         assert checked_buttons[0] == target_button
 
@@ -170,9 +151,7 @@ class TestWelcomeViewFunctional:
 
         # Verify both signals were emitted with default values
         player_count_mock.assert_called_with(2)  # Default player count
-        force_size_mock.assert_called_with(
-            constants.DEFAULT_FORCE_SIZE
-        )  # Default force size
+        force_size_mock.assert_called_with(constants.DEFAULT_FORCE_SIZE)  # Default force size
 
     def test_ui_has_both_selection_groups(self, qtbot):
         """Test that UI contains both player count and force size selection groups."""
@@ -188,12 +167,8 @@ class TestWelcomeViewFunctional:
         assert len(welcome_view.force_size_button_group.buttons()) > 0
 
         # Verify button groups have the expected number of buttons
-        assert (
-            len(welcome_view.player_count_button_group.buttons()) == 3
-        )  # 2, 3, 4 players
-        assert len(welcome_view.force_size_button_group.buttons()) == len(
-            constants.FORCE_SIZE_OPTIONS
-        )
+        assert len(welcome_view.player_count_button_group.buttons()) == 3  # 2, 3, 4 players
+        assert len(welcome_view.force_size_button_group.buttons()) == len(constants.FORCE_SIZE_OPTIONS)
 
     def test_selections_work_independently(self, qtbot):
         """Test that player count and force size selections work independently."""

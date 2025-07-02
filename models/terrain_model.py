@@ -1,4 +1,5 @@
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
+
 from models.element_model import ELEMENT_DATA
 
 
@@ -41,9 +42,7 @@ class Terrain:
 
         # Derive elements from color if not provided
         self.elements = elements or self._derive_elements_from_color(color)
-        self.element_colors = element_colors or [
-            ELEMENT_DATA[elem].icon for elem in self.elements
-        ]
+        self.element_colors = element_colors or [ELEMENT_DATA[elem].icon for elem in self.elements]
 
         # Display name
         self.display_name = name
@@ -79,24 +78,19 @@ class Terrain:
             valid_elements = list(ELEMENT_DATA.keys())
             for element in self.elements:
                 if element not in valid_elements:
-                    raise ValueError(
-                        f"Invalid element '{
-                            element}'. Must be one of {valid_elements}"
-                    )
+                    raise ValueError(f"Invalid element '{element}'. Must be one of {valid_elements}")
 
     def __str__(self) -> str:
         return f"{self.name} ({self.terrain_type})"
 
     def __repr__(self) -> str:
-        return f"Terrain(name='{self.name}', type='{self.terrain_type}', color='{self.color}', subtype='{self.subtype}')"
+        return (
+            f"Terrain(name='{self.name}', type='{self.terrain_type}', color='{self.color}', subtype='{self.subtype}')"
+        )
 
     def get_element_names(self) -> List[str]:
         """Returns the element color names."""
-        return (
-            [ELEMENT_DATA[elem].color_name for elem in self.elements]
-            if self.elements
-            else []
-        )
+        return [ELEMENT_DATA[elem].color_name for elem in self.elements] if self.elements else []
 
     def get_element_icons(self) -> List[str]:
         """Returns the element icons."""
@@ -192,7 +186,7 @@ TERRAIN_DATA = {
 
 
 # Helper functions for terrain access
-def get_terrain(terrain_name: str) -> Terrain:
+def get_terrain(terrain_name: str) -> Optional[Terrain]:
     """Get a terrain by name."""
     terrain_key = terrain_name.upper()
     return TERRAIN_DATA.get(terrain_key)
@@ -211,35 +205,23 @@ def get_all_terrain_objects() -> List[Terrain]:
 def get_terrains_by_element(element: str) -> List[Terrain]:
     """Get all terrains that contain a specific element."""
     element = element.upper()
-    return [
-        terrain for terrain in TERRAIN_DATA.values() if terrain.has_element(element)
-    ]
+    return [terrain for terrain in TERRAIN_DATA.values() if terrain.has_element(element)]
 
 
 def get_terrains_by_type(terrain_type: str) -> List[Terrain]:
     """Get all terrains of a specific type (major/minor)."""
-    return [
-        terrain
-        for terrain in TERRAIN_DATA.values()
-        if terrain.terrain_type == terrain_type.lower()
-    ]
+    return [terrain for terrain in TERRAIN_DATA.values() if terrain.terrain_type == terrain_type.lower()]
 
 
 def get_terrains_by_color(color: str) -> List[Terrain]:
     """Get all terrains of a specific color (base terrain type)."""
     color = color.upper()
-    return [
-        terrain for terrain in TERRAIN_DATA.values() if terrain.color.upper() == color
-    ]
+    return [terrain for terrain in TERRAIN_DATA.values() if terrain.color.upper() == color]
 
 
 def get_terrains_by_subtype(subtype: str) -> List[Terrain]:
     """Get all terrains of a specific subtype."""
-    return [
-        terrain
-        for terrain in TERRAIN_DATA.values()
-        if terrain.subtype.lower() == subtype.lower()
-    ]
+    return [terrain for terrain in TERRAIN_DATA.values() if terrain.subtype.lower() == subtype.lower()]
 
 
 def validate_terrain_data() -> bool:
@@ -260,16 +242,12 @@ def validate_terrain_data() -> bool:
         return False
 
 
-
 # Terrain utility functions
 def get_terrain_icon(terrain_name: str) -> str:
     """Get terrain icon. Raises KeyError if terrain not found."""
     terrain = get_terrain(terrain_name)
     if not terrain:
-        raise KeyError(
-            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {
-                get_all_terrain_names()}"
-        )
+        raise KeyError(f"Unknown terrain type: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}")
     return terrain.get_color_string()
 
 
@@ -290,17 +268,12 @@ def get_terrain_or_location_icon(name: str) -> str:
 
     # If not found in either, raise error
     valid_names = get_all_terrain_names() + list(LOCATION_DATA.keys())
-    raise KeyError(
-        f"Unknown terrain or location: '{name}'. Valid options: {valid_names}"
-    )
+    raise KeyError(f"Unknown terrain or location: '{name}'. Valid options: {valid_names}")
 
 
 def format_terrain_display(terrain_name: str) -> str:
     """Return 'icon display_name' format for display."""
     terrain = get_terrain(terrain_name)
     if not terrain:
-        raise KeyError(
-            f"Unknown terrain type: '{terrain_name}'. Valid terrains: {
-                get_all_terrain_names()}"
-        )
+        raise KeyError(f"Unknown terrain type: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}")
     return f"{terrain.get_color_string()} {terrain.display_name}"

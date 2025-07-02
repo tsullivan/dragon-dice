@@ -1,5 +1,5 @@
 # models/unit_model.py
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 class UnitFace:
@@ -17,7 +17,7 @@ class UnitFace:
     ICON_DRAGON_ATTACK_BITE = "DRAGON_BITE"
     ICON_DRAGON_ATTACK_TAIL = "DRAGON_TAIL"
     ICON_DRAGON_BREATH = "DRAGON_BREATH"
-    
+
     # SAI constants
     SAI_BULLSEYE = "BULLSEYE"
     SAI_DOUBLER = "DOUBLER"
@@ -157,9 +157,7 @@ class UnitModel:
         self.max_health = max_health
         self.abilities = abilities
         self.species = species
-        self.faces = [
-            UnitFace(face["name"], face["description"]) for face in (faces or [])
-        ]
+        self.faces = [UnitFace(face["name"], face["description"]) for face in (faces or [])]
 
     def __repr__(self):
         species_name = self.species.name if self.species else "Unknown"
@@ -174,10 +172,7 @@ class UnitModel:
             "max_health": self.max_health,
             "abilities": self.abilities,
             "species": self.species,
-            "faces": [
-                {"name": face.name, "description": face.description}
-                for face in self.faces
-            ],
+            "faces": [{"name": face.name, "description": face.description} for face in self.faces],
         }
 
     def get_species_name(self) -> str:
@@ -235,9 +230,7 @@ class UnitModel:
         )
 
     @classmethod
-    def from_unit_data(
-        cls, unit_type_id: str, current_health: int = None
-    ) -> "UnitModel":
+    def from_unit_data(cls, unit_type_id: str, current_health: int = None) -> "UnitModel":
         """Create a UnitModel instance from unit data definitions with validation."""
         from models.unit_data import get_unit_by_id
 
@@ -247,17 +240,13 @@ class UnitModel:
             raise ValueError(f"Unit type '{unit_type_id}' not found in unit data")
 
         # Create a new instance with custom health if specified
-        health = (
-            current_health if current_health is not None else unit_instance.max_health
-        )
+        health = current_health if current_health is not None else unit_instance.max_health
 
         # Validate health values
         if health < 0:
             raise ValueError(f"Current health cannot be negative: {health}")
         if health > unit_instance.max_health:
-            raise ValueError(
-                f"Current health ({health}) cannot exceed max health ({unit_instance.max_health})"
-            )
+            raise ValueError(f"Current health ({health}) cannot exceed max health ({unit_instance.max_health})")
 
         return cls(
             unit_id=unit_instance.unit_id,
@@ -267,10 +256,7 @@ class UnitModel:
             max_health=unit_instance.max_health,
             abilities=unit_instance.abilities.copy(),
             species=unit_instance.species,
-            faces=[
-                {"name": face.name, "description": face.description}
-                for face in unit_instance.faces
-            ],
+            faces=[{"name": face.name, "description": face.description} for face in unit_instance.faces],
         )
 
     @staticmethod
@@ -312,21 +298,17 @@ class UnitModel:
         # Validate max_health
         max_health = unit_data["max_health"]
         if not isinstance(max_health, int) or max_health < 1 or max_health > 4:
-            raise ValueError(
-                f"Invalid max_health: {max_health}. Must be integer between 1-4"
-            )
+            raise ValueError(f"Invalid max_health: {max_health}. Must be integer between 1-4")
 
         # Validate unit_class_type
         unit_class = unit_data["unit_class_type"]
         if unit_class not in valid_unit_classes:
-            raise ValueError(
-                f"Invalid unit_class_type: '{unit_class}'. Must be one of: {valid_unit_classes}"
-            )
+            raise ValueError(f"Invalid unit_class_type: '{unit_class}'. Must be one of: {valid_unit_classes}")
 
         # Validate species
         species = unit_data["species"]
         if not hasattr(species, "name"):
-            raise ValueError(f"Invalid species reference in unit data")
+            raise ValueError("Invalid species reference in unit data")
 
     @classmethod
     def validate_all_unit_data(cls) -> Dict[str, list]:
@@ -373,9 +355,7 @@ class UnitModel:
                 species_counts[species_name]["valid"] += 1
 
             except Exception as e:
-                species_name = getattr(
-                    getattr(unit_instance, "species", None), "name", "Unknown"
-                )
+                species_name = getattr(getattr(unit_instance, "species", None), "name", "Unknown")
                 validation_report["invalid_units"].append(
                     {
                         "species": species_name,

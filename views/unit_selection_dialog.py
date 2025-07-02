@@ -1,26 +1,23 @@
 # views/unit_selection_dialog.py
+from typing import List, Optional
+
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QDialog,
-    QVBoxLayout,
+    QDialogButtonBox,
     QHBoxLayout,
     QLabel,
-    QPushButton,
-    QListWidget,
-    QListWidgetItem,
-    QDialogButtonBox,
-    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
-    QAbstractItemView,
-    QHeaderView,
+    QTabWidget,
+    QVBoxLayout,
     QWidget,
 )
-from PySide6.QtCore import Qt, Signal, Slot
-from typing import List, Dict, Any, Optional
 
-from models.unit_roster_model import UnitRosterModel
-from models.unit_model import UnitModel
 from components.die_face_display_widget import DieFaceDisplayWidget
+from models.unit_model import UnitModel
+from models.unit_roster_model import UnitRosterModel
 
 
 class UnitSelectionDialog(QDialog):
@@ -40,9 +37,7 @@ class UnitSelectionDialog(QDialog):
         super().__init__(parent)
         self.army_name = army_name
         self.unit_roster = unit_roster
-        self.selected_units: List[UnitModel] = (
-            list(current_units) if current_units else []
-        )
+        self.selected_units: List[UnitModel] = list(current_units) if current_units else []
 
         self.setWindowTitle(f"Select Units for {self.army_name}")
         self.setMinimumSize(700, 500)
@@ -52,9 +47,7 @@ class UnitSelectionDialog(QDialog):
 
         # Available Units (Tabs with Tables)
         self.available_units_tabs = QTabWidget()
-        self.available_units_tabs.setMaximumWidth(
-            500
-        )  # Prevent excessive horizontal stretching
+        self.available_units_tabs.setMaximumWidth(500)  # Prevent excessive horizontal stretching
         self._populate_available_units_tabs()
         # Give more space to tabs
         main_area_layout.addWidget(self.available_units_tabs, 2)
@@ -66,25 +59,13 @@ class UnitSelectionDialog(QDialog):
         selected_units_group = QVBoxLayout()
         selected_units_group.addWidget(QLabel("Units in Army:"))
         self.selected_units_table = QTableWidget()
-        self.selected_units_table.setMaximumWidth(
-            350
-        )  # Prevent excessive horizontal stretching
+        self.selected_units_table.setMaximumWidth(350)  # Prevent excessive horizontal stretching
         self.selected_units_table.setColumnCount(3)
-        self.selected_units_table.setHorizontalHeaderLabels(
-            ["Unit Name", "Class Type", "Health Points"]
-        )
-        self.selected_units_table.setSelectionBehavior(
-            QAbstractItemView.SelectionBehavior.SelectRows
-        )
-        self.selected_units_table.setEditTriggers(
-            QAbstractItemView.EditTrigger.NoEditTriggers
-        )
-        self.selected_units_table.doubleClicked.connect(
-            self._remove_selected_unit_from_table
-        )
-        self.selected_units_table.selectionModel().selectionChanged.connect(
-            self._on_selected_unit_changed
-        )
+        self.selected_units_table.setHorizontalHeaderLabels(["Unit Name", "Class Type", "Health Points"])
+        self.selected_units_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.selected_units_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.selected_units_table.doubleClicked.connect(self._remove_selected_unit_from_table)
+        self.selected_units_table.selectionModel().selectionChanged.connect(self._on_selected_unit_changed)
         selected_units_group.addWidget(self.selected_units_table)
         right_side_layout.addLayout(selected_units_group)
 
@@ -96,9 +77,7 @@ class UnitSelectionDialog(QDialog):
 
         layout.addLayout(main_area_layout)
 
-        self.button_box = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
-        )
+        self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
         layout.addWidget(self.button_box)
@@ -161,9 +140,7 @@ class UnitSelectionDialog(QDialog):
 
             table = QTableWidget()
             table.setColumnCount(3)  # Name, Class Type, Health Points
-            table.setHorizontalHeaderLabels(
-                ["Unit Name", "Class Type", "Health Points"]
-            )
+            table.setHorizontalHeaderLabels(["Unit Name", "Class Type", "Health Points"])
             table.setRowCount(len(units_in_species))
             table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -174,9 +151,7 @@ class UnitSelectionDialog(QDialog):
 
             for row_idx, unit_type_info in enumerate(sorted_units):
                 name_item = QTableWidgetItem(unit_type_info["display_name"])
-                class_type_item = QTableWidgetItem(
-                    unit_type_info.get("unit_class_type", "N/A")
-                )
+                class_type_item = QTableWidgetItem(unit_type_info.get("unit_class_type", "N/A"))
                 health_item = QTableWidgetItem(str(unit_type_info.get("max_health", 0)))
                 name_item.setData(Qt.ItemDataRole.UserRole, unit_type_info)
 
@@ -185,9 +160,7 @@ class UnitSelectionDialog(QDialog):
                 table.setItem(row_idx, 2, health_item)
             table.cellClicked.connect(self._table_cell_clicked)
             table.selectionModel().selectionChanged.connect(
-                lambda selected, deselected, t=table: self._on_available_unit_selected(
-                    t
-                )
+                lambda selected, deselected, t=table: self._on_available_unit_selected(t)
             )
             tab_layout.addWidget(table)
 
@@ -207,18 +180,12 @@ class UnitSelectionDialog(QDialog):
             unit_def = self.unit_roster.get_unit_definition(unit.unit_type)
 
             # Class Type
-            class_type = (
-                unit_def.get("unit_class_type", "Unknown") if unit_def else "Unknown"
-            )
+            class_type = unit_def.get("unit_class_type", "Unknown") if unit_def else "Unknown"
             class_item = QTableWidgetItem(class_type)
             self.selected_units_table.setItem(row, 1, class_item)
 
             # Health Points
-            health = (
-                unit_def.get("max_health", unit.max_health)
-                if unit_def
-                else unit.max_health
-            )
+            health = unit_def.get("max_health", unit.max_health) if unit_def else unit.max_health
             health_item = QTableWidgetItem(str(health))
             self.selected_units_table.setItem(row, 2, health_item)
 
@@ -238,11 +205,8 @@ class UnitSelectionDialog(QDialog):
 
         unit_type_id = unit_type_info["id"]
         unit_display_name = unit_type_info["display_name"]
-        instance_count = sum(
-            1 for u in self.selected_units if u.unit_type == unit_type_id
-        )
-        instance_id = f"{self.army_name.lower().replace(' ', '_')}_{
-            unit_type_id}_{instance_count + 1}"
+        instance_count = sum(1 for u in self.selected_units if u.unit_type == unit_type_id)
+        instance_id = f"{self.army_name.lower().replace(' ', '_')}_{unit_type_id}_{instance_count + 1}"
         new_unit = self.unit_roster.create_unit_instance(unit_type_id, instance_id)
         if new_unit:
             self.selected_units.append(new_unit)
@@ -254,9 +218,7 @@ class UnitSelectionDialog(QDialog):
         current_row = self.selected_units_table.currentRow()
         if current_row >= 0 and current_row < len(self.selected_units):
             unit_to_remove = self.selected_units[current_row]
-            self.selected_units = [
-                u for u in self.selected_units if u.unit_id != unit_to_remove.unit_id
-            ]
+            self.selected_units = [u for u in self.selected_units if u.unit_id != unit_to_remove.unit_id]
             self._populate_selected_units_table()
 
     def get_selected_units(self) -> List[UnitModel]:

@@ -1,13 +1,15 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
+from models.app_data_model import AppDataModel
+from models.terrain_model import TERRAIN_DATA  # For mock terrain options
+from test.utils.visual_test_helpers import capture_widget_screenshot
 
 # Assuming your MainWindow is in main_window.py at the project root
 # Adjust this import if your project structure is different or main_window.py is elsewhere
 # from main_window import MainWindow # No longer needed for this direct view test
 from views.player_setup_view import PlayerSetupView
-from test.utils.visual_test_helpers import capture_widget_screenshot
-from models.terrain_model import TERRAIN_DATA  # For mock terrain options
-from models.app_data_model import AppDataModel
 
 
 def test_player_setup_view_direct_render(qtbot):  # Use qtbot fixture
@@ -15,9 +17,7 @@ def test_player_setup_view_direct_render(qtbot):  # Use qtbot fixture
 
     # Mock data for PlayerSetupView - convert new structure to expected format
     mock_num_players = 2
-    mock_terrain_options = [
-        (terrain.name, terrain.element_colors) for terrain in TERRAIN_DATA.values()
-    ]
+    mock_terrain_options = [(terrain.name, terrain.element_colors) for terrain in TERRAIN_DATA.values()]
     mock_required_dragons = 2  # As per AppDataModel.get_required_dragon_count()
     mock_force_size = 24  # Add required force_size parameter
 

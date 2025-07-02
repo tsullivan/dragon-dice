@@ -411,7 +411,8 @@ class TestUIIntegrationFlows:
         self.main_window = MainWindow()
         self.qtbot.addWidget(self.main_window)
         self.main_window.show()
-        self.qtbot.waitForWindowShown(self.main_window)
+        with self.qtbot.waitExposed(self.main_window):
+            pass
 
         yield
 
@@ -569,7 +570,8 @@ class TestCompleteUserJourneys:
         self.main_window = MainWindow()
         self.qtbot.addWidget(self.main_window)
         self.main_window.show()
-        self.qtbot.waitForWindowShown(self.main_window)
+        with self.qtbot.waitExposed(self.main_window):
+            pass
 
         yield
 

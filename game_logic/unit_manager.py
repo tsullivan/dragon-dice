@@ -6,9 +6,9 @@ and managing unit instances, extracted from UI components for better
 testability and reusability.
 """
 
-from typing import List, Dict, Any, Optional, Tuple, Callable
-from dataclasses import dataclass
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -81,9 +81,7 @@ class UnitSorter:
     }
 
     @staticmethod
-    def sort_units(
-        units: List[Dict[str, Any]], sort_config: str = "display_default"
-    ) -> List[Dict[str, Any]]:
+    def sort_units(units: List[Dict[str, Any]], sort_config: str = "display_default") -> List[Dict[str, Any]]:
         """
         Sort units according to specified configuration.
 
@@ -97,15 +95,11 @@ class UnitSorter:
         if not units:
             return []
 
-        criteria = UnitSorter.SORT_CONFIGS.get(
-            sort_config, UnitSorter.SORT_CONFIGS["display_default"]
-        )
+        criteria = UnitSorter.SORT_CONFIGS.get(sort_config, UnitSorter.SORT_CONFIGS["display_default"])
         return UnitSorter.sort_units_by_criteria(units, criteria)
 
     @staticmethod
-    def sort_units_by_criteria(
-        units: List[Dict[str, Any]], criteria: SortCriteria
-    ) -> List[Dict[str, Any]]:
+    def sort_units_by_criteria(units: List[Dict[str, Any]], criteria: SortCriteria) -> List[Dict[str, Any]]:
         """
         Sort units by specific criteria.
 
@@ -135,17 +129,13 @@ class UnitSorter:
         sorted_units = sorted(units, key=get_sort_key)
 
         # Apply reverse flags for string-based sorting
-        if criteria.reverse_primary and not isinstance(
-            units[0].get(criteria.primary_key, ""), (int, float)
-        ):
+        if criteria.reverse_primary and not isinstance(units[0].get(criteria.primary_key, ""), (int, float)):
             sorted_units.reverse()
 
         return sorted_units
 
     @staticmethod
-    def sort_units_custom(
-        units: List[Dict[str, Any]], key_func: Callable
-    ) -> List[Dict[str, Any]]:
+    def sort_units_custom(units: List[Dict[str, Any]], key_func: Callable) -> List[Dict[str, Any]]:
         """
         Sort units using a custom key function.
 
@@ -168,9 +158,7 @@ class UnitOrganizer:
     """
 
     @staticmethod
-    def group_by_species(
-        units: List[Dict[str, Any]], unit_roster=None
-    ) -> Dict[str, List[Dict[str, Any]]]:
+    def group_by_species(units: List[Dict[str, Any]], unit_roster=None) -> Dict[str, List[Dict[str, Any]]]:
         """
         Group units by their species.
 
@@ -221,7 +209,7 @@ class UnitOrganizer:
 
     @staticmethod
     def group_by_cost_range(
-        units: List[Dict[str, Any]], ranges: List[Tuple[int, int]] = None
+        units: List[Dict[str, Any]], ranges: Optional[List[Tuple[int, int]]] = None
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Group units by cost ranges.
@@ -246,9 +234,7 @@ class UnitOrganizer:
         return dict(cost_groups)
 
     @staticmethod
-    def filter_units(
-        units: List[Dict[str, Any]], filters: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def filter_units(units: List[Dict[str, Any]], filters: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Filter units based on criteria.
 
@@ -267,26 +253,16 @@ class UnitOrganizer:
 
             if isinstance(value, str):
                 # String matching (case-insensitive partial match)
-                filtered_units = [
-                    unit
-                    for unit in filtered_units
-                    if value.lower() in str(unit.get(field, "")).lower()
-                ]
+                filtered_units = [unit for unit in filtered_units if value.lower() in str(unit.get(field, "")).lower()]
             elif isinstance(value, (int, float)):
                 # Exact numeric match
-                filtered_units = [
-                    unit for unit in filtered_units if unit.get(field) == value
-                ]
+                filtered_units = [unit for unit in filtered_units if unit.get(field) == value]
             elif isinstance(value, (list, tuple)):
                 # Match any value in list
-                filtered_units = [
-                    unit for unit in filtered_units if unit.get(field) in value
-                ]
+                filtered_units = [unit for unit in filtered_units if unit.get(field) in value]
             elif callable(value):
                 # Custom filter function
-                filtered_units = [
-                    unit for unit in filtered_units if value(unit.get(field))
-                ]
+                filtered_units = [unit for unit in filtered_units if value(unit.get(field))]
 
         return filtered_units
 
@@ -305,8 +281,7 @@ class UnitOrganizer:
             if min_cost <= cost <= max_cost:
                 if min_cost == max_cost:
                     return f"{min_cost} pt"
-                else:
-                    return f"{min_cost}-{max_cost} pts"
+                return f"{min_cost}-{max_cost} pts"
         return f"{cost} pts"
 
 
@@ -329,7 +304,7 @@ class UnitInstanceManager:
         self.instance_counts = defaultdict(int)  # Track instances per army/unit type
 
     def create_unit_instance(
-        self, config: UnitInstanceConfig, existing_units: List[Any] = None
+        self, config: UnitInstanceConfig, existing_units: Optional[List[Any]] = None
     ) -> Optional[Any]:
         """
         Create a new unit instance.
@@ -349,8 +324,7 @@ class UnitInstanceManager:
             current_count = sum(
                 1
                 for unit in existing_units
-                if getattr(unit, "unit_type", unit.get("unit_type", ""))
-                == config.unit_type_id
+                if getattr(unit, "unit_type", unit.get("unit_type", "")) == config.unit_type_id
             )
             config.instance_count = current_count
 
@@ -358,9 +332,7 @@ class UnitInstanceManager:
         instance_id = config.generate_instance_id()
 
         # Create the unit instance
-        new_unit = self.unit_roster.create_unit_instance(
-            config.unit_type_id, instance_id
-        )
+        new_unit = self.unit_roster.create_unit_instance(config.unit_type_id, instance_id)
 
         if new_unit:
             # Track the creation
@@ -381,9 +353,9 @@ class UnitInstanceManager:
             Current instance count
         """
         key = f"{army_name}_{unit_type_id}"
-        return self.instance_counts[key]
+        return int(self.instance_counts[key])
 
-    def reset_instance_counts(self, army_name: str = None):
+    def reset_instance_counts(self, army_name: Optional[str] = None):
         """
         Reset instance counts.
 
@@ -391,11 +363,7 @@ class UnitInstanceManager:
             army_name: If specified, only reset counts for this army
         """
         if army_name:
-            keys_to_reset = [
-                key
-                for key in self.instance_counts.keys()
-                if key.startswith(f"{army_name}_")
-            ]
+            keys_to_reset = [key for key in self.instance_counts.keys() if key.startswith(f"{army_name}_")]
             for key in keys_to_reset:
                 self.instance_counts[key] = 0
         else:
@@ -472,7 +440,7 @@ class UnitCollectionManager:
         self,
         units: List[Dict[str, Any]],
         search_term: str,
-        search_fields: List[str] = None,
+        search_fields: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Search units by term across specified fields.
@@ -517,7 +485,7 @@ class UnitCollectionManager:
             return {"total_units": 0}
 
         costs = [unit.get("max_health", 0) for unit in units]
-        class_counts = defaultdict(int)
+        class_counts: Dict[str, int] = defaultdict(int)
 
         for unit in units:
             class_type = unit.get("unit_class_type", "Unknown")

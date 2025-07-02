@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
-from components.error_dialog import ErrorDialog, GameError, ErrorHandler
+
+from components.error_dialog import ErrorDialog, ErrorHandler, GameError
 
 
 class TestErrorDialog(unittest.TestCase):

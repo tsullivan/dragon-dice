@@ -1,22 +1,19 @@
+from typing import Any, Dict, List
+
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QGroupBox,
-    QTextEdit,
-    QSpacerItem,
     QSizePolicy,
-    QListWidget,
-    QListWidgetItem,
-    QWidget,
+    QSpacerItem,
     QSpinBox,
+    QTextEdit,
+    QVBoxLayout,
 )
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont
-from typing import List, Dict, Any, Optional
-from components.error_dialog import ErrorDialog
 
 
 class TerrainDirectionDialog(QDialog):
@@ -45,16 +42,14 @@ class TerrainDirectionDialog(QDialog):
         title_font.setPointSize(16)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignCenter)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
         # Current terrain info
         terrain_info = QLabel(
-            f"Location: {self.location}\n"
-            f"Current Face: {self.current_face}\n\n"
-            f"Choose the direction to turn the terrain:"
+            f"Location: {self.location}\nCurrent Face: {self.current_face}\n\nChoose the direction to turn the terrain:"
         )
-        terrain_info.setAlignment(Qt.AlignCenter)
+        terrain_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
         terrain_info.setWordWrap(True)
         layout.addWidget(terrain_info)
 
@@ -73,9 +68,7 @@ class TerrainDirectionDialog(QDialog):
 
         # DOWN button
         down_face = max(self.current_face - 1, 1)  # Dragon Dice faces 1-8
-        self.down_button = QPushButton(
-            f"Turn DOWN\n(Face {self.current_face} → {down_face})"
-        )
+        self.down_button = QPushButton(f"Turn DOWN\n(Face {self.current_face} → {down_face})")
         self.down_button.setStyleSheet(
             "QPushButton { background-color: #ff8787; color: white; font-weight: bold; padding: 10px; }"
         )
@@ -104,9 +97,7 @@ class CounterManeuverDecisionDialog(QDialog):
 
     decision_made = Signal(str, bool)  # player_name, will_counter
 
-    def __init__(
-        self, player_name: str, location: str, maneuvering_player: str, parent=None
-    ):
+    def __init__(self, player_name: str, location: str, maneuvering_player: str, parent=None):
         super().__init__(parent)
         self.player_name = player_name
         self.location = location
@@ -123,12 +114,12 @@ class CounterManeuverDecisionDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # Title
-        title = QLabel(f"Counter-Maneuver Opportunity")
+        title = QLabel("Counter-Maneuver Opportunity")
         title_font = QFont()
         title_font.setPointSize(14)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignCenter)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
         # Explanation
@@ -140,7 +131,7 @@ class CounterManeuverDecisionDialog(QDialog):
             f"If you don't oppose, the maneuver automatically succeeds."
         )
         explanation.setWordWrap(True)
-        explanation.setAlignment(Qt.AlignCenter)
+        explanation.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(explanation)
 
         layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -149,15 +140,11 @@ class CounterManeuverDecisionDialog(QDialog):
         button_layout = QHBoxLayout()
 
         self.counter_button = QPushButton("Counter-Maneuver")
-        self.counter_button.setStyleSheet(
-            "QPushButton { background-color: #ff6b6b; color: white; font-weight: bold; }"
-        )
+        self.counter_button.setStyleSheet("QPushButton { background-color: #ff6b6b; color: white; font-weight: bold; }")
         self.counter_button.clicked.connect(lambda: self._make_decision(True))
 
         self.allow_button = QPushButton("Allow Maneuver")
-        self.allow_button.setStyleSheet(
-            "QPushButton { background-color: #51cf66; color: white; font-weight: bold; }"
-        )
+        self.allow_button.setStyleSheet("QPushButton { background-color: #51cf66; color: white; font-weight: bold; }")
         self.allow_button.clicked.connect(lambda: self._make_decision(False))
 
         button_layout.addWidget(self.counter_button)
@@ -166,9 +153,7 @@ class CounterManeuverDecisionDialog(QDialog):
 
     def _make_decision(self, will_counter: bool):
         """Emit the decision and close dialog."""
-        print(
-            f"CounterManeuverDecisionDialog: {self.player_name} making decision: {will_counter}"
-        )
+        print(f"CounterManeuverDecisionDialog: {self.player_name} making decision: {will_counter}")
         self.decision_made.emit(self.player_name, will_counter)
         self.accept()
 
@@ -212,7 +197,7 @@ class SimultaneousManeuverRollDialog(QDialog):
         title_font.setPointSize(16)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignCenter)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
         # Instructions
@@ -221,7 +206,7 @@ class SimultaneousManeuverRollDialog(QDialog):
             f"Count maneuver results only. Maneuvering succeeds if results ≥ counter-maneuver results."
         )
         instructions.setWordWrap(True)
-        instructions.setAlignment(Qt.AlignCenter)
+        instructions.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(instructions)
 
         # Rolling sections
@@ -252,7 +237,7 @@ class SimultaneousManeuverRollDialog(QDialog):
         roll_layout.addWidget(maneuvering_group)
 
         # Counter-maneuvering player section
-        counter_group = QGroupBox(f"Counter-Maneuvering Army")
+        counter_group = QGroupBox("Counter-Maneuvering Army")
         counter_layout = QVBoxLayout(counter_group)
 
         counter_players_text = ", ".join(self.counter_players)
@@ -277,9 +262,7 @@ class SimultaneousManeuverRollDialog(QDialog):
         # Results display
         self.results_display = QTextEdit()
         self.results_display.setMaximumHeight(100)
-        self.results_display.setPlainText(
-            "Waiting for both armies to submit their maneuver results..."
-        )
+        self.results_display.setPlainText("Waiting for both armies to submit their maneuver results...")
         layout.addWidget(self.results_display)
 
         # Complete button (initially disabled)
@@ -295,9 +278,7 @@ class SimultaneousManeuverRollDialog(QDialog):
         self.submit_maneuvering_btn.setEnabled(False)
         self.maneuvering_spin.setEnabled(False)
 
-        self.results_display.append(
-            f"Maneuvering army rolled {self.maneuvering_results} maneuver results."
-        )
+        self.results_display.append(f"Maneuvering army rolled {self.maneuvering_results} maneuver results.")
         self._check_completion()
 
     def _submit_counter_results(self):
@@ -307,9 +288,7 @@ class SimultaneousManeuverRollDialog(QDialog):
         self.submit_counter_btn.setEnabled(False)
         self.counter_spin.setEnabled(False)
 
-        self.results_display.append(
-            f"Counter-maneuvering army rolled {self.counter_results} maneuver results."
-        )
+        self.results_display.append(f"Counter-maneuvering army rolled {self.counter_results} maneuver results.")
         self._check_completion()
 
     def _check_completion(self):
@@ -357,15 +336,9 @@ class ManeuverDialog(QDialog):
         self.game_engine = game_engine
 
         # Connect to engine signals
-        self.game_engine.counter_maneuver_requested.connect(
-            self._handle_counter_maneuver_request
-        )
-        self.game_engine.simultaneous_maneuver_rolls_requested.connect(
-            self._handle_simultaneous_rolls_request
-        )
-        self.game_engine.terrain_direction_choice_requested.connect(
-            self._handle_terrain_direction_request
-        )
+        self.game_engine.counter_maneuver_requested.connect(self._handle_counter_maneuver_request)
+        self.game_engine.simultaneous_maneuver_rolls_requested.connect(self._handle_simultaneous_rolls_request)
+        self.game_engine.terrain_direction_choice_requested.connect(self._handle_terrain_direction_request)
         # Connect to game state changes to auto-close when maneuver is complete
         self.game_engine.game_state_updated.connect(self._check_if_should_close)
 
@@ -373,7 +346,7 @@ class ManeuverDialog(QDialog):
         self.setWindowTitle("Maneuver Coordinator")
         self.setModal(False)  # Not modal since it's just a coordinator
         self.setVisible(False)  # Completely invisible
-        self.setAttribute(Qt.WA_DontShowOnScreen, True)  # Prevent showing
+        self.setAttribute(Qt.WidgetAttribute.WA_DontShowOnScreen, True)  # Prevent showing
 
         # Automatically start the maneuver process
         self._start_maneuver_process()
@@ -393,16 +366,14 @@ class ManeuverDialog(QDialog):
         opposing_players = list(set(army["player"] for army in opposing_armies))
         print(f"ManeuverDialog: Opposing players: {opposing_players}")
 
-        self.pending_decisions = {}
+        self.pending_decisions: Dict[str, Any] = {}
         self.expected_decisions = set(opposing_players)
-        self.active_decision_dialogs = []
+        self.active_decision_dialogs: List[Any] = []
 
         # Handle players sequentially (since typically it's one at a time in Dragon Dice)
         for player_name in opposing_players:
             print(f"ManeuverDialog: Showing decision dialog for {player_name}")
-            decision_dialog = CounterManeuverDecisionDialog(
-                player_name, location, self.current_player_name, None
-            )
+            decision_dialog = CounterManeuverDecisionDialog(player_name, location, self.current_player_name, None)
             decision_dialog.decision_made.connect(self._handle_counter_decision)
 
             # Show the dialog and wait for decision
@@ -413,9 +384,7 @@ class ManeuverDialog(QDialog):
 
     def _handle_counter_decision(self, player_name: str, will_counter: bool):
         """Handle a player's counter-maneuver decision."""
-        print(
-            f"ManeuverDialog: {player_name} counter-maneuver decision: {will_counter}"
-        )
+        print(f"ManeuverDialog: {player_name} counter-maneuver decision: {will_counter}")
 
         # Submit the decision immediately to the engine
         self.game_engine.submit_counter_maneuver_decision(player_name, will_counter)
@@ -428,12 +397,10 @@ class ManeuverDialog(QDialog):
         counter_responses: dict,
     ):
         """Handle request for simultaneous maneuver rolls."""
-        print(f"ManeuverDialog: Handling simultaneous rolls request")
+        print("ManeuverDialog: Handling simultaneous rolls request")
 
         # Get players who chose to counter-maneuver
-        counter_players = [
-            player for player, decision in counter_responses.items() if decision
-        ]
+        counter_players = [player for player, decision in counter_responses.items() if decision]
         location = maneuvering_army.get("location", "Unknown Location")
 
         # Show simultaneous roll dialog
@@ -445,23 +412,17 @@ class ManeuverDialog(QDialog):
 
     def _handle_roll_results(self, maneuvering_results: int, counter_results: int):
         """Handle the results from simultaneous rolling."""
-        print(
-            f"ManeuverDialog: Roll results - Maneuvering: {maneuvering_results}, Counter: {counter_results}"
-        )
+        print(f"ManeuverDialog: Roll results - Maneuvering: {maneuvering_results}, Counter: {counter_results}")
 
         # Submit results to engine for processing
-        self.game_engine.submit_maneuver_roll_results(
-            maneuvering_results, counter_results
-        )
+        self.game_engine.submit_maneuver_roll_results(maneuvering_results, counter_results)
 
         # Close this coordinator dialog
         self.accept()
 
     def _handle_terrain_direction_request(self, location: str, current_face: int):
         """Handle request for terrain direction choice."""
-        print(
-            f"ManeuverDialog: Handling terrain direction request for {location} (face {current_face})"
-        )
+        print(f"ManeuverDialog: Handling terrain direction request for {location} (face {current_face})")
 
         # Show terrain direction choice dialog
         # Use None as parent to avoid visibility issues with invisible coordinator
@@ -483,19 +444,17 @@ class ManeuverDialog(QDialog):
         """Check if the dialog should auto-close based on game state."""
         try:
             current_march_step = self.game_engine.get_current_march_step()
-            print(
-                f"[ManeuverDialog] Game state updated, march step: {current_march_step}"
-            )
+            print(f"[ManeuverDialog] Game state updated, march step: {current_march_step}")
 
             # If we've moved to SELECT_ACTION, the maneuver is complete
             if current_march_step == "SELECT_ACTION":
-                print(f"[ManeuverDialog] Auto-closing due to SELECT_ACTION state")
+                print("[ManeuverDialog] Auto-closing due to SELECT_ACTION state")
                 self.accept()
         except Exception as e:
             print(f"[ManeuverDialog] Error checking game state: {e}")
 
     def closeEvent(self, event):
         """Handle dialog close event."""
-        print(f"[ManeuverDialog] Dialog closing")
+        print("[ManeuverDialog] Dialog closing")
         self.maneuver_cancelled.emit()
         super().closeEvent(event)

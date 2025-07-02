@@ -5,8 +5,10 @@ This simulates the flow from your logs but now with complete action dialog integ
 """
 
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
+
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget
+
 from views.action_dialog import ActionDialog
 
 
@@ -51,9 +53,7 @@ class ActionFlowDemo(QWidget):
         self.result_label = QLabel("Click a button to test the action dialog flow.")
         self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.result_label.setWordWrap(True)
-        self.result_label.setStyleSheet(
-            "margin: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;"
-        )
+        self.result_label.setStyleSheet("margin: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;")
         layout.addWidget(self.result_label)
 
     def test_action_dialog(self, action_type: str):
@@ -110,9 +110,7 @@ class ActionFlowDemo(QWidget):
 
     def on_action_cancelled(self):
         """Handle cancelled action."""
-        self.result_label.setText(
-            "❌ Action was cancelled. The player can return to action selection."
-        )
+        self.result_label.setText("❌ Action was cancelled. The player can return to action selection.")
 
 
 if __name__ == "__main__":

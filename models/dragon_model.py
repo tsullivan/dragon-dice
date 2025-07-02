@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional
+
 from models.element_model import ELEMENT_DATA
 
 
@@ -32,9 +33,7 @@ class Dragon:
     def _validate(self):
         """Validate dragon data."""
         if len(self.faces) != 12:
-            raise ValueError(
-                f"Dragon must have exactly 12 faces, got {len(self.faces)}"
-            )
+            raise ValueError(f"Dragon must have exactly 12 faces, got {len(self.faces)}")
 
         if not self.display_name:
             raise ValueError("Dragon must have a display name")
@@ -246,12 +245,10 @@ def validate_dragon_data() -> bool:
                 print(f"ERROR: Dragon name mismatch: {dragon.name} != {dragon_name}")
                 return False
             if len(dragon.faces) != 12:
-                print(
-                    f"ERROR: Dragon {dragon_name} has {len(dragon.faces)} faces, expected 12"
-                )
+                print(f"ERROR: Dragon {dragon_name} has {len(dragon.faces)} faces, expected 12")
                 return False
 
-        print(f"✓ All dragon data validated successfully")
+        print("✓ All dragon data validated successfully")
         print(f"  - {len(DRAGON_DATA)} dragons")
         return True
     except Exception as e:
@@ -266,8 +263,6 @@ def calculate_required_dragons(force_size_points: int) -> int:
     Examples: 15 pts = 1 dragon, 24 pts = 1 dragon, 30 pts = 2 dragons, 60 pts = 3 dragons
     """
     import math
-    
+
     POINTS_PER_DRAGON = 24
     return math.ceil(force_size_points / POINTS_PER_DRAGON)
-
-

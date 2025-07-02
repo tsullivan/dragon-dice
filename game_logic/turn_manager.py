@@ -1,7 +1,7 @@
-from PySide6.QtCore import QObject, Signal
 from typing import Optional
 
-import utils.constants as constants
+from PySide6.QtCore import QObject, Signal
+
 from models.game_phase_model import get_turn_phases
 
 
@@ -21,9 +21,7 @@ class TurnManager(QObject):
         self.player_names = player_names
         self.num_players = len(player_names)
         self.current_player_idx = (
-            self.player_names.index(first_player_name)
-            if first_player_name in self.player_names
-            else 0
+            self.player_names.index(first_player_name) if first_player_name in self.player_names else 0
         )
 
         # Start with First March phase for the very first turn of the game
@@ -48,9 +46,7 @@ class TurnManager(QObject):
         if self.is_first_turn_of_game:
             # Keep the First March phase for the first turn
             self.is_first_turn_of_game = False
-            print(
-                f"TurnManager: Starting FIRST TURN with First March for {self.player_names[self.current_player_idx]}"
-            )
+            print(f"TurnManager: Starting FIRST TURN with First March for {self.player_names[self.current_player_idx]}")
         else:
             # Dragon Dice Rule: Each player's turn starts with First March
             self.current_phase_idx = get_turn_phases().index("FIRST_MARCH")
@@ -69,9 +65,7 @@ class TurnManager(QObject):
         # Dragon Dice Rule: Player turn consists of First March + Second March
         # After Second March, advance to next player (who starts at First March)
         if self.current_phase == "SECOND_MARCH":
-            print(
-                f"TurnManager: Completed {self.player_names[self.current_player_idx]}'s turn (First + Second March)"
-            )
+            print(f"TurnManager: Completed {self.player_names[self.current_player_idx]}'s turn (First + Second March)")
             self.advance_player()
         else:
             # Normal phase advancement within a player's turn
@@ -85,16 +79,12 @@ class TurnManager(QObject):
                 print(
                     f"TurnManager: Advancing phase to {self.current_phase} for {self.player_names[self.current_player_idx]}"
                 )
-                self.current_phase_changed.emit(
-                    self._get_current_phase_display_string()
-                )
+                self.current_phase_changed.emit(self._get_current_phase_display_string())
 
     def advance_player(self):
         """Advances to the next player and initializes their turn."""
         self.current_player_idx = (self.current_player_idx + 1) % self.num_players
-        print(
-            f"TurnManager: Advancing to next player: {self.player_names[self.current_player_idx]}"
-        )
+        print(f"TurnManager: Advancing to next player: {self.player_names[self.current_player_idx]}")
         self.initialize_turn()  # This will emit player_changed and phase_changed
 
     # Getter methods

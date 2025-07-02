@@ -1,19 +1,16 @@
 # models/army_model.py
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from .unit_model import UnitModel
 
 
 class ArmyModel:
-    def __init__(
-        self, name: str, army_type: str, location: str = "", max_points: int = 0
-    ):
+    def __init__(self, name: str, army_type: str, location: str = "", max_points: int = 0):
         self.name = name
         self.army_type = army_type
         self.units: List[UnitModel] = []
         self.location = location
-        self.max_points = (
-            max_points  # Max points this army can have (50% of total force)
-        )
+        self.max_points = max_points  # Max points this army can have (50% of total force)
 
     def get_total_points(self) -> int:
         """Calculate total points used by units in this army (using max_health as point cost)."""
@@ -90,14 +87,11 @@ def get_army_type_icon(army_type: str) -> str:
         return ARMY_DATA[army_key]["icon"]
 
     # Try case-insensitive match
-    for key in ARMY_DATA.keys():
+    for key in ARMY_DATA:
         if key.upper() == army_type.upper():
             return ARMY_DATA[key]["icon"]
 
-    raise KeyError(
-        f"Unknown army type: '{army_type}'. Valid army types: {
-            list(ARMY_DATA.keys())}"
-    )
+    raise KeyError(f"Unknown army type: '{army_type}'. Valid army types: {list(ARMY_DATA.keys())}")
 
 
 def format_army_type_display(army_type: str) -> str:
@@ -109,15 +103,12 @@ def format_army_type_display(army_type: str) -> str:
         return f"{army_info['icon']} {army_info['display_name']}"
 
     # Try case-insensitive match
-    for key in ARMY_DATA.keys():
+    for key in ARMY_DATA:
         if key.upper() == army_type.upper():
             army_info = ARMY_DATA[key]
             return f"{army_info['icon']} {army_info['display_name']}"
 
-    raise KeyError(
-        f"Unknown army type: '{army_type}'. Valid types: {
-            list(ARMY_DATA.keys())}"
-    )
+    raise KeyError(f"Unknown army type: '{army_type}'. Valid types: {list(ARMY_DATA.keys())}")
 
 
 def get_all_army_types() -> List[str]:

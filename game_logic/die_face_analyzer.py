@@ -6,10 +6,10 @@ die faces from unit compositions, extracted from UI components for better
 testability and reusability.
 """
 
-from typing import List, Dict, Any, Optional, Tuple
 from collections import Counter
 from dataclasses import dataclass
-import utils.constants as constants
+from typing import Any, Dict, List, Tuple
+
 from models.unit_model import UnitFace
 
 
@@ -129,19 +129,12 @@ class DieFaceAnalyzer:
         sorted_faces = sorted(
             face_counts.items(),
             key=lambda x: (
-                (
-                    self.FACE_PRIORITY_ORDER.index(x[0])
-                    if x[0] in self.FACE_PRIORITY_ORDER
-                    else 999
-                ),
+                (self.FACE_PRIORITY_ORDER.index(x[0]) if x[0] in self.FACE_PRIORITY_ORDER else 999),
                 -x[1],  # Negative for descending count order
             ),
         )
 
-        return [
-            DieFaceCount(face_type=face_type, count=count)
-            for face_type, count in sorted_faces
-        ]
+        return [DieFaceCount(face_type=face_type, count=count) for face_type, count in sorted_faces]
 
     def analyze_unit_die_faces(self, units: List[Any]) -> List[DieFaceCount]:
         """
@@ -184,9 +177,7 @@ class DieFaceAnalyzer:
         # Calculate percentages
         if total_faces > 0:
             for face_type, count in face_counts.items():
-                summary["percentages"][face_type] = round(
-                    (count / total_faces) * 100, 1
-                )
+                summary["percentages"][face_type] = round((count / total_faces) * 100, 1)
 
         # Find most and least common
         if sorted_faces:
@@ -195,9 +186,7 @@ class DieFaceAnalyzer:
 
         return summary
 
-    def compare_army_compositions(
-        self, army1_units: List[Any], army2_units: List[Any]
-    ) -> Dict[str, Any]:
+    def compare_army_compositions(self, army1_units: List[Any], army2_units: List[Any]) -> Dict[str, Any]:
         """
         Compare die face distributions between two army compositions.
 
@@ -264,14 +253,10 @@ class DieFaceAnalyzer:
         utility_faces = [UnitFace.ICON_MANEUVER, UnitFace.ICON_SAI]
 
         analysis = {
-            "offensive_strength": sum(
-                face_counts.get(face, 0) for face in offensive_faces
-            ),
+            "offensive_strength": sum(face_counts.get(face, 0) for face in offensive_faces),
             "defensive_strength": face_counts.get(UnitFace.ICON_SAVE, 0),
             "utility_strength": sum(face_counts.get(face, 0) for face in utility_faces),
-            "total_combat_faces": sum(
-                face_counts.get(face, 0) for face in offensive_faces + defensive_faces
-            ),
+            "total_combat_faces": sum(face_counts.get(face, 0) for face in offensive_faces + defensive_faces),
             "primary_strength": None,
             "weaknesses": [],
             "balanced": False,
@@ -313,9 +298,7 @@ class DieFaceAnalyzer:
         """
         return DieFaceAnalyzer.FACE_ICONS.get(face_type, "❓")
 
-    def format_face_summary(
-        self, face_counts: Dict[str, int], compact: bool = True
-    ) -> str:
+    def format_face_summary(self, face_counts: Dict[str, int], compact: bool = True) -> str:
         """
         Format face counts into a readable string.
 
@@ -337,13 +320,12 @@ class DieFaceAnalyzer:
             for face_count in sorted_faces:
                 parts.append(f"{face_count.icon}{face_count.count}")
             return " ".join(parts)
-        else:
-            # Detailed format: Melee: 3, Missile: 2, Save: 1
-            parts = []
-            for face_count in sorted_faces:
-                face_name = face_count.face_type.replace("_", " ").title()
-                parts.append(f"{face_name}: {face_count.count}")
-            return ", ".join(parts)
+        # Detailed format: Melee: 3, Missile: 2, Save: 1
+        parts = []
+        for face_count in sorted_faces:
+            face_name = face_count.face_type.replace("_", " ").title()
+            parts.append(f"{face_name}: {face_count.count}")
+        return ", ".join(parts)
 
 
 class UnitDieFaceExtractor:

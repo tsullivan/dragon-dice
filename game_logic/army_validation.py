@@ -6,8 +6,8 @@ according to official Dragon Dice rules, extracted from UI components for
 better testability and reusability.
 """
 
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass
@@ -30,10 +30,7 @@ class ArmyComposition:
 
     def get_total_points(self) -> int:
         """Calculate total points for this army."""
-        return sum(
-            getattr(unit, "max_health", unit.get("max_health", 0))
-            for unit in self.units
-        )
+        return sum(getattr(unit, "max_health", unit.get("max_health", 0)) for unit in self.units)
 
     def get_unit_count(self) -> int:
         """Get the number of units in this army."""
@@ -118,8 +115,7 @@ class DragonDiceArmyValidator:
         # Rule 4: Total army points must equal selected force size
         if total_force_points != force_size:
             errors.append(
-                f"Total army points ({total_force_points} pts) must equal "
-                f"selected force size ({force_size} pts)"
+                f"Total army points ({total_force_points} pts) must equal selected force size ({force_size} pts)"
             )
 
         return ValidationResult(
@@ -149,9 +145,7 @@ class DragonDiceArmyValidator:
 
         return magic_points
 
-    def validate_single_army(
-        self, army: ArmyComposition, max_points: int
-    ) -> Tuple[bool, List[str]]:
+    def validate_single_army(self, army: ArmyComposition, max_points: int) -> Tuple[bool, List[str]]:
         """
         Validate a single army against point limits.
 
@@ -171,9 +165,7 @@ class DragonDiceArmyValidator:
         # Check point limit
         army_points = army.get_total_points()
         if army_points > max_points:
-            errors.append(
-                f"{army.army_type} Army ({army_points} pts) exceeds maximum {max_points} pts"
-            )
+            errors.append(f"{army.army_type} Army ({army_points} pts) exceeds maximum {max_points} pts")
 
         return len(errors) == 0, errors
 

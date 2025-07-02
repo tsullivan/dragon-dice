@@ -1,7 +1,7 @@
 import pytest
 
-from views.distance_rolls_view import DistanceRollsView
 from test.utils.visual_test_helpers import capture_widget_screenshot
+from views.distance_rolls_view import DistanceRollsView
 
 
 def test_distance_rolls_view_render(qtbot):

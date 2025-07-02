@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import Mock, patch, MagicMock
-from game_logic.engine import GameEngine
+from unittest.mock import MagicMock, Mock, patch
+
 import utils.constants as constants
+from game_logic.engine import GameEngine
 
 
 class TestEngineIntegration(unittest.TestCase):
@@ -115,9 +116,7 @@ class TestEngineIntegration(unittest.TestCase):
         # No pending outcome
         self.engine.pending_attacker_outcome = None
 
-        with patch.object(
-            self.engine.action_resolver, "parse_dice_string"
-        ) as mock_parse:
+        with patch.object(self.engine.action_resolver, "parse_dice_string") as mock_parse:
             mock_parse.return_value = {"saves": 1}
 
             # Should handle gracefully and not crash
@@ -134,9 +133,7 @@ class TestEngineIntegration(unittest.TestCase):
             "maneuver_icons": 1,
         }
 
-        with patch.object(
-            self.engine.game_state_manager, "update_terrain_face"
-        ) as mock_update:
+        with patch.object(self.engine.game_state_manager, "update_terrain_face") as mock_update:
             mock_update.return_value = True
 
             success = self.engine.apply_maneuver_results(maneuver_result)
@@ -149,9 +146,7 @@ class TestEngineIntegration(unittest.TestCase):
         maneuver_result = {"success": False, "location": "Player 1 Highland"}
 
         # Should not attempt to update terrain for failed maneuver
-        with patch.object(
-            self.engine.game_state_manager, "update_terrain_face"
-        ) as mock_update:
+        with patch.object(self.engine.game_state_manager, "update_terrain_face") as mock_update:
             result = self.engine.apply_maneuver_results(maneuver_result)
 
             self.assertIsNone(result)
@@ -204,9 +199,7 @@ class TestEngineIntegration(unittest.TestCase):
         self.assertIsInstance(terrain_data, dict)
 
         # Test terrain type extraction
-        terrain_type = self.engine.extract_terrain_type_from_location(
-            "Player 1 Highland"
-        )
+        terrain_type = self.engine.extract_terrain_type_from_location("Player 1 Highland")
         self.assertEqual(terrain_type, "Highland")
 
     def test_error_handling_in_action_flow(self):

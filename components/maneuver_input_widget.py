@@ -1,14 +1,15 @@
-from PySide6.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
-    QPushButton,
-    QLabel,
-    QGroupBox,
-)
+from typing import Any, Dict, Optional
+
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QFont
-from typing import Optional, Dict, Any
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class ManeuverInputWidget(QWidget):
@@ -62,9 +63,7 @@ class ManeuverInputWidget(QWidget):
 
         self._main_layout.addLayout(button_layout)
 
-    def set_acting_army(
-        self, acting_army: Dict[str, Any], terrain_data: Dict[str, Any] = None
-    ):
+    def set_acting_army(self, acting_army: Dict[str, Any], terrain_data: Dict[str, Any] = None):
         """Set the acting army information to display."""
         if not acting_army:
             self._army_info_label.setText("No acting army selected")
@@ -83,11 +82,7 @@ class ManeuverInputWidget(QWidget):
             terrain_type = terrain.get("type", "Unknown")
             terrain_info = f"\nTerrain: {terrain_type}, Face {face}"
 
-        army_text = (
-            f"Army: {army_name}\n"
-            f"Location: {location}\n"
-            f"Units: {unit_count}{terrain_info}"
-        )
+        army_text = f"Army: {army_name}\nLocation: {location}\nUnits: {unit_count}{terrain_info}"
 
         self._army_info_label.setText(army_text)
 

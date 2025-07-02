@@ -1,21 +1,20 @@
+from typing import Any, Dict
+
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
-    QPushButton,
-    QGroupBox,
-    QRadioButton,
-    QButtonGroup,
-    QTextEdit,
-    QSpacerItem,
-    QSizePolicy,
-    QListWidget,
     QLineEdit,
+    QListWidget,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
 )
-import utils.constants as constants
-from PySide6.QtCore import Qt, Signal
-from typing import List, Dict, Any, Optional
+
+from models.action_model import get_action_icon
 
 
 class ActionDialog(QDialog):
@@ -85,11 +84,7 @@ class ActionDialog(QDialog):
         self.back_button.clicked.connect(self._on_back)
         button_layout.addWidget(self.back_button)
 
-        button_layout.addSpacerItem(
-            QSpacerItem(
-                40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
-            )
-        )
+        button_layout.addSpacerItem(QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setMaximumWidth(100)
@@ -122,10 +117,8 @@ class ActionDialog(QDialog):
 
     def _show_attacker_roll(self):
         """Show attacker roll input."""
-        action_icon = constants.get_action_icon(self.action_type)
-        self.step_label.setText(
-            f"Step 1: {action_icon} {self.action_type.title()} Attack"
-        )
+        action_icon = get_action_icon(self.action_type)
+        self.step_label.setText(f"Step 1: {action_icon} {self.action_type.title()} Attack")
 
         if not self.acting_army:
             return
@@ -134,7 +127,9 @@ class ActionDialog(QDialog):
         location = self.acting_army.get("location", "Unknown")
         army_name = self.acting_army.get("name", "Unknown Army")
 
-        summary_text = f"{self.current_player_name}'s {army_name} performs a {self.action_type.lower()} attack at {location}."
+        summary_text = (
+            f"{self.current_player_name}'s {army_name} performs a {self.action_type.lower()} attack at {location}."
+        )
         summary_label = QLabel(summary_text)
         summary_label.setWordWrap(True)
         summary_label.setStyleSheet("font-weight: bold; margin-bottom: 10px;")
@@ -164,9 +159,7 @@ class ActionDialog(QDialog):
         roll_layout.addWidget(instruction_label)
 
         self.attacker_dice_input = QLineEdit()
-        self.attacker_dice_input.setPlaceholderText(
-            "e.g., '3 melee, 2 saves, 1 SAI' or 'MM,S,SAI,M,S'"
-        )
+        self.attacker_dice_input.setPlaceholderText("e.g., '3 melee, 2 saves, 1 SAI' or 'MM,S,SAI,M,S'")
         roll_layout.addWidget(self.attacker_dice_input)
 
         self.content_layout.addWidget(roll_group)
@@ -178,9 +171,7 @@ class ActionDialog(QDialog):
         # Show attack results summary
         if self.attacker_results:
             results_text = f"Attacker rolled: {self.attacker_results}\n\n"
-            results_text += (
-                "The defender must now roll save dice to defend against this attack."
-            )
+            results_text += "The defender must now roll save dice to defend against this attack."
 
             results_label = QLabel(results_text)
             results_label.setWordWrap(True)
@@ -191,24 +182,20 @@ class ActionDialog(QDialog):
         save_group = QGroupBox("Defender Save Rolls")
         save_layout = QVBoxLayout(save_group)
 
-        instruction_text = (
-            "Defending player: Roll your save dice and enter the results below:"
-        )
+        instruction_text = "Defending player: Roll your save dice and enter the results below:"
         instruction_label = QLabel(instruction_text)
         instruction_label.setWordWrap(True)
         save_layout.addWidget(instruction_label)
 
         self.defender_dice_input = QLineEdit()
-        self.defender_dice_input.setPlaceholderText(
-            "e.g., '2 saves, 1 SAI' or 'S,S,SAI'"
-        )
+        self.defender_dice_input.setPlaceholderText("e.g., '2 saves, 1 SAI' or 'S,S,SAI'")
         save_layout.addWidget(self.defender_dice_input)
 
         self.content_layout.addWidget(save_group)
 
     def _show_results(self):
         """Show action results."""
-        action_icon = constants.get_action_icon(self.action_type)
+        action_icon = get_action_icon(self.action_type)
         self.step_label.setText(f"Step 3: {action_icon} Action Results")
 
         if not self.attacker_results or not self.defender_results:

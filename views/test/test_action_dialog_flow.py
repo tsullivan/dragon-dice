@@ -1,9 +1,11 @@
-import unittest
-from unittest.mock import Mock, patch, MagicMock
-from PySide6.QtWidgets import QApplication, QWidget
-from PySide6.QtTest import QSignalSpy
-from views.action_dialog import ActionDialog
 import sys
+import unittest
+from unittest.mock import MagicMock, Mock, patch
+
+from PySide6.QtTest import QSignalSpy
+from PySide6.QtWidgets import QApplication, QWidget
+
+from views.action_dialog import ActionDialog
 
 
 class TestActionDialogFlow(unittest.TestCase):
@@ -28,9 +30,7 @@ class TestActionDialogFlow(unittest.TestCase):
             ],
         }
 
-        self.sample_player_data = {
-            "Player 1": {"armies": {"campaign": self.sample_acting_army}}
-        }
+        self.sample_player_data = {"Player 1": {"armies": {"campaign": self.sample_acting_army}}}
 
         self.sample_terrain_data = {
             "Coastland (Blue, Green)": {

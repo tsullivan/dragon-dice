@@ -1,10 +1,8 @@
+from typing import Any, Dict, List, Optional
+
 from PySide6.QtCore import QObject, Signal
-from typing import List, Dict, Any, Optional
-import utils.constants as constants
 
 # For type hinting and potential reconstruction
-from models.army_model import ArmyModel
-
 # For type hinting and potential reconstruction
 from models.unit_model import UnitModel
 
@@ -54,9 +52,7 @@ class InvalidArmyIdentifierError(GameStateError):
     """Raised when an army identifier cannot be parsed."""
 
     def __init__(self, army_identifier: str):
-        super().__init__(
-            f"Invalid army identifier: '{army_identifier}'. Expected format: 'player_name_army_type'"
-        )
+        super().__init__(f"Invalid army identifier: '{army_identifier}'. Expected format: 'player_name_army_type'")
         self.army_identifier = army_identifier
 
 
@@ -66,9 +62,7 @@ class GameStateManager(QObject):
     This includes army compositions, unit health, terrain control, etc.
     """
 
-    game_state_changed = (
-        Signal()
-    )  # Emitted when any significant part of the game state changes
+    game_state_changed = Signal()  # Emitted when any significant part of the game state changes
 
     def __init__(
         self,
@@ -111,9 +105,7 @@ class GameStateManager(QObject):
         # "Frontier Name": {"name": "Frontier Name", "type": "Frontier", "face": 3, "controller": None, "armies_present": ["P1_Campaign", "P2_Campaign"]}
         # "Player 1 Home": {"name": "Player 1 Home", "type": "Home", "face": 1, "controller": "Player 1", "armies_present": ["P1_Home"]}
 
-        self._initialize_state(
-            initial_player_setup_data, frontier_terrain, distance_rolls
-        )
+        self._initialize_state(initial_player_setup_data, frontier_terrain, distance_rolls)
 
     def _initialize_state(
         self,
@@ -162,9 +154,7 @@ class GameStateManager(QObject):
                         for other_player in initial_player_setup_data:
                             if other_player["name"] != player_name:
                                 opponent_player_name = other_player["name"]
-                                opponent_home_terrain_type = other_player[
-                                    "home_terrain"
-                                ]
+                                opponent_home_terrain_type = other_player["home_terrain"]
                                 break
                         location = (
                             f"{opponent_player_name} {opponent_home_terrain_type}"
@@ -175,13 +165,8 @@ class GameStateManager(QObject):
                 # parsed_dice = self._parse_dragon_dice_description(dragon_dice_description) # Removed
                 self.players[player_name]["armies"][army_type_key] = {
                     "name": army_details["name"],
-                    "points_value": army_details.get(
-                        "allocated_points", army_details.get("points", 0)
-                    ),
-                    "units": [
-                        UnitModel.from_dict(u_data).to_dict()
-                        for u_data in army_details.get("units", [])
-                    ],
+                    "points_value": army_details.get("allocated_points", army_details.get("points", 0)),
+                    "units": [UnitModel.from_dict(u_data).to_dict() for u_data in army_details.get("units", [])],
                     "location": location,
                 }
 
@@ -206,9 +191,7 @@ class GameStateManager(QObject):
             # Handle frontier terrain roll
             if player_name == "__frontier__":
                 self.terrains[frontier_terrain_name]["face"] = distance
-                print(
-                    f"GameStateManager: Set frontier terrain {frontier_terrain_name} to face {distance}"
-                )
+                print(f"GameStateManager: Set frontier terrain {frontier_terrain_name} to face {distance}")
                 continue
 
             # Handle home terrain rolls
@@ -225,16 +208,11 @@ class GameStateManager(QObject):
         # Add unique identifiers to all armies
         self.update_army_identifiers_to_specific()
 
-        print(
-            f"GameStateManager: Initialized Players: {
-              list(self.players.keys())}"
-        )
+        print(f"GameStateManager: Initialized Players: {list(self.players.keys())}")
         print(f"GameStateManager: Initialized Terrains: {self.terrains}")
         self.game_state_changed.emit()
 
-    def _populate_reserve_pool(
-        self, player_name: str, player_setup_data: Dict[str, Any]
-    ):
+    def _populate_reserve_pool(self, player_name: str, player_setup_data: Dict[str, Any]):
         """
         Populate the reserve pool with units available for summoning/reinforcement.
         Based on Dragon Dice rules, this includes:
@@ -275,9 +253,7 @@ class GameStateManager(QObject):
                 reserve_unit = UnitModel.from_dict(unit_data).to_dict()
                 player_data["reserve_pool"].append(reserve_unit)
 
-    def _create_reserve_units(
-        self, player_name: str, points_available: int
-    ) -> List[Dict[str, Any]]:
+    def _create_reserve_units(self, player_name: str, points_available: int) -> List[Dict[str, Any]]:
         """
         Create reserve units based on available points using actual unit roster.
         Uses a simplified cost system based on unit health (1 health = 1 point).
@@ -294,9 +270,7 @@ class GameStateManager(QObject):
             available_units.extend(species_units)
 
         # Sort by health (using health as cost proxy)
-        available_units.sort(
-            key=lambda u: unit_roster.get_unit_definition(u["id"])["max_health"]
-        )
+        available_units.sort(key=lambda u: unit_roster.get_unit_definition(u["id"])["max_health"])
 
         unit_count = 0
         unit_cycle_index = 0  # Track which units we've used for variety
@@ -304,19 +278,14 @@ class GameStateManager(QObject):
         while remaining_points > 0 and unit_count < 15:  # Cap at 15 units
             # Find affordable units and cycle through them for variety
             affordable_units = [
-                u
-                for u in available_units
-                if unit_roster.get_unit_definition(u["id"])["max_health"]
-                <= remaining_points
+                u for u in available_units if unit_roster.get_unit_definition(u["id"])["max_health"] <= remaining_points
             ]
 
             if not affordable_units:
                 break  # No units fit within remaining points
 
             # Cycle through affordable units for variety
-            selected_unit_info = affordable_units[
-                unit_cycle_index % len(affordable_units)
-            ]
+            selected_unit_info = affordable_units[unit_cycle_index % len(affordable_units)]
             selected_unit_id = selected_unit_info["id"]
             unit_cycle_index += 1
 
@@ -324,9 +293,7 @@ class GameStateManager(QObject):
             unit_cost = unit_def["max_health"]
 
             unit_count += 1
-            instance_id = (
-                f"{player_name.lower().replace(' ', '_')}_reserve_{unit_count}"
-            )
+            instance_id = f"{player_name.lower().replace(' ', '_')}_reserve_{unit_count}"
 
             # Create unit instance using roster
             unit_instance = unit_roster.create_unit_instance(
@@ -362,10 +329,10 @@ class GameStateManager(QObject):
         - "Swampland (Green, Yellow)" -> "Swampland (Green, Yellow)"
         """
         # If location contains a player name prefix, extract the terrain type
-        import utils.constants as constants
+        from models.terrain_model import TERRAIN_DATA
 
         location_upper = location.upper()
-        for terrain_name in constants.TERRAIN_DATA.keys():
+        for terrain_name in TERRAIN_DATA.keys():
             if terrain_name in location_upper:
                 # Return the terrain name in its original case from the location string
                 # Find the actual terrain name in the location (case-insensitive)
@@ -377,9 +344,7 @@ class GameStateManager(QObject):
                 return terrain_name
 
         # No fallback - raise error if terrain type cannot be determined
-        raise TerrainNotFoundError(
-            f"Cannot extract terrain type from location: {location}"
-        )
+        raise TerrainNotFoundError(f"Cannot extract terrain type from location: {location}")
 
     def generate_army_identifier(self, player_name: str, army_type: str) -> str:
         """
@@ -412,9 +377,7 @@ class GameStateManager(QObject):
 
         raise InvalidArmyIdentifierError(army_identifier)
 
-    def get_army_by_identifier(
-        self, army_identifier: str
-    ) -> tuple[str, Dict[str, Any]]:
+    def get_army_by_identifier(self, army_identifier: str) -> tuple[str, Dict[str, Any]]:
         """
         Get army data by identifier. Returns (player_name, army_data).
         Raises appropriate exceptions if army cannot be found.
@@ -441,18 +404,14 @@ class GameStateManager(QObject):
             # Army keys are already specific (home, campaign, horde)
             # but we can add unique army IDs for tracking
             for army_type, army_data in armies.items():
-                army_data["unique_id"] = self.generate_army_identifier(
-                    player_name, army_type
-                )
+                army_data["unique_id"] = self.generate_army_identifier(player_name, army_type)
                 army_data["player_name"] = player_name
                 army_data["army_type"] = army_type
 
     # _parse_dragon_dice_description is removed as we are now getting structured dragon selections.
 
     # Army management methods
-    def get_unit_health(
-        self, player_name: str, army_identifier: str, unit_name: str
-    ) -> int:
+    def get_unit_health(self, player_name: str, army_identifier: str, unit_name: str) -> int:
         """Get the current health of a specific unit."""
         # Support both direct army types and specific army identifiers
         if army_identifier in ["home", "campaign", "horde"]:
@@ -473,9 +432,7 @@ class GameStateManager(QObject):
 
         raise UnitNotFoundError(unit_name, army_identifier)
 
-    def update_unit_health(
-        self, player_name: str, army_identifier: str, unit_name: str, new_health: int
-    ) -> None:
+    def update_unit_health(self, player_name: str, army_identifier: str, unit_name: str, new_health: int) -> None:
         """Update the health of a specific unit."""
         # Support both direct army types and specific army identifiers
         if army_identifier in ["home", "campaign", "horde"]:
@@ -502,9 +459,7 @@ class GameStateManager(QObject):
 
         raise UnitNotFoundError(unit_name, army_identifier)
 
-    def move_unit_between_armies(
-        self, player_name: str, unit_name: str, from_army: str, to_army: str
-    ) -> None:
+    def move_unit_between_armies(self, player_name: str, unit_name: str, from_army: str, to_army: str) -> None:
         """Move a unit from one army to another."""
         player_data = self.get_player_data(player_name)
         armies = player_data.get("armies", {})
@@ -537,9 +492,7 @@ class GameStateManager(QObject):
         if player_data:
             player_data.setdefault("dead_unit_area", []).append(unit)
 
-    def move_unit_to_bua(
-        self, player_name: str, army_identifier: str, unit_name: str
-    ) -> bool:
+    def move_unit_to_bua(self, player_name: str, army_identifier: str, unit_name: str) -> bool:
         """Move a unit to the Buried Unit Area (BUA)."""
         player_data = self.get_player_data(player_name)
         if not player_data:
@@ -557,9 +510,7 @@ class GameStateManager(QObject):
                 return True
         return False
 
-    def move_unit_to_reserve_area(
-        self, player_name: str, army_identifier: str, unit_name: str
-    ) -> bool:
+    def move_unit_to_reserve_area(self, player_name: str, army_identifier: str, unit_name: str) -> bool:
         """Move a unit to the Reserve Area for tactical repositioning."""
         player_data = self.get_player_data(player_name)
         if not player_data:
@@ -577,9 +528,7 @@ class GameStateManager(QObject):
                 return True
         return False
 
-    def move_unit_from_reserve_area(
-        self, player_name: str, unit_name: str, target_army: str
-    ) -> bool:
+    def move_unit_from_reserve_area(self, player_name: str, unit_name: str, target_army: str) -> bool:
         """Move a unit from Reserve Area to an army."""
         player_data = self.get_player_data(player_name)
         if not player_data:
@@ -599,9 +548,7 @@ class GameStateManager(QObject):
                 return True
         return False
 
-    def move_unit_from_reserve_pool(
-        self, player_name: str, unit_name: str, target_army: str
-    ) -> bool:
+    def move_unit_from_reserve_pool(self, player_name: str, unit_name: str, target_army: str) -> bool:
         """Move a unit from Reserve Pool to an army (deployment)."""
         player_data = self.get_player_data(player_name)
         if not player_data:
@@ -621,9 +568,7 @@ class GameStateManager(QObject):
                 return True
         return False
 
-    def update_army_location(
-        self, player_name: str, army_identifier: str, location: str
-    ) -> None:
+    def update_army_location(self, player_name: str, army_identifier: str, location: str) -> None:
         """Update the location of an army."""
         player_data = self.get_player_data(player_name)
         army = player_data.get("armies", {}).get(army_identifier)
@@ -633,9 +578,7 @@ class GameStateManager(QObject):
         army["location"] = location
         self.game_state_changed.emit()
 
-    def update_terrain_control(
-        self, terrain_name: str, controlling_player: Optional[str]
-    ) -> None:
+    def update_terrain_control(self, terrain_name: str, controlling_player: Optional[str]) -> None:
         """Update which player controls a terrain."""
         terrain = self.get_terrain_data(terrain_name)
         terrain["controlling_player"] = controlling_player
@@ -661,14 +604,10 @@ class GameStateManager(QObject):
         for player_name, player_data in self.players.items():
             for army_id, army in player_data.get("armies", {}).items():
                 if army.get("location") == location:
-                    armies_at_location.append(
-                        {"player": player_name, "army_id": army_id, "army": army}
-                    )
+                    armies_at_location.append({"player": player_name, "army_id": army_id, "army": army})
         return armies_at_location
 
-    def find_defending_armies_at_location(
-        self, attacking_player_name: str, location: str
-    ) -> List[Dict[str, Any]]:
+    def find_defending_armies_at_location(self, attacking_player_name: str, location: str) -> List[Dict[str, Any]]:
         """Find all enemy armies at the specified location that can be targeted."""
         all_armies_at_location = self.get_armies_at_location(location)
         defending_armies = []
@@ -679,13 +618,9 @@ class GameStateManager(QObject):
 
         return defending_armies
 
-    def determine_primary_defending_player(
-        self, attacking_player_name: str, location: str
-    ) -> Optional[str]:
+    def determine_primary_defending_player(self, attacking_player_name: str, location: str) -> Optional[str]:
         """Determine the primary defending player at a location using Dragon Dice army priority."""
-        defending_armies = self.find_defending_armies_at_location(
-            attacking_player_name, location
-        )
+        defending_armies = self.find_defending_armies_at_location(attacking_player_name, location)
 
         if not defending_armies:
             return None
@@ -699,13 +634,9 @@ class GameStateManager(QObject):
         # Fallback to first defending player found
         return defending_armies[0]["player"]
 
-    def determine_primary_defending_army_id(
-        self, attacking_player_name: str, location: str
-    ) -> Optional[str]:
+    def determine_primary_defending_army_id(self, attacking_player_name: str, location: str) -> Optional[str]:
         """Determine the primary defending army identifier at a location."""
-        defending_armies = self.find_defending_armies_at_location(
-            attacking_player_name, location
-        )
+        defending_armies = self.find_defending_armies_at_location(attacking_player_name, location)
 
         if not defending_armies:
             return None
@@ -715,15 +646,11 @@ class GameStateManager(QObject):
             for army_info in defending_armies:
                 if army_info["army_id"] == priority_type:
                     # Generate specific army identifier
-                    return self.generate_army_identifier(
-                        army_info["player"], priority_type
-                    )
+                    return self.generate_army_identifier(army_info["player"], priority_type)
 
         # Fallback to first defending army found
         first_army = defending_armies[0]
-        return self.generate_army_identifier(
-            first_army["player"], first_army["army_id"]
-        )
+        return self.generate_army_identifier(first_army["player"], first_army["army_id"])
 
     def get_reserve_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve pool (available for deployment) for a player."""
@@ -755,9 +682,7 @@ class GameStateManager(QObject):
         for terrain_data in self.terrains.values():
             controlling_player = terrain_data.get("controlling_player")
             if controlling_player:
-                player_terrain_counts[controlling_player] = (
-                    player_terrain_counts.get(controlling_player, 0) + 1
-                )
+                player_terrain_counts[controlling_player] = player_terrain_counts.get(controlling_player, 0) + 1
 
         # Check if any player controls more than half the terrains
         for player, count in player_terrain_counts.items():
@@ -766,9 +691,7 @@ class GameStateManager(QObject):
 
         return None
 
-    def apply_damage_to_units(
-        self, player_name: str, army_identifier: str, damage_amount: int
-    ) -> None:
+    def apply_damage_to_units(self, player_name: str, army_identifier: str, damage_amount: int) -> None:
         """
         Applies damage to units in a specific army.
         Distributes damage across all units in the army.
@@ -789,8 +712,9 @@ class GameStateManager(QObject):
             player_name = parsed_player  # Use the parsed player name
 
         print(
-            f"GameStateManager: Applying {damage_amount} damage to {
-              player_name}'s {army.get('name', target_army_key)} army."
+            f"GameStateManager: Applying {damage_amount} damage to {player_name}'s {
+                army.get('name', target_army_key)
+            } army."
         )
 
         remaining_damage = damage_amount
@@ -804,10 +728,7 @@ class GameStateManager(QObject):
             unit["health"] -= damage_to_unit
             remaining_damage -= damage_to_unit
             units_affected = True
-            print(
-                f"GameStateManager: Unit {unit['name']} took {
-                  damage_to_unit} damage, health now {unit['health']}."
-            )
+            print(f"GameStateManager: Unit {unit['name']} took {damage_to_unit} damage, health now {unit['health']}.")
 
             if unit["health"] <= 0:
                 print(f"GameStateManager: Unit {unit['name']} defeated.")
@@ -850,9 +771,7 @@ class GameStateManager(QObject):
         player = self.get_player_data(player_name)
         home_terrain = player.get("home_terrain_name")
         if not home_terrain:
-            raise GameStateError(
-                f"Player '{player_name}' has no home terrain configured"
-            )
+            raise GameStateError(f"Player '{player_name}' has no home terrain configured")
         return home_terrain
 
     def set_active_army(self, player_name: str, army_type: str) -> None:
@@ -866,9 +785,7 @@ class GameStateManager(QObject):
         player_data["active_army_type"] = army_type
         self.game_state_changed.emit()
 
-    def determine_active_army_by_location(
-        self, player_name: str, current_location: str
-    ) -> Optional[str]:
+    def determine_active_army_by_location(self, player_name: str, current_location: str) -> Optional[str]:
         """
         Determine which army should be active based on the current game location.
         Returns the army type that should be active.
@@ -913,13 +830,11 @@ class GameStateManager(QObject):
         if current_phase in ["FIRST_MARCH", "SECOND_MARCH"]:
             # During march phases, determine by location if provided
             if current_location:
-                return self.determine_active_army_by_location(
-                    player_name, current_location
-                )
+                return self.determine_active_army_by_location(player_name, current_location)
             # Otherwise, use current active army
             return player_data.get("active_army_type", "home")
 
-        elif current_phase == "DRAGON_ATTACK":
+        if current_phase == "DRAGON_ATTACK":
             # Dragons can attack any army, but usually home terrain
             home_terrain = player_data.get("home_terrain_name")
             if home_terrain:
@@ -956,9 +871,7 @@ class GameStateManager(QObject):
         active_army = self.get_active_army_data(player_name)
         return active_army.get("units", []) if active_army else []
 
-    def get_all_armies_at_location(
-        self, player_name: str, location: str
-    ) -> List[Dict[str, Any]]:
+    def get_all_armies_at_location(self, player_name: str, location: str) -> List[Dict[str, Any]]:
         """Get all armies for a player at a specific location."""
         player_data = self.get_player_data(player_name)
         if not player_data:
@@ -971,9 +884,7 @@ class GameStateManager(QObject):
                     {
                         "army_type": army_type,
                         "army_data": army_data,
-                        "unique_id": army_data.get(
-                            "unique_id", f"{player_name}_{army_type}"
-                        ),
+                        "unique_id": army_data.get("unique_id", f"{player_name}_{army_type}"),
                     }
                 )
 

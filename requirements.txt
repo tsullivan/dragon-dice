@@ -1,3 +1,5 @@
 PySide6
 pytest
 pytest-qt
+mypy
+ruff

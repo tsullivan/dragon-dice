@@ -1,7 +1,7 @@
 import pytest
 
-from views.welcome_view import WelcomeView
 from test.utils.visual_test_helpers import capture_widget_screenshot
+from views.welcome_view import WelcomeView
 
 
 def test_welcome_view_direct_render(qtbot):

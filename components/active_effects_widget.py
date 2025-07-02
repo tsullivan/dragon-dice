@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QListWidget, QListWidgetItem
+from typing import TYPE_CHECKING, List, Optional
 
-from typing import List, Optional, TYPE_CHECKING
+from PySide6.QtWidgets import QGroupBox, QListWidget, QListWidgetItem, QVBoxLayout
 
 if TYPE_CHECKING:
     from PySide6.QtWidgets import QWidget  # For type hinting parent
@@ -11,9 +11,7 @@ class ActiveEffectsWidget(QGroupBox):
     A widget to display a list of active effects in the game.
     """
 
-    def __init__(
-        self, title: str = "Active Effects", parent: Optional["QWidget"] = None
-    ):
+    def __init__(self, title: str = "Active Effects", parent: Optional["QWidget"] = None):
         super().__init__(title, parent)
 
         layout = QVBoxLayout(self)

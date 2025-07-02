@@ -1,14 +1,16 @@
+from typing import Any, Dict, List, Optional
+
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QButtonGroup,
+    QGroupBox,
     QLabel,
     QPushButton,
-    QButtonGroup,
     QRadioButton,
-    QGroupBox,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Signal
-from typing import Optional, List, Dict, Any
+
 from utils.display_utils import format_army_type, format_terrain_summary
 
 
@@ -35,9 +37,7 @@ class ActingArmyWidget(QWidget):
         self._main_layout.addWidget(self.title_label)
 
         # Instructions
-        self.instruction_label = QLabel(
-            "Select which army will be active for both Maneuver and Action steps:"
-        )
+        self.instruction_label = QLabel("Select which army will be active for both Maneuver and Action steps:")
         self.instruction_label.setWordWrap(True)
         self._main_layout.addWidget(self.instruction_label)
 
@@ -53,9 +53,7 @@ class ActingArmyWidget(QWidget):
         self.available_armies = []
         self.selected_army = None
 
-    def set_available_armies(
-        self, armies: List[Dict[str, Any]], terrain_data: Dict[str, Any] = None
-    ):
+    def set_available_armies(self, armies: List[Dict[str, Any]], terrain_data: Dict[str, Any] = None):
         """Set the available armies for selection."""
         self.available_armies = armies
 
@@ -87,14 +85,14 @@ class ActingArmyWidget(QWidget):
                 terrain_face = terrain_info.get("face", 1)
                 terrain_controller = terrain_info.get("controller", "")
 
-                formatted_location = format_terrain_summary(
-                    location, terrain_type, terrain_face, terrain_controller
-                )
+                formatted_location = format_terrain_summary(location, terrain_type, terrain_face, terrain_controller)
             else:
                 # Fallback formatting when no terrain data
                 formatted_location = f"🗺️ {location}"
 
-            button_text = f"{formatted_army} {army_name}\nLOCATION: {formatted_location}\nUNITS: {unit_count} units available"
+            button_text = (
+                f"{formatted_army} {army_name}\nLOCATION: {formatted_location}\nUNITS: {unit_count} units available"
+            )
 
             radio_button = QRadioButton(button_text)
             self.army_button_group.addButton(radio_button, i)
@@ -118,9 +116,7 @@ class ActingArmyWidget(QWidget):
         """Handle army selection."""
         if 0 <= army_index < len(self.available_armies):
             self.selected_army = self.available_armies[army_index]
-            print(
-                f"Acting army selected: {self.selected_army.get('name')} at {self.selected_army.get('location')}"
-            )
+            print(f"Acting army selected: {self.selected_army.get('name')} at {self.selected_army.get('location')}")
 
     def get_selected_army(self) -> Optional[Dict[str, Any]]:
         """Get the currently selected army."""

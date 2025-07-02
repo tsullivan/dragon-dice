@@ -1,16 +1,14 @@
 # components/die_face_display_widget.py
+from typing import List, Optional
+
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
     QFrame,
     QGridLayout,
+    QLabel,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt
-
-from typing import Dict, Optional, List
-import utils.constants as constants
 
 
 class DieFaceDisplayWidget(QWidget):
@@ -59,13 +57,9 @@ class DieFaceDisplayWidget(QWidget):
         """Show the widget in an empty state."""
         for label in self.face_labels:
             label.setText("—")
-            label.setStyleSheet(
-                "background-color: #f8f8f8; border: 1px solid #ddd; color: #999;"
-            )
+            label.setStyleSheet("background-color: #f8f8f8; border: 1px solid #ddd; color: #999;")
 
-    def _get_face_display_info(
-        self, face_name: str, face_description: str
-    ) -> tuple[str, str, str]:
+    def _get_face_display_info(self, face_name: str, face_description: str) -> tuple[str, str, str]:
         """Get display information for a die face.
 
         Returns:
@@ -142,9 +136,7 @@ class DieFaceDisplayWidget(QWidget):
                     display_text, background_color, tooltip = face.get_display_info()
                 else:
                     # Fallback for legacy face data
-                    display_text, background_color, tooltip = (
-                        self._get_face_display_info(face.name, face.description)
-                    )
+                    display_text, background_color, tooltip = self._get_face_display_info(face.name, face.description)
 
                 label.setText(display_text)
                 label.setStyleSheet(

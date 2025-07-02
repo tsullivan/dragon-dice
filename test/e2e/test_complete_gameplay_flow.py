@@ -32,7 +32,8 @@ class TestCompleteGameplayFlow:
         self.main_window.show()
 
         # Wait for the application to be ready
-        self.qtbot.waitForWindowShown(self.main_window)
+        with self.qtbot.waitExposed(self.main_window):
+            pass
         QTest.qWait(500)  # Additional wait for initialization
 
         yield
@@ -165,7 +166,8 @@ class TestGameplayInteractions:
         self.main_window = MainWindow()
         self.qtbot.addWidget(self.main_window)
         self.main_window.show()
-        self.qtbot.waitForWindowShown(self.main_window)
+        with self.qtbot.waitExposed(self.main_window):
+            pass
 
         yield
 
@@ -256,7 +258,8 @@ class TestErrorRecovery:
         main_window = MainWindow()
         qtbot.addWidget(main_window)
         main_window.show()
-        qtbot.waitForWindowShown(main_window)
+        with qtbot.waitExposed(main_window):
+            pass
 
         # Simulate some activity
         QTest.qWait(1000)

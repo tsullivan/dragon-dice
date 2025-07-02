@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 
 class ActionModel:
@@ -11,7 +11,7 @@ class ActionModel:
         name: str,
         icon: str,
         display_name: str,
-        substeps: Dict[str, Dict[str, Any]] = None,
+        substeps: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         self.name = name
         self.icon = icon
@@ -82,9 +82,7 @@ ACTION_DATA = {
         name="MAGIC",
         icon="🔮",
         display_name="Magic",
-        substeps={
-            "AWAITING_MAGIC_ROLL": {"DISPLAY_NAME": "Awaiting Magic Roll", "ORDER": 1}
-        },
+        substeps={"AWAITING_MAGIC_ROLL": {"DISPLAY_NAME": "Awaiting Magic Roll", "ORDER": 1}},
     ),
     "SAVE": ActionModel(name="SAVE", icon="🛡️", display_name="Save"),
     "SAI": ActionModel(name="SAI", icon="💎", display_name="Special Action"),
@@ -94,7 +92,7 @@ ACTION_DATA = {
 
 
 # Helper functions
-def get_action(action_name: str) -> ActionModel:
+def get_action(action_name: str) -> Optional[ActionModel]:
     """Get an action by name."""
     action_key = action_name.upper()
     return ACTION_DATA.get(action_key)
@@ -109,10 +107,7 @@ def get_action_icon(action_type: str) -> str:
     """Get action icon. Raises KeyError if action type not found."""
     action_key = action_type.upper()
     if action_key not in ACTION_DATA:
-        raise KeyError(
-            f"Unknown action type: '{action_type}'. Valid action types: {
-                list(ACTION_DATA.keys())}"
-        )
+        raise KeyError(f"Unknown action type: '{action_type}'. Valid action types: {list(ACTION_DATA.keys())}")
     return ACTION_DATA[action_key].icon
 
 
@@ -145,9 +140,7 @@ def validate_action_data() -> bool:
             # Validate substeps if they exist
             for substep_key, substep_data in action.substeps.items():
                 if "DISPLAY_NAME" not in substep_data:
-                    print(
-                        f"ERROR: Missing DISPLAY_NAME in substep {substep_key} of action {action_name}"
-                    )
+                    print(f"ERROR: Missing DISPLAY_NAME in substep {substep_key} of action {action_name}")
                     return False
 
         print(f"✓ All {len(ACTION_DATA)} actions validated successfully")

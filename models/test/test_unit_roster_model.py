@@ -1,8 +1,9 @@
 import unittest
 from unittest.mock import Mock, patch
-from models.unit_roster_model import UnitRosterModel
-from models.unit_model import UnitModel
+
 from models.app_data_model import AppDataModel
+from models.unit_model import UnitModel
+from models.unit_roster_model import UnitRosterModel
 
 
 class TestUnitRosterModel(unittest.TestCase):
@@ -127,9 +128,7 @@ class TestUnitRosterModel(unittest.TestCase):
         roster = UnitRosterModel(mock_app_data_model)
 
         # Test creating valid unit instance
-        unit_instance = roster.create_unit_instance(
-            "goblin_thug", "test_instance_id", "Custom Thug Name"
-        )
+        unit_instance = roster.create_unit_instance("goblin_thug", "test_instance_id", "Custom Thug Name")
 
         self.assertIsNotNone(unit_instance)
         self.assertIsInstance(unit_instance, UnitModel)
@@ -146,9 +145,7 @@ class TestUnitRosterModel(unittest.TestCase):
 
         roster = UnitRosterModel(mock_app_data_model)
 
-        unit_instance = roster.create_unit_instance(
-            "goblin_cutthroat", "test_instance_id"
-        )
+        unit_instance = roster.create_unit_instance("goblin_cutthroat", "test_instance_id")
 
         self.assertIsNotNone(unit_instance)
         self.assertEqual(unit_instance.name, "Cutthroat")  # Default display name
@@ -162,9 +159,7 @@ class TestUnitRosterModel(unittest.TestCase):
 
         roster = UnitRosterModel(mock_app_data_model)
 
-        unit_instance = roster.create_unit_instance(
-            "invalid_unit_type", "test_instance_id"
-        )
+        unit_instance = roster.create_unit_instance("invalid_unit_type", "test_instance_id")
 
         self.assertIsNone(unit_instance)
 
@@ -175,9 +170,7 @@ class TestUnitRosterModel(unittest.TestCase):
 
         roster = UnitRosterModel(mock_app_data_model)
 
-        unit_instance = roster.create_unit_instance(
-            "amazon_warrior", "test_instance_id"
-        )
+        unit_instance = roster.create_unit_instance("amazon_warrior", "test_instance_id")
 
         self.assertIsNotNone(unit_instance)
         self.assertIn("id_results", unit_instance.abilities)

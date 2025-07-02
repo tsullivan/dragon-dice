@@ -1,9 +1,8 @@
 # Unit data for Dragon Dice species
 # Each unit defined as a UnitModel instance
 
-from models.species_model import SPECIES_DATA, ALL_SPECIES
+from models.species_model import ALL_SPECIES, SPECIES_DATA
 from models.unit_model import UnitModel
-
 
 UNIT_DATA = [
     UnitModel(
@@ -9186,10 +9185,7 @@ def get_units_for_species(species_name: str) -> list:
         for unit in UNIT_DATA
         if hasattr(unit, "species_type")
         and unit.species_type.upper() == species_name.upper()
-        or (
-            hasattr(unit, "species")
-            and unit.species.name.upper() == species_name.upper()
-        )
+        or (hasattr(unit, "species") and unit.species.name.upper() == species_name.upper())
     ]
 
 
@@ -9206,11 +9202,7 @@ def get_all_species() -> list:
 
 def get_units_by_class(unit_class_type: str) -> list:
     """Get all units of a specific class type from UNIT_DATA."""
-    return [
-        unit
-        for unit in UNIT_DATA
-        if hasattr(unit, "unit_type") and unit.unit_type == unit_class_type
-    ]
+    return [unit for unit in UNIT_DATA if hasattr(unit, "unit_type") and unit.unit_type == unit_class_type]
 
 
 def validate_unit_data_integrity() -> bool:
@@ -9247,10 +9239,7 @@ def validate_unit_data_integrity() -> bool:
                 print(f"ERROR: Invalid name in {unit_id}")
                 return False
 
-            if (
-                hasattr(unit, "max_health")
-                and unit.max_health not in valid_health_values
-            ):
+            if hasattr(unit, "max_health") and unit.max_health not in valid_health_values:
                 print(f"ERROR: Invalid max_health {unit.max_health} in {unit_id}")
                 return False
 
@@ -9260,5 +9249,3 @@ def validate_unit_data_integrity() -> bool:
 
     print(f"✓ All {len(unit_ids)} unit instances validated successfully")
     return True
-
-

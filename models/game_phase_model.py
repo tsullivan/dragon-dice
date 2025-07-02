@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 
 class GamePhaseModel:
@@ -11,7 +11,7 @@ class GamePhaseModel:
         name: str,
         display_name: str,
         order: int,
-        substeps: Dict[str, Dict[str, Any]] = None,
+        substeps: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         self.name = name
         self.display_name = display_name
@@ -44,18 +44,10 @@ class GamePhaseModel:
 
 # Game phase instances
 GAME_PHASE_DATA = {
-    "EXPIRE_EFFECTS": GamePhaseModel(
-        name="EXPIRE_EFFECTS", display_name="Expire Effects", order=1
-    ),
-    "EIGHTH_FACE": GamePhaseModel(
-        name="EIGHTH_FACE", display_name="Eighth Face", order=2
-    ),
-    "DRAGON_ATTACK": GamePhaseModel(
-        name="DRAGON_ATTACK", display_name="Dragon Attack", order=3
-    ),
-    "SPECIES_ABILITIES": GamePhaseModel(
-        name="SPECIES_ABILITIES", display_name="Species Abilities", order=4
-    ),
+    "EXPIRE_EFFECTS": GamePhaseModel(name="EXPIRE_EFFECTS", display_name="Expire Effects", order=1),
+    "EIGHTH_FACE": GamePhaseModel(name="EIGHTH_FACE", display_name="Eighth Face", order=2),
+    "DRAGON_ATTACK": GamePhaseModel(name="DRAGON_ATTACK", display_name="Dragon Attack", order=3),
+    "SPECIES_ABILITIES": GamePhaseModel(name="SPECIES_ABILITIES", display_name="Species Abilities", order=4),
     "FIRST_MARCH": GamePhaseModel(
         name="FIRST_MARCH",
         display_name="First March",
@@ -91,7 +83,7 @@ GAME_PHASE_DATA = {
 
 
 # Helper functions
-def get_game_phase(phase_name: str) -> GamePhaseModel:
+def get_game_phase(phase_name: str) -> Optional[GamePhaseModel]:
     """Get a game phase by name."""
     phase_key = phase_name.upper()
     return GAME_PHASE_DATA.get(phase_key)
@@ -138,14 +130,10 @@ def validate_game_phase_data() -> bool:
             # Validate substeps if they exist
             for substep_key, substep_data in phase.substeps.items():
                 if "DISPLAY_NAME" not in substep_data:
-                    print(
-                        f"ERROR: Missing DISPLAY_NAME in substep {substep_key} of phase {phase_name}"
-                    )
+                    print(f"ERROR: Missing DISPLAY_NAME in substep {substep_key} of phase {phase_name}")
                     return False
                 if "ORDER" not in substep_data:
-                    print(
-                        f"ERROR: Missing ORDER in substep {substep_key} of phase {phase_name}"
-                    )
+                    print(f"ERROR: Missing ORDER in substep {substep_key} of phase {phase_name}")
                     return False
 
         print(f"✓ All {len(GAME_PHASE_DATA)} game phases validated successfully")

@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
-from PySide6.QtCore import Qt
 from typing import Optional
+
+from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
+
 from components.help_panel_widget import HelpPanelWidget
 
 

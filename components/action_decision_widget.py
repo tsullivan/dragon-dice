@@ -1,12 +1,14 @@
+from typing import Any, Dict, Optional
+
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Signal
-from typing import Optional, Dict, Any
+
 import utils.constants as constants
 
 
@@ -60,9 +62,7 @@ class ActionDecisionWidget(QWidget):
 
         self._main_layout.addLayout(button_layout)
 
-    def set_acting_army(
-        self, army_data: Dict[str, Any], terrain_data: Dict[str, Any] = None
-    ):
+    def set_acting_army(self, army_data: Dict[str, Any], terrain_data: Dict[str, Any] = None):
         """Set the acting army and show available actions based on terrain die face."""
         try:
             army_name = army_data.get("name", "Unknown Army")
@@ -102,11 +102,11 @@ class ActionDecisionWidget(QWidget):
                 terrain_controller = terrain_info.get("controller", "")
 
                 if terrain_type == "Frontier":
-                    terrain_description = f" (Frontier Terrain)"
+                    terrain_description = " (Frontier Terrain)"
                 elif terrain_type == "Home" and terrain_controller:
                     terrain_description = f" ({terrain_controller}'s Home Terrain)"
                 else:
-                    terrain_description = f" (Home Terrain)"
+                    terrain_description = " (Home Terrain)"
 
             # Determine available actions based on terrain die face
             available_actions = self._get_available_actions(terrain_die_face)

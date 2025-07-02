@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 
 class ElementModel:
@@ -35,7 +35,7 @@ ELEMENT_DATA = {
 
 
 # Helper functions
-def get_element(element_name: str) -> ElementModel:
+def get_element(element_name: str) -> Optional[ElementModel]:
     """Get an element by name."""
     element_key = element_name.upper()
     return ELEMENT_DATA.get(element_key)
@@ -50,10 +50,7 @@ def get_element_icon(element_name: str) -> str:
     """Get element icon. Raises KeyError if element not found."""
     element_key = element_name.upper()
     if element_key not in ELEMENT_DATA:
-        raise KeyError(
-            f"Unknown element: '{element_name}'. Valid elements: {
-                list(ELEMENT_DATA.keys())}"
-        )
+        raise KeyError(f"Unknown element: '{element_name}'. Valid elements: {list(ELEMENT_DATA.keys())}")
     return ELEMENT_DATA[element_key].icon
 
 
@@ -61,10 +58,7 @@ def get_element_color_name(element_name: str) -> str:
     """Get element color name. Raises KeyError if element not found."""
     element_key = element_name.upper()
     if element_key not in ELEMENT_DATA:
-        raise KeyError(
-            f"Unknown element: '{element_name}'. Valid elements: {
-                list(ELEMENT_DATA.keys())}"
-        )
+        raise KeyError(f"Unknown element: '{element_name}'. Valid elements: {list(ELEMENT_DATA.keys())}")
     return ELEMENT_DATA[element_key].color_name
 
 
@@ -72,19 +66,13 @@ def format_element_display(element_name: str) -> str:
     """Return 'icon element_name' format for display."""
     element = get_element(element_name)
     if not element:
-        raise KeyError(
-            f"Unknown element: '{element_name}'. Valid elements: {get_all_element_names()}"
-        )
+        raise KeyError(f"Unknown element: '{element_name}'. Valid elements: {get_all_element_names()}")
     return element.get_display_format()
 
 
 def get_elements_by_color(color_name: str) -> List[ElementModel]:
     """Get all elements that have a specific color name."""
-    return [
-        element
-        for element in ELEMENT_DATA.values()
-        if element.color_name.lower() == color_name.lower()
-    ]
+    return [element for element in ELEMENT_DATA.values() if element.color_name.lower() == color_name.lower()]
 
 
 def validate_element_data() -> bool:

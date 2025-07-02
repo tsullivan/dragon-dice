@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
 from game_logic.game_state_manager import GameStateManager
 
 
@@ -59,9 +60,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         mock_roster.create_unit_instance.return_value = mock_unit_instance
 
         # Create manager and test reserve creation
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         reserves = manager._create_reserve_units("Player 1", 5)
 
@@ -115,9 +114,7 @@ class TestReserveUnitCreation(unittest.TestCase):
 
         mock_roster.create_unit_instance.side_effect = create_instance_side_effect
 
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         reserves = manager._create_reserve_units("Player 1", 6)
 
@@ -151,9 +148,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         }[unit_id]
 
         def create_instance_side_effect(unit_id, instance_id, name):
-            health = {"goblin_thug": 1, "goblin_cutthroat": 2, "goblin_marauder": 3}[
-                unit_id
-            ]
+            health = {"goblin_thug": 1, "goblin_cutthroat": 2, "goblin_marauder": 3}[unit_id]
             instance = Mock()
             instance.unit_id = instance_id
             instance.name = name
@@ -165,9 +160,7 @@ class TestReserveUnitCreation(unittest.TestCase):
 
         mock_roster.create_unit_instance.side_effect = create_instance_side_effect
 
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         reserves = manager._create_reserve_units("Player 1", 5)
 
@@ -194,9 +187,7 @@ class TestReserveUnitCreation(unittest.TestCase):
             "goblin_expensive": {"display_name": "Expensive", "max_health": 10}
         }[unit_id]
 
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         reserves = manager._create_reserve_units("Player 1", 5)
 
@@ -212,9 +203,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         # Empty roster
         mock_roster.get_available_unit_types_by_species.return_value = {}
 
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         reserves = manager._create_reserve_units("Player 1", 10)
 
@@ -246,9 +235,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         mock_unit_instance.abilities = {"id_results": {"MELEE": 1}}
         mock_roster.create_unit_instance.return_value = mock_unit_instance
 
-        manager = GameStateManager(
-            self.player_setup_data, self.frontier_terrain, self.distance_rolls
-        )
+        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         # Try to create way more units than the cap allows
         reserves = manager._create_reserve_units("Player 1", 100)

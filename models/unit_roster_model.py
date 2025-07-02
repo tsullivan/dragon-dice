@@ -1,8 +1,10 @@
 # models/unit_roster_model.py
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 import utils.constants as constants
-from .unit_model import UnitModel
+
 from .app_data_model import AppDataModel
+from .unit_model import UnitModel
 
 
 class UnitRosterModel:
@@ -25,9 +27,7 @@ class UnitRosterModel:
                     display_name=unit_data["display_name"],
                     species=species_name,  # Species is now the key from the JSON object
                     max_health=unit_data["max_health"],
-                    abilities=self._map_abilities_to_constants(
-                        unit_data.get("abilities", {})
-                    ),
+                    abilities=self._map_abilities_to_constants(unit_data.get("abilities", {})),
                     unit_class_type=unit_data.get("unit_class_type", "Unknown"),
                     die_faces=unit_data.get("die_faces", []),
                 )
@@ -99,17 +99,13 @@ class UnitRosterModel:
             abilities=definition["abilities"].copy(),
         )
 
-    def _map_abilities_to_constants(
-        self, abilities_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _map_abilities_to_constants(self, abilities_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Maps string representations of icons/SAIs in abilities data to their constant values.
         """
         mapped_abilities = abilities_data.copy()
 
-        if "id_results" in mapped_abilities and isinstance(
-            mapped_abilities["id_results"], dict
-        ):
+        if "id_results" in mapped_abilities and isinstance(mapped_abilities["id_results"], dict):
             new_id_results = {}
             for key_str, value in mapped_abilities["id_results"].items():
                 constant_key = getattr(constants, f"ICON_{key_str.upper()}", key_str)
@@ -118,8 +114,7 @@ class UnitRosterModel:
 
         if "sais" in mapped_abilities and isinstance(mapped_abilities["sais"], list):
             mapped_abilities["sais"] = [
-                getattr(constants, f"SAI_{sai_str.upper()}", sai_str)
-                for sai_str in mapped_abilities["sais"]
+                getattr(constants, f"SAI_{sai_str.upper()}", sai_str) for sai_str in mapped_abilities["sais"]
             ]
 
         return mapped_abilities

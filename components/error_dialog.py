@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QMessageBox, QWidget
 from typing import Optional
+
+from PySide6.QtWidgets import QMessageBox, QWidget
 
 
 class ErrorDialog:
@@ -78,9 +79,7 @@ class ErrorDialog:
         if details:
             msg_box.setDetailedText(details)
 
-        msg_box.setStandardButtons(
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         msg_box.setDefaultButton(QMessageBox.StandardButton.No)
 
         result = msg_box.exec()
@@ -90,9 +89,7 @@ class ErrorDialog:
 class GameError(Exception):
     """Custom exception for game-specific errors."""
 
-    def __init__(
-        self, message: str, details: Optional[str] = None, user_friendly: bool = True
-    ):
+    def __init__(self, message: str, details: Optional[str] = None, user_friendly: bool = True):
         super().__init__(message)
         self.message = message
         self.details = details
@@ -125,9 +122,7 @@ class ErrorHandler:
             details = f"Error type: {type(error).__name__}\nError message: {str(error)}"
 
             if self.show_dialogs:
-                ErrorDialog.show_error(
-                    self.parent, f"Dragon Dice - {context} Error", error_msg, details
-                )
+                ErrorDialog.show_error(self.parent, f"Dragon Dice - {context} Error", error_msg, details)
             else:
                 print(f"Error in {context}: {error}")
 

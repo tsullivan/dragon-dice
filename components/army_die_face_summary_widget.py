@@ -1,15 +1,15 @@
 # components/army_die_face_summary_widget.py
+from collections import Counter
+from typing import Dict, List, Optional
+
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QWidget,
+    QFrame,
     QHBoxLayout,
     QLabel,
-    QFrame,
+    QWidget,
 )
-from PySide6.QtCore import Qt
 
-from typing import List, Dict, Optional
-from collections import Counter
-import utils.constants as constants
 from models.unit_model import UnitModel
 from models.unit_roster_model import UnitRosterModel
 
@@ -67,15 +67,25 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
     def _get_icon_for_face(self, face_type: str) -> str:
         """Get display icon for a die face type."""
+        # Map actual face names to icons (not the constant names)
         icon_map = {
-            constants.ICON_MELEE: "⚔️",
-            constants.ICON_MISSILE: "🏹",
-            constants.ICON_MAGIC: "✨",
-            constants.ICON_SAVE: "🛡️",
-            constants.ICON_MANEUVER: "🏃",
-            constants.ICON_SAI: "💎",
+            "Melee": "⚔️",
+            "Missile": "🏹",
+            "Magic": "✨",
+            "Save": "🛡️",
+            "Move": "🏃",  # This is the maneuver face
+            "SAI": "💎",
         }
-        return icon_map.get(face_type, "❓")
+
+        # For special abilities, use a generic sparkle icon
+        if face_type not in icon_map:
+            # Don't show icons for ID faces or special abilities
+            if face_type in ["ID", "ID(kin)"]:
+                return ""  # No icon for ID faces
+            # For special abilities, use a generic ability icon
+            return "⭐"
+
+        return icon_map[face_type]
 
     def _count_die_faces(self, units: List[UnitModel]) -> Dict[str, int]:
         """Count all die faces from a list of units."""
@@ -89,32 +99,42 @@ class ArmyDieFaceSummaryWidget(QWidget):
             if not unit_def:
                 continue
 
-            die_faces = unit_def.get("die_faces", {})
+            die_faces = unit_def.get("die_faces", [])
 
-            # Count standard faces (face_1 through face_6)
-            for face_key in [
-                "face_1",
-                "face_2",
-                "face_3",
-                "face_4",
-                "face_5",
-                "face_6",
-            ]:
-                face_type = die_faces.get(face_key)
-                if face_type and face_type != "ID":  # Don't count ID faces
-                    face_counts[face_type] += 1
+            # Handle both old dict format and new list of face objects
+            if isinstance(die_faces, dict):
+                # Old format: count standard faces (face_1 through face_6)
+                for face_key in [
+                    "face_1",
+                    "face_2",
+                    "face_3",
+                    "face_4",
+                    "face_5",
+                    "face_6",
+                ]:
+                    face_type = die_faces.get(face_key)
+                    if face_type and face_type != "ID":  # Don't count ID faces
+                        face_counts[face_type] += 1
+            elif isinstance(die_faces, list):
+                # New format: face objects or face names
+                for face in die_faces:
+                    if hasattr(face, "name"):  # Face object
+                        face_name = face.name
+                    else:  # Face name string
+                        face_name = face
+                    if face_name and face_name != "ID":  # Don't count ID faces
+                        face_counts[face_name] += 1
 
-            # Count eighth faces
-            for face_key in ["eighth_face_1", "eighth_face_2"]:
-                face_type = die_faces.get(face_key)
-                if face_type and face_type != "ID":  # Don't count ID faces
-                    face_counts[face_type] += 1
+            # Count eighth faces (only for old dict format)
+            if isinstance(die_faces, dict):
+                for face_key in ["eighth_face_1", "eighth_face_2"]:
+                    face_type = die_faces.get(face_key)
+                    if face_type and face_type != "ID":  # Don't count ID faces
+                        face_counts[face_type] += 1
 
         return dict(face_counts)
 
-    def set_units_and_roster(
-        self, units: List[UnitModel], unit_roster: UnitRosterModel
-    ):
+    def set_units_and_roster(self, units: List[UnitModel], unit_roster: UnitRosterModel):
         """Update the summary with new units and roster."""
         self.unit_roster = unit_roster
 
@@ -132,12 +152,12 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
         # Show the most common face types in a compact format
         priority_order = [
-            constants.ICON_MELEE,
-            constants.ICON_MISSILE,
-            constants.ICON_MAGIC,
-            constants.ICON_SAVE,
-            constants.ICON_MANEUVER,
-            constants.ICON_SAI,
+            "Melee",
+            "Missile",
+            "Magic",
+            "Save",
+            "Move",
+            "SAI",
         ]
 
         # Sort by priority, then by count (descending)

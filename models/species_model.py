@@ -1,5 +1,6 @@
 # models/species_model.py
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
+
 from models.element_model import ELEMENT_DATA
 
 
@@ -25,9 +26,7 @@ class SpeciesModel:
         self.description = description
 
     def __repr__(self):
-        elements_str = ", ".join(
-            [f"{icon} {color}" for icon, color in self.element_colors]
-        )
+        elements_str = ", ".join([f"{icon} {color}" for icon, color in self.element_colors])
         return f"SpeciesModel(name='{self.name}', elements=[{elements_str}])"
 
     def get_element_icons(self) -> List[str]:
@@ -406,18 +405,14 @@ def validate_species_elements() -> bool:
     for species_name, species in ALL_SPECIES.items():
         for element in species.elements:
             if element not in valid_elements:
-                print(
-                    f"ERROR: Species '{species_name}' has invalid element '{element}'"
-                )
+                print(f"ERROR: Species '{species_name}' has invalid element '{element}'")
                 return False
 
         # Validate element_colors match elements (except for multi-element species using white)
         if species.elements == ["AIR", "DEATH", "EARTH", "FIRE", "WATER"]:
             # Multi-element species should use white
             if species.element_colors != [_get_element_tuple("WHITE")]:
-                print(
-                    f"ERROR: Multi-element species '{species_name}' should use white icon"
-                )
+                print(f"ERROR: Multi-element species '{species_name}' should use white icon")
                 return False
         else:
             # Single/dual element species should have matching colors

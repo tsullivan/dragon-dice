@@ -1,6 +1,8 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QGroupBox
+from typing import Any, Dict, Optional
+
 from PySide6.QtCore import Qt
-from typing import Dict, List, Any, Optional
+from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
+
 from utils.display_utils import format_army_type, format_terrain_summary
 
 
@@ -13,15 +15,11 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
         super().__init__(f"{player_name}'s Army", parent)
 
         self.summary_layout = QVBoxLayout(self)
-        self.summary_layout.setContentsMargins(
-            5, 15, 5, 5
-        )  # Margins inside the group box
+        self.summary_layout.setContentsMargins(5, 15, 5, 5)  # Margins inside the group box
 
         self.details_label = QLabel("Loading summary...")
         self.details_label.setWordWrap(True)
-        self.details_label.setAlignment(
-            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft
-        )
+        self.details_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.details_label.setStyleSheet(
             "ul { margin-left:0px; padding-left:5px; list-style-position:inside; } li { margin-bottom: 2px; }"
         )
@@ -29,9 +27,7 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
         self.summary_layout.addWidget(self.details_label)
         self.setLayout(self.summary_layout)
 
-    def update_summary(
-        self, player_data: Dict[str, Any], terrain_data: Dict[str, Any] = None
-    ):
+    def update_summary(self, player_data: Dict[str, Any], terrain_data: Dict[str, Any] = None):
         """
         Updates the displayed summary based on the provided player data.
         player_data expected keys: 'name', 'captured_terrains', 'terrains_to_win', 'armies' (list of dicts)
@@ -69,7 +65,9 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
                 # Fallback formatting when no terrain data
                 formatted_location = f"🗺️ {army_location}"
 
-            summary_html += f"<li><b>{formatted_army_type}</b>: {army_points}pts<br>&nbsp;&nbsp;<b>{formatted_location}</b></li>"
+            summary_html += (
+                f"<li><b>{formatted_army_type}</b>: {army_points}pts<br>&nbsp;&nbsp;<b>{formatted_location}</b></li>"
+            )
         summary_html += "</ul>"
 
         self.details_label.setText(summary_html)

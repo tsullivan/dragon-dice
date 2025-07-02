@@ -1,0 +1,72 @@
+# Ruff configuration for Dragon Dice project
+target-version = "py38"
+line-length = 120
+
+[lint]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+# Plus some additional useful rules:
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings  
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+    "N",   # pep8-naming
+    "C4",  # flake8-comprehensions
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "PT",  # flake8-pytest-style
+    "Q",   # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "TID", # flake8-tidy-imports
+    "ARG", # flake8-unused-arguments
+]
+
+# Ignore some rules that are too strict for this project
+ignore = [
+    "E501",   # Line too long (handled by line-length setting)
+    "T201",   # print statements (we use print for debugging)
+    "B008",   # Do not perform function calls in argument defaults
+    "N999",   # Invalid module name (some modules have underscores)
+    "SIM108", # Use ternary operator (sometimes if/else is clearer)
+    "PIE790", # Unnecessary pass statement
+    "RET504", # Unnecessary variable assignment before return
+    "ARG002", # Unused method argument (Qt callbacks often have unused args)
+    "B904",   # Use raise from (not always needed)
+    "UP007",  # Use X | Y for type unions (Python 3.8 compatibility)
+]
+
+# Exclude directories from linting
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "test",
+    "tests",
+    "*.egg-info",
+]
+
+[lint.per-file-ignores]
+# Test files can have unused imports and arguments
+"test_*.py" = ["F401", "ARG"]
+"**/test/*.py" = ["F401", "ARG"]
+
+[lint.mccabe]
+# Maximum cyclomatic complexity
+max-complexity = 12
+
+[lint.isort]
+known-first-party = ["components", "models", "views", "game_logic", "controllers", "config", "utils"]
+
+[format]
+# Use double quotes for strings
+quote-style = "double"
+# Indent with 4 spaces
+indent-style = "space"
+# Respect existing line endings
+skip-magic-trailing-comma = false
