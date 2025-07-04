@@ -257,7 +257,7 @@ class PlayerSetupView(QWidget):
                 continue
             current_army_widget = self.army_setup_widgets[army_type]
             army_units_data = current_army_widget.get_current_units_as_dicts()
-            player_data["armies"][army_key] = {
+            player_data["armies"][army_key] = {  # type: ignore
                 "name": army_type,
                 "units": army_units_data,
             }
@@ -418,7 +418,7 @@ class PlayerSetupView(QWidget):
         if hasattr(self, "unit_roster") and self.unit_roster:
             unit_def = self.unit_roster.get_unit_definition(unit_type_id)
             if unit_def and "species" in unit_def:
-                return unit_def["species"]
+                return str(unit_def["species"])
 
         # Fallback: parse from unit_type_id (e.g., "amazon_war_driver" -> "Amazon")
         if "_" in unit_type_id:

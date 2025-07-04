@@ -1,3 +1,4 @@
+from typing import Any, Optional, Tuple
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -54,6 +55,9 @@ class MainGameplayView(QWidget):
 
         # Track active dialogs to prevent duplicates
         self.active_action_dialog = None
+
+        # Track phase state for UI updates
+        self._last_phase_state: Optional[Tuple[Any, Any, Any]] = None
 
         self.setWindowTitle("Dragon Dice - Gameplay")
 

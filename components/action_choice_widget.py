@@ -62,7 +62,7 @@ class ActionChoiceWidget(QWidget):
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)
 
-    def set_available_actions(self, acting_army: Dict[str, Any], terrain_data: Dict[str, Any] = None):
+    def set_available_actions(self, acting_army: Dict[str, Any], terrain_data: Optional[Dict[str, Any]] = None):
         """Set which actions are available based on the acting army's terrain die face."""
         location = acting_army.get("location", "Unknown")
         terrain_die_face = 1  # Default

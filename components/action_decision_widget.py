@@ -62,7 +62,7 @@ class ActionDecisionWidget(QWidget):
 
         self._main_layout.addLayout(button_layout)
 
-    def set_acting_army(self, army_data: Dict[str, Any], terrain_data: Dict[str, Any] = None):
+    def set_acting_army(self, army_data: Dict[str, Any], terrain_data: Optional[Dict[str, Any]] = None):
         """Set the acting army and show available actions based on terrain die face."""
         try:
             army_name = army_data.get("name", "Unknown Army")

@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dragon-dice-companion"
+description = "Digital companion app for Dragon Dice tabletop game"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{name = "Dragon Dice Companion Team"}]
+
+[tool.pycodestyle]
+max-line-length = 120
+ignore = ["E501"]
+
+[tool.flake8]
+max-line-length = 120
+ignore = ["E501"]
+
+[tool.pylsp-mypy]
+enabled = true
+live_mode = false
+strict = true
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "venv/*",
+    "test/*",
+    "*/test/*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["test", "*/test"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--disable-warnings",
+    "--tb=short",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "e2e: End-to-end tests",
+    "visual: Visual regression tests",
+]

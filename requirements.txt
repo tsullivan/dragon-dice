@@ -1,5 +1,21 @@
+# Runtime dependencies
 PySide6
+
+# Development and testing dependencies
 pytest
 pytest-qt
-mypy
-ruff
+pytest-cov              # Coverage reporting for your comprehensive test suite
+pytest-xvfb             # Virtual display for GUI testing in headless environments
+
+# Code quality and formatting
+mypy                     # Type checking (used by pyright LSP)
+ruff                     # Fast linting and formatting
+pre-commit               # Git hooks for code quality
+
+# LSP and editor integration
+python-lsp-server[all]   # Provides pylsp with all plugins
+pylsp-mypy               # mypy integration for pylsp
+python-lsp-black         # Black formatting for pylsp (optional, since you use ruff)
+
+# Additional type checking
+types-setuptools         # Type stubs for setuptools

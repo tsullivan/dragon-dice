@@ -1,5 +1,5 @@
 # models/species_model.py
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from models.element_model import ELEMENT_DATA
 
@@ -367,7 +367,7 @@ ALL_SPECIES = {
 
 
 # Helper functions for species data access
-def get_species(species_name: str) -> SpeciesModel:
+def get_species(species_name: str) -> Optional[SpeciesModel]:
     """Get a specific species by name."""
     return ALL_SPECIES.get(species_name)
 

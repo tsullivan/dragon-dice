@@ -50,10 +50,10 @@ class ActingArmyWidget(QWidget):
         self.army_button_group = QButtonGroup(self)
 
         # Will be populated when armies are set
-        self.available_armies = []
+        self.available_armies: List[Dict[str, Any]] = []
         self.selected_army = None
 
-    def set_available_armies(self, armies: List[Dict[str, Any]], terrain_data: Dict[str, Any] = None):
+    def set_available_armies(self, armies: List[Dict[str, Any]], terrain_data: Optional[Dict[str, Any]] = None):
         """Set the available armies for selection."""
         self.available_armies = armies
 
@@ -116,7 +116,8 @@ class ActingArmyWidget(QWidget):
         """Handle army selection."""
         if 0 <= army_index < len(self.available_armies):
             self.selected_army = self.available_armies[army_index]
-            print(f"Acting army selected: {self.selected_army.get('name')} at {self.selected_army.get('location')}")
+            if self.selected_army:
+                print(f"Acting army selected: {self.selected_army.get('name')} at {self.selected_army.get('location')}")
 
     def get_selected_army(self) -> Optional[Dict[str, Any]]:
         """Get the currently selected army."""

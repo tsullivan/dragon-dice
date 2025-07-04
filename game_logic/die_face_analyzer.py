@@ -8,7 +8,7 @@ testability and reusability.
 
 from collections import Counter
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any, Counter as TypingCounter, Dict, List, Optional, Tuple, Union
 
 from models.unit_model import UnitFace
 
@@ -82,7 +82,7 @@ class DieFaceAnalyzer:
         if not self.unit_roster or not units:
             return {}
 
-        face_counts = Counter()
+        face_counts: TypingCounter[str] = Counter()
 
         for unit in units:
             unit_type = getattr(unit, "unit_type", unit.get("unit_type", ""))
@@ -177,7 +177,7 @@ class DieFaceAnalyzer:
         # Calculate percentages
         if total_faces > 0:
             for face_type, count in face_counts.items():
-                summary["percentages"][face_type] = round((count / total_faces) * 100, 1)
+                summary["percentages"][face_type] = round((count / total_faces) * 100, 1)  # type: ignore
 
         # Find most and least common
         if sorted_faces:
@@ -216,18 +216,18 @@ class DieFaceAnalyzer:
             count2 = army2_faces.get(face_type, 0)
             difference = count1 - count2
 
-            comparison["face_differences"][face_type] = {
+            comparison["face_differences"][face_type] = {  # type: ignore
                 "army1_count": count1,
                 "army2_count": count2,
                 "difference": difference,
             }
 
             if difference > 0:
-                comparison["army1_advantages"].append((face_type, difference))
+                comparison["army1_advantages"].append((face_type, difference))  # type: ignore
             elif difference < 0:
-                comparison["army2_advantages"].append((face_type, abs(difference)))
+                comparison["army2_advantages"].append((face_type, abs(difference)))  # type: ignore
             else:
-                comparison["equal_faces"].append(face_type)
+                comparison["equal_faces"].append(face_type)  # type: ignore
 
         return comparison
 
@@ -252,7 +252,7 @@ class DieFaceAnalyzer:
         defensive_faces = [UnitFace.ICON_SAVE]
         utility_faces = [UnitFace.ICON_MANEUVER, UnitFace.ICON_SAI]
 
-        analysis = {
+        analysis: Dict[str, Any] = {
             "offensive_strength": sum(face_counts.get(face, 0) for face in offensive_faces),
             "defensive_strength": face_counts.get(UnitFace.ICON_SAVE, 0),
             "utility_strength": sum(face_counts.get(face, 0) for face in utility_faces),
@@ -270,7 +270,7 @@ class DieFaceAnalyzer:
         ]
 
         strengths.sort(key=lambda x: x[1], reverse=True)
-        analysis["primary_strength"] = strengths[0][0] if strengths[0][1] > 0 else None
+        analysis["primary_strength"] = strengths[0][0] if strengths and strengths[0][1] > 0 else None
 
         # Identify weaknesses (categories with very low counts)
         total_faces = sum(face_counts.values())

@@ -38,13 +38,13 @@ class TerrainSelectionWidget(QWidget):
         layout.addWidget(self.frontier_proposal_carousel, 1, 1)
 
     def get_home_terrain(self) -> Optional[str]:
-        return self.home_terrain_carousel.value()
+        return str(self.home_terrain_carousel.value()) if self.home_terrain_carousel.value() else None
 
     def set_home_terrain(self, terrain_name: Optional[str]):
         self.home_terrain_carousel.setValue(terrain_name)
 
     def get_frontier_proposal(self) -> Optional[str]:
-        return self.frontier_proposal_carousel.value()
+        return str(self.frontier_proposal_carousel.value()) if self.frontier_proposal_carousel.value() else None
 
     def set_frontier_proposal(self, terrain_name: Optional[str]):
         self.frontier_proposal_carousel.setValue(terrain_name)

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -47,8 +47,8 @@ class ActionDialog(QDialog):
 
         # Dialog state
         self.current_step = "attacker_roll"  # attacker_roll, defender_saves, results
-        self.attacker_results = None
-        self.defender_results = None
+        self.attacker_results: Optional[str] = None
+        self.defender_results: Optional[str] = None
         self.final_result = None
 
         self.setWindowTitle(f"{action_type.title()} Action")

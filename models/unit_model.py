@@ -1,5 +1,5 @@
 # models/unit_model.py
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class UnitFace:
@@ -125,7 +125,7 @@ class UnitFace:
         """Get the tooltip text with face name and description."""
         return f"{self.name}: {self.description}"
 
-    def get_display_info(self) -> tuple[str, str, str]:
+    def get_display_info(self) -> Tuple[str, str, str]:
         """Get display information for this face.
 
         Returns:
@@ -230,7 +230,7 @@ class UnitModel:
         )
 
     @classmethod
-    def from_unit_data(cls, unit_type_id: str, current_health: int = None) -> "UnitModel":
+    def from_unit_data(cls, unit_type_id: str, current_health: Optional[int] = None) -> "UnitModel":
         """Create a UnitModel instance from unit data definitions with validation."""
         from models.unit_data import get_unit_by_id
 
@@ -311,7 +311,7 @@ class UnitModel:
             raise ValueError("Invalid species reference in unit data")
 
     @classmethod
-    def validate_all_unit_data(cls) -> Dict[str, list]:
+    def validate_all_unit_data(cls) -> Dict[str, Any]:
         """Validate all unit data and return a report of any issues."""
         from models.unit_data import UNIT_DATA
 

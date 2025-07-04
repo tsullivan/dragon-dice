@@ -4535,7 +4535,6 @@ UNIT_DATA = [
             {"name": "Melee", "description": "Counts as two melee hit points."},
         ],
     ),
-
     # FROSTWING UNITS
     UnitModel(
         unit_id="frostwing_advocate",
