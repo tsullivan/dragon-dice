@@ -85,7 +85,9 @@ class CarouselInputWidget(QWidget):
             return
         try:
             current_index = self._allowed_values.index(self.value()) if self.value() in self._allowed_values else -1
-            if current_index == -1 and self._allowed_values or current_index == 0:  # If current value is not in list, start from last
+            if (
+                current_index == -1 and self._allowed_values or current_index == 0
+            ):  # If current value is not in list, start from last
                 new_index = len(self._allowed_values) - 1
             else:
                 new_index = current_index - 1
