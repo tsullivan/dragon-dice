@@ -111,7 +111,7 @@ DRAGON_DATA = {
             },
             {
                 "name": "Dragon Breath",
-                "description": "Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well. Against armies, five health-worth of units in the target army are killed. In addition, an effect based on the color affects the army.",
+                "description": "Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.\n* Against armies, five health-worth of units in the target army are killed.\n* In addition, an effect based on the color affects the army:\n** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.\n** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.\n** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.\n** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.\n** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.\n** IVORY (Life Drain): No additional effect.\n** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.",
             },
             {
                 "name": "Claw; Front Left",
@@ -164,7 +164,7 @@ DRAGON_DATA = {
             },
             {
                 "name": "Dragon Breath",
-                "description": "Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well. Against armies, five health-worth of units in the target army are killed. In addition, an effect based on the color affects the army.",
+                "description": "Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.\n* Against armies, five health-worth of units in the target army are killed.\n* In addition, an effect based on the color affects the army:\n** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.\n** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.\n** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.\n** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.\n** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.\n** IVORY (Life Drain): No additional effect.\n** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.",
             },
             {
                 "name": "Claw; Front Left",
