@@ -53,7 +53,7 @@ class TerrainDirectionDialog(QDialog):
         terrain_info.setWordWrap(True)
         layout.addWidget(terrain_info)
 
-        layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         # Direction buttons
         button_layout = QHBoxLayout()
@@ -134,7 +134,7 @@ class CounterManeuverDecisionDialog(QDialog):
         explanation.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(explanation)
 
-        layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         # Buttons
         button_layout = QHBoxLayout()

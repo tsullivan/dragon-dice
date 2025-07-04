@@ -63,7 +63,7 @@ class ManeuverInputWidget(QWidget):
 
         self._main_layout.addLayout(button_layout)
 
-    def set_acting_army(self, acting_army: Dict[str, Any], terrain_data: Dict[str, Any] = None):
+    def set_acting_army(self, acting_army: Dict[str, Any], terrain_data: Optional[Dict[str, Any]] = None):
         """Set the acting army information to display."""
         if not acting_army:
             self._army_info_label.setText("No acting army selected")

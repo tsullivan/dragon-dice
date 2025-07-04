@@ -1,5 +1,5 @@
 # models/unit_model.py
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
 class UnitFace:
@@ -315,7 +315,7 @@ class UnitModel:
         """Validate all unit data and return a report of any issues."""
         from models.unit_data import UNIT_DATA
 
-        validation_report = {
+        validation_report: Dict[str, Any] = {
             "valid_units": 0,
             "invalid_units": [],
             "missing_ids": [],
@@ -323,8 +323,8 @@ class UnitModel:
             "species_summary": {},
         }
 
-        unit_ids_seen = set()
-        species_counts = {}
+        unit_ids_seen: Set[str] = set()
+        species_counts: Dict[str, Dict[str, int]] = {}
 
         for unit_instance in UNIT_DATA:
             try:

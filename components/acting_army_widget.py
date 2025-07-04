@@ -51,7 +51,7 @@ class ActingArmyWidget(QWidget):
 
         # Will be populated when armies are set
         self.available_armies: List[Dict[str, Any]] = []
-        self.selected_army = None
+        self.selected_army: Optional[Dict[str, Any]] = None
 
     def set_available_armies(self, armies: List[Dict[str, Any]], terrain_data: Optional[Dict[str, Any]] = None):
         """Set the available armies for selection."""

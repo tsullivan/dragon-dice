@@ -13,7 +13,7 @@ class EffectManager(QObject):
 
     def __init__(self, parent: Optional[QObject] = None):
         super().__init__(parent)
-        self.active_effects = []  # List of effect dictionaries
+        self.active_effects: List[Dict[str, Any]] = []  # List of effect dictionaries
 
     def remove_effect_by_id(self, effect_id: str) -> bool:
         """Remove a specific effect by its ID. Returns True if found and removed."""
@@ -71,7 +71,7 @@ class EffectManager(QObject):
         self.effects_changed.emit()
         return effect["id"]  # Return effect ID for potential removal
 
-    def process_effect_expirations(self, current_player_name: str, current_phase: str = None):
+    def process_effect_expirations(self, current_player_name: str, current_phase: Optional[str] = None):
         """Processes effects that might expire at the start of a player's turn or round."""
         effects_to_remove = []
 

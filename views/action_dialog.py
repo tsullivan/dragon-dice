@@ -49,7 +49,7 @@ class ActionDialog(QDialog):
         self.current_step = "attacker_roll"  # attacker_roll, defender_saves, results
         self.attacker_results: Optional[str] = None
         self.defender_results: Optional[str] = None
-        self.final_result = None
+        self.final_result: Optional[Dict[str, Any]] = None
 
         self.setWindowTitle(f"{action_type.title()} Action")
         self.setModal(True)

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from PySide6.QtCore import QObject, Signal
 
@@ -68,7 +68,7 @@ class GameStateManager(QObject):
         self,
         initial_player_setup_data: List[Dict[str, Any]],
         frontier_terrain: str,
-        distance_rolls: List[tuple[str, int]],
+        distance_rolls: List[Tuple[str, int]],
         parent: Optional[QObject] = None,
     ):
         super().__init__(parent)
@@ -111,7 +111,7 @@ class GameStateManager(QObject):
         self,
         initial_player_setup_data: List[Dict[str, Any]],
         frontier_terrain_name: str,
-        distance_rolls: List[tuple[str, int]],
+        distance_rolls: List[Tuple[str, int]],
     ):
         """Initializes the game state from the setup data."""
         print("GameStateManager: Initializing state...")
@@ -354,7 +354,7 @@ class GameStateManager(QObject):
         safe_player_name = player_name.replace(" ", "_").replace("'", "").lower()
         return f"{safe_player_name}_{army_type}"
 
-    def parse_army_identifier(self, army_identifier: str) -> tuple[str, str]:
+    def parse_army_identifier(self, army_identifier: str) -> Tuple[str, str]:
         """
         Parse an army identifier back into player name and army type.
         Returns (player_name, army_type) or raises InvalidArmyIdentifierError.
@@ -377,7 +377,7 @@ class GameStateManager(QObject):
 
         raise InvalidArmyIdentifierError(army_identifier)
 
-    def get_army_by_identifier(self, army_identifier: str) -> tuple[str, Dict[str, Any]]:
+    def get_army_by_identifier(self, army_identifier: str) -> Tuple[str, Dict[str, Any]]:
         """
         Get army data by identifier. Returns (player_name, army_data).
         Raises appropriate exceptions if army cannot be found.

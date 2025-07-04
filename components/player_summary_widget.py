@@ -27,7 +27,7 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
         self.summary_layout.addWidget(self.details_label)
         self.setLayout(self.summary_layout)
 
-    def update_summary(self, player_data: Dict[str, Any], terrain_data: Dict[str, Any] = None):
+    def update_summary(self, player_data: Dict[str, Any], terrain_data: Optional[Dict[str, Any]] = None):
         """
         Updates the displayed summary based on the provided player data.
         player_data expected keys: 'name', 'captured_terrains', 'terrains_to_win', 'armies' (list of dicts)

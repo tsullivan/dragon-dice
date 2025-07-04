@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
@@ -13,7 +13,7 @@ class TurnManager(QObject):
 
     def __init__(
         self,
-        player_names: list[str],
+        player_names: List[str],
         first_player_name: str,
         parent: Optional[QObject] = None,
     ):
@@ -143,6 +143,6 @@ class TurnManager(QObject):
         """Get the current player's index."""
         return self.current_player_idx
 
-    def get_all_players(self) -> list[str]:
+    def get_all_players(self) -> List[str]:
         """Get list of all player names."""
         return self.player_names.copy()

@@ -4,8 +4,11 @@ Provides centralized formatting for terrain types, army types, and other game el
 All icon declarations are in constants.py - this module imports what it needs.
 """
 
+from typing import Optional
+
 # Import all icon mappings from constants
 import utils.constants as constants
+from models.action_model import get_action_icon
 from models.army_model import get_army_type_icon
 from models.location_model import LOCATION_DATA
 from models.terrain_model import TERRAIN_DATA, get_terrain_or_location_icon
@@ -37,7 +40,7 @@ def format_terrain_type(terrain_type: str) -> str:
     return f"{icon} {terrain_type}"
 
 
-def format_terrain_name(terrain_name: str, terrain_type: str = None) -> str:
+def format_terrain_name(terrain_name: str, terrain_type: Optional[str] = None) -> str:
     """
     Format terrain name with type icon.
 
@@ -74,7 +77,7 @@ def format_army_type(army_type: str) -> str:
     return f"{icon} {army_type}" if icon else army_type
 
 
-def format_army_name(army_name: str, army_type: str = None) -> str:
+def format_army_name(army_name: str, army_type: Optional[str] = None) -> str:
     """
     Format army name with type icon.
 
@@ -115,7 +118,7 @@ def format_action_type(action_type: str) -> str:
     Returns:
         Formatted string with icon prefix
     """
-    icon = constants.get_action_icon(action_type)
+    icon = get_action_icon(action_type)
     action_name = action_type.title() if action_type != "SKIP" else "Skip"
     return f"{icon} {action_name}" if icon else action_name
 
@@ -139,7 +142,7 @@ def clean_terrain_name(terrain_name: str) -> str:
     return terrain_name
 
 
-def format_terrain_summary(terrain_name: str, terrain_type: str, face_number: int, controller: str = None) -> str:
+def format_terrain_summary(terrain_name: str, terrain_type: str, face_number: int, controller: Optional[str] = None) -> str:
     """
     Format a complete terrain summary with icons.
 
