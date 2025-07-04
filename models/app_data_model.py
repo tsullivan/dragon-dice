@@ -166,7 +166,7 @@ class AppDataModel(QObject):
             unit_name = f"{unit.name} ({unit.unit_id})"
 
             # Check face count
-            expected_face_count = 10 if unit.unit_type == "Monster" else 6
+            expected_face_count = 10 if unit.unit_type in ["Monster", "MONSTER"] else 6
             actual_face_count = len(unit.faces)
 
             if actual_face_count != expected_face_count:
