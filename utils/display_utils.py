@@ -142,7 +142,9 @@ def clean_terrain_name(terrain_name: str) -> str:
     return terrain_name
 
 
-def format_terrain_summary(terrain_name: str, terrain_type: str, face_number: int, controller: Optional[str] = None) -> str:
+def format_terrain_summary(
+    terrain_name: str, terrain_type: str, face_number: int, controller: Optional[str] = None
+) -> str:
     """
     Format a complete terrain summary with icons.
 

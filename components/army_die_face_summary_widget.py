@@ -1,5 +1,6 @@
 # components/army_die_face_summary_widget.py
 from collections import Counter
+from typing import Counter as CounterType
 from typing import Dict, List, Optional
 
 from PySide6.QtCore import Qt
@@ -92,7 +93,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
         if not self.unit_roster or not units:
             return {}
 
-        face_counts: Counter[str] = Counter()
+        face_counts: CounterType[str] = Counter()
 
         for unit in units:
             unit_def = self.unit_roster.get_unit_definition(unit.unit_type)

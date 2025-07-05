@@ -1,5 +1,9 @@
 # models/unit_model.py
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
+
+if TYPE_CHECKING:
+    from models.die_face_model import DieFaceModel
+    from models.species_model import SpeciesModel
 
 
 class UnitFace:
@@ -146,18 +150,16 @@ class UnitModel:
         unit_type: str,
         health: int,
         max_health: int,
-        abilities: Dict[str, Any],
-        species: Optional[Any] = None,
-        faces: Optional[List[Dict[str, str]]] = None,
+        species: "SpeciesModel",
+        faces: List["DieFaceModel"],
     ) -> None:
         self.unit_id = unit_id
         self.name = name
         self.unit_type = unit_type
         self.health = health
         self.max_health = max_health
-        self.abilities = abilities
         self.species = species
-        self.faces = [UnitFace(face["name"], face["description"]) for face in (faces or [])]
+        self.faces = faces
 
     def __repr__(self):
         species_name = self.species.name if self.species else "Unknown"
@@ -170,9 +172,8 @@ class UnitModel:
             "unit_type": self.unit_type,
             "health": self.health,
             "max_health": self.max_health,
-            "abilities": self.abilities,
-            "species": self.species,
-            "faces": [{"name": face.name, "description": face.description} for face in self.faces],
+            "species": self.species.to_dict() if self.species else None,
+            "faces": [face.to_dict() for face in self.faces],
         }
 
     def get_species_name(self) -> str:
@@ -187,14 +188,14 @@ class UnitModel:
         """Get all face names for this unit."""
         return [face.name for face in self.faces]
 
-    def get_face_by_name(self, face_name: str) -> Optional["UnitFace"]:
+    def get_face_by_name(self, face_name: str) -> Optional["DieFaceModel"]:
         """Get a specific face by name."""
         for face in self.faces:
             if face.name == face_name:
                 return face
         return None
 
-    def get_face_by_index(self, index: int) -> Optional["UnitFace"]:
+    def get_face_by_index(self, index: int) -> Optional["DieFaceModel"]:
         """Get a face by its index."""
         if 0 <= index < len(self.faces):
             return self.faces[index]
@@ -219,14 +220,41 @@ class UnitModel:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "UnitModel":
+        from models.die_face_model import DieFaceModel
+        from models.species_model import SpeciesModel
+
+        # Handle species data
+        species_data = data.get("species")
+        if isinstance(species_data, dict):
+            species = SpeciesModel.from_dict(species_data)
+        elif species_data is not None:
+            species = species_data  # Assume it's already a SpeciesModel instance
+        else:
+            # Create a default species if none provided
+            species = SpeciesModel(
+                name="Unknown",
+                display_name="Unknown Species",
+                elements=[],
+                element_colors=[],
+            )
+
+        # Handle faces data
+        faces_data = data.get("faces", [])
+        faces = []
+        for face_data in faces_data:
+            if isinstance(face_data, dict):
+                faces.append(DieFaceModel.from_dict(face_data))
+            else:
+                faces.append(face_data)  # Assume it's already a DieFaceModel instance
+
         return cls(
             unit_id=data.get("unit_id", "unknown_id"),
             name=data.get("name", "Unknown Unit"),
             unit_type=data.get("unit_type", "unknown_type"),
             health=data.get("health", 0),
             max_health=data.get("max_health", 0),
-            abilities=data.get("abilities", {}),
-            faces=data.get("faces", []),
+            species=species,
+            faces=faces,
         )
 
     @classmethod
@@ -254,9 +282,8 @@ class UnitModel:
             unit_type=unit_instance.unit_type,
             health=health,
             max_health=unit_instance.max_health,
-            abilities=unit_instance.abilities.copy(),
             species=unit_instance.species,
-            faces=[{"name": face.name, "description": face.description} for face in unit_instance.faces],
+            faces=unit_instance.faces,
         )
 
     @staticmethod
