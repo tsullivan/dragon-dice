@@ -55,7 +55,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         mock_unit_instance.health = 1
         mock_unit_instance.max_health = 1
         mock_unit_instance.unit_type = "goblin_thug"
-        mock_unit_instance.abilities = {"id_results": {"MELEE": 1}}
+        mock_unit_instance.get_face_names.return_value = ["Melee", "Save"]  # Mock faces instead of abilities
 
         mock_roster.create_unit_instance.return_value = mock_unit_instance
 
@@ -76,7 +76,7 @@ class TestReserveUnitCreation(unittest.TestCase):
             self.assertIn("max_health", unit)
             self.assertIn("point_cost", unit)
             self.assertIn("unit_type", unit)
-            self.assertIn("abilities", unit)
+            self.assertIn("faces", unit)
             self.assertEqual(unit["location"], "Reserve Pool")
 
     @patch("models.unit_roster_model.UnitRosterModel")
@@ -109,7 +109,7 @@ class TestReserveUnitCreation(unittest.TestCase):
             instance.health = 1
             instance.max_health = 1
             instance.unit_type = unit_id
-            instance.abilities = {"id_results": {"MELEE": 1}}
+            instance.get_face_names.return_value = ["Melee", "Save"]  # Mock faces instead of abilities
             return instance
 
         mock_roster.create_unit_instance.side_effect = create_instance_side_effect
@@ -155,7 +155,7 @@ class TestReserveUnitCreation(unittest.TestCase):
             instance.health = health
             instance.max_health = health
             instance.unit_type = unit_id
-            instance.abilities = {"id_results": {"MELEE": 1}}
+            instance.get_face_names.return_value = ["Melee", "Save"]  # Mock faces instead of abilities
             return instance
 
         mock_roster.create_unit_instance.side_effect = create_instance_side_effect
@@ -232,7 +232,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         mock_unit_instance.health = 1
         mock_unit_instance.max_health = 1
         mock_unit_instance.unit_type = "goblin_thug"
-        mock_unit_instance.abilities = {"id_results": {"MELEE": 1}}
+        mock_unit_instance.get_face_names.return_value = ["Melee", "Save"]  # Mock faces instead of abilities
         mock_roster.create_unit_instance.return_value = mock_unit_instance
 
         manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)

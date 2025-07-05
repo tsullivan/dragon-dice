@@ -90,14 +90,19 @@ class UnitRosterModel:
         definition = self.get_unit_definition(unit_type_id)
         if not definition:
             return None
-        return UnitModel(
-            unit_id=instance_id,
-            name=custom_name or definition["display_name"],
-            unit_type=unit_type_id,
-            health=definition["max_health"],
-            max_health=definition["max_health"],
-            abilities=definition["abilities"].copy(),
-        )
+
+        # Use UnitModel.from_unit_data factory method which handles the new constructor properly
+        try:
+            unit_instance = UnitModel.from_unit_data(unit_type_id)
+            # Update with custom values
+            unit_instance.unit_id = instance_id
+            unit_instance.unit_type = unit_type_id  # Ensure unit_type matches the requested ID
+            if custom_name:
+                unit_instance.name = custom_name
+            return unit_instance
+        except Exception:
+            # Fallback: return None if unit data not found
+            return None
 
     def _map_abilities_to_constants(self, abilities_data: Dict[str, Any]) -> Dict[str, Any]:
         """

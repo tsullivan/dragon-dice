@@ -309,7 +309,7 @@ class GameStateManager(QObject):
                     "max_health": unit_instance.max_health,
                     "point_cost": unit_cost,
                     "unit_type": unit_instance.unit_type,
-                    "abilities": unit_instance.abilities,
+                    "faces": unit_instance.get_face_names(),  # Use faces instead of abilities
                     "location": "Reserve Pool",
                 }
                 reserve_units.append(reserve_unit)

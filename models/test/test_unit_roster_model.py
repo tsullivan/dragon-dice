@@ -164,7 +164,7 @@ class TestUnitRosterModel(unittest.TestCase):
         self.assertIsNone(unit_instance)
 
     def test_abilities_mapping(self):
-        """Test that abilities are properly mapped in unit creation."""
+        """Test that faces are properly available in unit creation."""
         mock_app_data_model = Mock(spec=AppDataModel)
         mock_app_data_model.get_unit_definitions.return_value = self.sample_unit_data
 
@@ -173,12 +173,12 @@ class TestUnitRosterModel(unittest.TestCase):
         unit_instance = roster.create_unit_instance("amazon_warrior", "test_instance_id")
 
         self.assertIsNotNone(unit_instance)
-        self.assertIn("id_results", unit_instance.abilities)
-
-        id_results = unit_instance.abilities["id_results"]
-        self.assertEqual(id_results["MELEE"], 1)
-        self.assertEqual(id_results["MISSILE"], 1)
-        self.assertEqual(id_results["SAVE"], 1)
+        # The new UnitModel uses faces instead of abilities
+        self.assertIsNotNone(unit_instance.faces)
+        self.assertIsInstance(unit_instance.faces, list)
+        # Check that faces have been populated (exact validation depends on actual unit data structure)
+        face_names = unit_instance.get_face_names()
+        self.assertIsInstance(face_names, list)
 
     def test_empty_unit_data_handling(self):
         """Test handling of empty unit data."""

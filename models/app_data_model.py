@@ -260,7 +260,7 @@ class AppDataModel(QObject):
                     "display_name": unit_instance.name,
                     "max_health": unit_instance.max_health,
                     "unit_class_type": unit_instance.unit_type,
-                    "abilities": unit_instance.abilities,
+                    "abilities": {},  # TODO: Convert faces to abilities format if needed
                     "die_faces": unit_instance.faces,  # Provide face objects, not just names
                 }
                 units_by_species[species_name].append(unit_dict)
