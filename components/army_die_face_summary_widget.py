@@ -1,7 +1,5 @@
 # components/army_die_face_summary_widget.py
-from collections import Counter
-from typing import Counter as CounterType
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -68,32 +66,52 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
     def _get_icon_for_face(self, face_type: str) -> str:
         """Get display icon for a die face type."""
-        # Map actual face names to icons (not the constant names)
-        icon_map = {
-            "Melee": "⚔️",
-            "Missile": "🏹",
-            "Magic": "✨",
-            "Save": "🛡️",
-            "Move": "🏃",  # This is the maneuver face
-            "SAI": "💎",
+        # Import DieFaceModel to get proper face type icons
+        from models.die_face_model import DieFaceModel
+
+        # Don't show icons for ID faces
+        if face_type.startswith("Id_") or face_type in ["ID", "ID(kin)"]:
+            return ""
+
+        # Map face names to face types for icon lookup
+        face_type_map = {
+            "Melee": "MELEE",
+            "Missile": "MISSILE",
+            "Magic": "MAGIC",
+            "Save": "SAVE",
+            "Move": "MOVE",
+            "SAI": "ID",
         }
 
-        # For special abilities, use a generic sparkle icon
-        if face_type not in icon_map:
-            # Don't show icons for ID faces or special abilities
-            if face_type in ["ID", "ID(kin)"]:
-                return ""  # No icon for ID faces
-            # For special abilities, use a generic ability icon
-            return "⭐"
+        # Handle face names with numbers (e.g., "Melee_1", "Move_2")
+        base_face_type = face_type.split("_")[0] if "_" in face_type else face_type
 
-        return icon_map[face_type]
+        # Get the standardized face type
+        standard_face_type = face_type_map.get(base_face_type, "SPECIAL")
+
+        # Create a temporary DieFaceModel to get the correct icon
+        temp_face = DieFaceModel("temp", face_type=standard_face_type)
+        return temp_face.get_face_icon()
+
+    def _extract_face_type_and_value(self, face_name: str) -> Tuple[str, int]:
+        """Extract the base face type and value from a face name like 'Save_1' or 'Melee_4'."""
+        if "_" in face_name:
+            parts = face_name.split("_")
+            base_type = parts[0]
+            try:
+                value = int(parts[1])
+            except (ValueError, IndexError):
+                value = 1  # Default value if parsing fails
+            return base_type, value
+        # No underscore, assume value of 1
+        return face_name, 1
 
     def _count_die_faces(self, units: List[UnitModel]) -> Dict[str, int]:
-        """Count all die faces from a list of units."""
+        """Aggregate die faces by type and sum base_value."""
         if not self.unit_roster or not units:
             return {}
 
-        face_counts: CounterType[str] = Counter()
+        face_totals: Dict[str, int] = {}
 
         for unit in units:
             unit_def = self.unit_roster.get_unit_definition(unit.unit_type)
@@ -104,7 +122,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
             # Handle both old dict format and new list of face objects
             if isinstance(die_faces, dict):
-                # Old format: count standard faces (face_1 through face_6)
+                # Old format: aggregate standard faces (face_1 through face_6)
                 for face_key in [
                     "face_1",
                     "face_2",
@@ -115,25 +133,40 @@ class ArmyDieFaceSummaryWidget(QWidget):
                 ]:
                     face_type = die_faces.get(face_key)
                     if face_type and face_type != "ID":  # Don't count ID faces
-                        face_counts[face_type] += 1
+                        # Extract base face type and value
+                        base_type, value = self._extract_face_type_and_value(face_type)
+                        if base_type not in face_totals:
+                            face_totals[base_type] = 0
+                        face_totals[base_type] += value
             elif isinstance(die_faces, list):
                 # New format: face objects or face names
                 for face in die_faces:
                     if hasattr(face, "name"):  # Face object
                         face_name = face.name
+                        base_value = getattr(face, "base_value", 1)
                     else:  # Face name string
                         face_name = face
+                        base_value = 1  # Default value if not face object
+
                     if face_name and face_name != "ID":  # Don't count ID faces
-                        face_counts[face_name] += 1
+                        # Extract base face type
+                        base_type, _ = self._extract_face_type_and_value(face_name)
+                        if base_type not in face_totals:
+                            face_totals[base_type] = 0
+                        face_totals[base_type] += base_value
 
             # Count eighth faces (only for old dict format)
             if isinstance(die_faces, dict):
                 for face_key in ["eighth_face_1", "eighth_face_2"]:
                     face_type = die_faces.get(face_key)
                     if face_type and face_type != "ID":  # Don't count ID faces
-                        face_counts[face_type] += 1
+                        # Extract base face type and value
+                        base_type, value = self._extract_face_type_and_value(face_type)
+                        if base_type not in face_totals:
+                            face_totals[base_type] = 0
+                        face_totals[base_type] += value
 
-        return dict(face_counts)
+        return face_totals
 
     def set_units_and_roster(self, units: List[UnitModel], unit_roster: UnitRosterModel):
         """Update the summary with new units and roster."""
@@ -170,10 +203,10 @@ class ArmyDieFaceSummaryWidget(QWidget):
             ),
         )
 
-        for face_type, count in sorted_faces:
+        for face_type, total_value in sorted_faces:
             icon = self._get_icon_for_face(face_type)
-            face_label = QLabel(f"{icon}{count}")
-            face_label.setToolTip(f"{face_type}: {count} faces")
+            face_label = QLabel(f"{icon}{total_value}")
+            face_label.setToolTip(f"{face_type}: {total_value} total value")
             face_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             face_label.setStyleSheet(
                 "padding: 2px 4px; "

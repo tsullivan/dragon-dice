@@ -134,29 +134,8 @@ class CarouselInputWidget(QWidget):
         self.valueChanged.emit(current_val)
 
     def _format_display_value(self, value: Any) -> str:
-        """Format display value with emoji if it's a known terrain type or dragon type."""
-        if not value:
-            return str(value)
-
-        # Import utilities locally to avoid circular imports
-        try:
-            from utils.display_utils import clean_terrain_name, format_terrain_type
-
-            value_str = str(value)
-
-            # Extract clean terrain name from strings like "Coastland (Blue, Green)"
-            clean_name = clean_terrain_name(value_str)
-
-            # Try to format as terrain/location, but gracefully fall back to plain text
-            try:
-                return format_terrain_type(clean_name)
-            except KeyError:
-                # Not a terrain or location, return the original value as-is
-                return value_str
-        except ImportError:
-            pass
-
-        return str(value)
+        """Simple display formatting - just return the value as a string."""
+        return str(value) if value is not None else ""
 
     def _update_button_states(self):
         # For circular navigation, buttons are always enabled if there are options

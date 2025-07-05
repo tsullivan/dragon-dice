@@ -97,9 +97,14 @@ class AppDataModel(QObject):
     def get_all_terrains_list(self) -> list[Terrain]:
         return self._all_terrains
 
-    def get_terrain_display_options(self) -> list[tuple]:
-        """Returns terrain display options as list of tuples (name, colors) for PlayerSetupView."""
-        return [(terrain.name, terrain.element_colors) for terrain in self._all_terrains]
+    def get_terrain_display_options(self) -> list[str]:
+        """Returns terrain display options formatted with element color icons for PlayerSetupView."""
+        return [self._format_terrain_for_display(terrain) for terrain in self._all_terrains]
+
+    def _format_terrain_for_display(self, terrain: Terrain) -> str:
+        """Format terrain with element color icons for display."""
+        element_icons = terrain.get_color_string()
+        return f"{element_icons} {terrain.name}"
 
     def get_required_dragon_count(self) -> int:
         """Calculate required dragons based on current force size.

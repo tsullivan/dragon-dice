@@ -38,16 +38,26 @@ class TerrainSelectionWidget(QWidget):
         layout.addWidget(self.frontier_proposal_carousel, 1, 1)
 
     def get_home_terrain(self) -> Optional[str]:
-        return str(self.home_terrain_carousel.value()) if self.home_terrain_carousel.value() else None
+        value = self.home_terrain_carousel.value()
+        return self._extract_terrain_name(str(value)) if value else None
 
     def set_home_terrain(self, terrain_name: Optional[str]):
-        self.home_terrain_carousel.setValue(terrain_name)
+        if terrain_name:
+            formatted_value = self._find_formatted_terrain(terrain_name)
+            self.home_terrain_carousel.setValue(formatted_value)
+        else:
+            self.home_terrain_carousel.setValue(None)
 
     def get_frontier_proposal(self) -> Optional[str]:
-        return str(self.frontier_proposal_carousel.value()) if self.frontier_proposal_carousel.value() else None
+        value = self.frontier_proposal_carousel.value()
+        return self._extract_terrain_name(str(value)) if value else None
 
     def set_frontier_proposal(self, terrain_name: Optional[str]):
-        self.frontier_proposal_carousel.setValue(terrain_name)
+        if terrain_name:
+            formatted_value = self._find_formatted_terrain(terrain_name)
+            self.frontier_proposal_carousel.setValue(formatted_value)
+        else:
+            self.frontier_proposal_carousel.setValue(None)
 
     def clear_selections(self):
         if self.all_terrain_options:
@@ -66,3 +76,18 @@ class TerrainSelectionWidget(QWidget):
         """Keep frontier proposal label static - terrain name only shows in carousel."""
         # Label should always show just the static text, not the terrain name
         self.frontier_proposal_label.setText("🗺️ Proposed Frontier Terrain:")
+
+    def _extract_terrain_name(self, formatted_value: str) -> str:
+        """Extract terrain name from formatted display like '🟦🟩 Coastland Castle' -> 'Coastland Castle'."""
+        # Split on spaces and skip emoji characters (which are typically single "words")
+        parts = formatted_value.split()
+        # Filter out parts that contain emoji (typically the element color icons)
+        text_parts = [part for part in parts if not any(ord(char) > 127 for char in part)]
+        return " ".join(text_parts) if text_parts else formatted_value
+
+    def _find_formatted_terrain(self, terrain_name: str) -> Optional[str]:
+        """Find the formatted terrain option that contains the given terrain name."""
+        for option in self.all_terrain_options:
+            if terrain_name in option:
+                return option
+        return terrain_name  # Fallback to original name if not found

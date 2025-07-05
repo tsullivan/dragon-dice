@@ -23,7 +23,11 @@ from components.tabbed_view_widget import TabbedViewWidget
 # No change, good comment
 from game_logic.engine import GameEngine
 from models.help_text_model import HelpTextModel
-from utils.display_utils import format_player_turn_label, format_terrain_summary
+from utils.display_utils import (
+    format_player_turn_label,
+    format_terrain_summary,
+    format_terrain_summary_with_description,
+)
 from views.action_dialog import ActionDialog
 from views.maneuver_dialog import ManeuverDialog
 
@@ -532,9 +536,12 @@ class MainGameplayView(QWidget):
             terrain_type = terrain.get("type", "N/A")
             face_number = terrain.get("face", 1)
             controller = terrain.get("controller", None)
+            face_details = terrain.get("details", f"Face {face_number}")
 
-            # Use utility function for consistent formatting
-            formatted_summary = format_terrain_summary(terrain_name, terrain_type, face_number, controller)
+            # Use utility function for consistent formatting but include face description
+            formatted_summary = format_terrain_summary_with_description(
+                terrain_name, terrain_type, face_details, controller
+            )
             terrains_html += f"<li>{formatted_summary}</li>"
 
         terrains_html += "</ul>"

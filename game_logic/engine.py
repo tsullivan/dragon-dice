@@ -830,7 +830,11 @@ class GameEngine(QObject):
         for terrain_name, terrain_data in all_terrains_state.items():
             controller = terrain_data.get("controller", "None")
             face_number = terrain_data.get("face", 1)
-            details = f"Face {face_number}"
+
+            # Get face description from terrain model
+            face_description = self._get_terrain_face_description(terrain_name, face_number)
+            details = f"Face {face_number}: {face_description}" if face_description else f"Face {face_number}"
+
             try:
                 icon = get_terrain_icon(terrain_name)
             except KeyError:
@@ -849,6 +853,45 @@ class GameEngine(QObject):
                 }
             )
         return relevant_terrains_info
+
+    def _get_terrain_face_description(self, terrain_name: str, face_number: int) -> str:
+        """Get the description for a specific face of a terrain die.
+
+        Args:
+            terrain_name: Name of the terrain (e.g., "Coastland Castle", "Player 1 Highland")
+            face_number: Face number (1-8)
+
+        Returns:
+            Face description string, or empty string if not found
+        """
+        try:
+            from models.terrain_model import TERRAIN_DATA
+
+            # Convert terrain name to terrain key format if needed
+            # Handle both "Coastland Castle" and "Player 1 Coastland Castle" formats
+            clean_name = terrain_name
+            if " " in terrain_name:
+                parts = terrain_name.split()
+                if len(parts) >= 3 and parts[0] == "Player":
+                    # Extract base terrain from "Player 1 Coastland Castle"
+                    clean_name = " ".join(parts[2:])
+
+            # Convert to terrain key format (e.g., "Coastland Castle" -> "COASTLAND_CASTLE")
+            terrain_key = clean_name.upper().replace(" ", "_")
+
+            if terrain_key in TERRAIN_DATA:
+                terrain = TERRAIN_DATA[terrain_key]
+                if hasattr(terrain, "faces") and terrain.faces:
+                    # Terrain faces are 1-indexed, list is 0-indexed
+                    face_index = face_number - 1
+                    if 0 <= face_index < len(terrain.faces):
+                        face = terrain.faces[face_index]
+                        return face.description if hasattr(face, "description") else face.name
+
+        except Exception as e:
+            print(f"Warning: Could not get face description for {terrain_name} face {face_number}: {e}")
+
+        return ""
 
     def _resolve_sai_effect(
         self,

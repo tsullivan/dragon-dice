@@ -1,16 +1,41 @@
 # models/army_model.py
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union, Optional
 
+from .location_model import LocationModel, get_location
 from .unit_model import UnitModel
 
 
 class ArmyModel:
-    def __init__(self, name: str, army_type: str, location: str = "", max_points: int = 0):
+    def __init__(
+        self, name: str, army_type: str, location: Union[str, LocationModel, None] = None, max_points: int = 0
+    ):
         self.name = name
         self.army_type = army_type
         self.units: List[UnitModel] = []
-        self.location = location
+        self.location = self._process_location(location)
         self.max_points = max_points  # Max points this army can have (50% of total force)
+
+    def _process_location(self, location: Union[str, LocationModel, None]) -> Optional[LocationModel]:
+        """Convert location input to LocationModel if possible, otherwise store as string."""
+        if location is None:
+            return None
+        elif isinstance(location, LocationModel):
+            return location
+        elif isinstance(location, str):
+            # Try to get a LocationModel if it's a known location name
+            location_model = get_location(location)
+            if location_model:
+                return location_model
+            # For terrain names or custom locations, we'll store as string in a custom LocationModel
+            return LocationModel(name=location.upper().replace(" ", "_"), display_name=location)
+        else:
+            raise ValueError(f"Invalid location type: {type(location)}")
+
+    def get_location_name(self) -> str:
+        """Get the location name as a string for compatibility."""
+        if self.location is None:
+            return ""
+        return self.location.display_name
 
     def get_total_points(self) -> int:
         """Calculate total points used by units in this army (using max_health as point cost)."""
@@ -42,7 +67,7 @@ class ArmyModel:
             "name": self.name,
             "army_type": self.army_type,
             "units": [unit.to_dict() for unit in self.units],
-            "location": self.location,
+            "location": self.get_location_name(),  # Store as string for serialization
             "max_points": self.max_points,
         }
 
@@ -51,7 +76,7 @@ class ArmyModel:
         army = cls(
             name=data["name"],
             army_type=data["army_type"],
-            location=data.get("location", ""),
+            location=data.get("location"),
             max_points=data.get("max_points", 0),
         )
         army.units = [UnitModel.from_dict(u_data) for u_data in data.get("units", [])]
@@ -107,6 +132,20 @@ def format_army_type_display(army_type: str) -> str:
         if key.upper() == army_type.upper():
             army_info = ARMY_DATA[key]
             return f"{army_info['icon']} {army_info['display_name']}"
+
+    raise KeyError(f"Unknown army type: '{army_type}'. Valid types: {list(ARMY_DATA.keys())}")
+
+
+def get_army_display_name(army_type: str) -> str:
+    """Return just the display_name without icon for army type."""
+    army_key = army_type.upper()
+    if army_key in ARMY_DATA:
+        return ARMY_DATA[army_key]["display_name"]
+
+    # Try case-insensitive match
+    for key in ARMY_DATA:
+        if key.upper() == army_type.upper():
+            return ARMY_DATA[key]["display_name"]
 
     raise KeyError(f"Unknown army type: '{army_type}'. Valid types: {list(ARMY_DATA.keys())}")
 

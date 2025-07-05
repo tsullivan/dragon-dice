@@ -1,5 +1,5 @@
 # models/die_face_model.py
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class DieFaceModel:
@@ -42,6 +42,38 @@ class DieFaceModel:
             "SPECIAL": "⭐",
         }
         return icon_map.get(self.face_type, "❓")
+
+    def get_display_info(self) -> Tuple[str, str, str]:
+        """Get display information for this die face.
+
+        Returns:
+            tuple: (display_text, background_color, tooltip)
+        """
+        # Get the icon for this face type
+        icon = self.get_face_icon()
+
+        # Show icon, display_name and base_value for die faces
+        if self.base_value > 0 and self.is_basic_face():
+            display_text = f"{icon} {self.display_name}: {self.base_value}"
+        else:
+            display_text = f"{icon} {self.display_name}"
+
+        # Color coding by face type
+        color_map = {
+            "ID": "#FFD700",  # Gold
+            "MOVE": "#87CEEB",  # Sky blue
+            "MELEE": "#FF6B6B",  # Red
+            "MISSILE": "#4ECDC4",  # Teal
+            "SAVE": "#95E1D3",  # Light green
+            "MAGIC": "#DDA0DD",  # Plum
+            "SPECIAL": "#F7DC6F",  # Light yellow
+        }
+        background_color = color_map.get(self.face_type, "#F0F0F0")
+
+        # Tooltip shows description
+        tooltip = self.description if self.description else self.display_name
+
+        return display_text, background_color, tooltip
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -799,6 +831,110 @@ ALL_DIE_FACES.update(DEFENSIVE_COUNTER_FACES)
 ALL_DIE_FACES.update(INSTANT_KILL_FACES)
 ALL_DIE_FACES.update(MISC_SPECIAL_FACES)
 ALL_DIE_FACES.update(ADDITIONAL_SPECIAL_FACES)
+
+# Dragon-specific die faces (moved here to avoid circular import)
+DRAGON_DIE_FACES = {
+    "Jaws": DieFaceModel(
+        name="Jaws",
+        display_name="Jaws",
+        description="A dragon's jaws inflict twelve points of damage on an army. Also counts as the 'ID' for ID based SAIs that effect Dragons.",
+        face_type="DRAGON_ATTACK",
+        base_value=12,
+    ),
+    "Dragon_Breath": DieFaceModel(
+        name="Dragon_Breath",
+        display_name="Dragon Breath",
+        description="Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.\\n* Against armies, five health-worth of units in the target army are killed.\\n* In addition, an effect based on the color affects the army:\\n** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.\\n** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.\\n** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.\\n** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.\\n** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.\\n** IVORY (Life Drain): No additional effect.\\n** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.",
+        face_type="DRAGON_ATTACK",
+        base_value=5,
+    ),
+    "Claw_Front_Left": DieFaceModel(
+        name="Claw_Front_Left",
+        display_name="Claw; Front Left",
+        description="A dragon's claws inflict six points of damage on an army.",
+        face_type="DRAGON_ATTACK",
+        base_value=6,
+    ),
+    "Claw_Front_Right": DieFaceModel(
+        name="Claw_Front_Right",
+        display_name="Claw; Front Right",
+        description="A dragon's claws inflict six points of damage on an army.",
+        face_type="DRAGON_ATTACK",
+        base_value=6,
+    ),
+    "Wing_Left": DieFaceModel(
+        name="Wing_Left",
+        display_name="Wing; Left",
+        description="A dragon's wings inflict five points of damage on an army. After the attack, if the dragon is still alive, it flies away. It returns to it's summoning pool.",
+        face_type="DRAGON_ATTACK",
+        base_value=5,
+    ),
+    "Wing_Right": DieFaceModel(
+        name="Wing_Right",
+        display_name="Wing; Right",
+        description="A dragon's wings inflict five points of damage on an army. After the attack, if the dragon is still alive, it flies away. It returns to it's summoning pool.",
+        face_type="DRAGON_ATTACK",
+        base_value=5,
+    ),
+    "Belly_Front": DieFaceModel(
+        name="Belly_Front",
+        display_name="Belly; Front",
+        description="The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.",
+        face_type="DRAGON_VULNERABLE",
+        base_value=0,
+    ),
+    "Belly_Rear": DieFaceModel(
+        name="Belly_Rear",
+        display_name="Belly; Rear",
+        description="The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.",
+        face_type="DRAGON_VULNERABLE",
+        base_value=0,
+    ),
+    "Claw_Rear_Left": DieFaceModel(
+        name="Claw_Rear_Left",
+        display_name="Claw; Rear Left",
+        description="A dragon's claws inflict six points of damage on an army.",
+        face_type="DRAGON_ATTACK",
+        base_value=6,
+    ),
+    "Claw_Rear_Right": DieFaceModel(
+        name="Claw_Rear_Right",
+        display_name="Claw; Rear Right",
+        description="A dragon's claws inflict six points of damage on an army.",
+        face_type="DRAGON_ATTACK",
+        base_value=6,
+    ),
+    "Tail_Front": DieFaceModel(
+        name="Tail_Front",
+        display_name="Tail; Front",
+        description="The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
+        face_type="DRAGON_ATTACK",
+        base_value=3,
+    ),
+    "Tail_Middle": DieFaceModel(
+        name="Tail_Middle",
+        display_name="Tail; Middle",
+        description="The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
+        face_type="DRAGON_ATTACK",
+        base_value=3,
+    ),
+    "Tail_Tip": DieFaceModel(
+        name="Tail_Tip",
+        display_name="Tail; Tip",
+        description="The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
+        face_type="DRAGON_ATTACK",
+        base_value=3,
+    ),
+    "Treasure": DieFaceModel(
+        name="Treasure",
+        display_name="Treasure",
+        description="One unit in the target army may immediately be promoted.",
+        face_type="DRAGON_SPECIAL",
+        base_value=0,
+    ),
+}
+
+ALL_DIE_FACES.update(DRAGON_DIE_FACES)
 
 
 # Helper functions for die face access

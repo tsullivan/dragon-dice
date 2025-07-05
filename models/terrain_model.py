@@ -124,65 +124,8 @@ class Terrain:
         return None
 
 
-# Static terrain data - define all terrain instances
+# Static terrain data - detailed terrain dice only
 TERRAIN_DATA = {
-    # Basic Terrains (keeping for backward compatibility)
-    "COASTLAND": Terrain(
-        name="Coastland",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic coastland terrain"}],
-        elements=["AIR", "WATER"],
-    ),
-    "DEADLAND": Terrain(
-        name="Deadland",
-        terrain_type="major",
-        color="Deadland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic deadland terrain"}],
-        elements=["DEATH"],
-    ),
-    "FLATLAND": Terrain(
-        name="Flatland",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic flatland terrain"}],
-        elements=["AIR", "EARTH"],
-    ),
-    "HIGHLAND": Terrain(
-        name="Highland",
-        terrain_type="major",
-        color="Highland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic highland terrain"}],
-        elements=["FIRE", "EARTH"],
-    ),
-    "SWAMPLAND": Terrain(
-        name="Swampland",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic swampland terrain"}],
-        elements=["WATER", "EARTH"],
-    ),
-    "FEYLAND": Terrain(
-        name="Feyland",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic feyland terrain"}],
-        elements=["WATER", "FIRE"],
-    ),
-    "WASTELAND": Terrain(
-        name="Wasteland",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Basic",
-        faces=[{"name": "Basic", "description": "Basic wasteland terrain"}],
-        elements=["AIR", "FIRE"],
-    ),
     # Detailed Terrain Dice
     "COASTLAND_CASTLE": Terrain(
         name="Coastland Castle",
@@ -1211,26 +1154,6 @@ def get_terrain_icon(terrain_name: str) -> str:
     if not terrain:
         raise KeyError(f"Unknown terrain type: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}")
     return terrain.get_color_string()
-
-
-def get_terrain_or_location_icon(name: str) -> str:
-    """Get icon for terrain type or location, checking both maps. Raises KeyError if not found."""
-    from models.location_model import LOCATION_DATA
-
-    name_key = name.upper()
-
-    # Check terrain types first - return color icons
-    terrain = get_terrain(name_key)
-    if terrain:
-        return terrain.get_color_string()
-
-    # Then check locations - use icon property for locations
-    if name_key in LOCATION_DATA:
-        return LOCATION_DATA[name_key].icon
-
-    # If not found in either, raise error
-    valid_names = get_all_terrain_names() + list(LOCATION_DATA.keys())
-    raise KeyError(f"Unknown terrain or location: '{name}'. Valid options: {valid_names}")
 
 
 def format_terrain_display(terrain_name: str) -> str:

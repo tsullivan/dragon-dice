@@ -39,7 +39,11 @@ class UnitSelectionDialog(QDialog):
         self.unit_roster = unit_roster
         self.selected_units: List[UnitModel] = list(current_units) if current_units else []
 
-        self.setWindowTitle(f"Select Units for {self.army_name}")
+        # Use army display name without icon (locations shouldn't have icons)
+        from models.army_model import get_army_display_name
+
+        army_display_name = get_army_display_name(self.army_name)
+        self.setWindowTitle(f"Select Units for {army_display_name}")
         self.setMinimumSize(700, 500)
 
         layout = QVBoxLayout(self)

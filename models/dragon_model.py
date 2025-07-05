@@ -1,20 +1,7 @@
 from typing import Dict, List, Optional
 
+from models.die_face_model import DieFaceModel, DRAGON_DIE_FACES
 from models.element_model import ELEMENT_DATA
-
-
-class DragonFace:
-    """Represents a single face on a dragon die."""
-
-    def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
-
-    def __str__(self) -> str:
-        return self.name
-
-    def __repr__(self) -> str:
-        return f"DragonFace(name='{self.name}')"
 
 
 class Dragon:
@@ -23,10 +10,10 @@ class Dragon:
     Each dragon has a display name and 12 faces with their effects.
     """
 
-    def __init__(self, display_name: str, faces: List[Dict[str, str]]):
+    def __init__(self, display_name: str, face_names: List[str]):
         self.display_name = display_name
         self.name = display_name.upper()  # Normalized name for keys
-        self.faces = [DragonFace(face["name"], face["description"]) for face in faces]
+        self.faces = [DRAGON_DIE_FACES[face_name] for face_name in face_names]
 
         self._validate()
 
@@ -48,14 +35,14 @@ class Dragon:
         """Get all face names for this dragon."""
         return [face.name for face in self.faces]
 
-    def get_face_by_name(self, face_name: str) -> Optional[DragonFace]:
+    def get_face_by_name(self, face_name: str) -> Optional[DieFaceModel]:
         """Get a specific face by name."""
         for face in self.faces:
             if face.name == face_name:
                 return face
         return None
 
-    def get_face_by_index(self, index: int) -> Optional[DragonFace]:
+    def get_face_by_index(self, index: int) -> Optional[DieFaceModel]:
         """Get a face by its index (0-11)."""
         if 0 <= index < len(self.faces):
             return self.faces[index]
@@ -104,108 +91,36 @@ class DragonTypeModel:
 DRAGON_DATA = {
     "DRAKE": Dragon(
         display_name="Drake",
-        faces=[
-            {
-                "name": "Jaws",
-                "description": "A dragon's jaws inflict twelve points of damage on an army. Also counts as the 'ID' for ID based SAIs that effect Dragons.",
-            },
-            {
-                "name": "Dragon Breath",
-                "description": "Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.\n* Against armies, five health-worth of units in the target army are killed.\n* In addition, an effect based on the color affects the army:\n** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.\n** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.\n** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.\n** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.\n** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.\n** IVORY (Life Drain): No additional effect.\n** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.",
-            },
-            {
-                "name": "Claw; Front Left",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Claw; Front Right",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Wing; Left",
-                "description": "A dragon's wings inflict five points of damage on an army. After the attack, if the dragon is still alive, it flies away. It returns to it's summoning pool.",
-            },
-            {
-                "name": "Wing; Right",
-                "description": "A dragon's wings inflict five points of damage on an army. After the attack, if the dragon is still alive, it flies away. It returns to it's summoning pool.",
-            },
-            {
-                "name": "Belly; Front",
-                "description": "The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.",
-            },
-            {
-                "name": "Belly; Rear",
-                "description": "The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.",
-            },
-            {
-                "name": "Claw; Rear Left",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Claw; Rear Right",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Tail; Front",
-                "description": "The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
-            },
-            {
-                "name": "Tail; Tip",
-                "description": "The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
-            },
+        face_names=[
+            "Jaws",
+            "Dragon_Breath",
+            "Claw_Front_Left",
+            "Claw_Front_Right",
+            "Wing_Left",
+            "Wing_Right",
+            "Belly_Front",
+            "Belly_Rear",
+            "Claw_Rear_Left",
+            "Claw_Rear_Right",
+            "Tail_Front",
+            "Tail_Tip",
         ],
     ),
     "WYRM": Dragon(
         display_name="Wyrm",
-        faces=[
-            {
-                "name": "Jaws",
-                "description": "A dragon's jaws inflict twelve points of damage on an army. Also counts as the 'ID' for ID based SAIs that effect Dragons.",
-            },
-            {
-                "name": "Dragon Breath",
-                "description": "Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.\n* Against armies, five health-worth of units in the target army are killed.\n* In addition, an effect based on the color affects the army:\n** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.\n** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.\n** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.\n** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.\n** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.\n** IVORY (Life Drain): No additional effect.\n** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.",
-            },
-            {
-                "name": "Claw; Front Left",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Claw; Front Right",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Belly; Front",
-                "description": "The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.",
-            },
-            {
-                "name": "Belly; Rear",
-                "description": "The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.",
-            },
-            {
-                "name": "Claw; Rear Left",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Claw; Rear Right",
-                "description": "A dragon's claws inflict six points of damage on an army.",
-            },
-            {
-                "name": "Tail; Front",
-                "description": "The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
-            },
-            {
-                "name": "Tail; Middle",
-                "description": "The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
-            },
-            {
-                "name": "Tail; Tip",
-                "description": "The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.",
-            },
-            {
-                "name": "Treasure",
-                "description": "One unit in the target army may immediately be promoted.",
-            },
+        face_names=[
+            "Jaws",
+            "Dragon_Breath",
+            "Claw_Front_Left",
+            "Claw_Front_Right",
+            "Belly_Front",
+            "Belly_Rear",
+            "Claw_Rear_Left",
+            "Claw_Rear_Right",
+            "Tail_Front",
+            "Tail_Middle",
+            "Tail_Tip",
+            "Treasure",
         ],
     ),
 }
