@@ -509,7 +509,7 @@ class TestUIIntegrationFlows:
 
         # Test that terrain data is accessible and correctly formatted
         from models.terrain_model import TERRAIN_DATA
-        from utils.display_utils import format_terrain_type
+        from views.display_utils import format_terrain_type
 
         # Test terrain data access patterns that were causing issues
         for terrain_name, terrain_obj in TERRAIN_DATA.items():

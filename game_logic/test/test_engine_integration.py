@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-import utils.constants as constants
+import constants
 from game_logic.engine import GameEngine
 
 

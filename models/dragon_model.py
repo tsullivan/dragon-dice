@@ -220,7 +220,7 @@ class DragonTypeModel:
 
 
 # Static dragon die data - define dragon instances based on JSON structure
-DRAGON_DATA = {
+DRAGON_FORM_DATA = {
     "DRAKE": Dragon(
         display_name="Drake",
         face_names=[
@@ -258,7 +258,7 @@ DRAGON_DATA = {
 }
 
 # Complete dragon type definitions - all possible dragon types from the game
-DRAGON_TYPE_EXAMPLES = {
+DRAGON_TYPE_DATA = {
     # Elemental Dragons (single element)
     "EARTH_ELEMENTAL": DragonTypeModel(
         name="Earth Elemental Dragon", dragon_type=DragonTypeModel.ELEMENTAL, elements=["EARTH"]
@@ -351,43 +351,43 @@ DRAGON_TYPE_EXAMPLES = {
 def get_dragon(dragon_name: str) -> Optional[Dragon]:
     """Get a dragon die by name (DRAKE or WYRM)."""
     dragon_key = dragon_name.upper()
-    return DRAGON_DATA.get(dragon_key)
+    return DRAGON_FORM_DATA.get(dragon_key)
 
 
 def get_all_dragon_names() -> List[str]:
     """Get all dragon die names."""
-    return list(DRAGON_DATA.keys())
+    return list(DRAGON_FORM_DATA.keys())
 
 
 def get_all_dragons() -> List[Dragon]:
     """Get all dragon die objects."""
-    return list(DRAGON_DATA.values())
+    return list(DRAGON_FORM_DATA.values())
 
 
 def get_available_dragon_forms() -> List[str]:
     """Get available dragon die forms (Drake, Wyrm)."""
-    return [dragon.display_name for dragon in DRAGON_DATA.values()]
+    return [dragon.display_name for dragon in DRAGON_FORM_DATA.values()]
 
 
 def get_available_dragon_types() -> List[str]:
     """Get available dragon type names."""
-    return list(DRAGON_TYPE_EXAMPLES.keys())
+    return list(DRAGON_TYPE_DATA.keys())
 
 
 def get_dragon_type(dragon_type_name: str) -> Optional[DragonTypeModel]:
-    """Get a dragon type by name from examples."""
+    """Get a dragon type by name."""
     dragon_type_key = dragon_type_name.upper()
-    return DRAGON_TYPE_EXAMPLES.get(dragon_type_key)
+    return DRAGON_TYPE_DATA.get(dragon_type_key)
 
 
 def get_all_dragon_type_names() -> List[str]:
     """Get all dragon type names."""
-    return list(DRAGON_TYPE_EXAMPLES.keys())
+    return list(DRAGON_TYPE_DATA.keys())
 
 
 def get_all_dragon_types() -> List[DragonTypeModel]:
     """Get all dragon type objects."""
-    return list(DRAGON_TYPE_EXAMPLES.values())
+    return list(DRAGON_TYPE_DATA.values())
 
 
 def create_dragon_type(name: str, dragon_type: str, elements: List[str], is_white: bool = False) -> DragonTypeModel:
@@ -397,29 +397,29 @@ def create_dragon_type(name: str, dragon_type: str, elements: List[str], is_whit
 
 def get_elemental_dragon_types() -> List[DragonTypeModel]:
     """Get all elemental dragon types."""
-    return [dt for dt in DRAGON_TYPE_EXAMPLES.values() if dt.dragon_type == DragonTypeModel.ELEMENTAL]
+    return [dt for dt in DRAGON_TYPE_DATA.values() if dt.dragon_type == DragonTypeModel.ELEMENTAL]
 
 
 def get_hybrid_dragon_types() -> List[DragonTypeModel]:
     """Get all hybrid dragon types."""
-    return [dt for dt in DRAGON_TYPE_EXAMPLES.values() if dt.dragon_type == DragonTypeModel.HYBRID]
+    return [dt for dt in DRAGON_TYPE_DATA.values() if dt.dragon_type == DragonTypeModel.HYBRID]
 
 
 def get_ivory_dragon_types() -> List[DragonTypeModel]:
     """Get all ivory dragon types."""
-    return [dt for dt in DRAGON_TYPE_EXAMPLES.values() if dt.dragon_type == DragonTypeModel.IVORY]
+    return [dt for dt in DRAGON_TYPE_DATA.values() if dt.dragon_type == DragonTypeModel.IVORY]
 
 
 def get_white_dragon_types() -> List[DragonTypeModel]:
     """Get all white dragon types."""
-    return [dt for dt in DRAGON_TYPE_EXAMPLES.values() if dt.dragon_type == DragonTypeModel.WHITE]
+    return [dt for dt in DRAGON_TYPE_DATA.values() if dt.dragon_type == DragonTypeModel.WHITE]
 
 
 def validate_dragon_data() -> bool:
     """Validate all dragon data."""
     try:
         # Validate dragon dice
-        for dragon_name, dragon in DRAGON_DATA.items():
+        for dragon_name, dragon in DRAGON_FORM_DATA.items():
             if not isinstance(dragon, Dragon):
                 print(f"ERROR: {dragon_name} is not a Dragon instance")
                 return False
@@ -431,7 +431,7 @@ def validate_dragon_data() -> bool:
                 return False
 
         # Validate dragon types
-        for dragon_type_name, dragon_type in DRAGON_TYPE_EXAMPLES.items():
+        for dragon_type_name, dragon_type in DRAGON_TYPE_DATA.items():
             if not isinstance(dragon_type, DragonTypeModel):
                 print(f"ERROR: {dragon_type_name} is not a DragonTypeModel instance")
                 return False
@@ -457,8 +457,8 @@ def validate_dragon_data() -> bool:
                 return False
 
         print("✓ All dragon data validated successfully")
-        print(f"  - {len(DRAGON_DATA)} dragon dice")
-        print(f"  - {len(DRAGON_TYPE_EXAMPLES)} dragon type examples")
+        print(f"  - {len(DRAGON_FORM_DATA)} dragon forms")
+        print(f"  - {len(DRAGON_TYPE_DATA)} dragon types")
         return True
     except Exception as e:
         print(f"ERROR: Dragon data validation failed: {e}")

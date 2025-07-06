@@ -7,10 +7,10 @@ All icon declarations are in constants.py - this module imports what it needs.
 from typing import Optional
 
 # Import all icon mappings from constants
-import utils.constants as constants
+import constants
 from models.action_model import get_action_icon
 from models.location_model import LOCATION_DATA
-from models.terrain_model import TERRAIN_DATA, get_terrain_icon
+from models.terrain_model import TERRAIN_DATA, get_terrain_icon, resolve_terrain_name, get_clean_terrain_display_name
 
 
 def format_terrain_type(terrain_type: str) -> str:
@@ -69,8 +69,8 @@ def format_terrain_name(terrain_name: str, terrain_type: Optional[str] = None) -
     Returns:
         Formatted string with icon prefix
     """
-    # Clean the terrain name first
-    clean_name = clean_terrain_name(terrain_name)
+    # Use terrain model to get clean display name
+    clean_name = get_clean_terrain_display_name(terrain_name)
 
     # Try to determine terrain type from name if not provided
     if terrain_type is None:
@@ -114,25 +114,6 @@ def format_action_type(action_type: str) -> str:
     return f"{icon} {action_name}" if icon else action_name
 
 
-def clean_terrain_name(terrain_name: str) -> str:
-    """
-    Clean terrain name by removing color information in parentheses.
-
-    Args:
-        terrain_name: The terrain name (e.g., "Coastland (Blue, Green)" or "Player 1 Coastland (Blue, Green)")
-
-    Returns:
-        Cleaned terrain name (e.g., "Coastland" or "Player 1 Coastland")
-    """
-    # Remove everything in parentheses (colors)
-    if "(" in terrain_name and ")" in terrain_name:
-        # Find the last occurrence of "(" to handle names like "Player 1 Coastland (Blue, Green)"
-        paren_start = terrain_name.rfind("(")
-        cleaned_name = terrain_name[:paren_start].strip()
-        return cleaned_name
-    return terrain_name
-
-
 def format_terrain_summary(
     terrain_name: str, terrain_type: str, face_number: int, controller: Optional[str] = None
 ) -> str:
@@ -148,34 +129,9 @@ def format_terrain_summary(
     Returns:
         Formatted terrain summary string
     """
-    # Clean the terrain name to remove color information
-    clean_name = clean_terrain_name(terrain_name)
-
-    # Extract base terrain type and use DISPLAY_NAME from constants
-    display_name = clean_name
-    if " " in clean_name:
-        # Handle names like "Player 1 Coastland" -> extract "Coastland"
-        parts = clean_name.split()
-        if len(parts) >= 3 and parts[0] == "Player":
-            base_terrain = " ".join(parts[2:])
-            terrain_key = base_terrain.upper().replace(" ", "_")
-            if terrain_key in TERRAIN_DATA:
-                terrain = TERRAIN_DATA[terrain_key]
-                display_name = terrain.display_name
-            else:
-                display_name = base_terrain
-        else:
-            # Check if entire name is a terrain type
-            terrain_key = clean_name.upper().replace(" ", "_")
-            if terrain_key in TERRAIN_DATA:
-                terrain = TERRAIN_DATA[terrain_key]
-                display_name = terrain.display_name
-    else:
-        # Single word - check if it's a known terrain type
-        terrain_key = clean_name.upper().replace(" ", "_")
-        if terrain_key in TERRAIN_DATA:
-            terrain = TERRAIN_DATA[terrain_key]
-            display_name = terrain.display_name
+    # Use terrain model to get clean display name and terrain object
+    display_name = get_clean_terrain_display_name(terrain_name)
+    terrain = resolve_terrain_name(terrain_name)
 
     # For terrain types, get_terrain_icon returns color icons
     # For locations (HOME, FRONTIER), use empty string
@@ -185,29 +141,10 @@ def format_terrain_summary(
         # Handle locations by returning empty string
         location_icon = ""
 
-    # Get terrain color icons separately for terrain names
+    # Get terrain color icons from resolved terrain object
     terrain_colors = ""
-    # Convert display name to terrain key format (e.g., "Coastland Castle" -> "COASTLAND_CASTLE")
-    terrain_key = display_name.upper().replace(" ", "_")
-    if terrain_key in TERRAIN_DATA:
-        terrain = TERRAIN_DATA[terrain_key]
+    if terrain:
         terrain_colors = terrain.get_color_string()
-    else:
-        # Try with original display name format
-        original_key = display_name.upper()
-        if original_key in TERRAIN_DATA:
-            terrain = TERRAIN_DATA[original_key]
-            terrain_colors = terrain.get_color_string()
-        else:
-            # Fallback - try to extract base terrain type from complex names
-            if " " in display_name:
-                parts = display_name.split()
-                if len(parts) >= 3 and parts[0] == "Player":
-                    base_terrain = " ".join(parts[2:])
-                    base_terrain_key = base_terrain.upper().replace(" ", "_")
-                    if base_terrain_key in TERRAIN_DATA:
-                        terrain = TERRAIN_DATA[base_terrain_key]
-                        terrain_colors = terrain.get_color_string()
 
     face_display = format_terrain_face(face_number)
 
@@ -235,36 +172,10 @@ def format_terrain_summary_with_description(
     """
     from models.terrain_model import TERRAIN_DATA
     from models.location_model import LOCATION_DATA
-    from utils.display_utils import clean_terrain_name
 
-    # Clean the terrain name to remove color information
-    clean_name = clean_terrain_name(terrain_name)
-
-    # Extract base terrain type and get display name
-    display_name = clean_name
-    if " " in clean_name:
-        # Handle names like "Player 1 Coastland" -> extract "Coastland"
-        parts = clean_name.split()
-        if len(parts) >= 3 and parts[0] == "Player":
-            base_terrain = " ".join(parts[2:])
-            terrain_key = base_terrain.upper().replace(" ", "_")
-            if terrain_key in TERRAIN_DATA:
-                terrain = TERRAIN_DATA[terrain_key]
-                display_name = terrain.display_name
-            else:
-                display_name = base_terrain
-        else:
-            # Check if entire name is a terrain type
-            terrain_key = clean_name.upper().replace(" ", "_")
-            if terrain_key in TERRAIN_DATA:
-                terrain = TERRAIN_DATA[terrain_key]
-                display_name = terrain.display_name
-    else:
-        # Single word - check if it's a known terrain type
-        terrain_key = clean_name.upper().replace(" ", "_")
-        if terrain_key in TERRAIN_DATA:
-            terrain = TERRAIN_DATA[terrain_key]
-            display_name = terrain.display_name
+    # Use terrain model to get clean display name and terrain object
+    display_name = get_clean_terrain_display_name(terrain_name)
+    terrain = resolve_terrain_name(terrain_name)
 
     # For terrain types, get_terrain_icon returns color icons
     # For locations (HOME, FRONTIER), use empty string
@@ -274,19 +185,10 @@ def format_terrain_summary_with_description(
         # Handle locations by returning empty string
         location_icon = ""
 
-    # Get terrain color icons separately for terrain names
+    # Get terrain color icons from resolved terrain object
     terrain_colors = ""
-    # Convert display name to terrain key format (e.g., "Coastland Castle" -> "COASTLAND_CASTLE")
-    terrain_key = display_name.upper().replace(" ", "_")
-    if terrain_key in TERRAIN_DATA:
-        terrain = TERRAIN_DATA[terrain_key]
+    if terrain:
         terrain_colors = terrain.get_color_string()
-    else:
-        # Try with original display name format
-        original_key = display_name.upper()
-        if original_key in TERRAIN_DATA:
-            terrain = TERRAIN_DATA[original_key]
-            terrain_colors = terrain.get_color_string()
 
     if terrain_type.upper() == "FRONTIER":
         return f"{location_icon} Frontier Terrain: {terrain_colors} {display_name} ({face_details})"

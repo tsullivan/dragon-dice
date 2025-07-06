@@ -1097,6 +1097,78 @@ def get_terrain(terrain_name: str) -> Optional[Terrain]:
     return TERRAIN_DATA.get(terrain_key)
 
 
+def resolve_terrain_name(terrain_name: str) -> Optional[Terrain]:
+    """Get a terrain by name, handling various input formats.
+
+    Handles:
+    - Direct terrain keys: "COASTLAND_CASTLE"
+    - Display names: "Coastland Castle"
+    - Names with parenthetical color info: "Coastland Castle (Blue, Green)"
+    - Player-specific names: "Player 1 Coastland Castle"
+    """
+    if not terrain_name:
+        return None
+
+    # Clean the terrain name by removing color information in parentheses
+    clean_name = terrain_name
+    if "(" in terrain_name and ")" in terrain_name:
+        paren_start = terrain_name.rfind("(")
+        clean_name = terrain_name[:paren_start].strip()
+
+    # Try direct lookup first (handles keys like "COASTLAND_CASTLE")
+    terrain_key = clean_name.upper().replace(" ", "_")
+    terrain = TERRAIN_DATA.get(terrain_key)
+    if terrain:
+        return terrain
+
+    # Try original clean name format
+    original_key = clean_name.upper()
+    terrain = TERRAIN_DATA.get(original_key)
+    if terrain:
+        return terrain
+
+    # Handle player-specific names like "Player 1 Coastland Castle"
+    if " " in clean_name:
+        parts = clean_name.split()
+        if len(parts) >= 3 and parts[0] == "Player":
+            # Extract base terrain name after "Player N"
+            base_terrain = " ".join(parts[2:])
+            base_terrain_key = base_terrain.upper().replace(" ", "_")
+            terrain = TERRAIN_DATA.get(base_terrain_key)
+            if terrain:
+                return terrain
+
+    # Search by display name (case-insensitive)
+    clean_name_lower = clean_name.lower()
+    for terrain in TERRAIN_DATA.values():
+        if terrain.display_name.lower() == clean_name_lower:
+            return terrain
+
+    return None
+
+
+def get_clean_terrain_display_name(terrain_name: str) -> str:
+    """Get the clean display name for a terrain, handling various input formats.
+
+    Args:
+        terrain_name: Any terrain name format (with/without colors, player-specific, etc.)
+
+    Returns:
+        Clean display name from TERRAIN_DATA, or original name if not found
+    """
+    terrain = resolve_terrain_name(terrain_name)
+    if terrain:
+        return terrain.display_name
+
+    # Fallback: clean the name manually if terrain not found
+    clean_name = terrain_name
+    if "(" in terrain_name and ")" in terrain_name:
+        paren_start = terrain_name.rfind("(")
+        clean_name = terrain_name[:paren_start].strip()
+
+    return clean_name
+
+
 def get_all_terrain_names() -> List[str]:
     """Get all terrain names."""
     return list(TERRAIN_DATA.keys())

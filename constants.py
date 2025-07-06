@@ -7,6 +7,9 @@ DEFAULT_FORCE_SIZE = 15
 # Dragon Requirements: 1 dragon per 24 points (or part thereof)
 POINTS_PER_DRAGON = 24
 
+# Whether to allow Hybrid dragons to be brought to the game
+ALLOW_HYBRID_DRAGONS = False
+
 # UI Icons (general interface elements) - uppercase keys
 UI_ICONS = {
     "RANDOMIZE": "🎲",  # Die (for randomize buttons)

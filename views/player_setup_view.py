@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-import utils.constants as constants
+import constants
 from components.army_setup_widget import ArmySetupWidget
 from components.carousel import CarouselInputWidget
 from components.dragon_selection_widget import DragonSelectionWidget

@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
-import utils.constants as constants
+import constants
 
 
 class EffectManager(QObject):

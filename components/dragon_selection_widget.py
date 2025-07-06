@@ -4,8 +4,9 @@ from typing import Any, Dict
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
+import constants
 from components.carousel import CarouselInputWidget
-from models.dragon_model import DRAGON_TYPE_EXAMPLES, get_available_dragon_forms
+from models.dragon_model import DRAGON_TYPE_DATA, DragonTypeModel, get_available_dragon_forms
 
 
 class DragonSelectionWidget(QWidget):
@@ -21,8 +22,13 @@ class DragonSelectionWidget(QWidget):
         self.dragon_type_display_options = {}  # Maps display name to type key
         self.type_to_display = {}  # Maps type key to display name
 
-        # Build mappings from all dragon types
-        for type_key, dragon_type in DRAGON_TYPE_EXAMPLES.items():
+        # Build mappings from dragon types, filtering hybrids if disabled
+        for type_key, dragon_type in DRAGON_TYPE_DATA.items():
+            # Skip hybrid dragons if not allowed
+            if not constants.ALLOW_HYBRID_DRAGONS:
+                if dragon_type.dragon_type in [DragonTypeModel.HYBRID, DragonTypeModel.IVORY_HYBRID]:
+                    continue
+
             display_name = dragon_type.get_display_name()
             self.dragon_type_display_options[display_name] = type_key
             self.type_to_display[type_key] = display_name
@@ -106,9 +112,17 @@ class DragonSelectionWidget(QWidget):
         if not isinstance(dragon_data, dict):
             return
 
-        # Update dragon type if provided
+        # Update dragon type if provided and allowed
         dragon_type = dragon_data.get("dragon_type")
         if dragon_type and dragon_type in self.type_to_display:
+            # Check if hybrid dragons are allowed before setting
+            if dragon_type in DRAGON_TYPE_DATA:
+                dragon_type_model = DRAGON_TYPE_DATA[dragon_type]
+                if not constants.ALLOW_HYBRID_DRAGONS:
+                    if dragon_type_model.dragon_type in [DragonTypeModel.HYBRID, DragonTypeModel.IVORY_HYBRID]:
+                        # Skip setting hybrid dragon if not allowed
+                        return
+
             self._current_dragon_type = dragon_type
             self.dragon_type_carousel.setValue(self.type_to_display[dragon_type])
 

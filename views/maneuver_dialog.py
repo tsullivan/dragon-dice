@@ -97,13 +97,13 @@ class CounterManeuverDecisionDialog(QDialog):
 
     decision_made = Signal(str, bool)  # player_name, will_counter
 
-    def __init__(self, player_name: str, location: str, maneuvering_player: str, parent=None):
+    def __init__(self, location: str, opposing_player: str, maneuvering_player: str, parent=None):
         super().__init__(parent)
-        self.player_name = player_name
+        self.opposing_player = opposing_player
         self.location = location
         self.maneuvering_player = maneuvering_player
 
-        self.setWindowTitle(f"Counter-Maneuver Decision - {player_name}")
+        self.setWindowTitle("Counter-Maneuver Decision")
         self.setModal(True)
         self.resize(400, 250)
 
@@ -124,14 +124,14 @@ class CounterManeuverDecisionDialog(QDialog):
 
         # Explanation
         explanation = QLabel(
-            f"Player {self.maneuvering_player} wants to maneuver at {self.location}.\n\n"
-            f"You have an army at this location. According to Dragon Dice rules,\n"
-            f"you may choose to oppose this maneuver (counter-maneuver).\n\n"
-            f"If you counter-maneuver, both armies will roll dice simultaneously.\n"
-            f"If you don't oppose, the maneuver automatically succeeds."
+            f"{self.maneuvering_player} wants to maneuver at {self.location}.\n\n"
+            f"{self.opposing_player} has an army at this location. According to Dragon Dice rules,\n"
+            f"{self.opposing_player} may choose to oppose this maneuver (counter-maneuver).\n\n"
+            f"If there is a counter-maneuver, both armies will roll dice simultaneously.\n"
+            f"If there is no counter-maneuver, the maneuver automatically succeeds."
         )
         explanation.setWordWrap(True)
-        explanation.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # explanation.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(explanation)
 
         layout.addItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
@@ -153,8 +153,8 @@ class CounterManeuverDecisionDialog(QDialog):
 
     def _make_decision(self, will_counter: bool):
         """Emit the decision and close dialog."""
-        print(f"CounterManeuverDecisionDialog: {self.player_name} making decision: {will_counter}")
-        self.decision_made.emit(self.player_name, will_counter)
+        print(f"CounterManeuverDecisionDialog: {self.opposing_player} making decision: {will_counter}")
+        self.decision_made.emit(self.opposing_player, will_counter)
         self.accept()
 
 

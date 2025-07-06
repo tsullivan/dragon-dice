@@ -6,11 +6,11 @@ Tests for DragonSelectionWidget functionality
 import pytest
 from PySide6.QtWidgets import QApplication
 
-import utils.constants as constants
+import constants
 from components.dragon_selection_widget import DragonSelectionWidget
 from models.dragon_model import (
-    DRAGON_DATA,
-    DRAGON_TYPE_EXAMPLES,
+    DRAGON_FORM_DATA,
+    DRAGON_TYPE_DATA,
     get_available_dragon_forms,
     get_available_dragon_types,
 )
@@ -26,7 +26,7 @@ class TestDragonSelectionWidget:
 
         # Check default values
         value = widget.value()
-        assert value["dragon_type"] == list(DRAGON_TYPE_EXAMPLES.keys())[0]  # Should be first dragon type
+        assert value["dragon_type"] == list(DRAGON_TYPE_DATA.keys())[0]  # Should be first dragon type
         assert value["dragon_form"] == get_available_dragon_forms()[0]  # Should be "Drake"
 
     def test_dragon_type_selection(self, qtbot):
@@ -77,7 +77,7 @@ class TestDragonSelectionWidget:
         # Clear and check defaults
         widget.clear()
         value = widget.value()
-        assert value["dragon_type"] == list(DRAGON_TYPE_EXAMPLES.keys())[0]
+        assert value["dragon_type"] == list(DRAGON_TYPE_DATA.keys())[0]
         assert value["dragon_form"] == get_available_dragon_forms()[0]
 
     def test_signal_emission(self, qtbot):
@@ -111,8 +111,8 @@ def test_dragon_constants():
     assert "WHITE" in get_available_dragon_types()
 
     # Test specific values
-    assert DRAGON_DATA["DRAKE"].display_name == "Drake"
-    assert DRAGON_DATA["WYRM"].display_name == "Wyrm"
+    assert DRAGON_FORM_DATA["DRAKE"].display_name == "Drake"
+    assert DRAGON_FORM_DATA["WYRM"].display_name == "Wyrm"
 
 
 if __name__ == "__main__":

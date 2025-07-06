@@ -4,7 +4,7 @@ import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QRadioButton
 
-import utils.constants as constants
+import constants
 from views.welcome_view import WelcomeView
 
 

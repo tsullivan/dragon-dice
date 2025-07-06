@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-import utils.constants as constants
+import constants
 from views.welcome_view import WelcomeView
 
 

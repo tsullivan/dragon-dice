@@ -1,7 +1,7 @@
 import pytest
 from PySide6.QtWidgets import QApplication
 
-import utils.constants as constants
+import constants
 from game_logic.engine import GameEngine  # To instantiate the game engine for the view
 from models.game_phase_model import get_turn_phases
 from test.utils.visual_test_helpers import capture_widget_screenshot

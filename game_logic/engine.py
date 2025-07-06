@@ -2,7 +2,7 @@ from typing import Optional  # Import Optional
 
 from PySide6.QtCore import QObject, Signal, Slot
 
-import utils.constants as constants
+import constants
 from game_logic.action_resolver import ActionResolver
 from game_logic.effect_manager import EffectManager
 from game_logic.game_state_manager import GameStateManager

@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from utils.display_utils import format_terrain_summary
+from views.display_utils import format_terrain_summary
 
 
 class ActingArmyWidget(QWidget):
@@ -70,29 +70,29 @@ class ActingArmyWidget(QWidget):
 
         # Add radio buttons for each army
         for i, army_info in enumerate(armies):
-            army_name = army_info.get("name", "Unknown Army")
-            army_display_name = army_info.get("display_name", "Unknown")
-            location = army_info.get("location", "Unknown")
-            unit_count = len(army_info.get("units", []))
+            army_points = army_info.get("points", 0)
+            army_location = army_info.get("location", "Unknown")
 
-            # Use the army's display_name directly
-            formatted_army = army_display_name
+            # Use the army's display_name if available, otherwise use army_type
+            formatted_army_type = army_info.get("display_name", army_info.get("army_type", "Unknown").title())
 
-            # Format location using utility function
-            if terrain_data and location in terrain_data:
-                terrain_info = terrain_data[location]
+            # Format location using utility function for consistency with Player Summaries
+            if terrain_data and army_location in terrain_data:
+                terrain_info = terrain_data[army_location]
                 terrain_type = terrain_info.get("type", "")
-                terrain_face = terrain_info.get("face", 1)
+                face_number = terrain_info.get("face", 1)
                 terrain_controller = terrain_info.get("controller", "")
 
-                formatted_location = format_terrain_summary(location, terrain_type, terrain_face, terrain_controller)
+                # Use standard formatting for consistency
+                formatted_location = format_terrain_summary(
+                    army_location, terrain_type, face_number, terrain_controller
+                )
             else:
                 # Fallback formatting when no terrain data
-                formatted_location = f"🗺️ {location}"
+                formatted_location = f"🗺️ {army_location}"
 
-            button_text = (
-                f"{formatted_army} {army_name}\nLOCATION: {formatted_location}\nUNITS: {unit_count} units available"
-            )
+            # Match the format used in Player Summaries widget
+            button_text = f"{formatted_army_type}: {army_points}pts\n{formatted_location}"
 
             radio_button = QRadioButton(button_text)
             self.army_button_group.addButton(radio_button, i)

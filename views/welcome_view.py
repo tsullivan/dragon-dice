@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-import utils.constants as constants
+import constants
 from components.tabbed_view_widget import TabbedViewWidget
 from models.dragon_model import calculate_required_dragons
 from models.help_text_model import HelpTextModel

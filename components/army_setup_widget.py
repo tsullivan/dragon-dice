@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )  # Removed QComboBox
 
-import utils.constants as constants  # Import constants
+import constants  # Import constants
 from components.army_die_face_summary_widget import ArmyDieFaceSummaryWidget
 from models.unit_model import UnitModel  # For type hinting
 from models.unit_roster_model import UnitRosterModel  # For type hinting

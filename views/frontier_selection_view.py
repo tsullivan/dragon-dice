@@ -16,7 +16,7 @@ from components.tabbed_view_widget import TabbedViewWidget
 
 # No change, good comment
 from models.help_text_model import HelpTextModel
-from utils.display_utils import format_terrain_type
+from views.display_utils import format_terrain_type
 
 
 class FrontierSelectionView(QWidget):

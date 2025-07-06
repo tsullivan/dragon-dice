@@ -1,6 +1,6 @@
 import pytest
 
-import utils.constants as constants
+import constants
 from models.unit_model import UnitModel
 from models.unit_roster_model import UnitRosterModel
 from test.utils.visual_test_helpers import capture_widget_screenshot

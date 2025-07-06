@@ -17,7 +17,7 @@ from components.tabbed_view_widget import TabbedViewWidget
 
 # No change, good comment
 from models.help_text_model import HelpTextModel
-from utils.display_utils import format_terrain_type
+from views.display_utils import format_terrain_type
 
 
 class DistanceRollsView(QWidget):
@@ -95,6 +95,7 @@ class DistanceRollsView(QWidget):
 
             # Frontier terrain roll (only for the first player)
             if player_name == self.first_player_name:
+                formatted_frontier = format_terrain_type(self.frontier_terrain)
                 frontier_terrain_label = QLabel(
                     f"Roll for {formatted_frontier} (Frontier Terrain - you are the first player):"
                 )

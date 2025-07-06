@@ -23,7 +23,7 @@ from components.tabbed_view_widget import TabbedViewWidget
 # No change, good comment
 from game_logic.engine import GameEngine
 from models.help_text_model import HelpTextModel
-from utils.display_utils import (
+from views.display_utils import (
     format_player_turn_label,
     format_terrain_summary,
     format_terrain_summary_with_description,
