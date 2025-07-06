@@ -49,6 +49,10 @@ addopts = [
     "--strict-markers",
     "--disable-warnings",
     "--tb=short",
+    "-p no:xvfb",
+]
+env = [
+    "QT_QPA_PLATFORM=offscreen",
 ]
 markers = [
     "unit: Unit tests",
