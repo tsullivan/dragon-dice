@@ -9,7 +9,6 @@ from typing import Optional
 # Import all icon mappings from constants
 import utils.constants as constants
 from models.action_model import get_action_icon
-from models.army_model import get_army_type_icon
 from models.location_model import LOCATION_DATA
 from models.terrain_model import TERRAIN_DATA, get_terrain_icon
 
@@ -84,37 +83,6 @@ def format_terrain_name(terrain_name: str, terrain_type: Optional[str] = None) -
         # Handle locations by returning empty string
         icon = ""
     return f"{icon} {clean_name}" if icon else clean_name
-
-
-def format_army_type(army_type: str) -> str:
-    """
-    Format army type with icon.
-
-    Args:
-        army_type: The army type string (e.g., "Home", "Campaign", "Horde")
-
-    Returns:
-        Formatted string with icon prefix (e.g., "🏠 Home")
-    """
-    icon = get_army_type_icon(army_type)
-    return f"{icon} {army_type}" if icon else army_type
-
-
-def format_army_name(army_name: str, army_type: Optional[str] = None) -> str:
-    """
-    Format army name with type icon.
-
-    Args:
-        army_name: The army name
-        army_type: The army type for icon selection
-
-    Returns:
-        Formatted string with icon prefix
-    """
-    if army_type:
-        icon = get_army_type_icon(army_type)
-        return f"{icon} {army_name}" if icon else army_name
-    return army_name
 
 
 def format_terrain_face(face_number: int) -> str:

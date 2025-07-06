@@ -79,15 +79,12 @@ class ActionDecisionWidget(QWidget):
             if not location_icon:
                 location_icon = "🗺️"  # Default terrain icon
 
-            # Add army type indicator
-            try:
-                army_type_indicator = constants.get_army_type_icon(army_type)
-            except KeyError:
-                army_type_indicator = "⚔️"
+            # Get army display name
+            army_display_name = army_data.get("display_name", army_type.title())
 
             # Update army info display
             self.army_info_label.setText(
-                f"Acting Army: {army_type_indicator} {army_name}\n"
+                f"Acting Army: {army_display_name} {army_name}\n"
                 f"Location: {location_icon} {location} ({unit_count} units)"
             )
 

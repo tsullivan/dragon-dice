@@ -14,6 +14,7 @@ class ArmyModel:
         self.units: List[UnitModel] = []
         self.location = self._process_location(location)
         self.max_points = max_points  # Max points this army can have (50% of total force)
+        self.display_name = self._get_display_name()
 
     def _process_location(self, location: Union[str, LocationModel, None]) -> Optional[LocationModel]:
         """Convert location input to LocationModel if possible, otherwise store as string."""
@@ -30,6 +31,14 @@ class ArmyModel:
             return LocationModel(name=location.upper().replace(" ", "_"), display_name=location)
         else:
             raise ValueError(f"Invalid location type: {type(location)}")
+
+    def _get_display_name(self) -> str:
+        """Get the display name for this army type."""
+        army_key = self.army_type.upper()
+        if army_key in ARMY_DATA:
+            return ARMY_DATA[army_key]["display_name"]
+        # Fallback to army_type if not found
+        return self.army_type.title()
 
     def get_location_name(self) -> str:
         """Get the location name as a string for compatibility."""
@@ -69,6 +78,7 @@ class ArmyModel:
             "units": [unit.to_dict() for unit in self.units],
             "location": self.get_location_name(),  # Store as string for serialization
             "max_points": self.max_points,
+            "display_name": self.display_name,
         }
 
     @classmethod
@@ -80,6 +90,7 @@ class ArmyModel:
             max_points=data.get("max_points", 0),
         )
         army.units = [UnitModel.from_dict(u_data) for u_data in data.get("units", [])]
+        # display_name will be automatically set by __init__
         return army
 
 
@@ -87,53 +98,20 @@ class ArmyModel:
 ARMY_DATA = {
     "HOME": {
         "name": "HOME",
-        "icon": "🏰",
         "display_name": "Home",
     },
     "CAMPAIGN": {
         "name": "CAMPAIGN",
-        "icon": "🚩",
         "display_name": "Campaign",
     },
     "HORDE": {
         "name": "HORDE",
-        "icon": "👥",
         "display_name": "Horde",
     },
 }
 
 
 # Helper functions for army types
-def get_army_type_icon(army_type: str) -> str:
-    """Get army type icon. Raises KeyError if army type not found."""
-    # Try exact match first (new format)
-    army_key = army_type.upper()
-    if army_key in ARMY_DATA:
-        return ARMY_DATA[army_key]["icon"]
-
-    # Try case-insensitive match
-    for key in ARMY_DATA:
-        if key.upper() == army_type.upper():
-            return ARMY_DATA[key]["icon"]
-
-    raise KeyError(f"Unknown army type: '{army_type}'. Valid army types: {list(ARMY_DATA.keys())}")
-
-
-def format_army_type_display(army_type: str) -> str:
-    """Return 'icon display_name' format for display."""
-    # Try exact match first (new format)
-    army_key = army_type.upper()
-    if army_key in ARMY_DATA:
-        army_info = ARMY_DATA[army_key]
-        return f"{army_info['icon']} {army_info['display_name']}"
-
-    # Try case-insensitive match
-    for key in ARMY_DATA:
-        if key.upper() == army_type.upper():
-            army_info = ARMY_DATA[key]
-            return f"{army_info['icon']} {army_info['display_name']}"
-
-    raise KeyError(f"Unknown army type: '{army_type}'. Valid types: {list(ARMY_DATA.keys())}")
 
 
 def get_army_display_name(army_type: str) -> str:
@@ -159,7 +137,7 @@ def validate_army_data() -> bool:
     """Validate all army data."""
     try:
         for army_name, army_info in ARMY_DATA.items():
-            required_fields = ["name", "icon", "display_name"]
+            required_fields = ["name", "display_name"]
             for field in required_fields:
                 if field not in army_info:
                     print(f"ERROR: Missing {field} in {army_name}")

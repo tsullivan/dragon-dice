@@ -27,7 +27,7 @@ from components.terrain_selection_widget import (
     TerrainSelectionWidget,
 )
 from config.resource_manager import ResourceManager
-from models.army_model import format_army_type_display, get_all_army_types
+from models.army_model import get_all_army_types, ARMY_DATA
 from models.help_text_model import HelpTextModel
 from models.unit_roster_model import UnitRosterModel
 
@@ -148,7 +148,7 @@ class PlayerSetupView(QWidget):
 
         for army_type in get_all_army_types():
             # Create fieldset for each army
-            army_group = QGroupBox(f"{format_army_type_display(army_type)} Army")
+            army_group = QGroupBox(f"{ARMY_DATA[army_type]['display_name']} Army")
             army_layout = QVBoxLayout(army_group)
             self.army_group_boxes[army_type] = army_group  # Store reference for visibility control
 

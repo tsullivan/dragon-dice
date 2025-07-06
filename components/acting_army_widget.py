@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from utils.display_utils import format_army_type, format_terrain_summary
+from utils.display_utils import format_terrain_summary
 
 
 class ActingArmyWidget(QWidget):
@@ -71,12 +71,12 @@ class ActingArmyWidget(QWidget):
         # Add radio buttons for each army
         for i, army_info in enumerate(armies):
             army_name = army_info.get("name", "Unknown Army")
-            army_type = army_info.get("army_type", "Home")  # Default to Home
+            army_display_name = army_info.get("display_name", "Unknown")
             location = army_info.get("location", "Unknown")
             unit_count = len(army_info.get("units", []))
 
-            # Format army using utility function
-            formatted_army = format_army_type(army_type)
+            # Use the army's display_name directly
+            formatted_army = army_display_name
 
             # Format location using utility function
             if terrain_data and location in terrain_data:

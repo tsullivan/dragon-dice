@@ -49,15 +49,6 @@ class DistanceRollsView(QWidget):
         title_label.setFont(font)
         main_layout.addWidget(title_label)
 
-        # Sub-title for Frontier Terrain
-        formatted_frontier = format_terrain_type(self.frontier_terrain)
-        frontier_info_label = QLabel(f"Rolling distance to: {formatted_frontier}")
-        frontier_info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        font = frontier_info_label.font()
-        font.setPointSize(16)
-        frontier_info_label.setFont(font)
-        main_layout.addWidget(frontier_info_label)
-
         # Tabbed Interface (Game and Help)
         self.tabbed_widget = TabbedViewWidget()
 

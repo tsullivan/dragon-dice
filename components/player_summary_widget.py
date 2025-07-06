@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
-from utils.display_utils import format_army_type, format_terrain_summary
+from utils.display_utils import format_terrain_summary
 
 
 class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled border
@@ -47,8 +47,8 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
             army_points = army.get("points", 0)
             army_location = army.get("location", "N/A")
 
-            # Format army with type emoji and proper capitalization
-            formatted_army_type = format_army_type(army_type.title())
+            # Use the army's display_name if available, otherwise use army_type
+            formatted_army_type = army.get("display_name", army_type.title())
 
             # Format location using utility function for consistency with Available Armies
             if terrain_data and army_location in terrain_data:
