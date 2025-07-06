@@ -1,0 +1,40 @@
+{
+  "DRAKE": {
+    "display_name": "Drake",
+    "face_count": 12,
+    "face_names": [
+      "Jaws",
+      "Dragon_Breath",
+      "Claw_Front_Left",
+      "Claw_Front_Right",
+      "Wing_Left",
+      "Wing_Right",
+      "Belly_Front",
+      "Belly_Rear",
+      "Claw_Rear_Left",
+      "Claw_Rear_Right",
+      "Tail_Front",
+      "Tail_Tip"
+    ],
+    "name": "DRAKE"
+  },
+  "WYRM": {
+    "display_name": "Wyrm",
+    "face_count": 12,
+    "face_names": [
+      "Jaws",
+      "Dragon_Breath",
+      "Claw_Front_Left",
+      "Claw_Front_Right",
+      "Belly_Front",
+      "Belly_Rear",
+      "Claw_Rear_Left",
+      "Claw_Rear_Right",
+      "Tail_Front",
+      "Tail_Middle",
+      "Tail_Tip",
+      "Treasure"
+    ],
+    "name": "WYRM"
+  }
+}

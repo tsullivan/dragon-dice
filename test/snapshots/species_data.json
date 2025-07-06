@@ -1,0 +1,776 @@
+{
+  "AMAZON": {
+    "abilities": [
+      {
+        "description": "During a march, instead of taking the maneuver step, you may bury a minor terrain the marching army controls. Amazons in that army may then count maneuver results as if they were missile results during a missile action this turn.",
+        "name": "Javelin Charge"
+      },
+      {
+        "description": "During a march, instead of taking the maneuver step, you may bury a minor terrain the marching army controls. Amazons in that army may then count maneuver results as if they were melee results during a melee action this turn.",
+        "name": "Kukri Charge"
+      },
+      {
+        "description": "Amazon units generate magic results matching the elements of the terrain where they are located. Amazon units in the Reserves Area generate Ivory magic, which may only be used to cast Elemental spells.",
+        "name": "Terrain Harmony"
+      }
+    ],
+    "description": "No elements (ivory)",
+    "display_name": "Amazons",
+    "element_colors": [
+      [
+        "🟫",
+        "Ivory"
+      ]
+    ],
+    "elements": [
+      "IVORY"
+    ],
+    "name": "Amazon"
+  },
+  "CORAL_ELF": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains water, Coral Elves may count maneuver results as if they were save results.",
+        "name": "Coastal Dodge"
+      },
+      {
+        "description": "When at a terrain that contains air, Coral Elves units may counter-attack against a missile action. Follow the same process used for a regular melee counter-attack, using missile results instead of melee results.",
+        "name": "Defensive Volley"
+      }
+    ],
+    "description": "Air & Water (blue & green)",
+    "display_name": "Coral Elves",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ],
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "AIR",
+      "WATER"
+    ],
+    "name": "Coral Elf"
+  },
+  "DRAGONCRUSADER": {
+    "abilities": [],
+    "description": "All Elements (white)",
+    "display_name": "Dragoncrusaders",
+    "element_colors": [
+      [
+        "⬜",
+        "White"
+      ]
+    ],
+    "elements": [
+      "AIR",
+      "DEATH",
+      "EARTH",
+      "FIRE",
+      "WATER"
+    ],
+    "name": "Dragoncrusader"
+  },
+  "DRAGONHUNTER_AIR": {
+    "abilities": [],
+    "description": "Single element - Air (blue)",
+    "display_name": "Dragonhunters (Air)",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ]
+    ],
+    "elements": [
+      "AIR"
+    ],
+    "name": "Dragonhunter Air"
+  },
+  "DRAGONHUNTER_DEATH": {
+    "abilities": [],
+    "description": "Single element - Death (black)",
+    "display_name": "Dragonhunters (Death)",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ]
+    ],
+    "elements": [
+      "DEATH"
+    ],
+    "name": "Dragonhunter Death"
+  },
+  "DRAGONHUNTER_EARTH": {
+    "abilities": [],
+    "description": "Single element - Earth (yellow)",
+    "display_name": "Dragonhunters (Earth)",
+    "element_colors": [
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "EARTH"
+    ],
+    "name": "Dragonhunter Earth"
+  },
+  "DRAGONHUNTER_FIRE": {
+    "abilities": [],
+    "description": "Single element - Fire (red)",
+    "display_name": "Dragonhunters (Fire)",
+    "element_colors": [
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "FIRE"
+    ],
+    "name": "Dragonhunter Fire"
+  },
+  "DRAGONHUNTER_WATER": {
+    "abilities": [],
+    "description": "Single element - Water (green)",
+    "display_name": "Dragonhunters (Water)",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "WATER"
+    ],
+    "name": "Dragonhunter Water"
+  },
+  "DRAGONKIN_AIR": {
+    "abilities": [],
+    "description": "Single element - Air (blue)",
+    "display_name": "Dragonkin (Air)",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ]
+    ],
+    "elements": [
+      "AIR"
+    ],
+    "name": "Dragonkin Air"
+  },
+  "DRAGONKIN_DEATH": {
+    "abilities": [],
+    "description": "Single element - Death (black)",
+    "display_name": "Dragonkin (Death)",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ]
+    ],
+    "elements": [
+      "DEATH"
+    ],
+    "name": "Dragonkin Death"
+  },
+  "DRAGONKIN_EARTH": {
+    "abilities": [],
+    "description": "Single element - Earth (yellow)",
+    "display_name": "Dragonkin (Earth)",
+    "element_colors": [
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "EARTH"
+    ],
+    "name": "Dragonkin Earth"
+  },
+  "DRAGONKIN_FIRE": {
+    "abilities": [],
+    "description": "Single element - Fire (red)",
+    "display_name": "Dragonkin (Fire)",
+    "element_colors": [
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "FIRE"
+    ],
+    "name": "Dragonkin Fire"
+  },
+  "DRAGONKIN_WATER": {
+    "abilities": [],
+    "description": "Single element - Water (green)",
+    "display_name": "Dragonkin (Water)",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "WATER"
+    ],
+    "name": "Dragonkin Water"
+  },
+  "DRAGONLORD": {
+    "abilities": [],
+    "description": "All Elements (white)",
+    "display_name": "Dragonlords",
+    "element_colors": [
+      [
+        "⬜",
+        "White"
+      ]
+    ],
+    "elements": [
+      "AIR",
+      "DEATH",
+      "EARTH",
+      "FIRE",
+      "WATER"
+    ],
+    "name": "Dragonlord"
+  },
+  "DRAGONMASTER_AIR": {
+    "abilities": [],
+    "description": "Single element - Air (blue)",
+    "display_name": "Dragonmasters (Air)",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ]
+    ],
+    "elements": [
+      "AIR"
+    ],
+    "name": "Dragonmaster Air"
+  },
+  "DRAGONMASTER_DEATH": {
+    "abilities": [],
+    "description": "Single element - Death (black)",
+    "display_name": "Dragonmasters (Death)",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ]
+    ],
+    "elements": [
+      "DEATH"
+    ],
+    "name": "Dragonmaster Death"
+  },
+  "DRAGONMASTER_EARTH": {
+    "abilities": [],
+    "description": "Single element - Earth (yellow)",
+    "display_name": "Dragonmasters (Earth)",
+    "element_colors": [
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "EARTH"
+    ],
+    "name": "Dragonmaster Earth"
+  },
+  "DRAGONMASTER_FIRE": {
+    "abilities": [],
+    "description": "Single element - Fire (red)",
+    "display_name": "Dragonmasters (Fire)",
+    "element_colors": [
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "FIRE"
+    ],
+    "name": "Dragonmaster Fire"
+  },
+  "DRAGONMASTER_WATER": {
+    "abilities": [],
+    "description": "Single element - Water (green)",
+    "display_name": "Dragonmasters (Water)",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "WATER"
+    ],
+    "name": "Dragonmaster Water"
+  },
+  "DRAGONSLAYER": {
+    "abilities": [],
+    "description": "All Elements (white)",
+    "display_name": "Dragonslayers",
+    "element_colors": [
+      [
+        "⬜",
+        "White"
+      ]
+    ],
+    "elements": [
+      "AIR",
+      "DEATH",
+      "EARTH",
+      "FIRE",
+      "WATER"
+    ],
+    "name": "Dragonslayer"
+  },
+  "DRAGONZEALOT_AIR": {
+    "abilities": [],
+    "description": "Single element - Air (blue)",
+    "display_name": "Dragonzealots (Air)",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ]
+    ],
+    "elements": [
+      "AIR"
+    ],
+    "name": "Dragonzealot Air"
+  },
+  "DRAGONZEALOT_DEATH": {
+    "abilities": [],
+    "description": "Single element - Death (black)",
+    "display_name": "Dragonzealots (Death)",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ]
+    ],
+    "elements": [
+      "DEATH"
+    ],
+    "name": "Dragonzealot Death"
+  },
+  "DRAGONZEALOT_EARTH": {
+    "abilities": [],
+    "description": "Single element - Earth (yellow)",
+    "display_name": "Dragonzealots (Earth)",
+    "element_colors": [
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "EARTH"
+    ],
+    "name": "Dragonzealot Earth"
+  },
+  "DRAGONZEALOT_FIRE": {
+    "abilities": [],
+    "description": "Single element - Fire (red)",
+    "display_name": "Dragonzealots (Fire)",
+    "element_colors": [
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "FIRE"
+    ],
+    "name": "Dragonzealot Fire"
+  },
+  "DRAGONZEALOT_WATER": {
+    "abilities": [],
+    "description": "Single element - Water (green)",
+    "display_name": "Dragonzealots (Water)",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "WATER"
+    ],
+    "name": "Dragonzealot Water"
+  },
+  "DWARF": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains earth, Dwarves may count melee results as if they were maneuver results.",
+        "name": "Mountain Mastery"
+      },
+      {
+        "description": "When at a terrain that contains fire, Dwarves may count save results as if they were melee results when rolling for a counter-attack.",
+        "name": "Dwarven Might"
+      }
+    ],
+    "description": "Fire & Earth (red & yellow)",
+    "display_name": "Dwarves",
+    "element_colors": [
+      [
+        "🟥",
+        "Red"
+      ],
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "FIRE",
+      "EARTH"
+    ],
+    "name": "Dwarf"
+  },
+  "ELDARIM_AIR": {
+    "abilities": [],
+    "description": "Single element - Air (blue)",
+    "display_name": "Eldarim (Air)",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ]
+    ],
+    "elements": [
+      "AIR"
+    ],
+    "name": "Eldarim Air"
+  },
+  "ELDARIM_DEATH": {
+    "abilities": [],
+    "description": "Single element - Death (black)",
+    "display_name": "Eldarim (Death)",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ]
+    ],
+    "elements": [
+      "DEATH"
+    ],
+    "name": "Eldarim Death"
+  },
+  "ELDARIM_EARTH": {
+    "abilities": [],
+    "description": "Single element - Earth (yellow)",
+    "display_name": "Eldarim (Earth)",
+    "element_colors": [
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "EARTH"
+    ],
+    "name": "Eldarim Earth"
+  },
+  "ELDARIM_FIRE": {
+    "abilities": [],
+    "description": "Single element - Fire (red)",
+    "display_name": "Eldarim (Fire)",
+    "element_colors": [
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "FIRE"
+    ],
+    "name": "Eldarim Fire"
+  },
+  "ELDARIM_WATER": {
+    "abilities": [],
+    "description": "Single element - Water (green)",
+    "display_name": "Eldarim (Water)",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "WATER"
+    ],
+    "name": "Eldarim Water"
+  },
+  "FERAL": {
+    "abilities": [
+      {
+        "description": "During the Species Abilities Phase, each of your armies containing at least one Feral unit at a terrain that contains earth or air may recruit a small (1 health) Feral unit to, or promote one Feral unit in, the army.",
+        "name": "Feralization"
+      },
+      {
+        "description": "When at a terrain that contains both earth and air, Feral units may count maneuver results as if they were melee results during a counter‑attack.",
+        "name": "Stampede"
+      }
+    ],
+    "description": "Air & Earth (blue & yellow)",
+    "display_name": "Feral",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ],
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "AIR",
+      "EARTH"
+    ],
+    "name": "Feral"
+  },
+  "FIREWALKER": {
+    "abilities": [
+      {
+        "description": "During the Retreat Step of the Reserves Phase, Firewalker units may move from any terrain that contains air to any other terrain that contains air and where you have at least one Firewalker unit.",
+        "name": "Air Flight"
+      },
+      {
+        "description": "When at a terrain that contains fire, Firewalkers may count save results as if they were melee results. Flaming Shields does not apply when making a counter-attack.",
+        "name": "Flaming Shields"
+      }
+    ],
+    "description": "Air & Fire (blue & red)",
+    "display_name": "Firewalkers",
+    "element_colors": [
+      [
+        "🟦",
+        "Blue"
+      ],
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "AIR",
+      "FIRE"
+    ],
+    "name": "Firewalker"
+  },
+  "FROSTWING": {
+    "abilities": [
+      {
+        "description": "During the Species Abilities Phase, if you have at least one Frostwing unit at a terrain that contains air, you may move one Frostwing unit of your choice from your BUA to your DUA.",
+        "name": "Winter's Fortitude"
+      },
+      {
+        "description": "When an opponent takes a magic action at a terrain containing Frostwings, the Frostwing units may make a magic negation roll. Roll the Frostwing units before the opponent totals their magic results. Subtract the magic results generated by the Frostwing units from the opponent's results.\n* The number of magic results that may be subtracted is equal to the number of Frostwing units in the Frostwing player's DUA, up to a maximum of five s (see page 21).",
+        "name": "Magic Negation"
+      }
+    ],
+    "description": "Death & Air (black & blue)",
+    "display_name": "Frostwings",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ],
+      [
+        "🟦",
+        "Blue"
+      ]
+    ],
+    "elements": [
+      "DEATH",
+      "AIR"
+    ],
+    "name": "Frostwing"
+  },
+  "GOBLIN": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains earth, Goblins may count melee results as if they were maneuver results.",
+        "name": "Swamp Mastery"
+      },
+      {
+        "description": "When an army containing Goblins takes a melee action, the opposing player must select a number of their units after they have resolved their save roll.\n* The selected units cannot perform a counter-attack during this melee action. The number of units that must be selected in this way is equal to the number of Goblin units in the Goblin player's DUA, up to a maximum of three s (see page 21).",
+        "name": "Foul Stench"
+      }
+    ],
+    "description": "Death & Earth (black & yellow)",
+    "display_name": "Goblins",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ],
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "DEATH",
+      "EARTH"
+    ],
+    "name": "Goblin"
+  },
+  "LAVA_ELF": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains fire, Lava Elves may count maneuver results as if they were save results.",
+        "name": "Volcanic Adaptation"
+      },
+      {
+        "description": "When targeting an army at the same terrain with a missile attack, Lava Elves missile results inflict damage that may only be reduced by save results generated by spells.\n* The number of missile results that may be effected in this way is equal to the number of Lava Elves units in the Lava Elves player's DUA, up to a maximum of three s (see page 21).",
+        "name": "Cursed Bullets"
+      }
+    ],
+    "description": "Death & Fire (black & red)",
+    "display_name": "Lava Elves",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ],
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "DEATH",
+      "FIRE"
+    ],
+    "name": "Lava Elf"
+  },
+  "SCALDER": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains fire, Scalders making a save roll against a melee attack inflict one point of damage on the attacking army for each save result rolled. Only save results generated by spells may reduce this damage. Scorching Touch does not apply when saving against a counter-attack.",
+        "name": "Scorching Touch"
+      },
+      {
+        "description": "When at a terrain that contains water, Scalders may count maneuver results as if they were save results against missile damage.",
+        "name": "Intangibility"
+      }
+    ],
+    "description": "Water & Fire (green & red)",
+    "display_name": "Scalders",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ],
+      [
+        "🟥",
+        "Red"
+      ]
+    ],
+    "elements": [
+      "WATER",
+      "FIRE"
+    ],
+    "name": "Scalder"
+  },
+  "SWAMP_STALKER": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains water, Swamp Stalkers may count maneuver results as if they were save results.",
+        "name": "Born of the Swamp"
+      },
+      {
+        "description": "During the Species Abilities Phase, you may attempt to Mutate providing the following criteria are met:\n- An opposing player must have at least one unit in their Reserves Area.\n- You must have at least one army containing a Swamp Stalker at a terrain.\n- You must have at least one Swamp Stalker unit in your DUA (or a Deadlands minor terrain in play).\n* Target units in an opponent's Reserve Area to make a save roll. Units that do not generate a save result are killed. One of your armies at a terrain that contains at least one Swamp Stalker unit can then recruit or promote Swamp Stalker units up to the health-worth that were killed this way.\n* The number of units that may be targeted in this way is equal to the number of Swamp Stalker units in the Swamp Stalker player's DUA, up to a maximum of one s (see page 21).",
+        "name": "Mutate"
+      }
+    ],
+    "description": "Death & Water (black & green)",
+    "display_name": "Swamp Stalkers",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ],
+      [
+        "🟩",
+        "Green"
+      ]
+    ],
+    "elements": [
+      "DEATH",
+      "WATER"
+    ],
+    "name": "Swamp Stalker"
+  },
+  "TREEFOLK": {
+    "abilities": [
+      {
+        "description": "When at a terrain that contains earth, Treefolk units that do not roll an SAI result may be re-rolled once when making a counter-maneuver. The previous results are ignored. Any units you wish to re-roll in this way must be selected and re-rolled together.",
+        "name": "Rapid Growth"
+      },
+      {
+        "description": "When at a terrain that contains water, Treefolk units that are killed should be rolled before being moved to the DUA. Any units that roll an ID icon are instead moved to your Reserve Area.",
+        "name": "Replanting"
+      }
+    ],
+    "description": "Water & Earth (green & yellow)",
+    "display_name": "Treefolk",
+    "element_colors": [
+      [
+        "🟩",
+        "Green"
+      ],
+      [
+        "🟨",
+        "Yellow"
+      ]
+    ],
+    "elements": [
+      "WATER",
+      "EARTH"
+    ],
+    "name": "Treefolk"
+  },
+  "UNDEAD": {
+    "abilities": [
+      {
+        "description": "When an Undead unit is killed you may instead exchange it with an Undead unit of lesser health from your DUA.",
+        "name": "Stepped Damage"
+      },
+      {
+        "description": "When an army containing Undead takes a magic action, each Undead unit that rolls at least one non-ID magic result may add one additional magic result.\n* The number of magic results that may be added in this way is equal to the number of Undead units in the Undead player's DUA, up to a maximum of four s (see page 21).",
+        "name": "Bone Magic"
+      }
+    ],
+    "description": "Death only (black)",
+    "display_name": "Undead",
+    "element_colors": [
+      [
+        "⬛",
+        "Black"
+      ]
+    ],
+    "elements": [
+      "DEATH"
+    ],
+    "name": "Undead"
+  }
+}

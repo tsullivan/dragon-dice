@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Dice 2-Player Tabletop Layout</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c1a 50%, #2c1810 100%);
+            font-family: 'Cinzel', 'Times New Roman', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .playmat {
+            width: 1200px;
+            height: 800px;
+            background: linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            border: 8px solid #8b4513;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 
+                0 0 30px rgba(139, 69, 19, 0.5),
+                inset 0 0 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .playmat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+                repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(139, 69, 19, 0.05) 100px, rgba(139, 69, 19, 0.05) 102px);
+            pointer-events: none;
+        }
+
+        .zone {
+            position: absolute;
+            border: 2px solid;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Player 1 (Top) */
+        .p1-home {
+            top: 20px;
+            left: 100px;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #4169e1, #1e3a8a);
+            border-color: #87ceeb;
+            color: white;
+            font-size: 14px;
+        }
+
+        .p1-summoning {
+            top: 20px;
+            right: 20px;
+            width: 140px;
+            height: 60px;
+            background: linear-gradient(135deg, #9370db, #4b0082);
+            border-color: #dda0dd;
+            color: white;
+            font-size: 12px;
+        }
+
+        .p1-reserve {
+            top: 90px;
+            right: 20px;
+            width: 140px;
+            height: 80px;
+            background: linear-gradient(135deg, #228b22, #006400);
+            border-color: #90ee90;
+            color: white;
+            font-size: 12px;
+        }
+
+        .p1-dua {
+            top: 180px;
+            right: 20px;
+            width: 65px;
+            height: 60px;
+            background: linear-gradient(135deg, #8b0000, #4b0000);
+            border-color: #ff6b6b;
+            color: white;
+            font-size: 10px;
+        }
+
+        .p1-bua {
+            top: 180px;
+            right: 95px;
+            width: 65px;
+            height: 60px;
+            background: linear-gradient(135deg, #2f2f2f, #1a1a1a);
+            border-color: #696969;
+            color: white;
+            font-size: 10px;
+        }
+
+        /* Player 2 (Bottom) */
+        .p2-home {
+            bottom: 20px;
+            right: 100px;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #dc143c, #8b0000);
+            border-color: #ffb6c1;
+            color: white;
+            font-size: 14px;
+        }
+
+        .p2-summoning {
+            bottom: 20px;
+            left: 20px;
+            width: 140px;
+            height: 60px;
+            background: linear-gradient(135deg, #9370db, #4b0082);
+            border-color: #dda0dd;
+            color: white;
+            font-size: 12px;
+        }
+
+        .p2-reserve {
+            bottom: 90px;
+            left: 20px;
+            width: 140px;
+            height: 80px;
+            background: linear-gradient(135deg, #228b22, #006400);
+            border-color: #90ee90;
+            color: white;
+            font-size: 12px;
+        }
+
+        .p2-dua {
+            bottom: 180px;
+            left: 20px;
+            width: 65px;
+            height: 60px;
+            background: linear-gradient(135deg, #8b0000, #4b0000);
+            border-color: #ff6b6b;
+            color: white;
+            font-size: 10px;
+        }
+
+        .p2-bua {
+            bottom: 180px;
+            left: 95px;
+            width: 65px;
+            height: 60px;
+            background: linear-gradient(135deg, #2f2f2f, #1a1a1a);
+            border-color: #696969;
+            color: white;
+            font-size: 10px;
+        }
+
+        /* Central Areas */
+        .frontier {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00, #ff8c00, #ffd700);
+            border-color: #ffff00;
+            color: #8b4513;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.6); }
+        }
+
+
+
+        /* Title and Elements */
+        .title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        .elements-legend {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .element {
+            padding: 5px 10px;
+            border-radius: 15px;
+            border: 2px solid;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .death { background: #2c2c2c; color: white; border-color: #666; }
+        .air { background: #4169e1; color: white; border-color: #87ceeb; }
+        .water { background: #228b22; color: white; border-color: #90ee90; }
+        .fire { background: #dc143c; color: white; border-color: #ff6b6b; }
+        .earth { background: #daa520; color: black; border-color: #ffd700; }
+
+        /* Turn indicator */
+        .turn-indicator {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4b0082, #8b008b);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #dda0dd;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Connection lines */
+        .connection {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            pointer-events: none;
+        }
+
+        .connection-1 {
+            top: 50%;
+            left: 220px;
+            width: 280px;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+
+        .connection-2 {
+            top: 50%;
+            right: 220px;
+            width: 280px;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="playmat">
+        <div class="title">DRAGON DICE</div>
+        <div class="turn-indicator">TURN PHASE TRACKER</div>
+        
+        <!-- Player 1 Areas (Top/Blue) -->
+        <div class="zone p1-home">PLAYER 1<br>HOME<br>TERRAIN</div>
+        <div class="zone p1-summoning">SUMMONING<br>POOL</div>
+        <div class="zone p1-reserve">RESERVE<br>AREA</div>
+        <div class="zone p1-dua">DUA</div>
+        <div class="zone p1-bua">BUA</div>
+        
+        <!-- Player 2 Areas (Bottom/Red) -->
+        <div class="zone p2-home">PLAYER 2<br>HOME<br>TERRAIN</div>
+        <div class="zone p2-summoning">SUMMONING<br>POOL</div>
+        <div class="zone p2-reserve">RESERVE<br>AREA</div>
+        <div class="zone p2-dua">DUA</div>
+        <div class="zone p2-bua">BUA</div>
+        
+        <!-- Central Frontier -->
+        <div class="zone frontier">FRONTIER<br>TERRAIN<br>⚔️</div>
+        
+
+        
+        <!-- Connection lines -->
+        <div class="connection connection-1"></div>
+        <div class="connection connection-2"></div>
+        
+        <!-- Elements Legend -->
+        <div class="elements-legend">
+            <div class="element death">DEATH</div>
+            <div class="element air">AIR</div>
+            <div class="element water">WATER</div>
+            <div class="element fire">FIRE</div>
+            <div class="element earth">EARTH</div>
+        </div>
+    </div>
+
+    <script>
+        // Convert to downloadable image
+        function downloadAsImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const playmat = document.querySelector('.playmat');
+            
+            canvas.width = 1200;
+            canvas.height = 800;
+            
+            // This would require html2canvas library for full conversion
+            // For now, this creates the layout structure
+            console.log('Playmat layout ready for screenshot');
+        }
+        
+        // Auto-trigger after load for screenshot
+        window.addEventListener('load', () => {
+            setTimeout(downloadAsImage, 1000);
+        });
+    </script>
+</body>
+</html>

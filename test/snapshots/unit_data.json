@@ -1,0 +1,4082 @@
+{
+  "amazon_battle_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Move_3",
+      "Melee_2",
+      "Move_3",
+      "Melee_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Battle Rider",
+    "species_name": "Amazon",
+    "unit_type": "Cavalry"
+  },
+  "amazon_centaur": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Melee_4",
+      "Kick",
+      "Missile_4",
+      "Move_4",
+      "Missile_4",
+      "Kick",
+      "Melee_4",
+      "Trample_4",
+      "Move_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Centaur",
+    "species_name": "Amazon",
+    "unit_type": "Monster"
+  },
+  "amazon_charioteer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Move_1",
+      "Melee_2",
+      "Move_1",
+      "Save_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Charioteer",
+    "species_name": "Amazon",
+    "unit_type": "Cavalry"
+  },
+  "amazon_chimera": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Melee_4",
+      "Rend_4",
+      "Smite_4",
+      "Melee_4",
+      "Save_4",
+      "Flame",
+      "Save_4",
+      "Melee_4",
+      "Fly_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Chimera",
+    "species_name": "Amazon",
+    "unit_type": "Monster"
+  },
+  "amazon_darter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_1",
+      "Save_1",
+      "Missile_2",
+      "Move_1",
+      "Melee_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Darter",
+    "species_name": "Amazon",
+    "unit_type": "Missile"
+  },
+  "amazon_envoy": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Move_2",
+      "Melee_3",
+      "Move_3",
+      "Missile_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Envoy",
+    "species_name": "Amazon",
+    "unit_type": "Light Melee"
+  },
+  "amazon_harbinger": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Move_3",
+      "Melee_3",
+      "Save_3",
+      "Counter"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Harbinger",
+    "species_name": "Amazon",
+    "unit_type": "Light Melee"
+  },
+  "amazon_hydra": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Melee_4",
+      "Save_4",
+      "Melee_4",
+      "Double Strike",
+      "Save_4",
+      "Double Strike",
+      "Melee_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Hydra",
+    "species_name": "Amazon",
+    "unit_type": "Monster"
+  },
+  "amazon_javelineer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_3",
+      "Save_2",
+      "Missile_3",
+      "Move_2",
+      "Melee_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Javelineer",
+    "species_name": "Amazon",
+    "unit_type": "Missile"
+  },
+  "amazon_medusa": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Melee_4",
+      "Stone",
+      "Melee_4",
+      "Melee_4",
+      "Move_4",
+      "Melee_4",
+      "Move_4",
+      "Stone"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Medusa",
+    "species_name": "Amazon",
+    "unit_type": "Monster"
+  },
+  "amazon_nightmare": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Trample_4",
+      "Firewalking",
+      "Melee_4",
+      "Fly_4",
+      "Hoof_4",
+      "Trample_4",
+      "Firebreath",
+      "Fly_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Nightmare",
+    "species_name": "Amazon",
+    "unit_type": "Monster"
+  },
+  "amazon_oracle": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Magic_4",
+      "Save_2",
+      "Magic_5",
+      "Move_2",
+      "Cantrip_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Oracle",
+    "species_name": "Amazon",
+    "unit_type": "Magic"
+  },
+  "amazon_runner": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Move_1",
+      "Melee_1",
+      "Move_2",
+      "Missile_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Runner",
+    "species_name": "Amazon",
+    "unit_type": "Light Melee"
+  },
+  "amazon_seer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Magic_1",
+      "Save_1",
+      "Magic_1",
+      "Move_1",
+      "Magic_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Seer",
+    "species_name": "Amazon",
+    "unit_type": "Magic"
+  },
+  "amazon_soldier": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Save_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Soldier",
+    "species_name": "Amazon",
+    "unit_type": "Heavy Melee"
+  },
+  "amazon_spearer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_3",
+      "Melee_2",
+      "Missile_4",
+      "Save_3",
+      "Bullseye"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Spearer",
+    "species_name": "Amazon",
+    "unit_type": "Missile"
+  },
+  "amazon_visionary": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Magic_3",
+      "Save_1",
+      "Magic_4",
+      "Move_2",
+      "Magic_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Visionary",
+    "species_name": "Amazon",
+    "unit_type": "Magic"
+  },
+  "amazon_war_chief": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Move_2",
+      "Melee_4",
+      "Save_3",
+      "Smite_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "War Chief",
+    "species_name": "Amazon",
+    "unit_type": "Heavy Melee"
+  },
+  "amazon_war_driver": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Trample_3",
+      "Missile_3",
+      "Trample_3",
+      "Save_3",
+      "Melee_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "War Driver",
+    "species_name": "Amazon",
+    "unit_type": "Cavalry"
+  },
+  "amazon_warrior": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Save_2",
+      "Melee_2",
+      "Move_3",
+      "Melee_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Warrior",
+    "species_name": "Amazon",
+    "unit_type": "Heavy Melee"
+  },
+  "coral_elf_archer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Missile_3",
+      "Move_2",
+      "Missile_3",
+      "Missile_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Archer",
+    "species_name": "Coral Elf",
+    "unit_type": "Missile"
+  },
+  "coral_elf_bowman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_1",
+      "Melee_1",
+      "Missile_1",
+      "Move_1",
+      "Missile_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Bowman",
+    "species_name": "Coral Elf",
+    "unit_type": "Missile"
+  },
+  "coral_elf_conjurer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Magic_3",
+      "Move_2",
+      "Magic_3",
+      "Magic_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Conjurer",
+    "species_name": "Coral Elf",
+    "unit_type": "Magic"
+  },
+  "coral_elf_coral_giant": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Smite_4",
+      "Trample_4",
+      "Melee_4",
+      "Move_4",
+      "Smite_4",
+      "Save_4",
+      "Counter",
+      "Trample_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Coral Giant",
+    "species_name": "Coral Elf",
+    "unit_type": "Monster"
+  },
+  "coral_elf_courier": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Move_3",
+      "Melee_2",
+      "Move_2",
+      "Missile_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Courier",
+    "species_name": "Coral Elf",
+    "unit_type": "Light Melee"
+  },
+  "coral_elf_eagle_knight": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Fly_3",
+      "Melee_4",
+      "Fly_3",
+      "Missile_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Eagle Knight",
+    "species_name": "Coral Elf",
+    "unit_type": "Cavalry"
+  },
+  "coral_elf_enchanter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_2",
+      "Magic_4",
+      "Melee_3",
+      "Magic_3",
+      "Cantrip_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Enchanter",
+    "species_name": "Coral Elf",
+    "unit_type": "Magic"
+  },
+  "coral_elf_evoker": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Magic_1",
+      "Melee_1",
+      "Magic_1",
+      "Move_1",
+      "Magic_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Evoker",
+    "species_name": "Coral Elf",
+    "unit_type": "Magic"
+  },
+  "coral_elf_fighter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Missile_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Fighter",
+    "species_name": "Coral Elf",
+    "unit_type": "Heavy Melee"
+  },
+  "coral_elf_gryphon": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Melee_4",
+      "Rend_4",
+      "Fly_4",
+      "Ferry",
+      "Melee_4",
+      "Fly_4",
+      "Melee_4",
+      "Ferry",
+      "Fly_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Gryphon",
+    "species_name": "Coral Elf",
+    "unit_type": "Monster"
+  },
+  "coral_elf_guard": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_1",
+      "Move_1",
+      "Missile_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Guard",
+    "species_name": "Coral Elf",
+    "unit_type": "Light Melee"
+  },
+  "coral_elf_herald": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Move_3",
+      "Melee_3",
+      "Move_3",
+      "Counter"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Herald",
+    "species_name": "Coral Elf",
+    "unit_type": "Light Melee"
+  },
+  "coral_elf_horseman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Hoof_1",
+      "Melee_1",
+      "Hoof_2",
+      "Melee_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Horseman",
+    "species_name": "Coral Elf",
+    "unit_type": "Cavalry"
+  },
+  "coral_elf_knight": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Hoof_3",
+      "Melee_2",
+      "Hoof_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Knight",
+    "species_name": "Coral Elf",
+    "unit_type": "Cavalry"
+  },
+  "coral_elf_leviathan": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Swallow",
+      "Move_4",
+      "Tail",
+      "Fly_4",
+      "Wave",
+      "Save_4",
+      "Hypnotic Glare",
+      "Fly_4",
+      "Tail"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Leviathan",
+    "species_name": "Coral Elf",
+    "unit_type": "Monster"
+  },
+  "coral_elf_protector": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_2",
+      "Melee_4",
+      "Save_3",
+      "Melee_3",
+      "Smite_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Protector",
+    "species_name": "Coral Elf",
+    "unit_type": "Heavy Melee"
+  },
+  "coral_elf_sharpshooter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Move_3",
+      "Missile_4",
+      "Melee_2",
+      "Missile_3",
+      "Bullseye"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Sharpshooter",
+    "species_name": "Coral Elf",
+    "unit_type": "Missile"
+  },
+  "coral_elf_sprite_swarm": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Magic_4",
+      "Fly_4",
+      "Missile_4",
+      "Magic_4",
+      "Missile_4",
+      "Fly_4",
+      "Missile_4",
+      "Magic_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Sprite Swarm",
+    "species_name": "Coral Elf",
+    "unit_type": "Monster"
+  },
+  "coral_elf_tako": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Entangle",
+      "Save_4",
+      "Move_4",
+      "Melee_4",
+      "Melee_4",
+      "Save_4",
+      "Entangle",
+      "Melee_4",
+      "Move_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Tako",
+    "species_name": "Coral Elf",
+    "unit_type": "Monster"
+  },
+  "coral_elf_trooper": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_2",
+      "Melee_3",
+      "Move_2",
+      "Melee_3",
+      "Missile_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Trooper",
+    "species_name": "Coral Elf",
+    "unit_type": "Heavy Melee"
+  },
+  "dwarf_androsphinx": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Melee_4",
+      "Magic_4",
+      "Roar",
+      "Magic_4",
+      "Melee_4",
+      "Rend_4",
+      "Save_4",
+      "Roar"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Androsphinx",
+    "species_name": "Dwarf",
+    "unit_type": "Monster"
+  },
+  "dwarf_behemoth": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Stomp",
+      "Bash",
+      "Move_4",
+      "Save_4",
+      "Roar",
+      "Trample_4",
+      "Charge",
+      "Save_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Behemoth",
+    "species_name": "Dwarf",
+    "unit_type": "Monster"
+  },
+  "dwarf_crack_shot": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_4",
+      "Missile_3",
+      "Bullseye",
+      "Missile_3",
+      "Missile_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Crack-Shot",
+    "species_name": "Dwarf",
+    "unit_type": "Missile"
+  },
+  "dwarf_crossbowman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Missile_1",
+      "Save_1",
+      "Missile_1",
+      "Missile_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Crossbowman",
+    "species_name": "Dwarf",
+    "unit_type": "Missile"
+  },
+  "dwarf_footman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_1",
+      "Save_1",
+      "Melee_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Footman",
+    "species_name": "Dwarf",
+    "unit_type": "Heavy Melee"
+  },
+  "dwarf_gargoyle": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Fly_4",
+      "Smite_4",
+      "Melee_4",
+      "Dispel Magic",
+      "Fly_4",
+      "Dispel Magic",
+      "Melee_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Gargoyle",
+    "species_name": "Dwarf",
+    "unit_type": "Monster"
+  },
+  "dwarf_lizard_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Paw_3",
+      "Melee_2",
+      "Paw_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Lizard Rider",
+    "species_name": "Dwarf",
+    "unit_type": "Cavalry"
+  },
+  "dwarf_mammoth_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_4",
+      "Trample_3",
+      "Melee_3",
+      "Trample_3",
+      "Save_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Mammoth Rider",
+    "species_name": "Dwarf",
+    "unit_type": "Cavalry"
+  },
+  "dwarf_marksman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Missile_2",
+      "Save_2",
+      "Missile_2",
+      "Missile_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Marksman",
+    "species_name": "Dwarf",
+    "unit_type": "Missile"
+  },
+  "dwarf_patroller": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Move_2",
+      "Melee_3",
+      "Move_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Patroller",
+    "species_name": "Dwarf",
+    "unit_type": "Light Melee"
+  },
+  "dwarf_pony_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Hoof_1",
+      "Melee_1",
+      "Hoof_2",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Pony Rider",
+    "species_name": "Dwarf",
+    "unit_type": "Cavalry"
+  },
+  "dwarf_roc": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Seize",
+      "Rend_4",
+      "Melee_4",
+      "Fly_4",
+      "Melee_4",
+      "Melee_4",
+      "Save_4",
+      "Seize",
+      "Fly_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Roc",
+    "species_name": "Dwarf",
+    "unit_type": "Monster"
+  },
+  "dwarf_sentry": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_2",
+      "Move_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Sentry",
+    "species_name": "Dwarf",
+    "unit_type": "Light Melee"
+  },
+  "dwarf_sergeant": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Move_2",
+      "Melee_2",
+      "Save_3",
+      "Melee_2",
+      "Melee_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Sergeant",
+    "species_name": "Dwarf",
+    "unit_type": "Heavy Melee"
+  },
+  "dwarf_skirmisher": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_4",
+      "Move_3",
+      "Melee_3",
+      "Move_2",
+      "Counter"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Skirmisher",
+    "species_name": "Dwarf",
+    "unit_type": "Light Melee"
+  },
+  "dwarf_thaumaturgist": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Magic_3",
+      "Save_2",
+      "Magic_3",
+      "Magic_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Thaumaturgist",
+    "species_name": "Dwarf",
+    "unit_type": "Magic"
+  },
+  "dwarf_theurgist": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Magic_1",
+      "Save_1",
+      "Magic_1",
+      "Magic_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Theurgist",
+    "species_name": "Dwarf",
+    "unit_type": "Magic"
+  },
+  "dwarf_umber_hulk": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Confuse",
+      "Melee_4",
+      "Smite_4",
+      "Save_4",
+      "Melee_4",
+      "Confuse",
+      "Move_4",
+      "Save_4",
+      "Smite_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Umber Hulk",
+    "species_name": "Dwarf",
+    "unit_type": "Monster"
+  },
+  "dwarf_warlord": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_3",
+      "Melee_3",
+      "Smite_4",
+      "Melee_3",
+      "Melee_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Warlord",
+    "species_name": "Dwarf",
+    "unit_type": "Heavy Melee"
+  },
+  "dwarf_wizard": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_3",
+      "Magic_4",
+      "Melee_2",
+      "Magic_3",
+      "Cantrip_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Wizard",
+    "species_name": "Dwarf",
+    "unit_type": "Magic"
+  },
+  "feral_antelope_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Hoof_1",
+      "Hoof_2",
+      "Save_1",
+      "Melee_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Antelope-Folk",
+    "species_name": "Feral",
+    "unit_type": "Cavalry"
+  },
+  "feral_badger_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Magic_3",
+      "Save_2",
+      "Magic_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Badger-Folk",
+    "species_name": "Feral",
+    "unit_type": "Magic"
+  },
+  "feral_bear_folk": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Double Strike",
+      "Missile_4",
+      "Hug",
+      "Paw_4",
+      "Paw_4",
+      "Save_4",
+      "Double Strike",
+      "Magic_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Bear-Folk",
+    "species_name": "Feral",
+    "unit_type": "Monster"
+  },
+  "feral_buffalo_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Counter",
+      "Hoof_3",
+      "Save_2",
+      "Hoof_4",
+      "Melee_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Buffalo-Folk",
+    "species_name": "Feral",
+    "unit_type": "Cavalry"
+  },
+  "feral_elephant_folk": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Trample_4",
+      "Save_4",
+      "Trample_4",
+      "Save_4",
+      "Melee_4",
+      "Trumpet",
+      "Melee_4",
+      "Save_4",
+      "Trumpet"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Elephant-Folk",
+    "species_name": "Feral",
+    "unit_type": "Monster"
+  },
+  "feral_falcon_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_1",
+      "Missile_2",
+      "Move_1",
+      "Melee_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Falcon-Folk",
+    "species_name": "Feral",
+    "unit_type": "Missile"
+  },
+  "feral_fox_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Paw_3",
+      "Melee_3",
+      "Paw_2",
+      "Melee_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Fox-Folk",
+    "species_name": "Feral",
+    "unit_type": "Light Melee"
+  },
+  "feral_hawk_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Missile_3",
+      "Move_2",
+      "Missile_2",
+      "Move_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Hawk-Folk",
+    "species_name": "Feral",
+    "unit_type": "Missile"
+  },
+  "feral_horse_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Hoof_2",
+      "Save_2",
+      "Hoof_2",
+      "Hoof_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Horse-Folk",
+    "species_name": "Feral",
+    "unit_type": "Cavalry"
+  },
+  "feral_hound_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_2",
+      "Paw_1",
+      "Melee_1",
+      "Paw_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Hound-Folk",
+    "species_name": "Feral",
+    "unit_type": "Light Melee"
+  },
+  "feral_leopard_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Paw_2",
+      "Melee_3",
+      "Save_2",
+      "Melee_3",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Leopard-Folk",
+    "species_name": "Feral",
+    "unit_type": "Heavy Melee"
+  },
+  "feral_lion_folk": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Paw_4",
+      "Double Strike",
+      "Save_4",
+      "Roar",
+      "Paw_4",
+      "Roar",
+      "Double Strike",
+      "Melee_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Lion-Folk",
+    "species_name": "Feral",
+    "unit_type": "Monster"
+  },
+  "feral_lynx_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Paw_1",
+      "Melee_1",
+      "Save_1",
+      "Melee_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Lynx-Folk",
+    "species_name": "Feral",
+    "unit_type": "Heavy Melee"
+  },
+  "feral_owl_folk": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Screech",
+      "Magic_4",
+      "Dispel Magic",
+      "Fly_4",
+      "Fly_4",
+      "Magic_4",
+      "Seize",
+      "Magic_4",
+      "Dispel Magic"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Owl-Folk",
+    "species_name": "Feral",
+    "unit_type": "Monster"
+  },
+  "feral_rhino_folk": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Gore",
+      "Melee_4",
+      "Save_4",
+      "Hoof_4",
+      "Trample_4",
+      "Melee_4",
+      "Gore",
+      "Hoof_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Rhino-Folk",
+    "species_name": "Feral",
+    "unit_type": "Monster"
+  },
+  "feral_tiger_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Double Strike",
+      "Melee_4",
+      "Save_4",
+      "Melee_2",
+      "Save_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Tiger-Folk",
+    "species_name": "Feral",
+    "unit_type": "Heavy Melee"
+  },
+  "feral_vulture_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Bullseye",
+      "Missile_4",
+      "Melee_3",
+      "Missile_2",
+      "Move_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Vulture-Folk",
+    "species_name": "Feral",
+    "unit_type": "Missile"
+  },
+  "feral_weasel_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Magic_2",
+      "Magic_1",
+      "Save_1",
+      "Melee_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Weasel-Folk",
+    "species_name": "Feral",
+    "unit_type": "Magic"
+  },
+  "feral_wolf_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Rend_3",
+      "Melee_2",
+      "Save_3",
+      "Melee_3",
+      "Paw_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Wolf-Folk",
+    "species_name": "Feral",
+    "unit_type": "Light Melee"
+  },
+  "feral_wolverine_folk": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Cantrip_4",
+      "Magic_3",
+      "Save_2",
+      "Magic_4",
+      "Melee_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Wolverine-Folk",
+    "species_name": "Feral",
+    "unit_type": "Magic"
+  },
+  "firewalker_adventurer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Flaming_Shield_1",
+      "Melee_2",
+      "Missile_3",
+      "Melee_3",
+      "Move_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Adventurer",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_ashbringer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Magic_3",
+      "Magic_3",
+      "Cantrip_3",
+      "Magic_3",
+      "Move_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Ashbringer",
+    "species_name": "Firewalker",
+    "unit_type": "Magic"
+  },
+  "firewalker_daybringer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Flaming_Shield_2",
+      "Missile_4",
+      "Fly_4",
+      "Melee_4",
+      "Move_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Daybringer",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_expeditioner": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_3",
+      "Melee_3",
+      "Counter",
+      "Melee_3",
+      "Move_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Expeditioner",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_explorer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Flaming_Shield_1",
+      "Melee_1",
+      "Missile_1",
+      "Move_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Explorer",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_firemaster": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_3",
+      "Flaming_Shield_2",
+      "Missile_3",
+      "Melee_2",
+      "Move_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Firemaster",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_fireshadow": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Melee_4",
+      "Smite_4",
+      "Create Fireminions",
+      "Fly_4",
+      "Create Fireminions",
+      "Cantrip_4",
+      "Melee_4",
+      "Fly_4",
+      "Counter"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Fireshadow",
+    "species_name": "Firewalker",
+    "unit_type": "Monster"
+  },
+  "firewalker_firestarter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_1",
+      "Flaming_Shield_1",
+      "Missile_2",
+      "Melee_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Firestarter",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_firestormer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_4",
+      "Flaming_Shield_2",
+      "Bullseye",
+      "Melee_3",
+      "Move_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Firestormer",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_genie": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Firecloud",
+      "Cantrip_4",
+      "Flaming_Shield_4",
+      "Galeforce",
+      "Firewalking",
+      "Melee_4",
+      "Flaming_Shield_4",
+      "Magic_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Genie",
+    "species_name": "Firewalker",
+    "unit_type": "Monster"
+  },
+  "firewalker_gorgon": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Flaming_Shield_4",
+      "Move_4",
+      "Flame",
+      "Flame",
+      "Move_4",
+      "Flaming_Shield_4",
+      "Move_4",
+      "Move_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Gorgon",
+    "species_name": "Firewalker",
+    "unit_type": "Monster"
+  },
+  "firewalker_guardian": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Flaming_Shield_1",
+      "Melee_2",
+      "Missile_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Guardian",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_nightsbane": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_3",
+      "Move_2",
+      "Melee_3",
+      "Move_2",
+      "Flaming_Shield_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Nightsbane",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_phoenix": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Seize",
+      "Smite_4",
+      "Rise From Ashes",
+      "Fly_4",
+      "Flaming_Shield_4",
+      "Fly_4",
+      "Flaming_Shield_4",
+      "Seize",
+      "Rise From Ashes"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Phoenix",
+    "species_name": "Firewalker",
+    "unit_type": "Monster"
+  },
+  "firewalker_salamander": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Melee_4",
+      "Flaming_Shield_4",
+      "Magic_4",
+      "Melee_4",
+      "Flaming_Shield_4",
+      "Smite_4",
+      "Missile_4",
+      "Cantrip_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Salamander",
+    "species_name": "Firewalker",
+    "unit_type": "Monster"
+  },
+  "firewalker_sentinel": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Move_3",
+      "Smite_4",
+      "Flaming_Shield_3",
+      "Missile_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Sentinel",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_shadowchaser": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Move_1",
+      "Melee_2",
+      "Move_1",
+      "Missile_1",
+      "Flaming_Shield_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "ShadowChaser",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "firewalker_sunburst": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Magic_1",
+      "Magic_1",
+      "Magic_1",
+      "Magic_1",
+      "Move_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Sunburst",
+    "species_name": "Firewalker",
+    "unit_type": "Magic"
+  },
+  "firewalker_sunflare": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Magic_2",
+      "Magic_2",
+      "Magic_2",
+      "Magic_3",
+      "Move_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Sunflare",
+    "species_name": "Firewalker",
+    "unit_type": "Magic"
+  },
+  "firewalker_watcher": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Flaming_Shield_2",
+      "Melee_3",
+      "Missile_2",
+      "Move_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Watcher",
+    "species_name": "Firewalker",
+    "unit_type": "Heavy Melee"
+  },
+  "frostwing_advocate": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_2",
+      "Move_1",
+      "Fly_1",
+      "Melee_1",
+      "Melee_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Advocate",
+    "species_name": "Frostwing",
+    "unit_type": "Melee"
+  },
+  "frostwing_apprentice": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Frost_Magic_2",
+      "Missile_1",
+      "Fly_1",
+      "Melee_1",
+      "Frost_Magic_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Apprentice",
+    "species_name": "Frostwing",
+    "unit_type": "Magic"
+  },
+  "frostwing_assailer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Volley",
+      "Melee_3",
+      "Fly_4",
+      "Missile_2",
+      "Missile_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Assailer",
+    "species_name": "Frostwing",
+    "unit_type": "Light Missile"
+  },
+  "frostwing_assaulter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_3",
+      "Melee_2",
+      "Fly_2",
+      "Missile_2",
+      "Missile_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Assaulter",
+    "species_name": "Frostwing",
+    "unit_type": "Light Missile"
+  },
+  "frostwing_attacker": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_2",
+      "Melee_1",
+      "Fly_1",
+      "Missile_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Attacker",
+    "species_name": "Frostwing",
+    "unit_type": "Light Missile"
+  },
+  "frostwing_bear_master": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Rend_4",
+      "Melee_2",
+      "Save_4",
+      "Paw_3",
+      "Melee_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Bear Master",
+    "species_name": "Frostwing",
+    "unit_type": "Cavalry"
+  },
+  "frostwing_cryohydra": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Double Strike",
+      "Save_4",
+      "Melee_4",
+      "Move_4",
+      "Double Strike",
+      "Move_4",
+      "Melee_4",
+      "Save_4",
+      "Frost Breath"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Cryohydra",
+    "species_name": "Frostwing",
+    "unit_type": "Monster"
+  },
+  "frostwing_defender": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_4",
+      "Move_2",
+      "Fly_2",
+      "Melee_3",
+      "Melee_1"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Defender",
+    "species_name": "Frostwing",
+    "unit_type": "Melee"
+  },
+  "frostwing_destroyer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_2",
+      "Save_1",
+      "Fly_1",
+      "Melee_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Destroyer",
+    "species_name": "Frostwing",
+    "unit_type": "Heavy Missile"
+  },
+  "frostwing_devastator": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Bullseye",
+      "Save_2",
+      "Fly_3",
+      "Missile_3",
+      "Missile_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Devastator",
+    "species_name": "Frostwing",
+    "unit_type": "Heavy Missile"
+  },
+  "frostwing_dispatcher": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_4",
+      "Save_2",
+      "Fly_2",
+      "Melee_1",
+      "Missile_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Dispatcher",
+    "species_name": "Frostwing",
+    "unit_type": "Heavy Missile"
+  },
+  "frostwing_frost_ogre": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Smite_4",
+      "Save_4",
+      "Missile_4",
+      "Move_4",
+      "Missile_4",
+      "Frost Cantrip",
+      "Frost_Magic_4",
+      "Save_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Frost Ogre",
+    "species_name": "Frostwing",
+    "unit_type": "Monster"
+  },
+  "frostwing_hound_master": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Paw_2",
+      "Missile_1",
+      "Save_1",
+      "Melee_1",
+      "Paw_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Hound Master",
+    "species_name": "Frostwing",
+    "unit_type": "Cavalry"
+  },
+  "frostwing_magi": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Frost Cantrip",
+      "Missile_2",
+      "Fly_4",
+      "Frost_Magic_2",
+      "Frost_Magic_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Magi",
+    "species_name": "Frostwing",
+    "unit_type": "Magic"
+  },
+  "frostwing_magus": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Frost_Magic_3",
+      "Missile_3",
+      "Fly_3",
+      "Frost_Magic_1",
+      "Frost_Magic_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Magus",
+    "species_name": "Frostwing",
+    "unit_type": "Magic"
+  },
+  "frostwing_remorhaz": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Swallow",
+      "Save_4",
+      "Melee_4",
+      "Move_4",
+      "Swallow",
+      "Save_4",
+      "Melee_4",
+      "Move_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Remorhaz",
+    "species_name": "Frostwing",
+    "unit_type": "Monster"
+  },
+  "frostwing_vindicator": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Smite_4",
+      "Save_3",
+      "Fly_4",
+      "Melee_2",
+      "Melee_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Vindicator",
+    "species_name": "Frostwing",
+    "unit_type": "Melee"
+  },
+  "frostwing_wolf_master": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Paw_3",
+      "Missile_2",
+      "Save_2",
+      "Melee_3",
+      "Paw_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Wolf Master",
+    "species_name": "Frostwing",
+    "unit_type": "Cavalry"
+  },
+  "frostwing_wolf_pack": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Howl",
+      "Rend_4",
+      "Melee_4",
+      "Paw_4",
+      "Paw_4",
+      "Save_4",
+      "Melee_4",
+      "Howl",
+      "Rend_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Wolf Pack",
+    "species_name": "Frostwing",
+    "unit_type": "Monster"
+  },
+  "frostwing_yeti": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Melee_4",
+      "Missile_4",
+      "Move_4",
+      "Melee_4",
+      "Surprise",
+      "Rend_4",
+      "Surprise",
+      "Rend_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Yeti",
+    "species_name": "Frostwing",
+    "unit_type": "Monster"
+  },
+  "goblin_ambusher": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_3",
+      "Move_3",
+      "Save_2",
+      "Move_2",
+      "Missile_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Ambusher",
+    "species_name": "Goblin",
+    "unit_type": "Light Melee"
+  },
+  "goblin_cannibal": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Swallow",
+      "Save_4",
+      "Stun",
+      "Melee_4",
+      "Save_4",
+      "Move_4",
+      "Net",
+      "Surprise",
+      "Sleep"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Cannibal",
+    "species_name": "Goblin",
+    "unit_type": "Monster"
+  },
+  "goblin_cutthroat": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_2",
+      "Melee_2",
+      "Move_3",
+      "Melee_2",
+      "Melee_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Cutthroat",
+    "species_name": "Goblin",
+    "unit_type": "Heavy Melee"
+  },
+  "goblin_deadeye": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_2",
+      "Missile_4",
+      "Save_3",
+      "Missile_3",
+      "Bullseye"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Deadeye",
+    "species_name": "Goblin",
+    "unit_type": "Missile"
+  },
+  "goblin_death_mage": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_2",
+      "Magic_4",
+      "Move_3",
+      "Magic_3",
+      "Cantrip_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Death Mage",
+    "species_name": "Goblin",
+    "unit_type": "Magic"
+  },
+  "goblin_death_naga": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Melee_4",
+      "Poison",
+      "Magic_4",
+      "Move_4",
+      "Magic_4",
+      "Poison",
+      "Save_4",
+      "Melee_4",
+      "Move_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Death Naga",
+    "species_name": "Goblin",
+    "unit_type": "Monster"
+  },
+  "goblin_filcher": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Move_3",
+      "Melee_3",
+      "Save_3",
+      "Melee_3",
+      "Counter"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Filcher",
+    "species_name": "Goblin",
+    "unit_type": "Light Melee"
+  },
+  "goblin_harpies": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Fly_4",
+      "Melee_4",
+      "Save_4",
+      "Fly_4",
+      "Melee_4",
+      "Screech",
+      "Melee_4",
+      "Fly_4",
+      "Screech"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Harpies",
+    "species_name": "Goblin",
+    "unit_type": "Monster"
+  },
+  "goblin_hedge_wizard": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_2",
+      "Magic_3",
+      "Move_2",
+      "Magic_3",
+      "Magic_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Hedge Wizard",
+    "species_name": "Goblin",
+    "unit_type": "Magic"
+  },
+  "goblin_leopard_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_3",
+      "Rend_3",
+      "Save_3",
+      "Rend_3",
+      "Melee_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Leopard Rider",
+    "species_name": "Goblin",
+    "unit_type": "Cavalry"
+  },
+  "goblin_marauder": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Move_2",
+      "Melee_4",
+      "Save_3",
+      "Melee_3",
+      "Smite_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Marauder",
+    "species_name": "Goblin",
+    "unit_type": "Heavy Melee"
+  },
+  "goblin_mugger": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_2",
+      "Move_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Mugger",
+    "species_name": "Goblin",
+    "unit_type": "Light Melee"
+  },
+  "goblin_pelter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Missile_1",
+      "Save_1",
+      "Missile_2",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Pelter",
+    "species_name": "Goblin",
+    "unit_type": "Missile"
+  },
+  "goblin_shambler": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Smother",
+      "Save_4",
+      "Melee_4",
+      "Save_4",
+      "Save_4",
+      "Melee_4",
+      "Smother",
+      "Smite_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Shambler",
+    "species_name": "Goblin",
+    "unit_type": "Monster"
+  },
+  "goblin_slingman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Missile_3",
+      "Move_2",
+      "Missile_3",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Slingman",
+    "species_name": "Goblin",
+    "unit_type": "Missile"
+  },
+  "goblin_thug": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Thug",
+    "species_name": "Goblin",
+    "unit_type": "Heavy Melee"
+  },
+  "goblin_trickster": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Magic_1",
+      "Move_1",
+      "Magic_1",
+      "Magic_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Trickster",
+    "species_name": "Goblin",
+    "unit_type": "Magic"
+  },
+  "goblin_troll": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Smite_4",
+      "Save_4",
+      "Melee_4",
+      "Regenerate",
+      "Regenerate",
+      "Melee_4",
+      "Save_4",
+      "Smite_4",
+      "Move_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Troll",
+    "species_name": "Goblin",
+    "unit_type": "Monster"
+  },
+  "goblin_wardog_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Paw_2",
+      "Melee_1",
+      "Paw_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Wardog Rider",
+    "species_name": "Goblin",
+    "unit_type": "Cavalry"
+  },
+  "goblin_wolf_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Paw_3",
+      "Melee_2",
+      "Paw_3",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Wolf Rider",
+    "species_name": "Goblin",
+    "unit_type": "Cavalry"
+  },
+  "lava_elf_adept": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Magic_1",
+      "Move_1",
+      "Magic_1",
+      "Magic_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Adept",
+    "species_name": "Lava Elf",
+    "unit_type": "Magic"
+  },
+  "lava_elf_assassin": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_5",
+      "Missile_3",
+      "Bullseye",
+      "Missile_1",
+      "Melee_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Assassin",
+    "species_name": "Lava Elf",
+    "unit_type": "Missile"
+  },
+  "lava_elf_beholder": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Magic_4",
+      "Flame",
+      "Save_4",
+      "Charm",
+      "Save_4",
+      "Stone",
+      "Confuse",
+      "Melee_4",
+      "Illusion"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Beholder",
+    "species_name": "Lava Elf",
+    "unit_type": "Monster"
+  },
+  "lava_elf_bladesman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_1",
+      "Missile_1",
+      "Melee_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Bladesman",
+    "species_name": "Lava Elf",
+    "unit_type": "Heavy Melee"
+  },
+  "lava_elf_conqueror": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_2",
+      "Melee_5",
+      "Save_3",
+      "Melee_1",
+      "Smite_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Conqueror",
+    "species_name": "Lava Elf",
+    "unit_type": "Heavy Melee"
+  },
+  "lava_elf_dead_shot": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Missile_2",
+      "Move_2",
+      "Missile_2",
+      "Missile_4"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Dead-Shot",
+    "species_name": "Lava Elf",
+    "unit_type": "Missile"
+  },
+  "lava_elf_drider": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Web",
+      "Move_4",
+      "Save_4",
+      "Melee_4",
+      "Melee_4",
+      "Missile_4",
+      "Move_4",
+      "Web",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Drider",
+    "species_name": "Lava Elf",
+    "unit_type": "Monster"
+  },
+  "lava_elf_duelist": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_2",
+      "Melee_4",
+      "Move_2",
+      "Melee_2",
+      "Missile_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Duelist",
+    "species_name": "Lava Elf",
+    "unit_type": "Heavy Melee"
+  },
+  "lava_elf_fusilier": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Missile_2",
+      "Move_1",
+      "Missile_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Fusilier",
+    "species_name": "Lava Elf",
+    "unit_type": "Missile"
+  },
+  "lava_elf_hell_hound": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Melee_4",
+      "Save_4",
+      "Flame",
+      "Melee_4",
+      "Flame",
+      "Melee_4",
+      "Move_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Hell Hound",
+    "species_name": "Lava Elf",
+    "unit_type": "Monster"
+  },
+  "lava_elf_infiltrator": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_5",
+      "Move_5",
+      "Melee_1",
+      "Move_1",
+      "Counter"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Infiltrator",
+    "species_name": "Lava Elf",
+    "unit_type": "Light Melee"
+  },
+  "lava_elf_lurker_in_the_deep": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Counter",
+      "Magic_4",
+      "Move_4",
+      "Cantrip_4",
+      "Magic_4",
+      "Volley",
+      "Cloak",
+      "Fly_4",
+      "Move_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Lurker in the Deep",
+    "species_name": "Lava Elf",
+    "unit_type": "Monster"
+  },
+  "lava_elf_necromancer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_2",
+      "Magic_5",
+      "Melee_3",
+      "Magic_2",
+      "Cantrip_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Necromancer",
+    "species_name": "Lava Elf",
+    "unit_type": "Magic"
+  },
+  "lava_elf_rakshasa": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Illusion",
+      "Melee_4",
+      "Magic_4",
+      "Melee_4",
+      "Illusion",
+      "Save_4",
+      "Counter",
+      "Magic_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Rakshasa",
+    "species_name": "Lava Elf",
+    "unit_type": "Monster"
+  },
+  "lava_elf_scorpion_knight": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_4",
+      "Move_3",
+      "Melee_1",
+      "Move_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Scorpion Knight",
+    "species_name": "Lava Elf",
+    "unit_type": "Cavalry"
+  },
+  "lava_elf_scout": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_2",
+      "Move_1",
+      "Melee_1",
+      "Move_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Scout",
+    "species_name": "Lava Elf",
+    "unit_type": "Light Melee"
+  },
+  "lava_elf_spider_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Move_2",
+      "Melee_1",
+      "Move_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Spider Rider",
+    "species_name": "Lava Elf",
+    "unit_type": "Cavalry"
+  },
+  "lava_elf_spy": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_4",
+      "Move_4",
+      "Melee_1",
+      "Move_1",
+      "Missile_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Spy",
+    "species_name": "Lava Elf",
+    "unit_type": "Light Melee"
+  },
+  "lava_elf_warlock": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Magic_2",
+      "Move_2",
+      "Magic_2",
+      "Magic_4"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Warlock",
+    "species_name": "Lava Elf",
+    "unit_type": "Magic"
+  },
+  "lava_elf_wyvern_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_4",
+      "Fly_5",
+      "Melee_2",
+      "Fly_1",
+      "Missile_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Wyvern Rider",
+    "species_name": "Lava Elf",
+    "unit_type": "Cavalry"
+  },
+  "scalder_blazer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Flaming Arrow",
+      "Move_3",
+      "Missile_6",
+      "Move_2",
+      "Missile_1"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Blazer",
+    "species_name": "Scalder",
+    "unit_type": "Missile"
+  },
+  "scalder_burner": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_2",
+      "Move_2",
+      "Missile_4",
+      "Move_1",
+      "Missile_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Burner",
+    "species_name": "Scalder",
+    "unit_type": "Missile"
+  },
+  "scalder_charkin": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Counter (scorching)",
+      "Move_2",
+      "Melee_5",
+      "Melee_2",
+      "Move_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Charkin",
+    "species_name": "Scalder",
+    "unit_type": "Light Melee"
+  },
+  "scalder_dragonne_knight": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Scorching Wings",
+      "Scorching_Shield_2",
+      "Paw",
+      "Melee_2",
+      "Paw_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Dragonne Knight",
+    "species_name": "Scalder",
+    "unit_type": "Cavalry"
+  },
+  "scalder_dragonne_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_1",
+      "Scorching_Shield_2",
+      "Paw_4",
+      "Melee_2",
+      "Paw_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Dragonne Rider",
+    "species_name": "Scalder",
+    "unit_type": "Cavalry"
+  },
+  "scalder_dragonne_tender": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Scorching_Shield_1",
+      "Paw_2",
+      "Melee_1",
+      "Paw_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Dragonne Tender",
+    "species_name": "Scalder",
+    "unit_type": "Cavalry"
+  },
+  "scalder_ettercap": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Magic_4",
+      "Move_4",
+      "Missile_4",
+      "Bullseye",
+      "Move_4",
+      "Missile_4",
+      "Scorching_Shield_4",
+      "Melee_4",
+      "Scorching_Shield_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Ettercap",
+    "species_name": "Scalder",
+    "unit_type": "Monster"
+  },
+  "scalder_glower": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_1",
+      "Move_1",
+      "Missile_2",
+      "Move_1",
+      "Missile_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Glower",
+    "species_name": "Scalder",
+    "unit_type": "Missile"
+  },
+  "scalder_igniter": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_1",
+      "Move_1",
+      "Melee_4",
+      "Melee_3",
+      "Move_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Igniter",
+    "species_name": "Scalder",
+    "unit_type": "Light Melee"
+  },
+  "scalder_inferno": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Cantrip_4",
+      "Move_2",
+      "Magic_6",
+      "Scorching_Shield_2",
+      "Magic_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Inferno",
+    "species_name": "Scalder",
+    "unit_type": "Magic"
+  },
+  "scalder_kindler": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_2",
+      "Melee_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Kindler",
+    "species_name": "Scalder",
+    "unit_type": "Light Melee"
+  },
+  "scalder_quickling": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Missile_4",
+      "Move_4",
+      "Poison",
+      "Missile_4",
+      "Move_4",
+      "Scorching_Shield_4",
+      "Move_4",
+      "Scorching_Shield_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Quickling",
+    "species_name": "Scalder",
+    "unit_type": "Monster"
+  },
+  "scalder_scorcher": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_1",
+      "Move_2",
+      "Melee_4",
+      "Melee_3",
+      "Scorching_Shield_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Scorcher",
+    "species_name": "Scalder",
+    "unit_type": "Heavy Melee"
+  },
+  "scalder_searer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Smite_4",
+      "Move_2",
+      "Melee_6",
+      "Melee_2",
+      "Scorching_Shield_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Searer",
+    "species_name": "Scalder",
+    "unit_type": "Heavy Melee"
+  },
+  "scalder_singeman": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Move_1",
+      "Melee_2",
+      "Melee_1",
+      "Scorching_Shield_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Singeman",
+    "species_name": "Scalder",
+    "unit_type": "Heavy Melee"
+  },
+  "scalder_smolderer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Scorching_Shield_2",
+      "Magic_1",
+      "Magic_4",
+      "Move_2",
+      "Magic_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Smolderer",
+    "species_name": "Scalder",
+    "unit_type": "Magic"
+  },
+  "scalder_sparker": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Scorching_Shield_1",
+      "Magic_1",
+      "Magic_2",
+      "Move_1",
+      "Magic_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Sparker",
+    "species_name": "Scalder",
+    "unit_type": "Magic"
+  },
+  "scalder_unseelie_faerie": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Magic_4",
+      "Melee_4",
+      "Scorching_Shield_4",
+      "Magic_4",
+      "Magic_4",
+      "Cantrip_4",
+      "Move_4",
+      "Scorching_Shield_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Unseelie Faerie",
+    "species_name": "Scalder",
+    "unit_type": "Monster"
+  },
+  "scalder_web_birds": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Missile_4",
+      "Melee_4",
+      "Web",
+      "Scorching Wings",
+      "Web",
+      "Missile_4",
+      "Melee_4",
+      "Missile_4",
+      "Scorching Wings"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Web Birds",
+    "species_name": "Scalder",
+    "unit_type": "Monster"
+  },
+  "scalder_will_o_wisps": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Magic_4",
+      "Dispel Magic",
+      "Confuse",
+      "Scorching Wings",
+      "Dispel Magic",
+      "Melee_4",
+      "Missile_4",
+      "Magic_4",
+      "Scorching Wings"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Will o Wisps",
+    "species_name": "Scalder",
+    "unit_type": "Monster"
+  },
+  "swamp_stalker_annihilator": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_5",
+      "Save_2",
+      "Smite_4",
+      "Save_3",
+      "Melee_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Annihilator",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Heavy Melee"
+  },
+  "swamp_stalker_bog_adept": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Magic_2",
+      "Magic_1",
+      "Save_1",
+      "Magic_1",
+      "Melee_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Bog Adept",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Magic"
+  },
+  "swamp_stalker_bog_runner": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Move_2",
+      "Move_1",
+      "Save_1",
+      "Melee_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Bog Runner",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Cavalry"
+  },
+  "swamp_stalker_crocosaur": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Surprise",
+      "Melee_4",
+      "Save_4",
+      "Move_4",
+      "Tail",
+      "Tail",
+      "Surprise",
+      "Melee_4",
+      "Rend_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Crocosaur",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Monster"
+  },
+  "swamp_stalker_deluger": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_5",
+      "Missile_2",
+      "Bullseye",
+      "Missile_2",
+      "Save_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Deluger",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Missile"
+  },
+  "swamp_stalker_invader": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_3",
+      "Melee_4",
+      "Poison",
+      "Move_3",
+      "Save_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Invader",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Light Melee"
+  },
+  "swamp_stalker_marsh_mage": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Magic_4",
+      "Magic_2",
+      "Melee_2",
+      "Magic_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Marsh Mage",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Magic"
+  },
+  "swamp_stalker_marsh_swimmer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Move_4",
+      "Save_2",
+      "Melee_2",
+      "Save_2",
+      "Move_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Marsh Swimmer",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Cavalry"
+  },
+  "swamp_stalker_mudmen": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Move_4",
+      "Smother",
+      "Melee_4",
+      "Save_4",
+      "Save_4",
+      "Surprise",
+      "Melee_4",
+      "Smother",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Mudmen",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Monster"
+  },
+  "swamp_stalker_ormyrr": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Magic_4",
+      "Move_4",
+      "Save_4",
+      "Melee_4",
+      "Magic_4",
+      "Coil",
+      "Melee_4",
+      "Missile_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Ormyrr",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Monster"
+  },
+  "swamp_stalker_raider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_2",
+      "Melee_3",
+      "Save_2",
+      "Melee_2",
+      "Move_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Raider",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Light Melee"
+  },
+  "swamp_stalker_ravager": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_4",
+      "Melee_1",
+      "Save_2",
+      "Melee_3",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Ravager",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Heavy Melee"
+  },
+  "swamp_stalker_sprayer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_2",
+      "Missile_1",
+      "Save_1",
+      "Missile_1",
+      "Melee_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Sprayer",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Missile"
+  },
+  "swamp_stalker_stormer": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Missile_4",
+      "Missile_2",
+      "Melee_2",
+      "Missile_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Stormer",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Missile"
+  },
+  "swamp_stalker_striker": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Missile_1",
+      "Melee_2",
+      "Save_1",
+      "Melee_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Striker",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Light Melee"
+  },
+  "swamp_stalker_swamp_beast": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Surprise",
+      "Melee_4",
+      "Save_4",
+      "Move_4",
+      "Wave",
+      "Melee_4",
+      "Poison",
+      "Wave",
+      "Poison"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Swamp Beast",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Monster"
+  },
+  "swamp_stalker_swamp_giant": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Smite_4",
+      "Trample_4",
+      "Poison",
+      "Save_4",
+      "Melee_4",
+      "Move_4",
+      "Smite_4",
+      "Trample_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Swamp Giant",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Monster"
+  },
+  "swamp_stalker_swamp_wizard": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Magic_5",
+      "Magic_3",
+      "Cantrip_4",
+      "Save_2",
+      "Melee_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Swamp Wizard",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Magic"
+  },
+  "swamp_stalker_warmonger": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_2",
+      "Melee_1",
+      "Save_1",
+      "Melee_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Warmonger",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Heavy Melee"
+  },
+  "swamp_stalker_wave_rider": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Move_5",
+      "Save_2",
+      "Coil",
+      "Save_3",
+      "Move_2"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Wave Rider",
+    "species_name": "Swamp Stalker",
+    "unit_type": "Cavalry"
+  },
+  "treefolk_darktree": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Smother",
+      "Melee_4",
+      "Surprise",
+      "Save_4",
+      "Surprise",
+      "Save_4",
+      "Melee_4",
+      "Smother",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Darktree",
+    "species_name": "Treefolk",
+    "unit_type": "Monster"
+  },
+  "treefolk_dryad": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Magic_2",
+      "Melee_2",
+      "Magic_2",
+      "Magic_3",
+      "Save_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Dryad",
+    "species_name": "Treefolk",
+    "unit_type": "Magic"
+  },
+  "treefolk_eldar_dryad": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Magic_2",
+      "Cantrip_4",
+      "Magic_4",
+      "Magic_3",
+      "Save_3"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Eldar Dryad",
+    "species_name": "Treefolk",
+    "unit_type": "Magic"
+  },
+  "treefolk_hamadryad": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Magic_1",
+      "Melee_1",
+      "Magic_1",
+      "Magic_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Hamadryad",
+    "species_name": "Treefolk",
+    "unit_type": "Magic"
+  },
+  "treefolk_lady_nereid": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Paw_4",
+      "Counter",
+      "Paw_2",
+      "Melee_2",
+      "Save_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Lady Nereid",
+    "species_name": "Treefolk",
+    "unit_type": "Cavalry"
+  },
+  "treefolk_naiad": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Paw_3",
+      "Melee_2",
+      "Paw_2",
+      "Save_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Naiad",
+    "species_name": "Treefolk",
+    "unit_type": "Cavalry"
+  },
+  "treefolk_noble_willow": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_4",
+      "Wild Growth",
+      "Melee_2",
+      "Move_2",
+      "Save_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Noble Willow",
+    "species_name": "Treefolk",
+    "unit_type": "Light Melee"
+  },
+  "treefolk_nymph": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_1",
+      "Paw_1",
+      "Melee_1",
+      "Paw_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Nymph",
+    "species_name": "Treefolk",
+    "unit_type": "Cavalry"
+  },
+  "treefolk_oak": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Melee_2",
+      "Melee_2",
+      "Melee_2",
+      "Melee_2",
+      "Save_4"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Oak",
+    "species_name": "Treefolk",
+    "unit_type": "Heavy Melee"
+  },
+  "treefolk_oak_lord": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Smite_3",
+      "Melee_3",
+      "Smite_3",
+      "Save_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Oak Lord",
+    "species_name": "Treefolk",
+    "unit_type": "Heavy Melee"
+  },
+  "treefolk_oakling": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Melee_1",
+      "Melee_1",
+      "Melee_1",
+      "Melee_1",
+      "Save_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Oakling",
+    "species_name": "Treefolk",
+    "unit_type": "Heavy Melee"
+  },
+  "treefolk_pine": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Move_2",
+      "Missile_3",
+      "Move_2",
+      "Missile_2",
+      "Save_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Pine",
+    "species_name": "Treefolk",
+    "unit_type": "Missile"
+  },
+  "treefolk_pine_prince": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Missile_2",
+      "Volley",
+      "Missile_2",
+      "Missile_4",
+      "Save_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Pine Prince",
+    "species_name": "Treefolk",
+    "unit_type": "Missile"
+  },
+  "treefolk_pineling": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Missile_1",
+      "Move_1",
+      "Missile_1",
+      "Missile_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Pineling",
+    "species_name": "Treefolk",
+    "unit_type": "Missile"
+  },
+  "treefolk_redwood": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Trample_4",
+      "Melee_4",
+      "Move_4",
+      "Save_4",
+      "Melee_4",
+      "Save_4",
+      "Melee_4",
+      "Trample_4",
+      "Save_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Redwood",
+    "species_name": "Treefolk",
+    "unit_type": "Monster"
+  },
+  "treefolk_satyr": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Magic_4",
+      "Hoof_4",
+      "Volley",
+      "Sleep",
+      "Missile_4",
+      "Confuse",
+      "Volley",
+      "Magic_4",
+      "Sleep"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Satyr",
+    "species_name": "Treefolk",
+    "unit_type": "Monster"
+  },
+  "treefolk_strangle_vine": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Choke",
+      "Move_4",
+      "Double Strike",
+      "Melee_4",
+      "Wild Growth",
+      "Smother",
+      "Choke",
+      "Move_4",
+      "Rend_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Strangle Vine",
+    "species_name": "Treefolk",
+    "unit_type": "Monster"
+  },
+  "treefolk_unicorn": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Dispel Magic",
+      "Teleport",
+      "Save_4",
+      "Trample_4",
+      "Trample_4",
+      "Counter",
+      "Dispel Magic",
+      "Save_4",
+      "Teleport"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Unicorn",
+    "species_name": "Treefolk",
+    "unit_type": "Monster"
+  },
+  "treefolk_willow": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_3",
+      "Move_2",
+      "Save_2",
+      "Move_2",
+      "Melee_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Willow",
+    "species_name": "Treefolk",
+    "unit_type": "Light Melee"
+  },
+  "treefolk_willowling": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Move_1",
+      "Save_1",
+      "Move_1",
+      "Save_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Willowling",
+    "species_name": "Treefolk",
+    "unit_type": "Light Melee"
+  },
+  "undead_apparition": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Magic_2",
+      "Melee_1",
+      "Magic_1",
+      "Melee_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Apparition",
+    "species_name": "Undead",
+    "unit_type": "Heavy Magic"
+  },
+  "undead_carrion_crawler": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Save_4",
+      "Stun",
+      "Melee_4",
+      "Move_4",
+      "Move_4",
+      "Stun",
+      "Save_4",
+      "Smite_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Carrion Crawler",
+    "species_name": "Undead",
+    "unit_type": "Monster"
+  },
+  "undead_death_knight": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_3",
+      "Melee_4",
+      "Save_3",
+      "Melee_3",
+      "Scare"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Death Knight",
+    "species_name": "Undead",
+    "unit_type": "Light Melee"
+  },
+  "undead_dracolich": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Smite_4",
+      "Cantrip_4",
+      "Magic_4",
+      "Fly_4",
+      "Fly_4",
+      "Rend_4",
+      "Save_4",
+      "Melee_4",
+      "Magic_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Dracolich",
+    "species_name": "Undead",
+    "unit_type": "Monster"
+  },
+  "undead_fenhound": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Dispel Magic",
+      "Save_4",
+      "Melee_4",
+      "Paw_4",
+      "Paw_4",
+      "Save_4",
+      "Dispel Magic",
+      "Smite_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Fenhound",
+    "species_name": "Undead",
+    "unit_type": "Monster"
+  },
+  "undead_ghast": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_3",
+      "Melee_3",
+      "Save_2",
+      "Melee_2",
+      "Magic_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Ghast",
+    "species_name": "Undead",
+    "unit_type": "Light Magic"
+  },
+  "undead_ghost": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Move_4",
+      "Melee_3",
+      "Save_3",
+      "Melee_3",
+      "Vanish"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Ghost",
+    "species_name": "Undead",
+    "unit_type": "Cavalry"
+  },
+  "undead_ghoul": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_2",
+      "Save_1",
+      "Melee_1",
+      "Magic_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Ghoul",
+    "species_name": "Undead",
+    "unit_type": "Light Magic"
+  },
+  "undead_heucuva": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Magic_3",
+      "Melee_3",
+      "Magic_2",
+      "Melee_2",
+      "Save_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Heucuva",
+    "species_name": "Undead",
+    "unit_type": "Heavy Magic"
+  },
+  "undead_lich": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Melee_3",
+      "Magic_3",
+      "Save_3",
+      "Magic_3",
+      "Cantrip_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Lich",
+    "species_name": "Undead",
+    "unit_type": "Heavy Magic"
+  },
+  "undead_minor_death": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Slay",
+      "Save_4",
+      "Plague",
+      "Melee_4",
+      "Melee_4",
+      "Save_4",
+      "Slay",
+      "Move_4",
+      "Plague"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Minor Death",
+    "species_name": "Undead",
+    "unit_type": "Monster"
+  },
+  "undead_mummy": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Save_3",
+      "Melee_3",
+      "Wither",
+      "Melee_3",
+      "Melee_4"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Mummy",
+    "species_name": "Undead",
+    "unit_type": "Heavy Melee"
+  },
+  "undead_revenant": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_3",
+      "Melee_3",
+      "Save_2",
+      "Melee_2",
+      "Move_2"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Revenant",
+    "species_name": "Undead",
+    "unit_type": "Light Melee"
+  },
+  "undead_skeletal_steed": {
+    "face_count": 10,
+    "face_names": [
+      "Id_4",
+      "Hoof_4",
+      "Save_4",
+      "Hoof_4",
+      "Melee_4",
+      "Trample_4",
+      "Save_4",
+      "Trample_4",
+      "Hoof_4",
+      "Melee_4"
+    ],
+    "health": 4,
+    "max_health": 4,
+    "name": "Skeletal Steed",
+    "species_name": "Undead",
+    "unit_type": "Monster"
+  },
+  "undead_skeleton": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_2",
+      "Save_1",
+      "Melee_1",
+      "Move_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Skeleton",
+    "species_name": "Undead",
+    "unit_type": "Light Melee"
+  },
+  "undead_spectre": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_3",
+      "Melee_2",
+      "Save_2",
+      "Melee_2",
+      "Move_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Spectre",
+    "species_name": "Undead",
+    "unit_type": "Cavalry"
+  },
+  "undead_vampire": {
+    "face_count": 6,
+    "face_names": [
+      "Id_3",
+      "Magic_3",
+      "Melee_4",
+      "Save_3",
+      "Melee_3",
+      "Convert"
+    ],
+    "health": 3,
+    "max_health": 3,
+    "name": "Vampire",
+    "species_name": "Undead",
+    "unit_type": "Light Magic"
+  },
+  "undead_wight": {
+    "face_count": 6,
+    "face_names": [
+      "Id_2",
+      "Save_3",
+      "Melee_2",
+      "Save_2",
+      "Melee_2",
+      "Melee_3"
+    ],
+    "health": 2,
+    "max_health": 2,
+    "name": "Wight",
+    "species_name": "Undead",
+    "unit_type": "Heavy Melee"
+  },
+  "undead_wraith": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Move_2",
+      "Melee_1",
+      "Move_1",
+      "Melee_1",
+      "Save_1"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Wraith",
+    "species_name": "Undead",
+    "unit_type": "Cavalry"
+  },
+  "undead_zombie": {
+    "face_count": 6,
+    "face_names": [
+      "Id_1",
+      "Save_1",
+      "Melee_1",
+      "Save_1",
+      "Melee_1",
+      "Melee_2"
+    ],
+    "health": 1,
+    "max_health": 1,
+    "name": "Zombie",
+    "species_name": "Undead",
+    "unit_type": "Heavy Melee"
+  }
+}

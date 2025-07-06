@@ -1,0 +1,438 @@
+{
+  "AIR_DEATH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟦⬛ Air/Death Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "AIR",
+      "DEATH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Air/Death Hybrid Dragon"
+  },
+  "AIR_EARTH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟦🟨 Air/Earth Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "AIR",
+      "EARTH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Air/Earth Hybrid Dragon"
+  },
+  "AIR_ELEMENTAL": {
+    "can_summon_from_terrain": true,
+    "description": "The standard dragon is an Elemental Dragon. It is made up of one of the five elements.",
+    "display_name": "🟦 Air Elemental",
+    "dragon_type": "ELEMENTAL",
+    "elements": [
+      "AIR"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Air Elemental Dragon"
+  },
+  "AIR_WATER_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟦🟩 Air/Water Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "AIR",
+      "WATER"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Air/Water Hybrid Dragon"
+  },
+  "DEATH_AIR_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "⬛🟦 Death/Air Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "DEATH",
+      "AIR"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Death/Air Hybrid Dragon"
+  },
+  "DEATH_EARTH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "⬛🟨 Death/Earth Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "DEATH",
+      "EARTH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Death/Earth Hybrid Dragon"
+  },
+  "DEATH_ELEMENTAL": {
+    "can_summon_from_terrain": true,
+    "description": "The standard dragon is an Elemental Dragon. It is made up of one of the five elements.",
+    "display_name": "⬛ Death Elemental",
+    "dragon_type": "ELEMENTAL",
+    "elements": [
+      "DEATH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Death Elemental Dragon"
+  },
+  "DEATH_WATER_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "⬛🟩 Death/Water Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "DEATH",
+      "WATER"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Death/Water Hybrid Dragon"
+  },
+  "EARTH_AIR_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟨🟦 Earth/Air Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "EARTH",
+      "AIR"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Earth/Air Hybrid Dragon"
+  },
+  "EARTH_DEATH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟨⬛ Earth/Death Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "EARTH",
+      "DEATH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Earth/Death Hybrid Dragon"
+  },
+  "EARTH_ELEMENTAL": {
+    "can_summon_from_terrain": true,
+    "description": "The standard dragon is an Elemental Dragon. It is made up of one of the five elements.",
+    "display_name": "🟨 Earth Elemental",
+    "dragon_type": "ELEMENTAL",
+    "elements": [
+      "EARTH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Earth Elemental Dragon"
+  },
+  "EARTH_WATER_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟨🟩 Earth/Water Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "EARTH",
+      "WATER"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Earth/Water Hybrid Dragon"
+  },
+  "FIRE_AIR_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟥🟦 Fire/Air Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "FIRE",
+      "AIR"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Fire/Air Hybrid Dragon"
+  },
+  "FIRE_DEATH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟥⬛ Fire/Death Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "FIRE",
+      "DEATH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Fire/Death Hybrid Dragon"
+  },
+  "FIRE_EARTH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟥🟨 Fire/Earth Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "FIRE",
+      "EARTH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Fire/Earth Hybrid Dragon"
+  },
+  "FIRE_ELEMENTAL": {
+    "can_summon_from_terrain": true,
+    "description": "The standard dragon is an Elemental Dragon. It is made up of one of the five elements.",
+    "display_name": "🟥 Fire Elemental",
+    "dragon_type": "ELEMENTAL",
+    "elements": [
+      "FIRE"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Fire Elemental Dragon"
+  },
+  "FIRE_WATER_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟥🟩 Fire/Water Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "FIRE",
+      "WATER"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Fire/Water Hybrid Dragon"
+  },
+  "IVORY": {
+    "can_summon_from_terrain": false,
+    "description": "Ivory Dragons may be summoned by using any one single element of magic or by any effect of a single element (such as a Dragon's Lair or Dragon Staff).\nIvory Dragons may only be summoned from the Summoning Pool. They may not be summoned from another terrain.",
+    "display_name": "🟫 Ivory Elemental",
+    "dragon_type": "IVORY",
+    "elements": [
+      "IVORY"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Ivory Dragon"
+  },
+  "IVORY_AIR_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Ivory Hybrid Dragons are composed of one element and ivory.\nWhen a breath result is rolled, apply the elemental breath effect.\nIvory Hybrid Dragons are affected by any spell or effect that can affect its element or ivory.\nIvory Hybrid Dragons can only be summoned from a terrain by magic or an effect that matches their element.",
+    "display_name": "🟫🟦 Ivory/Air Hybrid Dragon",
+    "dragon_type": "IVORY_HYBRID",
+    "elements": [
+      "AIR"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Ivory/Air Hybrid Dragon"
+  },
+  "IVORY_DEATH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Ivory Hybrid Dragons are composed of one element and ivory.\nWhen a breath result is rolled, apply the elemental breath effect.\nIvory Hybrid Dragons are affected by any spell or effect that can affect its element or ivory.\nIvory Hybrid Dragons can only be summoned from a terrain by magic or an effect that matches their element.",
+    "display_name": "🟫⬛ Ivory/Death Hybrid Dragon",
+    "dragon_type": "IVORY_HYBRID",
+    "elements": [
+      "DEATH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Ivory/Death Hybrid Dragon"
+  },
+  "IVORY_EARTH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Ivory Hybrid Dragons are composed of one element and ivory.\nWhen a breath result is rolled, apply the elemental breath effect.\nIvory Hybrid Dragons are affected by any spell or effect that can affect its element or ivory.\nIvory Hybrid Dragons can only be summoned from a terrain by magic or an effect that matches their element.",
+    "display_name": "🟫🟨 Ivory/Earth Hybrid Dragon",
+    "dragon_type": "IVORY_HYBRID",
+    "elements": [
+      "EARTH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Ivory/Earth Hybrid Dragon"
+  },
+  "IVORY_FIRE_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Ivory Hybrid Dragons are composed of one element and ivory.\nWhen a breath result is rolled, apply the elemental breath effect.\nIvory Hybrid Dragons are affected by any spell or effect that can affect its element or ivory.\nIvory Hybrid Dragons can only be summoned from a terrain by magic or an effect that matches their element.",
+    "display_name": "🟫🟥 Ivory/Fire Hybrid Dragon",
+    "dragon_type": "IVORY_HYBRID",
+    "elements": [
+      "FIRE"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Ivory/Fire Hybrid Dragon"
+  },
+  "IVORY_WATER_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Ivory Hybrid Dragons are composed of one element and ivory.\nWhen a breath result is rolled, apply the elemental breath effect.\nIvory Hybrid Dragons are affected by any spell or effect that can affect its element or ivory.\nIvory Hybrid Dragons can only be summoned from a terrain by magic or an effect that matches their element.",
+    "display_name": "🟫🟩 Ivory/Water Hybrid Dragon",
+    "dragon_type": "IVORY_HYBRID",
+    "elements": [
+      "WATER"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Ivory/Water Hybrid Dragon"
+  },
+  "WATER_AIR_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟩🟦 Water/Air Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "WATER",
+      "AIR"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Water/Air Hybrid Dragon"
+  },
+  "WATER_DEATH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟩⬛ Water/Death Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "WATER",
+      "DEATH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Water/Death Hybrid Dragon"
+  },
+  "WATER_EARTH_HYBRID": {
+    "can_summon_from_terrain": true,
+    "description": "Hybrid Dragons are composed of two elements.\nWhen a breath result is rolled, apply both elemental breath effects.\nHybrid Dragons are affected by any spell or effect that can affect either of its elements.",
+    "display_name": "🟩🟨 Water/Earth Hybrid",
+    "dragon_type": "HYBRID",
+    "elements": [
+      "WATER",
+      "EARTH"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Water/Earth Hybrid Dragon"
+  },
+  "WATER_ELEMENTAL": {
+    "can_summon_from_terrain": true,
+    "description": "The standard dragon is an Elemental Dragon. It is made up of one of the five elements.",
+    "display_name": "🟩 Water Elemental",
+    "dragon_type": "ELEMENTAL",
+    "elements": [
+      "WATER"
+    ],
+    "force_value": 1,
+    "has_doubled_damage": false,
+    "has_doubled_treasure": false,
+    "health": 5,
+    "is_white": false,
+    "name": "Water Elemental Dragon"
+  },
+  "WHITE": {
+    "can_summon_from_terrain": true,
+    "description": "White Dragons have ten health instead of five.\nAll damage inflicted from a White Dragon's claws, jaws, tail and wing results are doubled.\nIn addition, treasure results are also doubled, allowing two units to be promoted instead of one.\nWhite Dragons count as two normal dragons when assembling forces.\nWhite Dragons can only be summoned by the Summon White Dragon spell.",
+    "display_name": "⬜ White Dragon",
+    "dragon_type": "WHITE",
+    "elements": [
+      "WHITE"
+    ],
+    "force_value": 2,
+    "has_doubled_damage": true,
+    "has_doubled_treasure": true,
+    "health": 10,
+    "is_white": true,
+    "name": "White Dragon"
+  }
+}
