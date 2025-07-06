@@ -8,7 +8,12 @@ from PySide6.QtWidgets import QApplication
 
 import utils.constants as constants
 from components.dragon_selection_widget import DragonSelectionWidget
-from models.dragon_model import DRAGON_DATA, DRAGON_TYPE_EXAMPLES, get_available_dragon_forms, get_available_dragon_types
+from models.dragon_model import (
+    DRAGON_DATA,
+    DRAGON_TYPE_EXAMPLES,
+    get_available_dragon_forms,
+    get_available_dragon_types,
+)
 
 
 class TestDragonSelectionWidget:

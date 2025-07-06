@@ -69,10 +69,6 @@ class ArmyDieFaceSummaryWidget(QWidget):
         # Import DieFaceModel to get proper face type icons
         from models.die_face_model import DieFaceModel
 
-        # Don't show icons for ID faces
-        if face_type.startswith("Id_") or face_type in ["ID", "ID(kin)"]:
-            return ""
-
         # Map face names to face types for icon lookup
         face_type_map = {
             "Melee": "MELEE",
@@ -81,6 +77,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
             "Save": "SAVE",
             "Move": "MOVE",
             "SAI": "ID",
+            "ID": "ID",  # Add explicit mapping for ID faces
         }
 
         # Handle face names with numbers (e.g., "Melee_1", "Move_2")
@@ -132,7 +129,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
                     "face_6",
                 ]:
                     face_type = die_faces.get(face_key)
-                    if face_type and face_type != "ID":  # Don't count ID faces
+                    if face_type:  # Count all face types including ID
                         # Extract base face type and value
                         base_type, value = self._extract_face_type_and_value(face_type)
                         if base_type not in face_totals:
@@ -148,7 +145,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
                         face_name = face
                         base_value = 1  # Default value if not face object
 
-                    if face_name and face_name != "ID":  # Don't count ID faces
+                    if face_name:  # Count all face types including ID
                         # Extract base face type
                         base_type, _ = self._extract_face_type_and_value(face_name)
                         if base_type not in face_totals:
@@ -159,7 +156,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
             if isinstance(die_faces, dict):
                 for face_key in ["eighth_face_1", "eighth_face_2"]:
                     face_type = die_faces.get(face_key)
-                    if face_type and face_type != "ID":  # Don't count ID faces
+                    if face_type:  # Count all face types including ID
                         # Extract base face type and value
                         base_type, value = self._extract_face_type_and_value(face_type)
                         if base_type not in face_totals:
@@ -186,6 +183,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
 
         # Show the most common face types in a compact format
         priority_order = [
+            "ID",
             "Melee",
             "Missile",
             "Magic",

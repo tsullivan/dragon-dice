@@ -33,7 +33,7 @@ class DieFaceModel:
     def get_face_icon(self) -> str:
         """Get display icon for this face type."""
         icon_map = {
-            "ID": "💎",
+            "ID": "🆔",
             "MOVE": "🏃",
             "MELEE": "⚔️",
             "MISSILE": "🏹",
