@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Dice Spell Reference Cards</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .element-section {
+            margin-bottom: 20px;
+            page-break-after: always;
+        }
+
+        .element-title {
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            margin-bottom: 8px;
+            padding: 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            column-gap: 8px;
+        }
+
+        .element-title.air {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+        }
+
+        .element-title.death {
+            background: linear-gradient(135deg, #2c2c2c, #4a4a4a);
+        }
+
+        .element-title.earth {
+            background: linear-gradient(135deg, #daa520, #ffd700);
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .element-title.fire {
+            background: linear-gradient(135deg, #dc143c, #ff6347);
+        }
+
+        .element-title.water {
+            background: linear-gradient(135deg, #228b22, #32cd32);
+        }
+
+        .element-title.elemental {
+            background: linear-gradient(45deg, #4169e1, #228b22, #dc143c, #daa520, #2c2c2c);
+            background-size: 400% 400%;
+            animation: elementalShift 4s ease-in-out infinite;
+        }
+
+        @keyframes elementalShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .spell-card {
+            width: 100%;
+            min-height: 80px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 2px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 4px 6px;
+            background: linear-gradient(135deg, var(--header-primary), var(--header-secondary));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .spell-name {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .spell-indicators {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .spell-tag {
+            font-size: 7px;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-weight: 500;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .spell-tag.cantrip {
+            background: #4CAF50;
+        }
+
+        .spell-tag.reserves {
+            background: #2196F3;
+        }
+
+        .spell-cost {
+            font-size: 10px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 2px 4px;
+            border-radius: 3px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .card-content {
+            padding: 4px 6px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .spell-species {
+            font-size: 8px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .spell-description {
+            font-size: 9px;
+            line-height: 1.2;
+            color: #333;
+        }
+
+        /* Element-specific colors */
+        .spell-card.air {
+            --border-color: #4169e1;
+            --header-primary: #4169e1;
+            --header-secondary: #6495ed;
+        }
+
+        .spell-card.death {
+            --border-color: #2c2c2c;
+            --header-primary: #2c2c2c;
+            --header-secondary: #4a4a4a;
+        }
+
+        .spell-card.earth {
+            --border-color: #daa520;
+            --header-primary: #daa520;
+            --header-secondary: #ffd700;
+        }
+
+        .spell-card.fire {
+            --border-color: #dc143c;
+            --header-primary: #dc143c;
+            --header-secondary: #ff6347;
+        }
+
+        .spell-card.water {
+            --border-color: #228b22;
+            --header-primary: #228b22;
+            --header-secondary: #32cd32;
+        }
+
+        .spell-card.elemental {
+            --border-color: #9932cc;
+            --header-primary: #9932cc;
+            --header-secondary: #ba55d3;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+                padding: 5mm;
+                font-size: 10px;
+            }
+
+            .element-section {
+                page-break-after: always;
+                margin-bottom: 10px;
+            }
+
+            .element-title {
+                font-size: 14px;
+                margin-bottom: 6px;
+                padding: 4px;
+            }
+
+            .spell-card {
+                min-height: 60px;
+                margin-bottom: 1px;
+                border: 1px solid #333;
+            }
+
+            .spell-name {
+                font-size: 10px;
+            }
+
+            .spell-description {
+                font-size: 8px;
+                line-height: 1.1;
+            }
+
+            .spell-species {
+                font-size: 7px;
+            }
+
+            .spell-cost {
+                font-size: 9px;
+            }
+
+            .spell-tag {
+                font-size: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+    <!-- This file will be populated by the generate script -->
+    </div>
+</body>
+</html>

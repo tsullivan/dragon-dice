@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Dice Species Reference Cards</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            max-width: 1900px;
+            margin: 0 auto;
+        }
+
+        .species-card {
+            width: 450px;
+            height: 650px;
+            border-radius: 15px;
+            border: 3px solid;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+        }
+
+        .species-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-header {
+            height: 70px;
+            background: linear-gradient(135deg, var(--header-primary), var(--header-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .species-name {
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .elements {
+            position: absolute;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .element-badge {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .card-content {
+            padding: 10px;
+            height: calc(100% - 70px);
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+        }
+
+        .section {
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .abilities-list {
+            font-size: 9px;
+            line-height: 1.3;
+        }
+
+        .ability {
+            margin-bottom: 5px;
+        }
+
+        .ability-name {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            font-size: 7px;
+            margin-bottom: 6px;
+        }
+
+        .unit-category {
+            text-align: center;
+            padding: 4px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, var(--unit-bg), var(--unit-bg-alt));
+            border: 1px solid var(--accent-color);
+        }
+
+        .unit-type {
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 6px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .unit-item {
+            line-height: 1.1;
+            margin-bottom: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unit-name {
+            flex: 1;
+            text-align: left;
+            font-size: 6px;
+        }
+
+        .health-badge {
+            background: var(--accent-color);
+            color: white;
+            border-radius: 6px;
+            padding: 1px 2px;
+            font-size: 5px;
+            font-weight: bold;
+            min-width: 6px;
+            text-align: center;
+        }
+
+        .monsters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            font-size: 7px;
+        }
+
+        .monster-item {
+            text-align: center;
+            padding: 2px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, var(--monster-bg), var(--monster-bg-alt));
+            border: 1px solid var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .monster-name {
+            flex: 1;
+            text-align: left;
+            font-size: 6px;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+
+        /* Species-specific color schemes */
+        .amazons {
+            --bg-primary: #f8f8ff;
+            --bg-secondary: #e6e6fa;
+            --header-primary: #dcdcdc;
+            --header-secondary: #c0c0c0;
+            --border-color: #a0a0a0;
+            --accent-color: #696969;
+            --unit-bg: #f5f5f5;
+            --unit-bg-alt: #e8e8e8;
+            --monster-bg: #e0e0e0;
+            --monster-bg-alt: #d0d0d0;
+        }
+
+        .coral-elves {
+            --bg-primary: #4169e1;
+            --bg-secondary: #228b22;
+            --header-primary: #1e3a8a;
+            --header-secondary: #065f46;
+            --border-color: #87ceeb;
+            --accent-color: #0066cc;
+            --unit-bg: #e6f3ff;
+            --unit-bg-alt: #e6ffe6;
+            --monster-bg: #cce6ff;
+            --monster-bg-alt: #ccffcc;
+        }
+
+        .dwarves {
+            --bg-primary: #dc143c;
+            --bg-secondary: #daa520;
+            --header-primary: #8b0000;
+            --header-secondary: #b8860b;
+            --border-color: #ffd700;
+            --accent-color: #8b4513;
+            --unit-bg: #ffe6e6;
+            --unit-bg-alt: #fff8dc;
+            --monster-bg: #ffcccc;
+            --monster-bg-alt: #fff0b3;
+        }
+
+        .feral {
+            --bg-primary: #4169e1;
+            --bg-secondary: #daa520;
+            --header-primary: #1e3a8a;
+            --header-secondary: #b8860b;
+            --border-color: #87ceeb;
+            --accent-color: #8b4513;
+            --unit-bg: #e6f3ff;
+            --unit-bg-alt: #fff8dc;
+            --monster-bg: #cce6ff;
+            --monster-bg-alt: #fff0b3;
+        }
+
+        .firewalkers {
+            --bg-primary: #4169e1;
+            --bg-secondary: #dc143c;
+            --header-primary: #1e3a8a;
+            --header-secondary: #8b0000;
+            --border-color: #ff6b6b;
+            --accent-color: #cc3300;
+            --unit-bg: #e6f3ff;
+            --unit-bg-alt: #ffe6e6;
+            --monster-bg: #cce6ff;
+            --monster-bg-alt: #ffcccc;
+        }
+
+        .frostwings {
+            --bg-primary: #2c2c2c;
+            --bg-secondary: #4169e1;
+            --header-primary: #1a1a1a;
+            --header-secondary: #1e3a8a;
+            --border-color: #87ceeb;
+            --accent-color: #4682b4;
+            --unit-bg: #f0f0f0;
+            --unit-bg-alt: #e6f3ff;
+            --monster-bg: #e0e0e0;
+            --monster-bg-alt: #cce6ff;
+        }
+
+        .goblins {
+            --bg-primary: #2c2c2c;
+            --bg-secondary: #daa520;
+            --header-primary: #1a1a1a;
+            --header-secondary: #b8860b;
+            --border-color: #ffd700;
+            --accent-color: #8b4513;
+            --unit-bg: #f0f0f0;
+            --unit-bg-alt: #fff8dc;
+            --monster-bg: #e0e0e0;
+            --monster-bg-alt: #fff0b3;
+        }
+
+        .lava-elves {
+            --bg-primary: #2c2c2c;
+            --bg-secondary: #dc143c;
+            --header-primary: #1a1a1a;
+            --header-secondary: #8b0000;
+            --border-color: #ff6b6b;
+            --accent-color: #cc3300;
+            --unit-bg: #f0f0f0;
+            --unit-bg-alt: #ffe6e6;
+            --monster-bg: #e0e0e0;
+            --monster-bg-alt: #ffcccc;
+        }
+
+        .scalders {
+            --bg-primary: #228b22;
+            --bg-secondary: #dc143c;
+            --header-primary: #065f46;
+            --header-secondary: #8b0000;
+            --border-color: #90ee90;
+            --accent-color: #cc3300;
+            --unit-bg: #e6ffe6;
+            --unit-bg-alt: #ffe6e6;
+            --monster-bg: #ccffcc;
+            --monster-bg-alt: #ffcccc;
+        }
+
+        .swamp-stalkers {
+            --bg-primary: #2c2c2c;
+            --bg-secondary: #228b22;
+            --header-primary: #1a1a1a;
+            --header-secondary: #065f46;
+            --border-color: #90ee90;
+            --accent-color: #2d5016;
+            --unit-bg: #f0f0f0;
+            --unit-bg-alt: #e6ffe6;
+            --monster-bg: #e0e0e0;
+            --monster-bg-alt: #ccffcc;
+        }
+
+        .treefolk {
+            --bg-primary: #daa520;
+            --bg-secondary: #228b22;
+            --header-primary: #b8860b;
+            --header-secondary: #065f46;
+            --border-color: #90ee90;
+            --accent-color: #2d5016;
+            --unit-bg: #fff8dc;
+            --unit-bg-alt: #e6ffe6;
+            --monster-bg: #fff0b3;
+            --monster-bg-alt: #ccffcc;
+        }
+
+        .undead {
+            --bg-primary: #2c2c2c;
+            --bg-secondary: #1a1a1a;
+            --header-primary: #0d0d0d;
+            --header-secondary: #0a0a0a;
+            --border-color: #696969;
+            --accent-color: #8b0000;
+            --unit-bg: #f0f0f0;
+            --unit-bg-alt: #e8e8e8;
+            --monster-bg: #e0e0e0;
+            --monster-bg-alt: #d8d8d8;
+        }
+
+        /* Element colors */
+        .death { background: #2c2c2c; }
+        .air { background: #4169e1; }
+        .water { background: #228b22; }
+        .fire { background: #dc143c; }
+        .earth { background: #daa520; }
+        .ivory { background: #f8f8ff; color: #333 !important; }
+
+        .card-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .card-content::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        /* Spell section styles */
+        .spells-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 7px;
+        }
+
+        .spell-element {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            padding: 4px;
+            border: 1px solid var(--accent-color);
+        }
+
+        .spell-element-title {
+            font-weight: 600;
+            font-size: 7px;
+            margin-bottom: 3px;
+            text-align: center;
+            border-radius: 3px;
+            padding: 2px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .spell-element.air .spell-element-title {
+            background: #4169e1;
+        }
+
+        .spell-element.death .spell-element-title {
+            background: #2c2c2c;
+        }
+
+        .spell-element.earth .spell-element-title {
+            background: #daa520;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .spell-element.fire .spell-element-title {
+            background: #dc143c;
+        }
+
+        .spell-element.water .spell-element-title {
+            background: #228b22;
+        }
+
+        .spell-element.elemental .spell-element-title {
+            background: linear-gradient(45deg, #4169e1, #228b22, #dc143c, #daa520, #2c2c2c);
+            background-size: 200% 200%;
+            animation: elementalShift 3s ease-in-out infinite;
+        }
+
+        @keyframes elementalShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .spell-list {
+            font-size: 6px;
+            line-height: 1.2;
+        }
+
+        .spell-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1px;
+            padding: 1px 2px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .spell-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .spell-indicators {
+            display: flex;
+            gap: 1px;
+            align-items: center;
+        }
+
+        .spell-cost {
+            background: var(--accent-color);
+            color: white;
+            border-radius: 6px;
+            padding: 1px 2px;
+            font-size: 5px;
+            font-weight: bold;
+            min-width: 6px;
+            text-align: center;
+        }
+
+        .spell-tag {
+            font-size: 4px;
+            padding: 1px 2px;
+            border-radius: 2px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+        }
+
+        .spell-tag.cantrip {
+            background: #4CAF50;
+        }
+
+        .spell-tag.reserves {
+            background: #2196F3;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            font-weight: 700;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Print styles for page breaks */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 5mm;
+                font-size: 10px;
+            }
+
+            .species-card {
+                page-break-after: always;
+                margin-bottom: 10px;
+            }
+            
+            .species-card:last-child {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cards-container">
+        <!-- Amazons -->
+        <div class="species-card amazons">
+            <div class="card-header">
+                <h2 class="species-name">AMAZONS</h2>
+                <div class="elements">
+                    <div class="element-badge ivory">🟫</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Javelin Charge:</span> During a march, instead of taking the maneuver step, you may bury a minor terrain the marching army controls. Amazons in that army may then count m...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Kukri Charge:</span> During a march, instead of taking the maneuver step, you may bury a minor terrain the marching army controls. Amazons in that army may then count m...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Terrain Harmony:</span> Amazon units generate magic results matching the elements of the terrain where they are located. Amazon units in the Reserves Area generate Ivory m...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Soldier</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Warrior</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">War Chief</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Runner</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Envoy</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Harbinger</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Charioteer</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Battle Rider</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">War Driver</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Darter</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Javelineer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Spearer</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Seer</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Visionary</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Oracle</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Centaur</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Chimera</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Hydra</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Medusa</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Nightmare</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Esfah's Gift</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Rally</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coral Elves -->
+        <div class="species-card coral-elves">
+            <div class="card-header">
+                <h2 class="species-name">CORAL ELVES</h2>
+                <div class="elements">
+                    <div class="element-badge blue">🟦</div>
+                    <div class="element-badge green">🟩</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Coastal Dodge:</span> When at a terrain that contains water, Coral Elves may count maneuver results as if they were save results.
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Defensive Volley:</span> When at a terrain that contains air, Coral Elves units may counter-attack against a missile action. Follow the same process used for a regular mele...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Fighter</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Trooper</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Protector</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Guard</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Courier</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Herald</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Horseman</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Knight</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Eagle Knight</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Bowman</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Archer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Sharpshooter</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Evoker</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Conjurer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Enchanter</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Coral Giant</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Gryphon</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Leviathan</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Sprite Swarm</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Tako</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element air">
+                            <div class="spell-element-title">AIR</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Hailstorm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Blizzard</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wind Walk</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Lightning Strike</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element water">
+                            <div class="spell-element-title">WATER</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Watery Double</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Flash Flood</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Deluge</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wall of Fog</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dwarves -->
+        <div class="species-card dwarves">
+            <div class="card-header">
+                <h2 class="species-name">DWARVES</h2>
+                <div class="elements">
+                    <div class="element-badge red">🟥</div>
+                    <div class="element-badge yellow">🟨</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Mountain Mastery:</span> When at a terrain that contains earth, Dwarves may count melee results as if they were maneuver results.
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Dwarven Might:</span> When at a terrain that contains fire, Dwarves may count save results as if they were melee results when rolling for a counter-attack.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Footman</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Sergeant</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Warlord</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Sentry</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Patroller</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Skirmisher</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Pony Rider</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Lizard Rider</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Mammoth Rider</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Crossbowman</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Marksman</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Crack-Shot</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Theurgist</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Thaumaturgist</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Wizard</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Androsphinx</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Behemoth</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Gargoyle</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Roc</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Umber Hulk</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element earth">
+                            <div class="spell-element-title">EARTH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Stone Skin</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Path</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Higher Ground</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Transmute Rock to Mud</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element fire">
+                            <div class="spell-element-title">FIRE</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Ash Storm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Firebolt</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Fiery Weapon</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Dancing Lights</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feral -->
+        <div class="species-card feral">
+            <div class="card-header">
+                <h2 class="species-name">FERAL</h2>
+                <div class="elements">
+                    <div class="element-badge blue">🟦</div>
+                    <div class="element-badge yellow">🟨</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Feralization:</span> During the Species Abilities Phase, each of your armies containing at least one Feral unit at a terrain that contains earth or air may recruit a sm...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Stampede:</span> When at a terrain that contains both earth and air, Feral units may count maneuver results as if they were melee results during a counter‑attack.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Lynx-Folk</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Leopard-Folk</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Tiger-Folk</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Hound-Folk</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Fox-Folk</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Wolf-Folk</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Antelope-Folk</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Horse-Folk</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Buffalo-Folk</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Falcon-Folk</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Hawk-Folk</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Vulture-Folk</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Weasel-Folk</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Badger-Folk</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Wolverine-Folk</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Bear-Folk</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Elephant-Folk</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Lion-Folk</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Owl-Folk</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Rhino-Folk</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element air">
+                            <div class="spell-element-title">AIR</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Hailstorm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wilding</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wind Walk</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Lightning Strike</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element earth">
+                            <div class="spell-element-title">EARTH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Stone Skin</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Path</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Berserker Rage</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Transmute Rock to Mud</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firewalkers -->
+        <div class="species-card firewalkers">
+            <div class="card-header">
+                <h2 class="species-name">FIREWALKERS</h2>
+                <div class="elements">
+                    <div class="element-badge blue">🟦</div>
+                    <div class="element-badge red">🟥</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Air Flight:</span> During the Retreat Step of the Reserves Phase, Firewalker units may move from any terrain that contains air to any other terrain that contains air ...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Flaming Shields:</span> When at a terrain that contains fire, Firewalkers may count save results as if they were melee results. Flaming Shields does not apply when making ...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Explorer</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Firestarter</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Guardian</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">ShadowChaser</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Adventurer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Firemaster</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Nightsbane</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Watcher</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Daybringer</span><span class="health-badge">3</span></div>
+                            <div class="unit-item"><span class="unit-name">Expeditioner</span><span class="health-badge">3</span></div>
+                            <div class="unit-item"><span class="unit-name">Firestormer</span><span class="health-badge">3</span></div>
+                            <div class="unit-item"><span class="unit-name">Sentinel</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Sunburst</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Sunflare</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Ashbringer</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Fireshadow</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Genie</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Gorgon</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Phoenix</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Salamander</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element air">
+                            <div class="spell-element-title">AIR</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Hailstorm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wind Walk</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Mirage</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Lightning Strike</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element fire">
+                            <div class="spell-element-title">FIRE</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Ash Storm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Flashfire</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Fiery Weapon</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Dancing Lights</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Frostwings -->
+        <div class="species-card frostwings">
+            <div class="card-header">
+                <h2 class="species-name">FROSTWINGS</h2>
+                <div class="elements">
+                    <div class="element-badge black">⬛</div>
+                    <div class="element-badge blue">🟦</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Winter's Fortitude:</span> During the Species Abilities Phase, if you have at least one Frostwing unit at a terrain that contains air, you may move one Frostwing unit of your...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Magic Negation:</span> When an opponent takes a magic action at a terrain containing Frostwings, the Frostwing units may make a magic negation roll. Roll the Frostwing un...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Hound Master</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Wolf Master</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Bear Master</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Apprentice</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Magus</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Magi</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Missile</div>
+                            <div class="unit-item"><span class="unit-name">Destroyer</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Dispatcher</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Devastator</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Missile</div>
+                            <div class="unit-item"><span class="unit-name">Attacker</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Assaulter</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Assailer</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Melee</div>
+                            <div class="unit-item"><span class="unit-name">Advocate</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Defender</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Vindicator</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Cryohydra</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Frost Ogre</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Remorhaz</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Wolf Pack</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Yeti</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element air">
+                            <div class="spell-element-title">AIR</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Hailstorm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wind Walk</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Fields of Ice</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Lightning Strike</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element death">
+                            <div class="spell-element-title">DEATH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Palsy</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Magic Drain</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Finger of Death</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Soiled Ground</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goblins -->
+        <div class="species-card goblins">
+            <div class="card-header">
+                <h2 class="species-name">GOBLINS</h2>
+                <div class="elements">
+                    <div class="element-badge black">⬛</div>
+                    <div class="element-badge yellow">🟨</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Swamp Mastery:</span> When at a terrain that contains earth, Goblins may count melee results as if they were maneuver results.
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Foul Stench:</span> When an army containing Goblins takes a melee action, the opposing player must select a number of their units after they have resolved their save r...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Thug</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Cutthroat</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Marauder</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Mugger</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Ambusher</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Filcher</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Wardog Rider</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Wolf Rider</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Leopard Rider</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Pelter</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Slingman</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Deadeye</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Trickster</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Hedge Wizard</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Death Mage</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Cannibal</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Death Naga</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Harpies</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Shambler</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Troll</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element death">
+                            <div class="spell-element-title">DEATH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Palsy</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Decay</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Finger of Death</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Soiled Ground</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element earth">
+                            <div class="spell-element-title">EARTH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Stone Skin</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Path</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Scent of Fear</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Transmute Rock to Mud</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lava Elves -->
+        <div class="species-card lava-elves">
+            <div class="card-header">
+                <h2 class="species-name">LAVA ELVES</h2>
+                <div class="elements">
+                    <div class="element-badge black">⬛</div>
+                    <div class="element-badge red">🟥</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Volcanic Adaptation:</span> When at a terrain that contains fire, Lava Elves may count maneuver results as if they were save results.
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Cursed Bullets:</span> When targeting an army at the same terrain with a missile attack, Lava Elves missile results inflict damage that may only be reduced by save result...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Bladesman</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Duelist</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Conqueror</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Scout</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Spy</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Infiltrator</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Spider Rider</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Scorpion Knight</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Wyvern Rider</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Fusilier</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Dead-Shot</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Assassin</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Adept</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Warlock</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Necromancer</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Beholder</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Drider</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Hell Hound</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Lurker in the Deep</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Rakshasa</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element death">
+                            <div class="spell-element-title">DEATH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Palsy</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Finger of Death</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Necromantic Wave</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Soiled Ground</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element fire">
+                            <div class="spell-element-title">FIRE</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Ash Storm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Fearful Flames</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Fiery Weapon</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Dancing Lights</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scalders -->
+        <div class="species-card scalders">
+            <div class="card-header">
+                <h2 class="species-name">SCALDERS</h2>
+                <div class="elements">
+                    <div class="element-badge green">🟩</div>
+                    <div class="element-badge red">🟥</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Scorching Touch:</span> When at a terrain that contains fire, Scalders making a save roll against a melee attack inflict one point of damage on the attacking army for each...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Intangibility:</span> When at a terrain that contains water, Scalders may count maneuver results as if they were save results against missile damage.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Singeman</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Scorcher</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Searer</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Kindler</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Igniter</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Charkin</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Dragonne Tender</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Dragonne Rider</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Dragonne Knight</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Glower</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Burner</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Blazer</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Sparker</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Smolderer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Inferno</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Ettercap</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Quickling</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Unseelie Faerie</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Web Birds</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Will o Wisps</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element fire">
+                            <div class="spell-element-title">FIRE</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Ash Storm</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Firestorm</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Fiery Weapon</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Dancing Lights</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element water">
+                            <div class="spell-element-title">WATER</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Watery Double</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Flash Flood</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Tidal Wave</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wall of Fog</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Swamp Stalkers -->
+        <div class="species-card swamp-stalkers">
+            <div class="card-header">
+                <h2 class="species-name">SWAMP STALKERS</h2>
+                <div class="elements">
+                    <div class="element-badge black">⬛</div>
+                    <div class="element-badge green">🟩</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Born of the Swamp:</span> When at a terrain that contains water, Swamp Stalkers may count maneuver results as if they were save results.
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Mutate:</span> During the Species Abilities Phase, you may attempt to Mutate providing the following criteria are met:
+- An opposing player must have at least one...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Warmonger</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Ravager</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Annihilator</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Striker</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Raider</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Invader</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Bog Runner</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Marsh Swimmer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Wave Rider</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Sprayer</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Stormer</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Deluger</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Bog Adept</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Marsh Mage</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Swamp Wizard</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Crocosaur</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Mudmen</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Ormyrr</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Swamp Beast</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Swamp Giant</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element death">
+                            <div class="spell-element-title">DEATH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Palsy</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Swamp Fever</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Finger of Death</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Soiled Ground</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element water">
+                            <div class="spell-element-title">WATER</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Watery Double</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Flash Flood</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Mire</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wall of Fog</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treefolk -->
+        <div class="species-card treefolk">
+            <div class="card-header">
+                <h2 class="species-name">TREEFOLK</h2>
+                <div class="elements">
+                    <div class="element-badge green">🟩</div>
+                    <div class="element-badge yellow">🟨</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Rapid Growth:</span> When at a terrain that contains earth, Treefolk units that do not roll an SAI result may be re-rolled once when making a counter-maneuver. The prev...
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Replanting:</span> When at a terrain that contains water, Treefolk units that are killed should be rolled before being moved to the DUA. Any units that roll an ID ico...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Oakling</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Oak</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Oak Lord</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Willowling</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Willow</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Noble Willow</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Nymph</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Naiad</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Lady Nereid</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Missile</div>
+                            <div class="unit-item"><span class="unit-name">Pineling</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Pine</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Pine Prince</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Magic</div>
+                            <div class="unit-item"><span class="unit-name">Hamadryad</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Dryad</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Eldar Dryad</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Darktree</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Redwood</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Satyr</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Strangle Vine</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Unicorn</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element earth">
+                            <div class="spell-element-title">EARTH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Stone Skin</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Path</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wall of Thorns</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Transmute Rock to Mud</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element water">
+                            <div class="spell-element-title">WATER</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Watery Double</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Accelerated Growth</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Flash Flood</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Wall of Fog</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Undead -->
+        <div class="species-card undead">
+            <div class="card-header">
+                <h2 class="species-name">UNDEAD</h2>
+                <div class="elements">
+                    <div class="element-badge black">⬛</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section">
+                    <div class="section-title">Species Abilities</div>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <span class="ability-name">Stepped Damage:</span> When an Undead unit is killed you may instead exchange it with an Undead unit of lesser health from your DUA.
+                        </div>
+                        <div class="ability">
+                            <span class="ability-name">Bone Magic:</span> When an army containing Undead takes a magic action, each Undead unit that rolls at least one non-ID magic result may add one additional magic resu...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Units</div>
+                    <div class="units-grid">
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Melee</div>
+                            <div class="unit-item"><span class="unit-name">Zombie</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Wight</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Mummy</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Melee</div>
+                            <div class="unit-item"><span class="unit-name">Skeleton</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Revenant</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Death Knight</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Cavalry</div>
+                            <div class="unit-item"><span class="unit-name">Wraith</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Spectre</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Ghost</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Heavy Magic</div>
+                            <div class="unit-item"><span class="unit-name">Apparition</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Heucuva</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Lich</span><span class="health-badge">3</span></div>
+                        </div>
+                        <div class="unit-category">
+                            <div class="unit-type">Light Magic</div>
+                            <div class="unit-item"><span class="unit-name">Ghoul</span><span class="health-badge">1</span></div>
+                            <div class="unit-item"><span class="unit-name">Ghast</span><span class="health-badge">2</span></div>
+                            <div class="unit-item"><span class="unit-name">Vampire</span><span class="health-badge">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monsters</div>
+                    <div class="monsters-grid">
+                        <div class="monster-item"><span class="monster-name">Carrion Crawler</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Dracolich</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Fenhound</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Minor Death</span><span class="health-badge">4</span></div>
+                        <div class="monster-item"><span class="monster-name">Skeletal Steed</span><span class="health-badge">4</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Spells</div>
+                    <div class="spells-grid">
+                        <div class="spell-element death">
+                            <div class="spell-element-title">DEATH</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Palsy</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-cost">2</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Evil Eye</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Restless Dead</span><div class="spell-indicators"><span class="spell-tag cantrip">C</span><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Finger of Death</span><div class="spell-indicators"><span class="spell-cost">4</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Exhume</span><div class="spell-indicators"><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Open Grave</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">5</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Soiled Ground</span><div class="spell-indicators"><span class="spell-cost">6</span></div></div>
+                            </div>
+                        </div>
+                        <div class="spell-element elemental">
+                            <div class="spell-element-title">ELEMENTAL</div>
+                            <div class="spell-list">
+                                <div class="spell-item"><span class="spell-name">Resurrect Dead</span><div class="spell-indicators"><span class="spell-tag reserves">R</span><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragonkin</span><div class="spell-indicators"><span class="spell-cost">3</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon Dragon</span><div class="spell-indicators"><span class="spell-cost">7</span></div></div>
+                                <div class="spell-item"><span class="spell-name">Summon White Dragon</span><div class="spell-indicators"><span class="spell-cost">14</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>

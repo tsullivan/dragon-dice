@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Dice Dragon Reference Cards</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 10mm;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .sections-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .small-cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            page-break-after: always;
+        }
+
+        .small-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            border: 2px solid #3498db;
+        }
+
+        .dragon-types-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dragon-category {
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 5px;
+            padding: 6px;
+            border: 1px solid #3498db;
+        }
+
+        .category-title {
+            font-weight: 600;
+            font-size: 10px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .dragon-list {
+            font-size: 8px;
+            line-height: 1.2;
+        }
+
+        .dragon-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+            padding: 1px 2px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .dragon-icons {
+            margin-right: 3px;
+            font-size: 7px;
+        }
+
+        .dragon-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .health-badge {
+            background: #e74c3c;
+            color: white;
+            border-radius: 3px;
+            padding: 0px 2px;
+            font-size: 6px;
+            font-weight: bold;
+            min-width: 8px;
+            text-align: center;
+        }
+
+        .force-badge {
+            background: #9b59b6;
+            color: white;
+            border-radius: 3px;
+            padding: 0px 2px;
+            font-size: 6px;
+            font-weight: bold;
+            min-width: 8px;
+            text-align: center;
+            margin-left: 2px;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            border: 2px solid #3498db;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+
+        .special-item {
+            font-size: 7px;
+            line-height: 1.2;
+            margin-bottom: 2px;
+            color: #2c3e50;
+        }
+
+        .forms-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-card {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid #2ecc71;
+            border-radius: 5px;
+            padding: 8px;
+        }
+
+        .form-title {
+            font-weight: 600;
+            font-size: 12px;
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .faces-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 7px;
+        }
+
+        .face-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 3px;
+            border-radius: 3px;
+            border: 1px solid #2ecc71;
+        }
+
+        .face-name {
+            font-weight: 600;
+            color: #27ae60;
+            margin-bottom: 1px;
+        }
+
+        .face-description {
+            color: #2c3e50;
+            line-height: 1.3;
+        }
+
+
+        .rule-item {
+            font-size: 8px;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            color: #2c3e50;
+        }
+
+        .rule-category {
+            font-weight: 600;
+            color: #8e44ad;
+            text-transform: uppercase;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+                padding: 5mm;
+            }
+
+            .page-container {
+                background: white !important;
+                box-shadow: none;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+
+            .dragon-item, .face-item, .rule-item {
+                font-size: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <h1 class="page-title">Dragon Reference Cards</h1>
+        
+        <!-- Small Cards Section -->
+        <div class="small-cards-container">
+            <!-- Dragon Types Card -->
+            <div class="small-card">
+                <div class="section-title">Dragon Types</div>
+                
+                <div class="dragon-types-grid">
+                    <div class="dragon-category">
+                        <div class="category-title">Elemental Dragons</div>
+                        <div class="dragon-list">
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟨</span>
+                                <span class="dragon-name">Earth Elemental</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟥</span>
+                                <span class="dragon-name">Fire Elemental</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟩</span>
+                                <span class="dragon-name">Water Elemental</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟦</span>
+                                <span class="dragon-name">Air Elemental</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">⬛</span>
+                                <span class="dragon-name">Death Elemental</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dragon-category">
+                        <div class="category-title">Hybrid Dragons</div>
+                        <div class="dragon-list">
+                            <div class="dragon-item">
+                                <span class="dragon-icons">⬛🟦</span>
+                                <span class="dragon-name">Death/Air Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">⬛🟩</span>
+                                <span class="dragon-name">Death/Water Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">⬛🟨</span>
+                                <span class="dragon-name">Death/Earth Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟦🟩</span>
+                                <span class="dragon-name">Air/Water Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟦🟨</span>
+                                <span class="dragon-name">Air/Earth Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟩🟨</span>
+                                <span class="dragon-name">Water/Earth Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟥⬛</span>
+                                <span class="dragon-name">Fire/Death Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟥🟦</span>
+                                <span class="dragon-name">Fire/Air Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟥🟩</span>
+                                <span class="dragon-name">Fire/Water Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟥🟨</span>
+                                <span class="dragon-name">Fire/Earth Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dragon-category">
+                        <div class="category-title">Special Dragons</div>
+                        <div class="dragon-list">
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟫</span>
+                                <span class="dragon-name">Ivory</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟫⬛</span>
+                                <span class="dragon-name">Ivory/Death Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟫🟦</span>
+                                <span class="dragon-name">Ivory/Air Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟫🟩</span>
+                                <span class="dragon-name">Ivory/Water Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟫🟥</span>
+                                <span class="dragon-name">Ivory/Fire Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">🟫🟨</span>
+                                <span class="dragon-name">Ivory/Earth Hybrid</span>
+                                <span class="health-badge">5</span>
+                                <span class="force-badge">1</span>
+                            </div>
+                            <div class="dragon-item">
+                                <span class="dragon-icons">⬜</span>
+                                <span class="dragon-name">White Dragon</span>
+                                <span class="health-badge">10</span>
+                                <span class="force-badge">2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Dragon Abilities Card -->
+            <div class="small-card">
+                <div class="section-title">Special Dragon Abilities</div>
+                <div class="special-item"><strong>Hybrid Dragons:</strong> Apply both elemental breath effects when breath result is rolled</div>
+                <div class="special-item"><strong>Ivory Hybrids:</strong> Apply elemental breath effect, affected by spells of their element or ivory</div>
+                <div class="special-item"><strong>White Dragons:</strong> Double damage from claws/jaws/tail/wing, double treasure results</div>
+            </div>
+        </div>
+        
+        <!-- Drake Form Section -->
+        <div class="section page-break">
+            <div class="section-title">Drake Form (12 faces)</div>
+            <div class="faces-list">
+                <div class="face-item">
+                    <div class="face-name">Jaws</div>
+                    <div class="face-description">A dragon's jaws inflict twelve points of damage on an army. Also counts as the 'ID' for ID based SAIs that effect Dragons.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Dragon Breath</div>
+                    <div class="face-description">Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.<br>* Against armies, five health-worth of units in the target army are killed.<br>* In addition, an effect based on the color affects the army:<br>** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.<br>** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.<br>** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.<br>** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.<br>** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.<br>** IVORY (Life Drain): No additional effect.<br>** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Front Left</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Front Right</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Wing Left</div>
+                    <div class="face-description">A dragon's wings inflict five points of damage on an army. After the attack, if the dragon is still alive, it flies away. It returns to it's summoning pool.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Wing Right</div>
+                    <div class="face-description">A dragon's wings inflict five points of damage on an army. After the attack, if the dragon is still alive, it flies away. It returns to it's summoning pool.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Belly Front</div>
+                    <div class="face-description">The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Belly Rear</div>
+                    <div class="face-description">The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Rear Left</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Rear Right</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Tail Front</div>
+                    <div class="face-description">The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Tail Tip</div>
+                    <div class="face-description">The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wyrm Form Section -->
+        <div class="section page-break">
+            <div class="section-title">Wyrm Form (12 faces)</div>
+            <div class="faces-list">
+                <div class="face-item">
+                    <div class="face-name">Jaws</div>
+                    <div class="face-description">A dragon's jaws inflict twelve points of damage on an army. Also counts as the 'ID' for ID based SAIs that effect Dragons.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Dragon Breath</div>
+                    <div class="face-description">Against another dragon, dragon breath inflicts five (ten for a White Dragon) points of damage; roll the dragon again and apply the new result as well.<br>* Against armies, five health-worth of units in the target army are killed.<br>* In addition, an effect based on the color affects the army:<br>** BLACK (Dragon Plague): The army ignores all of its ID results until the beginning of its next turn.<br>** BLUE (Lightning Bolt): The army's melee results are halved until the beginning of its next turn. Results are rounded down.<br>** YELLOW (Petrify): The army's maneuver results are halved until the beginning of its next turn. Results are rounded down.<br>** GREEN (Poisonous Cloud): The army's missile results are halved until the beginning of its next turn. Results are rounded down.<br>** RED (Dragon Fire): Roll the units killed by this dragon's breath attack. Those that do not generate a save result are buried.<br>** IVORY (Life Drain): No additional effect.<br>** WHITE (Terrain Empathy): An additional five health-worth of units in the army are killed. The army is affected by a breath of both colors of the terrain.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Front Left</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Front Right</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Belly Front</div>
+                    <div class="face-description">The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Belly Rear</div>
+                    <div class="face-description">The dragon's five automatic saves do not count during this attack. In other words, five points of damage will slay the dragon this turn.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Rear Left</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Claw Rear Right</div>
+                    <div class="face-description">A dragon's claws inflict six points of damage on an army.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Tail Front</div>
+                    <div class="face-description">The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Tail Middle</div>
+                    <div class="face-description">The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Tail Tip</div>
+                    <div class="face-description">The dragon's tail inflicts three points of damage on an army; roll the dragon again and apply the new results as well.</div>
+                </div>
+                <div class="face-item">
+                    <div class="face-name">Treasure</div>
+                    <div class="face-description">One unit in the target army may immediately be promoted.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dragon Summoning Rules Section -->
+        <div class="section page-break">
+            <div class="section-title">Dragon Summoning Rules</div>
+            
+            <div class="rule-item">
+                <span class="rule-category">Elemental Dragons:</span> Can be summoned from terrain or summoning pool using matching element magic
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-category">Hybrid Dragons:</span> Can be summoned from terrain using either element's magic
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-category">Ivory Dragons:</span> Can only be summoned from summoning pool using any single element magic
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-category">Ivory Hybrids:</span> Can be summoned from terrain using their element's magic or ivory effects
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-category">White Dragons:</span> Can only be summoned using "Summon White Dragon" spell (14 cost, any element combination)
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-category">Force Values:</span> Most dragons count as 1 force, White Dragons count as 2 force when assembling armies
+            </div>
+        </div>
+    </div>
+</body>
+</html>

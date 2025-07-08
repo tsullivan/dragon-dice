@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Dice Spell Reference Cards</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .element-section {
+            margin-bottom: 20px;
+            page-break-after: always;
+        }
+
+        .element-title {
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            margin-bottom: 8px;
+            padding: 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            column-gap: 8px;
+        }
+
+        .element-title.air {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+        }
+
+        .element-title.death {
+            background: linear-gradient(135deg, #2c2c2c, #4a4a4a);
+        }
+
+        .element-title.earth {
+            background: linear-gradient(135deg, #daa520, #ffd700);
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .element-title.fire {
+            background: linear-gradient(135deg, #dc143c, #ff6347);
+        }
+
+        .element-title.water {
+            background: linear-gradient(135deg, #228b22, #32cd32);
+        }
+
+        .element-title.elemental {
+            background: linear-gradient(45deg, #4169e1, #228b22, #dc143c, #daa520, #2c2c2c);
+            background-size: 400% 400%;
+            animation: elementalShift 4s ease-in-out infinite;
+        }
+
+        @keyframes elementalShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .spell-card {
+            width: 100%;
+            min-height: 80px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 2px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 4px 6px;
+            background: linear-gradient(135deg, var(--header-primary), var(--header-secondary));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .spell-name {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .spell-indicators {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .spell-tag {
+            font-size: 7px;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-weight: 500;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .spell-tag.cantrip {
+            background: #4CAF50;
+        }
+
+        .spell-tag.reserves {
+            background: #2196F3;
+        }
+
+        .spell-cost {
+            font-size: 10px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 2px 4px;
+            border-radius: 3px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .card-content {
+            padding: 4px 6px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .spell-species {
+            font-size: 8px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .spell-description {
+            font-size: 9px;
+            line-height: 1.2;
+            color: #333;
+        }
+
+        /* Element-specific colors */
+        .spell-card.air {
+            --border-color: #4169e1;
+            --header-primary: #4169e1;
+            --header-secondary: #6495ed;
+        }
+
+        .spell-card.death {
+            --border-color: #2c2c2c;
+            --header-primary: #2c2c2c;
+            --header-secondary: #4a4a4a;
+        }
+
+        .spell-card.earth {
+            --border-color: #daa520;
+            --header-primary: #daa520;
+            --header-secondary: #ffd700;
+        }
+
+        .spell-card.fire {
+            --border-color: #dc143c;
+            --header-primary: #dc143c;
+            --header-secondary: #ff6347;
+        }
+
+        .spell-card.water {
+            --border-color: #228b22;
+            --header-primary: #228b22;
+            --header-secondary: #32cd32;
+        }
+
+        .spell-card.elemental {
+            --border-color: #9932cc;
+            --header-primary: #9932cc;
+            --header-secondary: #ba55d3;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 5mm;
+                font-size: 10px;
+            }
+
+            .element-section {
+                page-break-after: always;
+                margin-bottom: 10px;
+            }
+
+            .element-title {
+                font-size: 14px;
+                margin-bottom: 6px;
+                padding: 4px;
+            }
+
+            .spell-card {
+                min-height: 60px;
+                margin-bottom: 1px;
+                border: 1px solid #333;
+            }
+
+            .spell-name {
+                font-size: 10px;
+            }
+
+            .spell-description {
+                font-size: 8px;
+                line-height: 1.1;
+            }
+
+            .spell-species {
+                font-size: 7px;
+            }
+
+            .spell-cost {
+                font-size: 9px;
+            }
+
+            .spell-tag {
+                font-size: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+    <div class="element-section">
+        <div class="element-title air">Air Magic</div>
+        <div class="cards-container">
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Hailstorm</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-cost">2</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any opposing army. Inflict one point of damage on the target.</div>
+                </div>
+            </div>
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Blizzard</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Coral Elves</div>
+                    <div class="spell-description">Target any terrain. Subtract three melee results from all army rolls at that terrain until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Wilding</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Feral</div>
+                    <div class="spell-description">Target any army. The target army may double the melee and save results of any one unit until the beginning of your next turn. Select the unit to double its results after the army makes each roll.</div>
+                </div>
+            </div>
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Wind Walk</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">4</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any army. Add four maneuver results to the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Fields of Ice</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Frostwings</div>
+                    <div class="spell-description">Target any terrain. Subtract four maneuver results from all army rolls at that terrain until the beginning of your next turn. Ties in maneuver rolls at that terrain are won by the counter-maneuvering army while the terrain is under the effect of Fields of Ice.</div>
+                </div>
+            </div>
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Mirage</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Firewalkers</div>
+                    <div class="spell-description">Target up to five health-worth of units at any terrain. The targets make a save roll. Those that do not generate a save result are moved to their Reserve Area.</div>
+                </div>
+            </div>
+            <div class="spell-card air">
+                <div class="card-header">
+                    <div class="spell-name">Lightning Strike</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">6</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any opposing unit. The target makes a save roll. If it does not generate a save result, it is killed. A unit may not be targeted by more than one Lightning Strike per magic action.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="element-section">
+        <div class="element-title death">Death Magic</div>
+        <div class="cards-container">
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Palsy</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-cost">2</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any opposing army. Subtract one result from the target's non-maneuver rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Decay</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Goblins</div>
+                    <div class="spell-description">Target any opposing army. Subtract two melee results from the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Evil Eye</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Undead</div>
+                    <div class="spell-description">Target any opposing army. Subtract two save results from the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Magic Drain</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Frostwings</div>
+                    <div class="spell-description">Target any terrain. Subtract two magic results from all army rolls at that terrain until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Restless Dead</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Undead</div>
+                    <div class="spell-description">Target any army. Add three maneuver results to the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Swamp Fever</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Swamp Stalkers</div>
+                    <div class="spell-description">Target up to three health-worth of units in an opposing army. Roll the targets. If they roll an ID icon, they are killed. Any units killed by Swamp Fever make a second roll. If they roll an ID icon they are buried.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Finger of Death</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">4</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any opposing unit. Inflict one point of damage on the target with no save possible.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Exhume</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Undead</div>
+                    <div class="spell-description">Target up to three health-worth of units in an opposing player's DUA. The targets make a save roll. If the targets do not generate a save result they are buried. You may return units, up to the health-worth of units buried in this way, to the casting army from your DUA.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Necromantic Wave</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Lava Elves</div>
+                    <div class="spell-description">Target any army. All units in the target army may count magic results as if they were melee or missile results until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Open Grave</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Undead</div>
+                    <div class="spell-description">Target any army. Until the beginning of your next turn, units in the target army that are killed following a save roll by any army-targeting effects (including melee and missile damage) go to their owner's Reserve Area instead of the DUA. If no save roll is possible when units are killed, Open Grave does nothing.</div>
+                </div>
+            </div>
+            <div class="spell-card death">
+                <div class="card-header">
+                    <div class="spell-name">Soiled Ground</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">6</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any terrain. Until the beginning of your next turn, any unit killed at that terrain that goes into the DUA must make a save roll. Those that do not generate a save result are buried.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="element-section">
+        <div class="element-title earth">Earth Magic</div>
+        <div class="cards-container">
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Stone Skin</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-tag reserves">RESERVES</div><div class="spell-cost">2</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any army. Add one save result to the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Path</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">4</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target one of your units at a terrain. Move the target to any other terrain where you have an army.</div>
+                </div>
+            </div>
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Berserker Rage</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Feral</div>
+                    <div class="spell-description">Target an army containing at least one Feral unit. All Feral units in the target army may count save results as if they were melee results during all counter-attacks, until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Higher Ground</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Dwarves</div>
+                    <div class="spell-description">Target any opposing army. Subtract five melee results from the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Scent of Fear</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Goblins</div>
+                    <div class="spell-description">Target up to three health-worth of opposing units at any terrain. The target units are moved to their Reserve Area.</div>
+                </div>
+            </div>
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Wall of Thorns</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Treefolk</div>
+                    <div class="spell-description">Target any terrain not at its eighth face. Any army that successfully maneuvers that terrain takes six points of damage. The army makes a melee roll instead of a save roll. Reduce the damage taken by the number of melee results generated. This effect lasts until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card earth">
+                <div class="card-header">
+                    <div class="spell-name">Transmute Rock to Mud</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">6</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any opposing army. Subtract six maneuver results from the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="element-section">
+        <div class="element-title fire">Fire Magic</div>
+        <div class="cards-container">
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Ash Storm</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-cost">2</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any terrain. Subtract one result from all army rolls at that terrain until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Fearful Flames</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Lava Elves</div>
+                    <div class="spell-description">Target any opposing unit. Inflict one point of damage on the target. If the target unit saves against the damage, the target unit makes a second save roll. Unless the target unit gets a save result, the target unit flees to reserves.</div>
+                </div>
+            </div>
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Firebolt</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Dwarves</div>
+                    <div class="spell-description">Target any opposing unit. Inflict one point of damage on the target.</div>
+                </div>
+            </div>
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Firestorm</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Scalders</div>
+                    <div class="spell-description">Target any terrain. Inflict two points of damage on each army at that terrain.</div>
+                </div>
+            </div>
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Flashfire</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Firewalkers</div>
+                    <div class="spell-description">Target any army. During any non-maneuver army roll, the target's owner may re-roll any one unit in the target army once, ignoring the previous result. This effect lasts until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Fiery Weapon</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">4</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any army. Add two melee or missile results to any roll the target makes until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card fire">
+                <div class="card-header">
+                    <div class="spell-name">Dancing Lights</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">6</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any opposing army. Subtract six melee results from the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="element-section">
+        <div class="element-title water">Water Magic</div>
+        <div class="cards-container">
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Watery Double</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-tag reserves">RESERVES</div><div class="spell-cost">2</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any army. Add one save result to the target's rolls until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Accelerated Growth</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Treefolk</div>
+                    <div class="spell-description">Target your DUA. When a two (or greater) health Treefolk unit is killed, you may instead exchange it with a one health Treefolk unit from your DUA. This effect lasts until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Flash Flood</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">4</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any terrain. Reduce that terrain one step unless an opposing army at that terrain generates at least six maneuver results. A terrain may never be reduced by more than one step during a player's turn from the effects of Flash Flood.</div>
+                </div>
+            </div>
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Deluge</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Coral Elves</div>
+                    <div class="spell-description">Target any terrain. Subtract three maneuver and three missile results from all army rolls at that terrain until the beginning of your next turn.</div>
+                </div>
+            </div>
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Mire</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Swamp Stalkers</div>
+                    <div class="spell-description">Target any terrain. Until the beginning of your next turn, any army marching at that terrain must first make a maneuver roll. The marching player then selects health-worth of units up to the maneuver results generated by this first roll. The army uses only those units, and items they carry, for any rolls in the march for both the maneuver step and the action step.</div>
+                </div>
+            </div>
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Tidal Wave</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Scalders</div>
+                    <div class="spell-description">Target any terrain. Each army at that terrain takes four points of damage, and makes a combination save and maneuver roll. For this special combination roll, only effects that generate normal save and maneuver results count. The terrain is reduced one step unless an army generates at least four maneuver results. A terrain may never be reduced by more than one step during a player's turn from the effects of Tidal Wave.</div>
+                </div>
+            </div>
+            <div class="spell-card water">
+                <div class="card-header">
+                    <div class="spell-name">Wall of Fog</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">6</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any terrain. Subtract six missile results from any missile attack targeting an army at that terrain until the beginning of your next turn.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="element-section">
+        <div class="element-title elemental">Elemental Magic</div>
+        <div class="cards-container">
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Esfah's Gift</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag cantrip">CANTRIP</div><div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Amazons</div>
+                    <div class="spell-description">Target a minor terrain in your BUA. Move that terrain to your summoning pool.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Evolve Dragonkin</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Eldarim</div>
+                    <div class="spell-description">Target one of your Dragonkin units that matches the element of magic used to cast this spell. The target is promoted one health-worth.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Resurrect Dead</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target one health-worth of units in your DUA that contains the element of magic used to cast this spell. Return the targets to the casting army. Magic of any one element (or Ivory) may be used to resurrect Amazons. Multiple casting of this spell targeting a single unit must all use the same element of magic.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Summon Dragonkin</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">3</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target one health-worth of Dragonkin units in your Summoning Pool that match the element of magic used to cast this spell. The targets join the casting army.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Rally</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Amazons</div>
+                    <div class="spell-description">Target up to three of your Amazon units at a terrain. Move those units to any other terrain where you have at least one Amazon unit.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Rise of the Eldarim</div>
+                    <div class="spell-indicators">
+                        <div class="spell-tag reserves">RESERVES</div><div class="spell-cost">5</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">Eldarim</div>
+                    <div class="spell-description">Target any Eldarim unit that matches the element of magic used to cast this spell. The target is promoted one health-worth.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Summon Dragon</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">7</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any terrain. Summon one dragon that contains the element used to cast this spell from any Summoning Pool or terrain to the target terrain. Magic of any one element may be used to summon an Ivory or Ivory Hybrid Dragon from any Summoning Pool to the target terrain.</div>
+                </div>
+            </div>
+            <div class="spell-card elemental">
+                <div class="card-header">
+                    <div class="spell-name">Summon White Dragon</div>
+                    <div class="spell-indicators">
+                        <div class="spell-cost">14</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="spell-species">All Species</div>
+                    <div class="spell-description">Target any terrain. Summon one White Dragon from any Summoning Pool or terrain to the target terrain. Any combination of magic elements may be used to cast this spell.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
+</html>
