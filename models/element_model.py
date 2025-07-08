@@ -6,10 +6,11 @@ class ElementModel:
     Model for element data with icon and color name.
     """
 
-    def __init__(self, name: str, icon: str, color_name: str):
+    def __init__(self, name: str, icon: str, color_name: str, display_name: Optional[str] = None):
         self.name = name
         self.icon = icon
         self.color_name = color_name
+        self.display_name = display_name or name.title()
 
     def __str__(self) -> str:
         return f"{self.icon} {self.name}"
@@ -24,13 +25,13 @@ class ElementModel:
 
 # Element instances
 ELEMENT_DATA = {
-    "DEATH": ElementModel(name="DEATH", icon="⬛", color_name="Black"),
-    "AIR": ElementModel(name="AIR", icon="🟦", color_name="Blue"),
-    "WATER": ElementModel(name="WATER", icon="🟩", color_name="Green"),
-    "FIRE": ElementModel(name="FIRE", icon="🟥", color_name="Red"),
-    "EARTH": ElementModel(name="EARTH", icon="🟨", color_name="Yellow"),
-    "IVORY": ElementModel(name="IVORY", icon="🟫", color_name="Ivory"),
-    "WHITE": ElementModel(name="WHITE", icon="⬜", color_name="White"),
+    "DEATH": ElementModel(name="DEATH", icon="⬛", color_name="Black", display_name="Death"),
+    "AIR": ElementModel(name="AIR", icon="🟦", color_name="Blue", display_name="Air"),
+    "WATER": ElementModel(name="WATER", icon="🟩", color_name="Green", display_name="Water"),
+    "FIRE": ElementModel(name="FIRE", icon="🟥", color_name="Red", display_name="Fire"),
+    "EARTH": ElementModel(name="EARTH", icon="🟨", color_name="Yellow", display_name="Earth"),
+    "IVORY": ElementModel(name="IVORY", icon="🟫", color_name="Ivory", display_name="Ivory"),
+    "WHITE": ElementModel(name="WHITE", icon="⬜", color_name="White", display_name="White"),
 }
 
 

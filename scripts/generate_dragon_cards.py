@@ -17,15 +17,15 @@ from models.die_face_model import DRAGON_DIE_FACES
 
 def load_dragon_type_data():
     """Load dragon type data from snapshot."""
-    dragon_type_file = Path("test/snapshots/dragon_type_data.json")
-    with open(dragon_type_file, 'r') as f:
+    dragon_type_file = Path("models/test/snapshots/dragon_type_data.json")
+    with open(dragon_type_file, "r") as f:
         return json.load(f)
 
 
 def load_dragon_form_data():
     """Load dragon form data from snapshot."""
-    dragon_form_file = Path("test/snapshots/dragon_form_data.json")
-    with open(dragon_form_file, 'r') as f:
+    dragon_form_file = Path("models/test/snapshots/dragon_form_data.json")
+    with open(dragon_form_file, "r") as f:
         return json.load(f)
 
 
@@ -33,12 +33,12 @@ def get_element_icon(element):
     """Get emoji icon for element."""
     element_icons = {
         "AIR": "🟦",
-        "DEATH": "⬛", 
+        "DEATH": "⬛",
         "EARTH": "🟨",
         "FIRE": "🟥",
         "WATER": "🟩",
         "IVORY": "🟫",
-        "WHITE": "⬜"
+        "WHITE": "⬜",
     }
     return element_icons.get(element, "❓")
 
@@ -59,153 +59,148 @@ def get_face_description(face_name):
 def generate_dragon_types_section():
     """Generate the dragon types section HTML."""
     dragon_types = load_dragon_type_data()
-    
+
     # Group dragons by type
     elemental_dragons = []
     hybrid_dragons = []
     special_dragons = []
-    
+
     for dragon_key, dragon_data in dragon_types.items():
         dragon_type = dragon_data["dragon_type"]
         elements = dragon_data["elements"]
         health = dragon_data["health"]
         force_value = dragon_data["force_value"]
         display_name = dragon_data["display_name"]
-        
+
         # Create element icons
         element_icons = "".join([get_element_icon(elem) for elem in elements])
-        
+
         # Determine dragon name (remove element icons from display name)
         name_parts = display_name.split(" ", 1)
         if len(name_parts) > 1:
             dragon_name = name_parts[1]
         else:
             dragon_name = display_name
-        
-        dragon_item = {
-            "icons": element_icons,
-            "name": dragon_name,
-            "health": health,
-            "force": force_value
-        }
-        
+
+        dragon_item = {"icons": element_icons, "name": dragon_name, "health": health, "force": force_value}
+
         if dragon_type == "ELEMENTAL":
             elemental_dragons.append(dragon_item)
         elif dragon_type == "HYBRID":
             hybrid_dragons.append(dragon_item)
         else:  # IVORY, IVORY_HYBRID, WHITE
             special_dragons.append(dragon_item)
-    
+
     # Sort each group
     elemental_dragons.sort(key=lambda x: x["name"])
     hybrid_dragons.sort(key=lambda x: x["name"])
     special_dragons.sort(key=lambda x: x["name"])
-    
+
     html = ""
-    
+
     # Generate elemental dragons
-    html += '''                    <div class="dragon-category">
+    html += """                    <div class="dragon-category">
                         <div class="category-title">Elemental Dragons</div>
                         <div class="dragon-list">
-'''
+"""
     for dragon in elemental_dragons:
-        html += f'''                            <div class="dragon-item">
+        html += f"""                            <div class="dragon-item">
                                 <span class="dragon-icons">{dragon["icons"]}</span>
                                 <span class="dragon-name">{dragon["name"]}</span>
                                 <span class="health-badge">{dragon["health"]}</span>
                                 <span class="force-badge">{dragon["force"]}</span>
                             </div>
-'''
-    html += '''                        </div>
+"""
+    html += """                        </div>
                     </div>
 
-'''
-    
+"""
+
     # Generate hybrid dragons
-    html += '''                    <div class="dragon-category">
+    html += """                    <div class="dragon-category">
                         <div class="category-title">Hybrid Dragons</div>
                         <div class="dragon-list">
-'''
+"""
     for dragon in hybrid_dragons:
-        html += f'''                            <div class="dragon-item">
+        html += f"""                            <div class="dragon-item">
                                 <span class="dragon-icons">{dragon["icons"]}</span>
                                 <span class="dragon-name">{dragon["name"]}</span>
                                 <span class="health-badge">{dragon["health"]}</span>
                                 <span class="force-badge">{dragon["force"]}</span>
                             </div>
-'''
-    html += '''                        </div>
+"""
+    html += """                        </div>
                     </div>
 
-'''
-    
+"""
+
     # Generate special dragons
-    html += '''                    <div class="dragon-category">
+    html += """                    <div class="dragon-category">
                         <div class="category-title">Special Dragons</div>
                         <div class="dragon-list">
-'''
+"""
     for dragon in special_dragons:
-        html += f'''                            <div class="dragon-item">
+        html += f"""                            <div class="dragon-item">
                                 <span class="dragon-icons">{dragon["icons"]}</span>
                                 <span class="dragon-name">{dragon["name"]}</span>
                                 <span class="health-badge">{dragon["health"]}</span>
                                 <span class="force-badge">{dragon["force"]}</span>
                             </div>
-'''
-    html += '''                        </div>
+"""
+    html += """                        </div>
                     </div>
-'''
-    
+"""
+
     return html
 
 
 def generate_dragon_forms_section():
     """Generate the dragon forms section HTML."""
     dragon_forms = load_dragon_form_data()
-    
+
     html = ""
-    
+
     for form_key, form_data in dragon_forms.items():
         display_name = form_data["display_name"]
         face_names = form_data["face_names"]
-        
-        html += f'''                    <div class="form-card">
+
+        html += f"""                    <div class="form-card">
                         <div class="form-title">{display_name} ({len(face_names)} faces)</div>
                         <div class="faces-list">
-'''
-        
+"""
+
         for face_name in face_names:
             # Get face description
             description = get_face_description(face_name)
             # Get display name (remove underscores and clean up)
             display_face_name = face_name.replace("_", " ")
-            
-            html += f'''                            <div class="face-item">
+
+            html += f"""                            <div class="face-item">
                                 <div class="face-name">{display_face_name}</div>
                                 <div class="face-description">{description}</div>
                             </div>
-'''
-        
-        html += '''                        </div>
+"""
+
+        html += """                        </div>
                     </div>
-'''
-    
+"""
+
     return html
 
 
 def generate_special_abilities_section():
     """Generate the special abilities section HTML."""
-    return '''                <div class="special-abilities">
+    return """                <div class="special-abilities">
                     <div class="special-title">Special Dragon Abilities</div>
                     <div class="special-item"><strong>Hybrid Dragons:</strong> Apply both elemental breath effects when breath result is rolled</div>
                     <div class="special-item"><strong>Ivory Hybrids:</strong> Apply elemental breath effect, affected by spells of their element or ivory</div>
                     <div class="special-item"><strong>White Dragons:</strong> Double damage from claws/jaws/tail/wing, double treasure results</div>
-                </div>'''
+                </div>"""
 
 
 def generate_summoning_rules_section():
     """Generate the summoning rules section HTML."""
-    return '''                <div class="summoning-rules">
+    return """                <div class="summoning-rules">
                     <div class="rules-title">Dragon Summoning Rules</div>
                     
                     <div class="rule-item">
@@ -231,19 +226,19 @@ def generate_summoning_rules_section():
                     <div class="rule-item">
                         <span class="rule-category">Force Values:</span> Most dragons count as 1 force, White Dragons count as 2 force when assembling armies
                     </div>
-                </div>'''
+                </div>"""
 
 
 def generate_complete_html():
     """Generate the complete dragon cards HTML file."""
-    
+
     # Generate sections
     dragon_types_html = generate_dragon_types_section()
     dragon_forms_html = generate_dragon_forms_section()
     special_abilities_html = generate_special_abilities_section()
     summoning_rules_html = generate_summoning_rules_section()
-    
-    html = f'''<!DOCTYPE html>
+
+    html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -531,34 +526,34 @@ def generate_complete_html():
 {summoning_rules_html}
     </div>
 </body>
-</html>'''
-    
+</html>"""
+
     return html
 
 
 def main():
     """Generate and save the complete dragon cards HTML."""
     print("Generating dragon reference cards...")
-    
+
     # Load data for statistics
     dragon_types = load_dragon_type_data()
     dragon_forms = load_dragon_form_data()
-    
+
     print(f"Found {len(dragon_types)} dragon types")
     print(f"Found {len(dragon_forms)} dragon forms")
     print(f"Available die faces: {len(DRAGON_DIE_FACES)}")
-    
+
     # Generate the complete HTML
     html_content = generate_complete_html()
-    
+
     # Save to file
-    with open('assets/dragon_cards.html', 'w') as f:
+    with open("assets/dragon_cards.html", "w") as f:
         f.write(html_content)
-    
+
     print(f"\\nGenerated complete dragon reference cards: assets/dragon_cards.html")
     print(f"Total dragon types: {len(dragon_types)}")
     print(f"Total dragon forms: {len(dragon_forms)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

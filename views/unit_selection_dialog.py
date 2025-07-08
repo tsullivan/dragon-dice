@@ -42,7 +42,12 @@ class UnitSelectionDialog(QDialog):
         # Use army display name without icon (locations shouldn't have icons)
         from models.army_model import get_army_display_name
 
-        army_display_name = get_army_display_name(self.army_name)
+        try:
+            army_display_name = get_army_display_name(self.army_name)
+        except KeyError:
+            # Handle test cases or non-standard army names
+            army_display_name = self.army_name
+
         self.setWindowTitle(f"Select Units for {army_display_name}")
         self.setMinimumSize(700, 500)
 

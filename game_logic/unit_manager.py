@@ -271,7 +271,10 @@ class UnitOrganizer:
         """Extract species name from unit type ID."""
         # Common patterns: "goblin_thug", "feral_lynx_folk", etc.
         if "_" in unit_type_id:
-            return unit_type_id.split("_")[0].title()
+            species_key = unit_type_id.split("_")[0].upper()
+            # TODO: Import species model and use display_name
+            # For now, use proper capitalization
+            return species_key.replace("_", " ").title()
         return "Unknown"
 
     @staticmethod

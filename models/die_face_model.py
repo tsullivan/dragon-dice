@@ -108,7 +108,7 @@ def _create_basic_face(face_type: str, value: int, display_name: str) -> DieFace
     }
 
     return DieFaceModel(
-        name=f"{face_type.title()}_{value}",
+        name=f"{face_type}_{value}",
         display_name=display_name,
         description=descriptions[face_type],
         face_type=face_type,

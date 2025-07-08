@@ -2,12 +2,12 @@
   "amazon_battle_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Move_3",
-      "Melee_2",
-      "Move_3",
-      "Melee_2",
-      "Save_2"
+      "ID_2",
+      "MOVE_3",
+      "MELEE_2",
+      "MOVE_3",
+      "MELEE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -18,16 +18,16 @@
   "amazon_centaur": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Melee_4",
+      "ID_4",
+      "MELEE_4",
       "Kick",
-      "Missile_4",
-      "Move_4",
-      "Missile_4",
+      "MISSILE_4",
+      "MOVE_4",
+      "MISSILE_4",
       "Kick",
-      "Melee_4",
+      "MELEE_4",
       "Trample_4",
-      "Move_4"
+      "MOVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -38,12 +38,12 @@
   "amazon_charioteer": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Move_1",
-      "Melee_2",
-      "Move_1",
-      "Save_1",
-      "Move_1"
+      "ID_1",
+      "MOVE_1",
+      "MELEE_2",
+      "MOVE_1",
+      "SAVE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -54,15 +54,15 @@
   "amazon_chimera": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Melee_4",
+      "ID_4",
+      "MELEE_4",
       "Rend_4",
       "Smite_4",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "SAVE_4",
       "Flame",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Fly_4"
     ],
     "health": 4,
@@ -74,12 +74,12 @@
   "amazon_darter": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_1",
-      "Save_1",
-      "Missile_2",
-      "Move_1",
-      "Melee_1"
+      "ID_1",
+      "MISSILE_1",
+      "SAVE_1",
+      "MISSILE_2",
+      "MOVE_1",
+      "MELEE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -90,12 +90,12 @@
   "amazon_envoy": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Move_2",
-      "Melee_3",
-      "Move_3",
-      "Missile_2",
-      "Save_2"
+      "ID_2",
+      "MOVE_2",
+      "MELEE_3",
+      "MOVE_3",
+      "MISSILE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -106,11 +106,11 @@
   "amazon_harbinger": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
-      "Move_3",
-      "Melee_3",
-      "Save_3",
+      "ID_3",
+      "MELEE_3",
+      "MOVE_3",
+      "MELEE_3",
+      "SAVE_3",
       "Counter"
     ],
     "health": 3,
@@ -122,16 +122,16 @@
   "amazon_hydra": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
-      "Melee_4",
-      "Save_4",
-      "Melee_4",
+      "ID_4",
+      "SAVE_4",
+      "MELEE_4",
+      "SAVE_4",
+      "MELEE_4",
       "Double Strike",
-      "Save_4",
+      "SAVE_4",
       "Double Strike",
-      "Melee_4",
-      "Save_4"
+      "MELEE_4",
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -142,12 +142,12 @@
   "amazon_javelineer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_3",
-      "Save_2",
-      "Missile_3",
-      "Move_2",
-      "Melee_2"
+      "ID_2",
+      "MISSILE_3",
+      "SAVE_2",
+      "MISSILE_3",
+      "MOVE_2",
+      "MELEE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -158,15 +158,15 @@
   "amazon_medusa": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
-      "Melee_4",
+      "ID_4",
+      "SAVE_4",
+      "MELEE_4",
       "Stone",
-      "Melee_4",
-      "Melee_4",
-      "Move_4",
-      "Melee_4",
-      "Move_4",
+      "MELEE_4",
+      "MELEE_4",
+      "MOVE_4",
+      "MELEE_4",
+      "MOVE_4",
       "Stone"
     ],
     "health": 4,
@@ -178,16 +178,16 @@
   "amazon_nightmare": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Trample_4",
       "Firewalking",
-      "Melee_4",
+      "MELEE_4",
       "Fly_4",
       "Hoof_4",
       "Trample_4",
       "Firebreath",
       "Fly_4",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -198,11 +198,11 @@
   "amazon_oracle": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Magic_4",
-      "Save_2",
-      "Magic_5",
-      "Move_2",
+      "ID_3",
+      "MAGIC_4",
+      "SAVE_2",
+      "MAGIC_5",
+      "MOVE_2",
       "Cantrip_3"
     ],
     "health": 3,
@@ -214,12 +214,12 @@
   "amazon_runner": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Move_1",
-      "Melee_1",
-      "Move_2",
-      "Missile_1",
-      "Save_1"
+      "ID_1",
+      "MOVE_1",
+      "MELEE_1",
+      "MOVE_2",
+      "MISSILE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -230,12 +230,12 @@
   "amazon_seer": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Magic_1",
-      "Save_1",
-      "Magic_1",
-      "Move_1",
-      "Magic_2"
+      "ID_1",
+      "MAGIC_1",
+      "SAVE_1",
+      "MAGIC_1",
+      "MOVE_1",
+      "MAGIC_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -246,12 +246,12 @@
   "amazon_soldier": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Save_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_2"
+      "ID_1",
+      "MELEE_1",
+      "SAVE_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -262,11 +262,11 @@
   "amazon_spearer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_3",
-      "Melee_2",
-      "Missile_4",
-      "Save_3",
+      "ID_3",
+      "MISSILE_3",
+      "MELEE_2",
+      "MISSILE_4",
+      "SAVE_3",
       "Bullseye"
     ],
     "health": 3,
@@ -278,12 +278,12 @@
   "amazon_visionary": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Magic_3",
-      "Save_1",
-      "Magic_4",
-      "Move_2",
-      "Magic_2"
+      "ID_2",
+      "MAGIC_3",
+      "SAVE_1",
+      "MAGIC_4",
+      "MOVE_2",
+      "MAGIC_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -294,11 +294,11 @@
   "amazon_war_chief": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
-      "Move_2",
-      "Melee_4",
-      "Save_3",
+      "ID_3",
+      "MELEE_3",
+      "MOVE_2",
+      "MELEE_4",
+      "SAVE_3",
       "Smite_4"
     ],
     "health": 3,
@@ -310,12 +310,12 @@
   "amazon_war_driver": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Trample_3",
-      "Missile_3",
+      "MISSILE_3",
       "Trample_3",
-      "Save_3",
-      "Melee_4"
+      "SAVE_3",
+      "MELEE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -326,12 +326,12 @@
   "amazon_warrior": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Save_2",
-      "Melee_2",
-      "Move_3",
-      "Melee_3"
+      "ID_2",
+      "MELEE_2",
+      "SAVE_2",
+      "MELEE_2",
+      "MOVE_3",
+      "MELEE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -342,12 +342,12 @@
   "coral_elf_archer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Missile_3",
-      "Move_2",
-      "Missile_3",
-      "Missile_2"
+      "ID_2",
+      "MELEE_2",
+      "MISSILE_3",
+      "MOVE_2",
+      "MISSILE_3",
+      "MISSILE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -358,12 +358,12 @@
   "coral_elf_bowman": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_1",
-      "Melee_1",
-      "Missile_1",
-      "Move_1",
-      "Missile_2"
+      "ID_1",
+      "MISSILE_1",
+      "MELEE_1",
+      "MISSILE_1",
+      "MOVE_1",
+      "MISSILE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -374,12 +374,12 @@
   "coral_elf_conjurer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Magic_3",
-      "Move_2",
-      "Magic_3",
-      "Magic_2"
+      "ID_2",
+      "MELEE_2",
+      "MAGIC_3",
+      "MOVE_2",
+      "MAGIC_3",
+      "MAGIC_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -390,14 +390,14 @@
   "coral_elf_coral_giant": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
+      "ID_4",
+      "SAVE_4",
       "Smite_4",
       "Trample_4",
-      "Melee_4",
-      "Move_4",
+      "MELEE_4",
+      "MOVE_4",
       "Smite_4",
-      "Save_4",
+      "SAVE_4",
       "Counter",
       "Trample_4"
     ],
@@ -410,12 +410,12 @@
   "coral_elf_courier": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Move_3",
-      "Melee_2",
-      "Move_2",
-      "Missile_3"
+      "ID_2",
+      "MELEE_2",
+      "MOVE_3",
+      "MELEE_2",
+      "MOVE_2",
+      "MISSILE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -426,12 +426,12 @@
   "coral_elf_eagle_knight": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
+      "ID_3",
+      "MELEE_3",
       "Fly_3",
-      "Melee_4",
+      "MELEE_4",
       "Fly_3",
-      "Missile_3"
+      "MISSILE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -442,11 +442,11 @@
   "coral_elf_enchanter": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_2",
-      "Magic_4",
-      "Melee_3",
-      "Magic_3",
+      "ID_3",
+      "SAVE_2",
+      "MAGIC_4",
+      "MELEE_3",
+      "MAGIC_3",
       "Cantrip_4"
     ],
     "health": 3,
@@ -458,12 +458,12 @@
   "coral_elf_evoker": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Magic_1",
-      "Melee_1",
-      "Magic_1",
-      "Move_1",
-      "Magic_2"
+      "ID_1",
+      "MAGIC_1",
+      "MELEE_1",
+      "MAGIC_1",
+      "MOVE_1",
+      "MAGIC_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -474,12 +474,12 @@
   "coral_elf_fighter": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Missile_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_2"
+      "ID_1",
+      "MELEE_1",
+      "MISSILE_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -490,14 +490,14 @@
   "coral_elf_gryphon": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Melee_4",
+      "ID_4",
+      "MELEE_4",
       "Rend_4",
       "Fly_4",
       "Ferry",
-      "Melee_4",
+      "MELEE_4",
       "Fly_4",
-      "Melee_4",
+      "MELEE_4",
       "Ferry",
       "Fly_4"
     ],
@@ -510,12 +510,12 @@
   "coral_elf_guard": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_1",
-      "Move_1",
-      "Missile_2"
+      "ID_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MISSILE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -526,11 +526,11 @@
   "coral_elf_herald": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
-      "Move_3",
-      "Melee_3",
-      "Move_3",
+      "ID_3",
+      "MELEE_3",
+      "MOVE_3",
+      "MELEE_3",
+      "MOVE_3",
       "Counter"
     ],
     "health": 3,
@@ -542,12 +542,12 @@
   "coral_elf_horseman": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
+      "ID_1",
       "Hoof_1",
-      "Melee_1",
+      "MELEE_1",
       "Hoof_2",
-      "Melee_1",
-      "Missile_1"
+      "MELEE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -558,12 +558,12 @@
   "coral_elf_knight": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
+      "ID_2",
+      "MELEE_3",
       "Hoof_3",
-      "Melee_2",
+      "MELEE_2",
       "Hoof_2",
-      "Save_2"
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -574,13 +574,13 @@
   "coral_elf_leviathan": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Swallow",
-      "Move_4",
+      "MOVE_4",
       "Tail",
       "Fly_4",
       "Wave",
-      "Save_4",
+      "SAVE_4",
       "Hypnotic Glare",
       "Fly_4",
       "Tail"
@@ -594,11 +594,11 @@
   "coral_elf_protector": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_2",
-      "Melee_4",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "MISSILE_2",
+      "MELEE_4",
+      "SAVE_3",
+      "MELEE_3",
       "Smite_4"
     ],
     "health": 3,
@@ -610,11 +610,11 @@
   "coral_elf_sharpshooter": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Move_3",
-      "Missile_4",
-      "Melee_2",
-      "Missile_3",
+      "ID_3",
+      "MOVE_3",
+      "MISSILE_4",
+      "MELEE_2",
+      "MISSILE_3",
       "Bullseye"
     ],
     "health": 3,
@@ -626,16 +626,16 @@
   "coral_elf_sprite_swarm": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Magic_4",
+      "ID_4",
+      "MAGIC_4",
       "Fly_4",
-      "Missile_4",
-      "Magic_4",
-      "Missile_4",
+      "MISSILE_4",
+      "MAGIC_4",
+      "MISSILE_4",
       "Fly_4",
-      "Missile_4",
-      "Magic_4",
-      "Melee_4"
+      "MISSILE_4",
+      "MAGIC_4",
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -646,16 +646,16 @@
   "coral_elf_tako": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Entangle",
-      "Save_4",
-      "Move_4",
-      "Melee_4",
-      "Melee_4",
-      "Save_4",
+      "SAVE_4",
+      "MOVE_4",
+      "MELEE_4",
+      "MELEE_4",
+      "SAVE_4",
       "Entangle",
-      "Melee_4",
-      "Move_4"
+      "MELEE_4",
+      "MOVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -666,12 +666,12 @@
   "coral_elf_trooper": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_2",
-      "Melee_3",
-      "Move_2",
-      "Melee_3",
-      "Missile_2"
+      "ID_2",
+      "SAVE_2",
+      "MELEE_3",
+      "MOVE_2",
+      "MELEE_3",
+      "MISSILE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -682,15 +682,15 @@
   "dwarf_androsphinx": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
-      "Melee_4",
-      "Magic_4",
+      "ID_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MAGIC_4",
       "Roar",
-      "Magic_4",
-      "Melee_4",
+      "MAGIC_4",
+      "MELEE_4",
       "Rend_4",
-      "Save_4",
+      "SAVE_4",
       "Roar"
     ],
     "health": 4,
@@ -702,16 +702,16 @@
   "dwarf_behemoth": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Stomp",
       "Bash",
-      "Move_4",
-      "Save_4",
+      "MOVE_4",
+      "SAVE_4",
       "Roar",
       "Trample_4",
       "Charge",
-      "Save_4",
-      "Melee_4"
+      "SAVE_4",
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -722,12 +722,12 @@
   "dwarf_crack_shot": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_4",
-      "Missile_3",
+      "ID_3",
+      "MELEE_4",
+      "MISSILE_3",
       "Bullseye",
-      "Missile_3",
-      "Missile_2"
+      "MISSILE_3",
+      "MISSILE_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -738,12 +738,12 @@
   "dwarf_crossbowman": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Missile_1",
-      "Save_1",
-      "Missile_1",
-      "Missile_2"
+      "ID_1",
+      "MELEE_1",
+      "MISSILE_1",
+      "SAVE_1",
+      "MISSILE_1",
+      "MISSILE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -754,12 +754,12 @@
   "dwarf_footman": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_1",
-      "Save_1",
-      "Melee_1",
-      "Melee_2"
+      "ID_1",
+      "SAVE_1",
+      "MELEE_1",
+      "SAVE_1",
+      "MELEE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -770,16 +770,16 @@
   "dwarf_gargoyle": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
+      "ID_4",
+      "MOVE_4",
       "Fly_4",
       "Smite_4",
-      "Melee_4",
+      "MELEE_4",
       "Dispel Magic",
       "Fly_4",
       "Dispel Magic",
-      "Melee_4",
-      "Save_4"
+      "MELEE_4",
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -790,12 +790,12 @@
   "dwarf_lizard_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
+      "ID_2",
+      "MELEE_3",
       "Paw_3",
-      "Melee_2",
+      "MELEE_2",
       "Paw_2",
-      "Save_2"
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -806,12 +806,12 @@
   "dwarf_mammoth_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_4",
+      "ID_3",
+      "MELEE_4",
       "Trample_3",
-      "Melee_3",
+      "MELEE_3",
       "Trample_3",
-      "Save_3"
+      "SAVE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -822,12 +822,12 @@
   "dwarf_marksman": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
-      "Missile_2",
-      "Save_2",
-      "Missile_2",
-      "Missile_3"
+      "ID_2",
+      "MELEE_3",
+      "MISSILE_2",
+      "SAVE_2",
+      "MISSILE_2",
+      "MISSILE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -838,12 +838,12 @@
   "dwarf_patroller": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
-      "Move_2",
-      "Melee_3",
-      "Move_2",
-      "Save_2"
+      "ID_2",
+      "MELEE_3",
+      "MOVE_2",
+      "MELEE_3",
+      "MOVE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -854,12 +854,12 @@
   "dwarf_pony_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
+      "ID_1",
+      "MELEE_1",
       "Hoof_1",
-      "Melee_1",
+      "MELEE_1",
       "Hoof_2",
-      "Save_1"
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -870,14 +870,14 @@
   "dwarf_roc": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Seize",
       "Rend_4",
-      "Melee_4",
+      "MELEE_4",
       "Fly_4",
-      "Melee_4",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "MELEE_4",
+      "SAVE_4",
       "Seize",
       "Fly_4"
     ],
@@ -890,12 +890,12 @@
   "dwarf_sentry": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_2",
-      "Move_1",
-      "Missile_1"
+      "ID_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_2",
+      "MOVE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -906,12 +906,12 @@
   "dwarf_sergeant": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Move_2",
-      "Melee_2",
-      "Save_3",
-      "Melee_2",
-      "Melee_3"
+      "ID_2",
+      "MOVE_2",
+      "MELEE_2",
+      "SAVE_3",
+      "MELEE_2",
+      "MELEE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -922,11 +922,11 @@
   "dwarf_skirmisher": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_4",
-      "Move_3",
-      "Melee_3",
-      "Move_2",
+      "ID_3",
+      "MELEE_4",
+      "MOVE_3",
+      "MELEE_3",
+      "MOVE_2",
       "Counter"
     ],
     "health": 3,
@@ -938,12 +938,12 @@
   "dwarf_thaumaturgist": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Magic_3",
-      "Save_2",
-      "Magic_3",
-      "Magic_2"
+      "ID_2",
+      "MELEE_2",
+      "MAGIC_3",
+      "SAVE_2",
+      "MAGIC_3",
+      "MAGIC_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -954,12 +954,12 @@
   "dwarf_theurgist": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Magic_1",
-      "Save_1",
-      "Magic_1",
-      "Magic_2"
+      "ID_1",
+      "MELEE_1",
+      "MAGIC_1",
+      "SAVE_1",
+      "MAGIC_1",
+      "MAGIC_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -970,15 +970,15 @@
   "dwarf_umber_hulk": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Confuse",
-      "Melee_4",
+      "MELEE_4",
       "Smite_4",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Confuse",
-      "Move_4",
-      "Save_4",
+      "MOVE_4",
+      "SAVE_4",
       "Smite_4"
     ],
     "health": 4,
@@ -990,12 +990,12 @@
   "dwarf_warlord": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "SAVE_3",
+      "MELEE_3",
       "Smite_4",
-      "Melee_3",
-      "Melee_3"
+      "MELEE_3",
+      "MELEE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1006,11 +1006,11 @@
   "dwarf_wizard": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_3",
-      "Magic_4",
-      "Melee_2",
-      "Magic_3",
+      "ID_3",
+      "SAVE_3",
+      "MAGIC_4",
+      "MELEE_2",
+      "MAGIC_3",
       "Cantrip_4"
     ],
     "health": 3,
@@ -1022,12 +1022,12 @@
   "feral_antelope_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
+      "ID_1",
       "Hoof_1",
       "Hoof_2",
-      "Save_1",
-      "Melee_1",
-      "Save_1"
+      "SAVE_1",
+      "MELEE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1038,12 +1038,12 @@
   "feral_badger_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
-      "Magic_3",
-      "Save_2",
-      "Magic_2",
-      "Save_2"
+      "ID_2",
+      "MELEE_3",
+      "MAGIC_3",
+      "SAVE_2",
+      "MAGIC_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -1054,16 +1054,16 @@
   "feral_bear_folk": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Double Strike",
-      "Missile_4",
+      "MISSILE_4",
       "Hug",
       "Paw_4",
       "Paw_4",
-      "Save_4",
+      "SAVE_4",
       "Double Strike",
-      "Magic_4",
-      "Save_4"
+      "MAGIC_4",
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1074,12 +1074,12 @@
   "feral_buffalo_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Counter",
       "Hoof_3",
-      "Save_2",
+      "SAVE_2",
       "Hoof_4",
-      "Melee_3"
+      "MELEE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1090,15 +1090,15 @@
   "feral_elephant_folk": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Trample_4",
-      "Save_4",
+      "SAVE_4",
       "Trample_4",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Trumpet",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "SAVE_4",
       "Trumpet"
     ],
     "health": 4,
@@ -1110,12 +1110,12 @@
   "feral_falcon_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_1",
-      "Missile_2",
-      "Move_1",
-      "Melee_1",
-      "Move_1"
+      "ID_1",
+      "MISSILE_1",
+      "MISSILE_2",
+      "MOVE_1",
+      "MELEE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1126,12 +1126,12 @@
   "feral_fox_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
+      "ID_2",
       "Paw_3",
-      "Melee_3",
+      "MELEE_3",
       "Paw_2",
-      "Melee_2",
-      "Save_2"
+      "MELEE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -1142,12 +1142,12 @@
   "feral_hawk_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Missile_3",
-      "Move_2",
-      "Missile_2",
-      "Move_3"
+      "ID_2",
+      "MELEE_2",
+      "MISSILE_3",
+      "MOVE_2",
+      "MISSILE_2",
+      "MOVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -1158,10 +1158,10 @@
   "feral_horse_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
+      "ID_2",
+      "MELEE_3",
       "Hoof_2",
-      "Save_2",
+      "SAVE_2",
       "Hoof_2",
       "Hoof_3"
     ],
@@ -1174,11 +1174,11 @@
   "feral_hound_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_2",
+      "ID_1",
+      "SAVE_1",
+      "MELEE_2",
       "Paw_1",
-      "Melee_1",
+      "MELEE_1",
       "Paw_1"
     ],
     "health": 1,
@@ -1190,12 +1190,12 @@
   "feral_leopard_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
+      "ID_2",
       "Paw_2",
-      "Melee_3",
-      "Save_2",
-      "Melee_3",
-      "Save_2"
+      "MELEE_3",
+      "SAVE_2",
+      "MELEE_3",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -1206,16 +1206,16 @@
   "feral_lion_folk": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Paw_4",
       "Double Strike",
-      "Save_4",
+      "SAVE_4",
       "Roar",
       "Paw_4",
       "Roar",
       "Double Strike",
-      "Melee_4",
-      "Save_4"
+      "MELEE_4",
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1226,12 +1226,12 @@
   "feral_lynx_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
+      "ID_1",
       "Paw_1",
-      "Melee_1",
-      "Save_1",
-      "Melee_1",
-      "Melee_2"
+      "MELEE_1",
+      "SAVE_1",
+      "MELEE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -1242,15 +1242,15 @@
   "feral_owl_folk": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Screech",
-      "Magic_4",
+      "MAGIC_4",
       "Dispel Magic",
       "Fly_4",
       "Fly_4",
-      "Magic_4",
+      "MAGIC_4",
       "Seize",
-      "Magic_4",
+      "MAGIC_4",
       "Dispel Magic"
     ],
     "health": 4,
@@ -1262,16 +1262,16 @@
   "feral_rhino_folk": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Gore",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "SAVE_4",
       "Hoof_4",
       "Trample_4",
-      "Melee_4",
+      "MELEE_4",
       "Gore",
       "Hoof_4",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1282,12 +1282,12 @@
   "feral_tiger_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Double Strike",
-      "Melee_4",
-      "Save_4",
-      "Melee_2",
-      "Save_2"
+      "MELEE_4",
+      "SAVE_4",
+      "MELEE_2",
+      "SAVE_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -1298,12 +1298,12 @@
   "feral_vulture_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Bullseye",
-      "Missile_4",
-      "Melee_3",
-      "Missile_2",
-      "Move_3"
+      "MISSILE_4",
+      "MELEE_3",
+      "MISSILE_2",
+      "MOVE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1314,12 +1314,12 @@
   "feral_weasel_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Magic_2",
-      "Magic_1",
-      "Save_1",
-      "Melee_1",
-      "Save_1"
+      "ID_1",
+      "MAGIC_2",
+      "MAGIC_1",
+      "SAVE_1",
+      "MELEE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1330,11 +1330,11 @@
   "feral_wolf_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Rend_3",
-      "Melee_2",
-      "Save_3",
-      "Melee_3",
+      "MELEE_2",
+      "SAVE_3",
+      "MELEE_3",
       "Paw_4"
     ],
     "health": 3,
@@ -1346,12 +1346,12 @@
   "feral_wolverine_folk": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Cantrip_4",
-      "Magic_3",
-      "Save_2",
-      "Magic_4",
-      "Melee_3"
+      "MAGIC_3",
+      "SAVE_2",
+      "MAGIC_4",
+      "MELEE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1362,28 +1362,28 @@
   "firewalker_adventurer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
+      "ID_2",
       "Flaming_Shield_1",
-      "Melee_2",
-      "Missile_3",
-      "Melee_3",
-      "Move_3"
+      "MELEE_2",
+      "MISSILE_3",
+      "MELEE_3",
+      "MOVE_3"
     ],
     "health": 2,
     "max_health": 2,
     "name": "Adventurer",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Light Melee"
   },
   "firewalker_ashbringer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Magic_3",
-      "Magic_3",
+      "ID_3",
+      "MAGIC_3",
+      "MAGIC_3",
       "Cantrip_3",
-      "Magic_3",
-      "Move_4"
+      "MAGIC_3",
+      "MOVE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -1394,78 +1394,78 @@
   "firewalker_daybringer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Flaming_Shield_2",
-      "Missile_4",
+      "MISSILE_4",
       "Fly_4",
-      "Melee_4",
-      "Move_2"
+      "MELEE_4",
+      "MOVE_2"
     ],
     "health": 3,
     "max_health": 3,
     "name": "Daybringer",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Cavalry"
   },
   "firewalker_expeditioner": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_3",
-      "Melee_3",
+      "ID_3",
+      "MISSILE_3",
+      "MELEE_3",
       "Counter",
-      "Melee_3",
-      "Move_3"
+      "MELEE_3",
+      "MOVE_3"
     ],
     "health": 3,
     "max_health": 3,
     "name": "Expeditioner",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Light Melee"
   },
   "firewalker_explorer": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
+      "ID_1",
+      "MELEE_1",
       "Flaming_Shield_1",
-      "Melee_1",
-      "Missile_1",
-      "Move_2"
+      "MELEE_1",
+      "MISSILE_1",
+      "MOVE_2"
     ],
     "health": 1,
     "max_health": 1,
     "name": "Explorer",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Light Melee"
   },
   "firewalker_firemaster": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_3",
+      "ID_2",
+      "MISSILE_3",
       "Flaming_Shield_2",
-      "Missile_3",
-      "Melee_2",
-      "Move_2"
+      "MISSILE_3",
+      "MELEE_2",
+      "MOVE_2"
     ],
     "health": 2,
     "max_health": 2,
     "name": "Firemaster",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Missile"
   },
   "firewalker_fireshadow": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Melee_4",
+      "ID_4",
+      "MELEE_4",
       "Smite_4",
       "Create Fireminions",
       "Fly_4",
       "Create Fireminions",
       "Cantrip_4",
-      "Melee_4",
+      "MELEE_4",
       "Fly_4",
       "Counter"
     ],
@@ -1478,48 +1478,48 @@
   "firewalker_firestarter": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_1",
+      "ID_1",
+      "MISSILE_1",
       "Flaming_Shield_1",
-      "Missile_2",
-      "Melee_1",
-      "Move_1"
+      "MISSILE_2",
+      "MELEE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
     "name": "Firestarter",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Missile"
   },
   "firewalker_firestormer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_4",
+      "ID_3",
+      "MISSILE_4",
       "Flaming_Shield_2",
       "Bullseye",
-      "Melee_3",
-      "Move_3"
+      "MELEE_3",
+      "MOVE_3"
     ],
     "health": 3,
     "max_health": 3,
     "name": "Firestormer",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Missile"
   },
   "firewalker_genie": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Firecloud",
       "Cantrip_4",
       "Flaming_Shield_4",
       "Galeforce",
       "Firewalking",
-      "Melee_4",
+      "MELEE_4",
       "Flaming_Shield_4",
-      "Magic_4",
-      "Melee_4"
+      "MAGIC_4",
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1530,16 +1530,16 @@
   "firewalker_gorgon": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
+      "ID_4",
+      "MOVE_4",
       "Flaming_Shield_4",
-      "Move_4",
+      "MOVE_4",
       "Flame",
       "Flame",
-      "Move_4",
+      "MOVE_4",
       "Flaming_Shield_4",
-      "Move_4",
-      "Move_4"
+      "MOVE_4",
+      "MOVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1550,12 +1550,12 @@
   "firewalker_guardian": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
+      "ID_1",
+      "MELEE_1",
       "Flaming_Shield_1",
-      "Melee_2",
-      "Missile_1",
-      "Move_1"
+      "MELEE_2",
+      "MISSILE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1566,23 +1566,23 @@
   "firewalker_nightsbane": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_3",
-      "Move_2",
-      "Melee_3",
-      "Move_2",
+      "ID_2",
+      "MISSILE_3",
+      "MOVE_2",
+      "MELEE_3",
+      "MOVE_2",
       "Flaming_Shield_2"
     ],
     "health": 2,
     "max_health": 2,
     "name": "Nightsbane",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Cavalry"
   },
   "firewalker_phoenix": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Seize",
       "Smite_4",
       "Rise From Ashes",
@@ -1602,16 +1602,16 @@
   "firewalker_salamander": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Melee_4",
+      "ID_4",
+      "MELEE_4",
       "Flaming_Shield_4",
-      "Magic_4",
-      "Melee_4",
+      "MAGIC_4",
+      "MELEE_4",
       "Flaming_Shield_4",
       "Smite_4",
-      "Missile_4",
+      "MISSILE_4",
       "Cantrip_4",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1622,12 +1622,12 @@
   "firewalker_sentinel": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
-      "Move_3",
+      "ID_3",
+      "MELEE_3",
+      "MOVE_3",
       "Smite_4",
       "Flaming_Shield_3",
-      "Missile_3"
+      "MISSILE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1638,28 +1638,28 @@
   "firewalker_shadowchaser": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Move_1",
-      "Melee_2",
-      "Move_1",
-      "Missile_1",
+      "ID_1",
+      "MOVE_1",
+      "MELEE_2",
+      "MOVE_1",
+      "MISSILE_1",
       "Flaming_Shield_1"
     ],
     "health": 1,
     "max_health": 1,
     "name": "ShadowChaser",
     "species_name": "Firewalker",
-    "unit_type": "Heavy Melee"
+    "unit_type": "Cavalry"
   },
   "firewalker_sunburst": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Magic_1",
-      "Magic_1",
-      "Magic_1",
-      "Magic_1",
-      "Move_2"
+      "ID_1",
+      "MAGIC_1",
+      "MAGIC_1",
+      "MAGIC_1",
+      "MAGIC_1",
+      "MOVE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -1670,12 +1670,12 @@
   "firewalker_sunflare": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Magic_2",
-      "Magic_2",
-      "Magic_2",
-      "Magic_3",
-      "Move_3"
+      "ID_2",
+      "MAGIC_2",
+      "MAGIC_2",
+      "MAGIC_2",
+      "MAGIC_3",
+      "MOVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -1686,12 +1686,12 @@
   "firewalker_watcher": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
+      "ID_2",
+      "MELEE_3",
       "Flaming_Shield_2",
-      "Melee_3",
-      "Missile_2",
-      "Move_2"
+      "MELEE_3",
+      "MISSILE_2",
+      "MOVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -1702,12 +1702,12 @@
   "frostwing_advocate": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_2",
-      "Move_1",
+      "ID_1",
+      "MELEE_2",
+      "MOVE_1",
       "Fly_1",
-      "Melee_1",
-      "Melee_1"
+      "MELEE_1",
+      "MELEE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1718,11 +1718,11 @@
   "frostwing_apprentice": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
+      "ID_1",
       "Frost_Magic_2",
-      "Missile_1",
+      "MISSILE_1",
       "Fly_1",
-      "Melee_1",
+      "MELEE_1",
       "Frost_Magic_1"
     ],
     "health": 1,
@@ -1734,12 +1734,12 @@
   "frostwing_assailer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Volley",
-      "Melee_3",
+      "MELEE_3",
       "Fly_4",
-      "Missile_2",
-      "Missile_3"
+      "MISSILE_2",
+      "MISSILE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1750,12 +1750,12 @@
   "frostwing_assaulter": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_3",
-      "Melee_2",
+      "ID_2",
+      "MISSILE_3",
+      "MELEE_2",
       "Fly_2",
-      "Missile_2",
-      "Missile_3"
+      "MISSILE_2",
+      "MISSILE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -1766,12 +1766,12 @@
   "frostwing_attacker": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_2",
-      "Melee_1",
+      "ID_1",
+      "MISSILE_2",
+      "MELEE_1",
       "Fly_1",
-      "Missile_1",
-      "Missile_1"
+      "MISSILE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1782,12 +1782,12 @@
   "frostwing_bear_master": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Rend_4",
-      "Melee_2",
-      "Save_4",
+      "MELEE_2",
+      "SAVE_4",
       "Paw_3",
-      "Melee_3"
+      "MELEE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1798,15 +1798,15 @@
   "frostwing_cryohydra": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Double Strike",
-      "Save_4",
-      "Melee_4",
-      "Move_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MOVE_4",
       "Double Strike",
-      "Move_4",
-      "Melee_4",
-      "Save_4",
+      "MOVE_4",
+      "MELEE_4",
+      "SAVE_4",
       "Frost Breath"
     ],
     "health": 4,
@@ -1818,12 +1818,12 @@
   "frostwing_defender": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_4",
-      "Move_2",
+      "ID_2",
+      "MELEE_4",
+      "MOVE_2",
       "Fly_2",
-      "Melee_3",
-      "Melee_1"
+      "MELEE_3",
+      "MELEE_1"
     ],
     "health": 2,
     "max_health": 2,
@@ -1834,12 +1834,12 @@
   "frostwing_destroyer": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_2",
-      "Save_1",
+      "ID_1",
+      "MISSILE_2",
+      "SAVE_1",
       "Fly_1",
-      "Melee_1",
-      "Missile_1"
+      "MELEE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -1850,12 +1850,12 @@
   "frostwing_devastator": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Bullseye",
-      "Save_2",
+      "SAVE_2",
       "Fly_3",
-      "Missile_3",
-      "Missile_4"
+      "MISSILE_3",
+      "MISSILE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -1866,12 +1866,12 @@
   "frostwing_dispatcher": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_4",
-      "Save_2",
+      "ID_2",
+      "MISSILE_4",
+      "SAVE_2",
       "Fly_2",
-      "Melee_1",
-      "Missile_3"
+      "MELEE_1",
+      "MISSILE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -1882,16 +1882,16 @@
   "frostwing_frost_ogre": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Smite_4",
-      "Save_4",
-      "Missile_4",
-      "Move_4",
-      "Missile_4",
+      "SAVE_4",
+      "MISSILE_4",
+      "MOVE_4",
+      "MISSILE_4",
       "Frost Cantrip",
       "Frost_Magic_4",
-      "Save_4",
-      "Melee_4"
+      "SAVE_4",
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1902,11 +1902,11 @@
   "frostwing_hound_master": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
+      "ID_1",
       "Paw_2",
-      "Missile_1",
-      "Save_1",
-      "Melee_1",
+      "MISSILE_1",
+      "SAVE_1",
+      "MELEE_1",
       "Paw_1"
     ],
     "health": 1,
@@ -1918,9 +1918,9 @@
   "frostwing_magi": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Frost Cantrip",
-      "Missile_2",
+      "MISSILE_2",
       "Fly_4",
       "Frost_Magic_2",
       "Frost_Magic_4"
@@ -1934,9 +1934,9 @@
   "frostwing_magus": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
+      "ID_2",
       "Frost_Magic_3",
-      "Missile_3",
+      "MISSILE_3",
       "Fly_3",
       "Frost_Magic_1",
       "Frost_Magic_2"
@@ -1950,16 +1950,16 @@
   "frostwing_remorhaz": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Swallow",
-      "Save_4",
-      "Melee_4",
-      "Move_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MOVE_4",
       "Swallow",
-      "Save_4",
-      "Melee_4",
-      "Move_4",
-      "Save_4"
+      "SAVE_4",
+      "MELEE_4",
+      "MOVE_4",
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -1970,12 +1970,12 @@
   "frostwing_vindicator": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Smite_4",
-      "Save_3",
+      "SAVE_3",
       "Fly_4",
-      "Melee_2",
-      "Melee_3"
+      "MELEE_2",
+      "MELEE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -1986,11 +1986,11 @@
   "frostwing_wolf_master": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
+      "ID_2",
       "Paw_3",
-      "Missile_2",
-      "Save_2",
-      "Melee_3",
+      "MISSILE_2",
+      "SAVE_2",
+      "MELEE_3",
       "Paw_2"
     ],
     "health": 2,
@@ -2002,14 +2002,14 @@
   "frostwing_wolf_pack": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Howl",
       "Rend_4",
-      "Melee_4",
+      "MELEE_4",
       "Paw_4",
       "Paw_4",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Howl",
       "Rend_4"
     ],
@@ -2022,12 +2022,12 @@
   "frostwing_yeti": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
-      "Melee_4",
-      "Missile_4",
-      "Move_4",
-      "Melee_4",
+      "ID_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MISSILE_4",
+      "MOVE_4",
+      "MELEE_4",
       "Surprise",
       "Rend_4",
       "Surprise",
@@ -2042,12 +2042,12 @@
   "goblin_ambusher": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_3",
-      "Move_3",
-      "Save_2",
-      "Move_2",
-      "Missile_2"
+      "ID_2",
+      "MELEE_3",
+      "MOVE_3",
+      "SAVE_2",
+      "MOVE_2",
+      "MISSILE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2058,13 +2058,13 @@
   "goblin_cannibal": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Swallow",
-      "Save_4",
+      "SAVE_4",
       "Stun",
-      "Melee_4",
-      "Save_4",
-      "Move_4",
+      "MELEE_4",
+      "SAVE_4",
+      "MOVE_4",
       "Net",
       "Surprise",
       "Sleep"
@@ -2078,12 +2078,12 @@
   "goblin_cutthroat": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_2",
-      "Melee_2",
-      "Move_3",
-      "Melee_2",
-      "Melee_3"
+      "ID_2",
+      "SAVE_2",
+      "MELEE_2",
+      "MOVE_3",
+      "MELEE_2",
+      "MELEE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -2094,11 +2094,11 @@
   "goblin_deadeye": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_2",
-      "Missile_4",
-      "Save_3",
-      "Missile_3",
+      "ID_3",
+      "MELEE_2",
+      "MISSILE_4",
+      "SAVE_3",
+      "MISSILE_3",
       "Bullseye"
     ],
     "health": 3,
@@ -2110,11 +2110,11 @@
   "goblin_death_mage": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_2",
-      "Magic_4",
-      "Move_3",
-      "Magic_3",
+      "ID_3",
+      "SAVE_2",
+      "MAGIC_4",
+      "MOVE_3",
+      "MAGIC_3",
       "Cantrip_4"
     ],
     "health": 3,
@@ -2126,16 +2126,16 @@
   "goblin_death_naga": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Melee_4",
+      "ID_4",
+      "MELEE_4",
       "Poison",
-      "Magic_4",
-      "Move_4",
-      "Magic_4",
+      "MAGIC_4",
+      "MOVE_4",
+      "MAGIC_4",
       "Poison",
-      "Save_4",
-      "Melee_4",
-      "Move_4"
+      "SAVE_4",
+      "MELEE_4",
+      "MOVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2146,11 +2146,11 @@
   "goblin_filcher": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Move_3",
-      "Melee_3",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "MOVE_3",
+      "MELEE_3",
+      "SAVE_3",
+      "MELEE_3",
       "Counter"
     ],
     "health": 3,
@@ -2162,14 +2162,14 @@
   "goblin_harpies": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Fly_4",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "SAVE_4",
       "Fly_4",
-      "Melee_4",
+      "MELEE_4",
       "Screech",
-      "Melee_4",
+      "MELEE_4",
       "Fly_4",
       "Screech"
     ],
@@ -2182,12 +2182,12 @@
   "goblin_hedge_wizard": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_2",
-      "Magic_3",
-      "Move_2",
-      "Magic_3",
-      "Magic_2"
+      "ID_2",
+      "SAVE_2",
+      "MAGIC_3",
+      "MOVE_2",
+      "MAGIC_3",
+      "MAGIC_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2198,12 +2198,12 @@
   "goblin_leopard_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_3",
+      "ID_3",
+      "MISSILE_3",
       "Rend_3",
-      "Save_3",
+      "SAVE_3",
       "Rend_3",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -2214,11 +2214,11 @@
   "goblin_marauder": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Move_2",
-      "Melee_4",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "MOVE_2",
+      "MELEE_4",
+      "SAVE_3",
+      "MELEE_3",
       "Smite_4"
     ],
     "health": 3,
@@ -2230,12 +2230,12 @@
   "goblin_mugger": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_2",
-      "Move_1",
-      "Save_1"
+      "ID_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_2",
+      "MOVE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2246,12 +2246,12 @@
   "goblin_pelter": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Missile_1",
-      "Save_1",
-      "Missile_2",
-      "Move_1"
+      "ID_1",
+      "SAVE_1",
+      "MISSILE_1",
+      "SAVE_1",
+      "MISSILE_2",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2262,16 +2262,16 @@
   "goblin_shambler": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Smother",
-      "Save_4",
-      "Melee_4",
-      "Save_4",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
+      "SAVE_4",
+      "SAVE_4",
+      "MELEE_4",
       "Smother",
       "Smite_4",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2282,12 +2282,12 @@
   "goblin_slingman": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Missile_3",
-      "Move_2",
-      "Missile_3",
-      "Save_2"
+      "ID_2",
+      "MELEE_2",
+      "MISSILE_3",
+      "MOVE_2",
+      "MISSILE_3",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2298,12 +2298,12 @@
   "goblin_thug": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_1",
-      "Melee_2"
+      "ID_1",
+      "SAVE_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -2314,12 +2314,12 @@
   "goblin_trickster": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Magic_1",
-      "Move_1",
-      "Magic_1",
-      "Magic_2"
+      "ID_1",
+      "MELEE_1",
+      "MAGIC_1",
+      "MOVE_1",
+      "MAGIC_1",
+      "MAGIC_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -2330,16 +2330,16 @@
   "goblin_troll": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Smite_4",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Regenerate",
       "Regenerate",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "SAVE_4",
       "Smite_4",
-      "Move_4"
+      "MOVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2350,12 +2350,12 @@
   "goblin_wardog_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
+      "ID_1",
+      "MELEE_1",
       "Paw_2",
-      "Melee_1",
+      "MELEE_1",
       "Paw_1",
-      "Save_1"
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2366,12 +2366,12 @@
   "goblin_wolf_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
+      "ID_2",
+      "MELEE_2",
       "Paw_3",
-      "Melee_2",
+      "MELEE_2",
       "Paw_3",
-      "Save_2"
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2382,12 +2382,12 @@
   "lava_elf_adept": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Magic_1",
-      "Move_1",
-      "Magic_1",
-      "Magic_2"
+      "ID_1",
+      "SAVE_1",
+      "MAGIC_1",
+      "MOVE_1",
+      "MAGIC_1",
+      "MAGIC_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -2398,12 +2398,12 @@
   "lava_elf_assassin": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_5",
-      "Missile_3",
+      "ID_3",
+      "MISSILE_5",
+      "MISSILE_3",
       "Bullseye",
-      "Missile_1",
-      "Melee_3"
+      "MISSILE_1",
+      "MELEE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -2414,15 +2414,15 @@
   "lava_elf_beholder": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Magic_4",
+      "ID_4",
+      "MAGIC_4",
       "Flame",
-      "Save_4",
+      "SAVE_4",
       "Charm",
-      "Save_4",
+      "SAVE_4",
       "Stone",
       "Confuse",
-      "Melee_4",
+      "MELEE_4",
       "Illusion"
     ],
     "health": 4,
@@ -2434,12 +2434,12 @@
   "lava_elf_bladesman": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_1",
-      "Missile_1",
-      "Melee_1",
-      "Melee_2"
+      "ID_1",
+      "SAVE_1",
+      "MELEE_1",
+      "MISSILE_1",
+      "MELEE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -2450,11 +2450,11 @@
   "lava_elf_conqueror": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_2",
-      "Melee_5",
-      "Save_3",
-      "Melee_1",
+      "ID_3",
+      "MISSILE_2",
+      "MELEE_5",
+      "SAVE_3",
+      "MELEE_1",
       "Smite_4"
     ],
     "health": 3,
@@ -2466,12 +2466,12 @@
   "lava_elf_dead_shot": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Missile_2",
-      "Move_2",
-      "Missile_2",
-      "Missile_4"
+      "ID_2",
+      "MELEE_2",
+      "MISSILE_2",
+      "MOVE_2",
+      "MISSILE_2",
+      "MISSILE_4"
     ],
     "health": 2,
     "max_health": 2,
@@ -2482,16 +2482,16 @@
   "lava_elf_drider": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Web",
-      "Move_4",
-      "Save_4",
-      "Melee_4",
-      "Melee_4",
-      "Missile_4",
-      "Move_4",
+      "MOVE_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MELEE_4",
+      "MISSILE_4",
+      "MOVE_4",
       "Web",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2502,12 +2502,12 @@
   "lava_elf_duelist": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_2",
-      "Melee_4",
-      "Move_2",
-      "Melee_2",
-      "Missile_2"
+      "ID_2",
+      "SAVE_2",
+      "MELEE_4",
+      "MOVE_2",
+      "MELEE_2",
+      "MISSILE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2518,12 +2518,12 @@
   "lava_elf_fusilier": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Missile_2",
-      "Move_1",
-      "Missile_1",
-      "Save_1"
+      "ID_1",
+      "MELEE_1",
+      "MISSILE_2",
+      "MOVE_1",
+      "MISSILE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2534,16 +2534,16 @@
   "lava_elf_hell_hound": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
-      "Melee_4",
-      "Save_4",
+      "ID_4",
+      "MOVE_4",
+      "MELEE_4",
+      "SAVE_4",
       "Flame",
-      "Melee_4",
+      "MELEE_4",
       "Flame",
-      "Melee_4",
-      "Move_4",
-      "Save_4"
+      "MELEE_4",
+      "MOVE_4",
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2554,11 +2554,11 @@
   "lava_elf_infiltrator": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_5",
-      "Move_5",
-      "Melee_1",
-      "Move_1",
+      "ID_3",
+      "MELEE_5",
+      "MOVE_5",
+      "MELEE_1",
+      "MOVE_1",
       "Counter"
     ],
     "health": 3,
@@ -2570,16 +2570,16 @@
   "lava_elf_lurker_in_the_deep": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Counter",
-      "Magic_4",
-      "Move_4",
+      "MAGIC_4",
+      "MOVE_4",
       "Cantrip_4",
-      "Magic_4",
+      "MAGIC_4",
       "Volley",
       "Cloak",
       "Fly_4",
-      "Move_4"
+      "MOVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2590,11 +2590,11 @@
   "lava_elf_necromancer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_2",
-      "Magic_5",
-      "Melee_3",
-      "Magic_2",
+      "ID_3",
+      "SAVE_2",
+      "MAGIC_5",
+      "MELEE_3",
+      "MAGIC_2",
       "Cantrip_4"
     ],
     "health": 3,
@@ -2606,16 +2606,16 @@
   "lava_elf_rakshasa": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
+      "ID_4",
+      "MOVE_4",
       "Illusion",
-      "Melee_4",
-      "Magic_4",
-      "Melee_4",
+      "MELEE_4",
+      "MAGIC_4",
+      "MELEE_4",
       "Illusion",
-      "Save_4",
+      "SAVE_4",
       "Counter",
-      "Magic_4"
+      "MAGIC_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -2626,12 +2626,12 @@
   "lava_elf_scorpion_knight": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_4",
-      "Move_3",
-      "Melee_1",
-      "Move_2",
-      "Save_2"
+      "ID_2",
+      "MELEE_4",
+      "MOVE_3",
+      "MELEE_1",
+      "MOVE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2642,12 +2642,12 @@
   "lava_elf_scout": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_2",
-      "Move_1",
-      "Melee_1",
-      "Move_1",
-      "Missile_1"
+      "ID_1",
+      "MELEE_2",
+      "MOVE_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2658,12 +2658,12 @@
   "lava_elf_spider_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Move_2",
-      "Melee_1",
-      "Move_1",
-      "Missile_1"
+      "ID_1",
+      "MELEE_1",
+      "MOVE_2",
+      "MELEE_1",
+      "MOVE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2674,12 +2674,12 @@
   "lava_elf_spy": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_4",
-      "Move_4",
-      "Melee_1",
-      "Move_1",
-      "Missile_2"
+      "ID_2",
+      "MELEE_4",
+      "MOVE_4",
+      "MELEE_1",
+      "MOVE_1",
+      "MISSILE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -2690,12 +2690,12 @@
   "lava_elf_warlock": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Magic_2",
-      "Move_2",
-      "Magic_2",
-      "Magic_4"
+      "ID_2",
+      "MELEE_2",
+      "MAGIC_2",
+      "MOVE_2",
+      "MAGIC_2",
+      "MAGIC_4"
     ],
     "health": 2,
     "max_health": 2,
@@ -2706,12 +2706,12 @@
   "lava_elf_wyvern_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_4",
+      "ID_3",
+      "MELEE_4",
       "Fly_5",
-      "Melee_2",
+      "MELEE_2",
       "Fly_1",
-      "Missile_4"
+      "MISSILE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -2722,12 +2722,12 @@
   "scalder_blazer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Flaming Arrow",
-      "Move_3",
-      "Missile_6",
-      "Move_2",
-      "Missile_1"
+      "MOVE_3",
+      "MISSILE_6",
+      "MOVE_2",
+      "MISSILE_1"
     ],
     "health": 3,
     "max_health": 3,
@@ -2738,12 +2738,12 @@
   "scalder_burner": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_2",
-      "Move_2",
-      "Missile_4",
-      "Move_1",
-      "Missile_3"
+      "ID_2",
+      "MISSILE_2",
+      "MOVE_2",
+      "MISSILE_4",
+      "MOVE_1",
+      "MISSILE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -2754,12 +2754,12 @@
   "scalder_charkin": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Counter (scorching)",
-      "Move_2",
-      "Melee_5",
-      "Melee_2",
-      "Move_3"
+      "MOVE_2",
+      "MELEE_5",
+      "MELEE_2",
+      "MOVE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -2770,11 +2770,11 @@
   "scalder_dragonne_knight": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Scorching Wings",
       "Scorching_Shield_2",
       "Paw",
-      "Melee_2",
+      "MELEE_2",
       "Paw_2"
     ],
     "health": 3,
@@ -2786,11 +2786,11 @@
   "scalder_dragonne_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_1",
+      "ID_2",
+      "MELEE_1",
       "Scorching_Shield_2",
       "Paw_4",
-      "Melee_2",
+      "MELEE_2",
       "Paw_3"
     ],
     "health": 2,
@@ -2802,11 +2802,11 @@
   "scalder_dragonne_tender": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
+      "ID_1",
+      "MELEE_1",
       "Scorching_Shield_1",
       "Paw_2",
-      "Melee_1",
+      "MELEE_1",
       "Paw_1"
     ],
     "health": 1,
@@ -2818,15 +2818,15 @@
   "scalder_ettercap": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Magic_4",
-      "Move_4",
-      "Missile_4",
+      "ID_4",
+      "MAGIC_4",
+      "MOVE_4",
+      "MISSILE_4",
       "Bullseye",
-      "Move_4",
-      "Missile_4",
+      "MOVE_4",
+      "MISSILE_4",
       "Scorching_Shield_4",
-      "Melee_4",
+      "MELEE_4",
       "Scorching_Shield_4"
     ],
     "health": 4,
@@ -2838,12 +2838,12 @@
   "scalder_glower": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_1",
-      "Move_1",
-      "Missile_2",
-      "Move_1",
-      "Missile_1"
+      "ID_1",
+      "MISSILE_1",
+      "MOVE_1",
+      "MISSILE_2",
+      "MOVE_1",
+      "MISSILE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2854,12 +2854,12 @@
   "scalder_igniter": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_1",
-      "Move_1",
-      "Melee_4",
-      "Melee_3",
-      "Move_3"
+      "ID_2",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_4",
+      "MELEE_3",
+      "MOVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -2870,12 +2870,12 @@
   "scalder_inferno": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Cantrip_4",
-      "Move_2",
-      "Magic_6",
+      "MOVE_2",
+      "MAGIC_6",
       "Scorching_Shield_2",
-      "Magic_2"
+      "MAGIC_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -2886,12 +2886,12 @@
   "scalder_kindler": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_2",
-      "Melee_1",
-      "Move_1"
+      "ID_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_2",
+      "MELEE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -2902,15 +2902,15 @@
   "scalder_quickling": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
-      "Missile_4",
-      "Move_4",
+      "ID_4",
+      "MOVE_4",
+      "MISSILE_4",
+      "MOVE_4",
       "Poison",
-      "Missile_4",
-      "Move_4",
+      "MISSILE_4",
+      "MOVE_4",
       "Scorching_Shield_4",
-      "Move_4",
+      "MOVE_4",
       "Scorching_Shield_4"
     ],
     "health": 4,
@@ -2922,11 +2922,11 @@
   "scalder_scorcher": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_1",
-      "Move_2",
-      "Melee_4",
-      "Melee_3",
+      "ID_2",
+      "MELEE_1",
+      "MOVE_2",
+      "MELEE_4",
+      "MELEE_3",
       "Scorching_Shield_2"
     ],
     "health": 2,
@@ -2938,11 +2938,11 @@
   "scalder_searer": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Smite_4",
-      "Move_2",
-      "Melee_6",
-      "Melee_2",
+      "MOVE_2",
+      "MELEE_6",
+      "MELEE_2",
       "Scorching_Shield_2"
     ],
     "health": 3,
@@ -2954,11 +2954,11 @@
   "scalder_singeman": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Move_1",
-      "Melee_2",
-      "Melee_1",
+      "ID_1",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_2",
+      "MELEE_1",
       "Scorching_Shield_1"
     ],
     "health": 1,
@@ -2970,12 +2970,12 @@
   "scalder_smolderer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
+      "ID_2",
       "Scorching_Shield_2",
-      "Magic_1",
-      "Magic_4",
-      "Move_2",
-      "Magic_3"
+      "MAGIC_1",
+      "MAGIC_4",
+      "MOVE_2",
+      "MAGIC_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -2986,12 +2986,12 @@
   "scalder_sparker": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
+      "ID_1",
       "Scorching_Shield_1",
-      "Magic_1",
-      "Magic_2",
-      "Move_1",
-      "Magic_1"
+      "MAGIC_1",
+      "MAGIC_2",
+      "MOVE_1",
+      "MAGIC_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3002,15 +3002,15 @@
   "scalder_unseelie_faerie": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
-      "Magic_4",
-      "Melee_4",
+      "ID_4",
+      "MOVE_4",
+      "MAGIC_4",
+      "MELEE_4",
       "Scorching_Shield_4",
-      "Magic_4",
-      "Magic_4",
+      "MAGIC_4",
+      "MAGIC_4",
       "Cantrip_4",
-      "Move_4",
+      "MOVE_4",
       "Scorching_Shield_4"
     ],
     "health": 4,
@@ -3022,15 +3022,15 @@
   "scalder_web_birds": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Missile_4",
-      "Melee_4",
+      "ID_4",
+      "MISSILE_4",
+      "MELEE_4",
       "Web",
       "Scorching Wings",
       "Web",
-      "Missile_4",
-      "Melee_4",
-      "Missile_4",
+      "MISSILE_4",
+      "MELEE_4",
+      "MISSILE_4",
       "Scorching Wings"
     ],
     "health": 4,
@@ -3042,15 +3042,15 @@
   "scalder_will_o_wisps": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Magic_4",
+      "ID_4",
+      "MAGIC_4",
       "Dispel Magic",
       "Confuse",
       "Scorching Wings",
       "Dispel Magic",
-      "Melee_4",
-      "Missile_4",
-      "Magic_4",
+      "MELEE_4",
+      "MISSILE_4",
+      "MAGIC_4",
       "Scorching Wings"
     ],
     "health": 4,
@@ -3062,12 +3062,12 @@
   "swamp_stalker_annihilator": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_5",
-      "Save_2",
+      "ID_3",
+      "MELEE_5",
+      "SAVE_2",
       "Smite_4",
-      "Save_3",
-      "Melee_2"
+      "SAVE_3",
+      "MELEE_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -3078,12 +3078,12 @@
   "swamp_stalker_bog_adept": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Magic_2",
-      "Magic_1",
-      "Save_1",
-      "Magic_1",
-      "Melee_1"
+      "ID_1",
+      "MAGIC_2",
+      "MAGIC_1",
+      "SAVE_1",
+      "MAGIC_1",
+      "MELEE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3094,12 +3094,12 @@
   "swamp_stalker_bog_runner": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Move_2",
-      "Move_1",
-      "Save_1",
-      "Melee_1",
-      "Save_1"
+      "ID_1",
+      "MOVE_2",
+      "MOVE_1",
+      "SAVE_1",
+      "MELEE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3110,15 +3110,15 @@
   "swamp_stalker_crocosaur": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Surprise",
-      "Melee_4",
-      "Save_4",
-      "Move_4",
+      "MELEE_4",
+      "SAVE_4",
+      "MOVE_4",
       "Tail",
       "Tail",
       "Surprise",
-      "Melee_4",
+      "MELEE_4",
       "Rend_4"
     ],
     "health": 4,
@@ -3130,12 +3130,12 @@
   "swamp_stalker_deluger": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_5",
-      "Missile_2",
+      "ID_3",
+      "MISSILE_5",
+      "MISSILE_2",
       "Bullseye",
-      "Missile_2",
-      "Save_3"
+      "MISSILE_2",
+      "SAVE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -3146,12 +3146,12 @@
   "swamp_stalker_invader": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_3",
-      "Melee_4",
+      "ID_3",
+      "MISSILE_3",
+      "MELEE_4",
       "Poison",
-      "Move_3",
-      "Save_2"
+      "MOVE_3",
+      "SAVE_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -3162,12 +3162,12 @@
   "swamp_stalker_marsh_mage": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Magic_4",
-      "Magic_2",
-      "Melee_2",
-      "Magic_2",
-      "Save_2"
+      "ID_2",
+      "MAGIC_4",
+      "MAGIC_2",
+      "MELEE_2",
+      "MAGIC_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3178,12 +3178,12 @@
   "swamp_stalker_marsh_swimmer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Move_4",
-      "Save_2",
-      "Melee_2",
-      "Save_2",
-      "Move_2"
+      "ID_2",
+      "MOVE_4",
+      "SAVE_2",
+      "MELEE_2",
+      "SAVE_2",
+      "MOVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3194,16 +3194,16 @@
   "swamp_stalker_mudmen": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Move_4",
+      "ID_4",
+      "MOVE_4",
       "Smother",
-      "Melee_4",
-      "Save_4",
-      "Save_4",
+      "MELEE_4",
+      "SAVE_4",
+      "SAVE_4",
       "Surprise",
-      "Melee_4",
+      "MELEE_4",
       "Smother",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3214,16 +3214,16 @@
   "swamp_stalker_ormyrr": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
-      "Magic_4",
-      "Move_4",
-      "Save_4",
-      "Melee_4",
-      "Magic_4",
+      "ID_4",
+      "SAVE_4",
+      "MAGIC_4",
+      "MOVE_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MAGIC_4",
       "Coil",
-      "Melee_4",
-      "Missile_4"
+      "MELEE_4",
+      "MISSILE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3234,12 +3234,12 @@
   "swamp_stalker_raider": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_2",
-      "Melee_3",
-      "Save_2",
-      "Melee_2",
-      "Move_3"
+      "ID_2",
+      "MISSILE_2",
+      "MELEE_3",
+      "SAVE_2",
+      "MELEE_2",
+      "MOVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -3250,12 +3250,12 @@
   "swamp_stalker_ravager": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_4",
-      "Melee_1",
-      "Save_2",
-      "Melee_3",
-      "Save_2"
+      "ID_2",
+      "MELEE_4",
+      "MELEE_1",
+      "SAVE_2",
+      "MELEE_3",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3266,12 +3266,12 @@
   "swamp_stalker_sprayer": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_2",
-      "Missile_1",
-      "Save_1",
-      "Missile_1",
-      "Melee_1"
+      "ID_1",
+      "MISSILE_2",
+      "MISSILE_1",
+      "SAVE_1",
+      "MISSILE_1",
+      "MELEE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3282,12 +3282,12 @@
   "swamp_stalker_stormer": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Missile_4",
-      "Missile_2",
-      "Melee_2",
-      "Missile_2",
-      "Save_2"
+      "ID_2",
+      "MISSILE_4",
+      "MISSILE_2",
+      "MELEE_2",
+      "MISSILE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3298,12 +3298,12 @@
   "swamp_stalker_striker": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Missile_1",
-      "Melee_2",
-      "Save_1",
-      "Melee_1",
-      "Move_1"
+      "ID_1",
+      "MISSILE_1",
+      "MELEE_2",
+      "SAVE_1",
+      "MELEE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3314,13 +3314,13 @@
   "swamp_stalker_swamp_beast": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Surprise",
-      "Melee_4",
-      "Save_4",
-      "Move_4",
+      "MELEE_4",
+      "SAVE_4",
+      "MOVE_4",
       "Wave",
-      "Melee_4",
+      "MELEE_4",
       "Poison",
       "Wave",
       "Poison"
@@ -3334,16 +3334,16 @@
   "swamp_stalker_swamp_giant": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Smite_4",
       "Trample_4",
       "Poison",
-      "Save_4",
-      "Melee_4",
-      "Move_4",
+      "SAVE_4",
+      "MELEE_4",
+      "MOVE_4",
       "Smite_4",
       "Trample_4",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3354,12 +3354,12 @@
   "swamp_stalker_swamp_wizard": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Magic_5",
-      "Magic_3",
+      "ID_3",
+      "MAGIC_5",
+      "MAGIC_3",
       "Cantrip_4",
-      "Save_2",
-      "Melee_2"
+      "SAVE_2",
+      "MELEE_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -3370,12 +3370,12 @@
   "swamp_stalker_warmonger": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_2",
-      "Melee_1",
-      "Save_1",
-      "Melee_1",
-      "Save_1"
+      "ID_1",
+      "MELEE_2",
+      "MELEE_1",
+      "SAVE_1",
+      "MELEE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3386,12 +3386,12 @@
   "swamp_stalker_wave_rider": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Move_5",
-      "Save_2",
+      "ID_3",
+      "MOVE_5",
+      "SAVE_2",
       "Coil",
-      "Save_3",
-      "Move_2"
+      "SAVE_3",
+      "MOVE_2"
     ],
     "health": 3,
     "max_health": 3,
@@ -3402,16 +3402,16 @@
   "treefolk_darktree": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Smother",
-      "Melee_4",
+      "MELEE_4",
       "Surprise",
-      "Save_4",
+      "SAVE_4",
       "Surprise",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Smother",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3422,12 +3422,12 @@
   "treefolk_dryad": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Magic_2",
-      "Melee_2",
-      "Magic_2",
-      "Magic_3",
-      "Save_3"
+      "ID_2",
+      "MAGIC_2",
+      "MELEE_2",
+      "MAGIC_2",
+      "MAGIC_3",
+      "SAVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -3438,12 +3438,12 @@
   "treefolk_eldar_dryad": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Magic_2",
+      "ID_3",
+      "MAGIC_2",
       "Cantrip_4",
-      "Magic_4",
-      "Magic_3",
-      "Save_3"
+      "MAGIC_4",
+      "MAGIC_3",
+      "SAVE_3"
     ],
     "health": 3,
     "max_health": 3,
@@ -3454,12 +3454,12 @@
   "treefolk_hamadryad": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Magic_1",
-      "Melee_1",
-      "Magic_1",
-      "Magic_2"
+      "ID_1",
+      "SAVE_1",
+      "MAGIC_1",
+      "MELEE_1",
+      "MAGIC_1",
+      "MAGIC_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -3470,12 +3470,12 @@
   "treefolk_lady_nereid": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
+      "ID_3",
       "Paw_4",
       "Counter",
       "Paw_2",
-      "Melee_2",
-      "Save_4"
+      "MELEE_2",
+      "SAVE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -3486,12 +3486,12 @@
   "treefolk_naiad": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
+      "ID_2",
+      "MELEE_2",
       "Paw_3",
-      "Melee_2",
+      "MELEE_2",
       "Paw_2",
-      "Save_3"
+      "SAVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -3502,12 +3502,12 @@
   "treefolk_noble_willow": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_4",
+      "ID_3",
+      "MELEE_4",
       "Wild Growth",
-      "Melee_2",
-      "Move_2",
-      "Save_4"
+      "MELEE_2",
+      "MOVE_2",
+      "SAVE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -3518,11 +3518,11 @@
   "treefolk_nymph": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_1",
+      "ID_1",
+      "SAVE_1",
+      "MELEE_1",
       "Paw_1",
-      "Melee_1",
+      "MELEE_1",
       "Paw_2"
     ],
     "health": 1,
@@ -3534,12 +3534,12 @@
   "treefolk_oak": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Melee_2",
-      "Melee_2",
-      "Melee_2",
-      "Melee_2",
-      "Save_4"
+      "ID_2",
+      "MELEE_2",
+      "MELEE_2",
+      "MELEE_2",
+      "MELEE_2",
+      "SAVE_4"
     ],
     "health": 2,
     "max_health": 2,
@@ -3550,12 +3550,12 @@
   "treefolk_oak_lord": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
+      "ID_3",
+      "MELEE_3",
       "Smite_3",
-      "Melee_3",
+      "MELEE_3",
       "Smite_3",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -3566,12 +3566,12 @@
   "treefolk_oakling": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Melee_1",
-      "Melee_1",
-      "Melee_1",
-      "Melee_1",
-      "Save_2"
+      "ID_1",
+      "MELEE_1",
+      "MELEE_1",
+      "MELEE_1",
+      "MELEE_1",
+      "SAVE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -3582,12 +3582,12 @@
   "treefolk_pine": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Move_2",
-      "Missile_3",
-      "Move_2",
-      "Missile_2",
-      "Save_3"
+      "ID_2",
+      "MOVE_2",
+      "MISSILE_3",
+      "MOVE_2",
+      "MISSILE_2",
+      "SAVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -3598,12 +3598,12 @@
   "treefolk_pine_prince": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Missile_2",
+      "ID_3",
+      "MISSILE_2",
       "Volley",
-      "Missile_2",
-      "Missile_4",
-      "Save_4"
+      "MISSILE_2",
+      "MISSILE_4",
+      "SAVE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -3614,12 +3614,12 @@
   "treefolk_pineling": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Missile_1",
-      "Move_1",
-      "Missile_1",
-      "Missile_2"
+      "ID_1",
+      "SAVE_1",
+      "MISSILE_1",
+      "MOVE_1",
+      "MISSILE_1",
+      "MISSILE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -3630,16 +3630,16 @@
   "treefolk_redwood": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Trample_4",
-      "Melee_4",
-      "Move_4",
-      "Save_4",
-      "Melee_4",
-      "Save_4",
-      "Melee_4",
+      "MELEE_4",
+      "MOVE_4",
+      "SAVE_4",
+      "MELEE_4",
+      "SAVE_4",
+      "MELEE_4",
       "Trample_4",
-      "Save_4"
+      "SAVE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3650,15 +3650,15 @@
   "treefolk_satyr": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Magic_4",
+      "ID_4",
+      "MAGIC_4",
       "Hoof_4",
       "Volley",
       "Sleep",
-      "Missile_4",
+      "MISSILE_4",
       "Confuse",
       "Volley",
-      "Magic_4",
+      "MAGIC_4",
       "Sleep"
     ],
     "health": 4,
@@ -3670,15 +3670,15 @@
   "treefolk_strangle_vine": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Choke",
-      "Move_4",
+      "MOVE_4",
       "Double Strike",
-      "Melee_4",
+      "MELEE_4",
       "Wild Growth",
       "Smother",
       "Choke",
-      "Move_4",
+      "MOVE_4",
       "Rend_4"
     ],
     "health": 4,
@@ -3690,15 +3690,15 @@
   "treefolk_unicorn": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Dispel Magic",
       "Teleport",
-      "Save_4",
+      "SAVE_4",
       "Trample_4",
       "Trample_4",
       "Counter",
       "Dispel Magic",
-      "Save_4",
+      "SAVE_4",
       "Teleport"
     ],
     "health": 4,
@@ -3710,12 +3710,12 @@
   "treefolk_willow": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_3",
-      "Move_2",
-      "Save_2",
-      "Move_2",
-      "Melee_3"
+      "ID_2",
+      "SAVE_3",
+      "MOVE_2",
+      "SAVE_2",
+      "MOVE_2",
+      "MELEE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -3726,12 +3726,12 @@
   "treefolk_willowling": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Move_1",
-      "Save_1",
-      "Move_1",
-      "Save_1",
-      "Melee_2"
+      "ID_1",
+      "MOVE_1",
+      "SAVE_1",
+      "MOVE_1",
+      "SAVE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,
@@ -3742,12 +3742,12 @@
   "undead_apparition": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Magic_2",
-      "Melee_1",
-      "Magic_1",
-      "Melee_1",
-      "Save_1"
+      "ID_1",
+      "MAGIC_2",
+      "MELEE_1",
+      "MAGIC_1",
+      "MELEE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3758,16 +3758,16 @@
   "undead_carrion_crawler": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
-      "Save_4",
+      "ID_4",
+      "SAVE_4",
       "Stun",
-      "Melee_4",
-      "Move_4",
-      "Move_4",
+      "MELEE_4",
+      "MOVE_4",
+      "MOVE_4",
       "Stun",
-      "Save_4",
+      "SAVE_4",
       "Smite_4",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3778,11 +3778,11 @@
   "undead_death_knight": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_3",
-      "Melee_4",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "SAVE_3",
+      "MELEE_4",
+      "SAVE_3",
+      "MELEE_3",
       "Scare"
     ],
     "health": 3,
@@ -3794,16 +3794,16 @@
   "undead_dracolich": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Smite_4",
       "Cantrip_4",
-      "Magic_4",
+      "MAGIC_4",
       "Fly_4",
       "Fly_4",
       "Rend_4",
-      "Save_4",
-      "Melee_4",
-      "Magic_4"
+      "SAVE_4",
+      "MELEE_4",
+      "MAGIC_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3814,16 +3814,16 @@
   "undead_fenhound": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Dispel Magic",
-      "Save_4",
-      "Melee_4",
+      "SAVE_4",
+      "MELEE_4",
       "Paw_4",
       "Paw_4",
-      "Save_4",
+      "SAVE_4",
       "Dispel Magic",
       "Smite_4",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3834,12 +3834,12 @@
   "undead_ghast": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_3",
-      "Melee_3",
-      "Save_2",
-      "Melee_2",
-      "Magic_2"
+      "ID_2",
+      "SAVE_3",
+      "MELEE_3",
+      "SAVE_2",
+      "MELEE_2",
+      "MAGIC_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3850,11 +3850,11 @@
   "undead_ghost": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Move_4",
-      "Melee_3",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "MOVE_4",
+      "MELEE_3",
+      "SAVE_3",
+      "MELEE_3",
       "Vanish"
     ],
     "health": 3,
@@ -3866,12 +3866,12 @@
   "undead_ghoul": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_2",
-      "Save_1",
-      "Melee_1",
-      "Magic_1"
+      "ID_1",
+      "SAVE_1",
+      "MELEE_2",
+      "SAVE_1",
+      "MELEE_1",
+      "MAGIC_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -3882,12 +3882,12 @@
   "undead_heucuva": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Magic_3",
-      "Melee_3",
-      "Magic_2",
-      "Melee_2",
-      "Save_2"
+      "ID_2",
+      "MAGIC_3",
+      "MELEE_3",
+      "MAGIC_2",
+      "MELEE_2",
+      "SAVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3898,11 +3898,11 @@
   "undead_lich": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Melee_3",
-      "Magic_3",
-      "Save_3",
-      "Magic_3",
+      "ID_3",
+      "MELEE_3",
+      "MAGIC_3",
+      "SAVE_3",
+      "MAGIC_3",
       "Cantrip_4"
     ],
     "health": 3,
@@ -3914,15 +3914,15 @@
   "undead_minor_death": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Slay",
-      "Save_4",
+      "SAVE_4",
       "Plague",
-      "Melee_4",
-      "Melee_4",
-      "Save_4",
+      "MELEE_4",
+      "MELEE_4",
+      "SAVE_4",
       "Slay",
-      "Move_4",
+      "MOVE_4",
       "Plague"
     ],
     "health": 4,
@@ -3934,12 +3934,12 @@
   "undead_mummy": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "SAVE_3",
+      "MELEE_3",
       "Wither",
-      "Melee_3",
-      "Melee_4"
+      "MELEE_3",
+      "MELEE_4"
     ],
     "health": 3,
     "max_health": 3,
@@ -3950,12 +3950,12 @@
   "undead_revenant": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_3",
-      "Melee_3",
-      "Save_2",
-      "Melee_2",
-      "Move_2"
+      "ID_2",
+      "SAVE_3",
+      "MELEE_3",
+      "SAVE_2",
+      "MELEE_2",
+      "MOVE_2"
     ],
     "health": 2,
     "max_health": 2,
@@ -3966,16 +3966,16 @@
   "undead_skeletal_steed": {
     "face_count": 10,
     "face_names": [
-      "Id_4",
+      "ID_4",
       "Hoof_4",
-      "Save_4",
+      "SAVE_4",
       "Hoof_4",
-      "Melee_4",
+      "MELEE_4",
       "Trample_4",
-      "Save_4",
+      "SAVE_4",
       "Trample_4",
       "Hoof_4",
-      "Melee_4"
+      "MELEE_4"
     ],
     "health": 4,
     "max_health": 4,
@@ -3986,12 +3986,12 @@
   "undead_skeleton": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_2",
-      "Save_1",
-      "Melee_1",
-      "Move_1"
+      "ID_1",
+      "SAVE_1",
+      "MELEE_2",
+      "SAVE_1",
+      "MELEE_1",
+      "MOVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -4002,12 +4002,12 @@
   "undead_spectre": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_3",
-      "Melee_2",
-      "Save_2",
-      "Melee_2",
-      "Move_3"
+      "ID_2",
+      "SAVE_3",
+      "MELEE_2",
+      "SAVE_2",
+      "MELEE_2",
+      "MOVE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -4018,11 +4018,11 @@
   "undead_vampire": {
     "face_count": 6,
     "face_names": [
-      "Id_3",
-      "Magic_3",
-      "Melee_4",
-      "Save_3",
-      "Melee_3",
+      "ID_3",
+      "MAGIC_3",
+      "MELEE_4",
+      "SAVE_3",
+      "MELEE_3",
       "Convert"
     ],
     "health": 3,
@@ -4034,12 +4034,12 @@
   "undead_wight": {
     "face_count": 6,
     "face_names": [
-      "Id_2",
-      "Save_3",
-      "Melee_2",
-      "Save_2",
-      "Melee_2",
-      "Melee_3"
+      "ID_2",
+      "SAVE_3",
+      "MELEE_2",
+      "SAVE_2",
+      "MELEE_2",
+      "MELEE_3"
     ],
     "health": 2,
     "max_health": 2,
@@ -4050,12 +4050,12 @@
   "undead_wraith": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Move_2",
-      "Melee_1",
-      "Move_1",
-      "Melee_1",
-      "Save_1"
+      "ID_1",
+      "MOVE_2",
+      "MELEE_1",
+      "MOVE_1",
+      "MELEE_1",
+      "SAVE_1"
     ],
     "health": 1,
     "max_health": 1,
@@ -4066,12 +4066,12 @@
   "undead_zombie": {
     "face_count": 6,
     "face_names": [
-      "Id_1",
-      "Save_1",
-      "Melee_1",
-      "Save_1",
-      "Melee_1",
-      "Melee_2"
+      "ID_1",
+      "SAVE_1",
+      "MELEE_1",
+      "SAVE_1",
+      "MELEE_1",
+      "MELEE_2"
     ],
     "health": 1,
     "max_health": 1,

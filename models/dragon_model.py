@@ -123,25 +123,25 @@ class DragonTypeModel:
 
         if self.dragon_type == self.ELEMENTAL:
             # "{black_icon} Death Elemental"
-            base_name = f"{ELEMENT_DATA[self.elements[0]].name.title()} Elemental"
+            base_name = f"{ELEMENT_DATA[self.elements[0]].display_name} Elemental"
             if self.is_white:
                 base_name = f"White {base_name}"
             return f"{''.join(element_icons)} {base_name}"
 
         elif self.dragon_type == self.HYBRID:
             # "{green_icon}{blue_icon} Water/Air Hybrid"
-            element_names = [ELEMENT_DATA[elem].name.title() for elem in self.elements]
+            element_names = [ELEMENT_DATA[elem].display_name for elem in self.elements]
             base_name = f"{'/'.join(element_names)} Hybrid"
             return f"{''.join(element_icons)} {base_name}"
 
         elif self.dragon_type == self.IVORY:
             # Same as Elemental but Ivory rules
-            base_name = f"{ELEMENT_DATA[self.elements[0]].name.title()} Elemental"
+            base_name = f"{ELEMENT_DATA[self.elements[0]].display_name} Elemental"
             return f"{''.join(element_icons)} {base_name}"
 
         elif self.dragon_type == self.IVORY_HYBRID:
             # Ivory Hybrid: element + ivory
-            element_name = ELEMENT_DATA[self.elements[0]].name.title()
+            element_name = ELEMENT_DATA[self.elements[0]].display_name
             base_name = f"Ivory/{element_name} Hybrid Dragon"
             return f"🟫{''.join(element_icons)} {base_name}"
 

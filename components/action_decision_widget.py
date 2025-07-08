@@ -72,10 +72,12 @@ class ActionDecisionWidget(QWidget):
 
             # Add terrain icon
             location_icon = ""
-            for terrain_name, terrain_info in constants.TERRAIN_DATA.items():
-                if terrain_name in location:
-                    location_icon = terrain_info.get_color_string()
-                    break
+            from models.terrain_model import get_terrain_icon
+
+            try:
+                location_icon = get_terrain_icon(location)
+            except (KeyError, AttributeError):
+                location_icon = ""
             if not location_icon:
                 location_icon = "🗺️"  # Default terrain icon
 

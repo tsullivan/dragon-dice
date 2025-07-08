@@ -1,4 +1,4 @@
-from typing import Optional  # Import Optional
+from typing import Any, Dict, List, Optional  # Import typing
 
 from PySide6.QtCore import QObject, Signal, Slot
 
@@ -622,10 +622,11 @@ class GameEngine(QObject):
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
             parsed_results = {"magic": 0, "sais": []}
-        print(f"GameEngine: Parsed magic via ActionResolver: {parsed_results}")
 
         # Process magic effects
-        magic_outcome = self.action_resolver.resolve_magic(parsed_results)
+        magic_outcome = self.action_resolver.resolve_magic(str(parsed_results))
+        print(f"GameEngine: Parsed magic via ActionResolver: {parsed_results}")
+
         print(f"GameEngine: Magic outcome from ActionResolver: {magic_outcome}")
 
         # Clear action step to indicate completion
@@ -653,10 +654,11 @@ class GameEngine(QObject):
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
             parsed_results = {"missile": 0, "saves": 0, "sais": []}
-        print(f"GameEngine: Parsed attacker missile via ActionResolver: {parsed_results}")
 
         # Process missile attack
-        missile_outcome = self.action_resolver.resolve_attacker_missile(parsed_results)
+        missile_outcome = self.action_resolver.resolve_attacker_missile(str(parsed_results))
+        print(f"GameEngine: Parsed attacker missile via ActionResolver: {parsed_results}")
+
         print(f"GameEngine: Missile outcome from ActionResolver: {missile_outcome}")
 
         # Clear action step to indicate completion
@@ -935,11 +937,13 @@ class GameEngine(QObject):
                 affected_player_name=target_army_player_name,
             )
 
-    def get_displayable_active_effects(self) -> list[str]:
+    def get_displayable_active_effects(self) -> List[str]:
         """Returns a list of strings representing active effects for UI display."""
         return self.effect_manager.get_displayable_effects()
 
-    def get_available_units_for_damage(self, player_name: str, army_identifier: str = None) -> list:
+    def get_available_units_for_damage(
+        self, player_name: str, army_identifier: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
         """Get units that can receive damage for a specific player/army."""
         if army_identifier:
             # Get units from specific army
@@ -958,7 +962,9 @@ class GameEngine(QObject):
 
         return available_units
 
-    def request_unit_damage_allocation(self, player_name: str, damage_amount: int, army_identifier: str = None):
+    def request_unit_damage_allocation(
+        self, player_name: str, damage_amount: int, army_identifier: Optional[str] = None
+    ):
         """Request that the player allocate damage to specific units."""
         available_units = self.get_available_units_for_damage(player_name, army_identifier)
 
@@ -979,7 +985,9 @@ class GameEngine(QObject):
         # Emit signal for UI to handle unit selection
         self.unit_selection_required.emit(player_name, damage_amount, available_units)
 
-    def allocate_damage_to_units(self, player_name: str, damage_allocations: dict, army_identifier: str = None):
+    def allocate_damage_to_units(
+        self, player_name: str, damage_allocations: Dict[str, int], army_identifier: Optional[str] = None
+    ):
         """Apply damage allocation decisions to specific units."""
         """
         damage_allocations format: {
@@ -1006,19 +1014,18 @@ class GameEngine(QObject):
             # Calculate new health after damage
             new_health = max(0, current_health - damage_amount)
 
-            success = self.game_state_manager.update_unit_health(player_name, army_id, unit_name, new_health)
-
-            if success:
+            try:
+                self.game_state_manager.update_unit_health(player_name, army_id, unit_name, new_health)
                 total_damage_applied += damage_amount
                 print(f"GameEngine: Applied {damage_amount} damage to {unit_name}")
-            else:
-                print(f"GameEngine: Failed to apply damage to {unit_name}")
+            except Exception as e:
+                print(f"GameEngine: Failed to apply damage to {unit_name}: {e}")
 
         print(f"GameEngine: Total damage applied: {total_damage_applied}")
         self.damage_allocation_completed.emit(player_name, total_damage_applied)
         self.game_state_updated.emit()
 
-    def auto_allocate_damage(self, player_name: str, damage_amount: int, army_identifier: str = None):
+    def auto_allocate_damage(self, player_name: str, damage_amount: int, army_identifier: Optional[str] = None):
         """Automatically allocate damage to units (for AI or quick resolution)."""
         available_units = self.get_available_units_for_damage(player_name, army_identifier)
 

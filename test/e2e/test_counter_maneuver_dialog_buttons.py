@@ -154,7 +154,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Create the dialog that would be shown
         dialog = CounterManeuverDecisionDialog(
-            "Player 2", "Coastland", "Player 1", None
+            "Coastland", "Player 2", "Player 1", None
         )
 
         # Connect to track the signal
@@ -206,7 +206,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Create the dialog that would be shown
         dialog = CounterManeuverDecisionDialog(
-            "Player 2", "Coastland", "Player 1", None
+            "Coastland", "Player 2", "Player 1", None
         )
 
         # Connect to track the signal
@@ -251,7 +251,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Create dialog
         dialog = CounterManeuverDecisionDialog(
-            "Player 2", "Coastland", "Player 1", None
+            "Coastland", "Player 2", "Player 1", None
         )
 
         # Track method calls

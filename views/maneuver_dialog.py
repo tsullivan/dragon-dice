@@ -373,7 +373,7 @@ class ManeuverDialog(QDialog):
         # Handle players sequentially (since typically it's one at a time in Dragon Dice)
         for player_name in opposing_players:
             print(f"ManeuverDialog: Showing decision dialog for {player_name}")
-            decision_dialog = CounterManeuverDecisionDialog(player_name, location, self.current_player_name, None)
+            decision_dialog = CounterManeuverDecisionDialog(location, player_name, self.current_player_name, None)
             decision_dialog.decision_made.connect(self._handle_counter_decision)
 
             # Show the dialog and wait for decision

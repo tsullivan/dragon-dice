@@ -37,8 +37,8 @@ class ArmyModel:
         army_key = self.army_type.upper()
         if army_key in ARMY_DATA:
             return ARMY_DATA[army_key]["display_name"]
-        # Fallback to army_type if not found
-        return self.army_type.title()
+        # Fallback to army_type if not found - should add to ARMY_DATA instead
+        return self.army_type.replace("_", " ").title()
 
     def get_location_name(self) -> str:
         """Get the location name as a string for compatibility."""

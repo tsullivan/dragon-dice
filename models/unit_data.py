@@ -1369,7 +1369,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_adventurer",
         name="Adventurer",
-        unit_type="Heavy Melee",
+        unit_type="Light Melee",
         health=2,
         max_health=2,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1401,7 +1401,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_daybringer",
         name="Daybringer",
-        unit_type="Heavy Melee",
+        unit_type="Cavalry",
         health=3,
         max_health=3,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1417,7 +1417,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_expeditioner",
         name="Expeditioner",
-        unit_type="Heavy Melee",
+        unit_type="Light Melee",
         health=3,
         max_health=3,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1433,7 +1433,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_explorer",
         name="Explorer",
-        unit_type="Heavy Melee",
+        unit_type="Light Melee",
         health=1,
         max_health=1,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1449,7 +1449,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_firemaster",
         name="Firemaster",
-        unit_type="Heavy Melee",
+        unit_type="Missile",
         health=2,
         max_health=2,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1485,7 +1485,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_firestarter",
         name="Firestarter",
-        unit_type="Heavy Melee",
+        unit_type="Missile",
         health=1,
         max_health=1,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1501,7 +1501,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_firestormer",
         name="Firestormer",
-        unit_type="Heavy Melee",
+        unit_type="Missile",
         health=3,
         max_health=3,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1573,7 +1573,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_nightsbane",
         name="Nightsbane",
-        unit_type="Heavy Melee",
+        unit_type="Cavalry",
         health=2,
         max_health=2,
         species=SPECIES_DATA["FIREWALKER"],
@@ -1645,7 +1645,7 @@ UNIT_DATA = [
     UnitModel(
         unit_id="firewalker_shadowchaser",
         name="ShadowChaser",
-        unit_type="Heavy Melee",
+        unit_type="Cavalry",
         health=1,
         max_health=1,
         species=SPECIES_DATA["FIREWALKER"],

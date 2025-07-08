@@ -270,7 +270,11 @@ class GameStateManager(QObject):
             available_units.extend(species_units)
 
         # Sort by health (using health as cost proxy)
-        available_units.sort(key=lambda u: unit_roster.get_unit_definition(u["id"])["max_health"])
+        available_units.sort(
+            key=lambda u: unit_roster.get_unit_definition(u["id"])
+            and unit_roster.get_unit_definition(u["id"])["max_health"]
+            or 0
+        )
 
         unit_count = 0
         unit_cycle_index = 0  # Track which units we've used for variety
@@ -278,7 +282,10 @@ class GameStateManager(QObject):
         while remaining_points > 0 and unit_count < 15:  # Cap at 15 units
             # Find affordable units and cycle through them for variety
             affordable_units = [
-                u for u in available_units if unit_roster.get_unit_definition(u["id"])["max_health"] <= remaining_points
+                u
+                for u in available_units
+                if unit_roster.get_unit_definition(u["id"])
+                and unit_roster.get_unit_definition(u["id"])["max_health"] <= remaining_points
             ]
 
             if not affordable_units:
@@ -290,6 +297,8 @@ class GameStateManager(QObject):
             unit_cycle_index += 1
 
             unit_def = unit_roster.get_unit_definition(selected_unit_id)
+            if not unit_def:
+                continue
             unit_cost = unit_def["max_health"]
 
             unit_count += 1
@@ -332,11 +341,26 @@ class GameStateManager(QObject):
         from models.terrain_model import TERRAIN_DATA
 
         location_upper = location.upper()
+
+        # Look for terrain prefixes (like HIGHLAND, COASTLAND, etc.)
+        terrain_prefixes = set()
+        for terrain_name in TERRAIN_DATA.keys():
+            if "_" in terrain_name:
+                prefix = terrain_name.split("_")[0]
+                terrain_prefixes.add(prefix)
+
+        # Check if any terrain prefix matches a word in the location
+        location_words = location.split()
+        for word in location_words:
+            word_upper = word.upper()
+            if word_upper in terrain_prefixes:
+                return word  # Return in original case
+
+        # Fallback: check for exact terrain matches
         for terrain_name in TERRAIN_DATA.keys():
             if terrain_name in location_upper:
                 # Return the terrain name in its original case from the location string
                 # Find the actual terrain name in the location (case-insensitive)
-                location_words = location.split()
                 for word in location_words:
                     if word.upper() == terrain_name:
                         return word
@@ -428,7 +452,7 @@ class GameStateManager(QObject):
 
         for unit in army.get("units", []):
             if unit.get("name") == unit_name:
-                return unit.get("health", 0)
+                return int(unit.get("health", 0))
 
         raise UnitNotFoundError(unit_name, army_identifier)
 
@@ -629,10 +653,10 @@ class GameStateManager(QObject):
         for priority_type in ["home", "campaign", "horde"]:
             for army_info in defending_armies:
                 if army_info["army_id"] == priority_type:
-                    return army_info["player"]
+                    return str(army_info["player"])
 
         # Fallback to first defending player found
-        return defending_armies[0]["player"]
+        return str(defending_armies[0]["player"])
 
     def determine_primary_defending_army_id(self, attacking_player_name: str, location: str) -> Optional[str]:
         """Determine the primary defending army identifier at a location."""
@@ -655,17 +679,17 @@ class GameStateManager(QObject):
     def get_reserve_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve pool (available for deployment) for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("reserve_pool", [])
+        return list(player_data.get("reserve_pool", []))
 
     def get_reserve_area(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve area (tactical repositioning) for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("reserve_area", [])
+        return list(player_data.get("reserve_area", []))
 
     def get_summoning_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the summoning pool for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("summoning_pool", [])
+        return list(player_data.get("summoning_pool", []))
 
     def add_to_summoning_pool(self, player_name: str, unit: Dict[str, Any]) -> None:
         """Add a unit to the summoning pool."""
@@ -676,7 +700,7 @@ class GameStateManager(QObject):
     def check_victory_conditions(self) -> Optional[str]:
         """Check if any player has won by capturing required terrains."""
         # Simple victory condition: control majority of terrains
-        player_terrain_counts = {}
+        player_terrain_counts: Dict[str, int] = {}
         total_terrains = len(self.terrains)
 
         for terrain_data in self.terrains.values():
@@ -687,7 +711,7 @@ class GameStateManager(QObject):
         # Check if any player controls more than half the terrains
         for player, count in player_terrain_counts.items():
             if count > total_terrains // 2:
-                return player
+                return str(player)
 
         return None
 
@@ -772,7 +796,7 @@ class GameStateManager(QObject):
         home_terrain = player.get("home_terrain_name")
         if not home_terrain:
             raise GameStateError(f"Player '{player_name}' has no home terrain configured")
-        return home_terrain
+        return str(home_terrain)
 
     def set_active_army(self, player_name: str, army_type: str) -> None:
         """Set the active army for a player based on current game context."""
@@ -804,7 +828,7 @@ class GameStateManager(QObject):
 
         # If only one army at location, it's the active one
         if len(armies_at_location) == 1:
-            return armies_at_location[0]
+            return str(armies_at_location[0])
 
         # If multiple armies, prefer by priority: home > campaign > horde
         priority_order = ["home", "campaign", "horde"]
@@ -815,7 +839,7 @@ class GameStateManager(QObject):
         return None
 
     def determine_active_army_by_phase(
-        self, player_name: str, current_phase: str, current_location: str = None
+        self, player_name: str, current_phase: str, current_location: Optional[str] = None
     ) -> Optional[str]:
         """
         Determine which army should be active based on the current game phase and context.
@@ -832,7 +856,7 @@ class GameStateManager(QObject):
             if current_location:
                 return self.determine_active_army_by_location(player_name, current_location)
             # Otherwise, use current active army
-            return player_data.get("active_army_type", "home")
+            return str(player_data.get("active_army_type", "home"))
 
         if current_phase == "DRAGON_ATTACK":
             # Dragons can attack any army, but usually home terrain
@@ -842,15 +866,15 @@ class GameStateManager(QObject):
 
         elif current_phase == "RESERVES":
             # Reserve phase can involve any army
-            return player_data.get("active_army_type", "home")
+            return str(player_data.get("active_army_type", "home"))
 
         # Default to current active army or home
-        return player_data.get("active_army_type", "home")
+        return str(player_data.get("active_army_type", "home"))
 
     def get_active_army_type(self, player_name: str) -> str:
         """Get the currently active army type for a player."""
         player_data = self.get_player_data(player_name)
-        return player_data.get("active_army_type", "home")
+        return str(player_data.get("active_army_type", "home"))
 
     def get_active_army_data(self, player_name: str) -> Dict[str, Any]:
         """Get the data for the currently active army."""
