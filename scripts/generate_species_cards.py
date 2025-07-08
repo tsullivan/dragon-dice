@@ -69,6 +69,9 @@ def get_spells_for_species(species_display_name, species_elements):
 
     # Get species elements as a set for easy checking
     species_element_set = set(species_elements)
+    
+    # Special case: IVORY species (Amazons) can use "Any" spells from ALL elements
+    is_ivory_species = "IVORY" in species_element_set
 
     # For each element, check if species has that element
     for element, spells in SPELLS_BY_ELEMENT.items():
@@ -79,13 +82,21 @@ def get_spells_for_species(species_display_name, species_elements):
                 if spell.species == "Any" or spell.species == species_display_name:
                     available_spells[element].append(spell)
         else:
-            # Include ALL spells (Any + species-specific) for elements the species has
-            if element in species_element_set:
+            # For IVORY species: include "Any" spells from ALL elements
+            # For other species: only include spells for elements they have
+            if element in species_element_set or is_ivory_species:
                 available_spells[element] = []
                 for spell in spells.values():
-                    # Include if it's a universal spell OR if it's specific to this species
-                    if spell.species == "Any" or spell.species == species_display_name:
-                        available_spells[element].append(spell)
+                    # For IVORY species: only include "Any" spells from non-IVORY elements
+                    # For other species: include "Any" spells + species-specific spells
+                    if is_ivory_species and element not in species_element_set:
+                        # IVORY species gets only "Any" spells from other elements
+                        if spell.species == "Any":
+                            available_spells[element].append(spell)
+                    else:
+                        # Normal logic: "Any" spells + species-specific spells
+                        if spell.species == "Any" or spell.species == species_display_name:
+                            available_spells[element].append(spell)
 
     return available_spells
 
@@ -178,9 +189,7 @@ def generate_species_card(species_name, species_data, units_data):
     for ability in species_data["abilities"]:
         name = ability["name"]
         description = ability["description"]
-        # Truncate long descriptions for card display
-        if len(description) > 150:
-            description = description[:147] + "..."
+        # Use full description text without truncation
         abilities_html += f"""                        <div class="ability">
                             <span class="ability-name">{name}:</span> {description}
                         </div>
