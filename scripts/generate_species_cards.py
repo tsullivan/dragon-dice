@@ -69,7 +69,7 @@ def get_spells_for_species(species_display_name, species_elements):
 
     # Get species elements as a set for easy checking
     species_element_set = set(species_elements)
-    
+
     # Special case: IVORY species (Amazons) can use "Any" spells from ALL elements
     is_ivory_species = "IVORY" in species_element_set
 
