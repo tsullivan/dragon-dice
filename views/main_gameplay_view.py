@@ -195,6 +195,14 @@ class MainGameplayView(QWidget):
         self.continue_button.setEnabled(False)  # Disabled by default until phase actions are completed
         self.continue_button.clicked.connect(self._on_continue_clicked)
         player_continue_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
+        
+        # Skip Second March Button (only shown after First March)
+        self.skip_second_march_button = QPushButton("Skip Second March")
+        self.skip_second_march_button.setMaximumWidth(220)
+        self.skip_second_march_button.setEnabled(False)
+        self.skip_second_march_button.clicked.connect(self._on_skip_second_march_clicked)
+        self.skip_second_march_button.hide()  # Hidden by default
+        player_continue_layout.addWidget(self.skip_second_march_button, 0, Qt.AlignmentFlag.AlignCenter)
 
         main_layout.addLayout(player_continue_layout)
 
@@ -224,6 +232,10 @@ class MainGameplayView(QWidget):
     def _on_continue_clicked(self):
         print(f"MainGameplayView: Continue button clicked. Current phase: {self.game_engine.current_phase}")
         self.continue_to_next_phase_signal.emit()
+
+    def _on_skip_second_march_clicked(self):
+        print("MainGameplayView: Skip Second March button clicked")
+        self.game_engine.skip_to_next_phase_group()
 
     def _handle_acting_army_chosen(self, army_data: dict):
         """Handle acting army selection."""
@@ -402,6 +414,8 @@ class MainGameplayView(QWidget):
         # Most phases should advance automatically, so hide the continue button in most cases
         should_show = False
         should_enable = False
+        should_show_skip = False
+        should_enable_skip = False
 
         # Only show continue button for phases that genuinely need manual progression
         if current_phase == "EIGHTH_FACE":
@@ -415,10 +429,17 @@ class MainGameplayView(QWidget):
         elif current_phase in [
             "RESERVES",
             "EXPIRE_EFFECTS",
+            "SPECIES_ABILITIES",
         ]:
             # These might need manual review/progression
             should_show = True
             should_enable = True
+        elif current_phase == "FIRST_MARCH" and not current_march_step and not current_action_step:
+            # First March is complete, offer option to skip Second March
+            should_show = True
+            should_enable = True
+            should_show_skip = True
+            should_enable_skip = True
         else:
             # March phases should advance automatically via actions/skips
             should_show = False
@@ -427,6 +448,8 @@ class MainGameplayView(QWidget):
         # Set button visibility and state
         self.continue_button.setVisible(should_show)
         self.continue_button.setEnabled(should_enable)
+        self.skip_second_march_button.setVisible(should_show_skip)
+        self.skip_second_march_button.setEnabled(should_enable_skip)
 
         # Update button text based on phase
         if should_show and should_enable:
@@ -434,6 +457,8 @@ class MainGameplayView(QWidget):
                 self.continue_button.setText("Continue (Eighth Face Complete)")
             elif current_phase == "DRAGON_ATTACK":
                 self.continue_button.setText("Continue (Dragon Attacks Complete)")
+            elif current_phase == "FIRST_MARCH":
+                self.continue_button.setText("Continue to Second March")
             else:
                 self.continue_button.setText("Continue to Next Phase")
         else:

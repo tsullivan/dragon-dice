@@ -62,24 +62,39 @@ class TurnManager(QObject):
 
     def advance_phase(self):
         """Advances to the next phase or next player based on Dragon Dice rules."""
-        # Dragon Dice Rule: Player turn consists of First March + Second March
-        # After Second March, advance to next player (who starts at First March)
-        if self.current_phase == "SECOND_MARCH":
-            print(f"TurnManager: Completed {self.player_names[self.current_player_idx]}'s turn (First + Second March)")
+        # Normal phase advancement within a player's turn
+        self.current_phase_idx += 1
+        if self.current_phase_idx >= len(get_turn_phases()):
+            # All phases complete, advance to next player
+            print(f"TurnManager: Completed {self.player_names[self.current_player_idx]}'s turn (all phases complete)")
             self.advance_player()
         else:
-            # Normal phase advancement within a player's turn
-            self.current_phase_idx += 1
-            if self.current_phase_idx >= len(get_turn_phases()):
-                self.advance_player()
-            else:
-                self.current_phase = get_turn_phases()[self.current_phase_idx]
-                self.current_march_step = ""  # Reset march step when advancing phase
-                self.current_action_step = ""  # Reset action step
-                print(
-                    f"TurnManager: Advancing phase to {self.current_phase} for {self.player_names[self.current_player_idx]}"
-                )
-                self.current_phase_changed.emit(self._get_current_phase_display_string())
+            self.current_phase = get_turn_phases()[self.current_phase_idx]
+            self.current_march_step = ""  # Reset march step when advancing phase
+            self.current_action_step = ""  # Reset action step
+            print(
+                f"TurnManager: Advancing phase to {self.current_phase} for {self.player_names[self.current_player_idx]}"
+            )
+            self.current_phase_changed.emit(self._get_current_phase_display_string())
+
+    def skip_to_next_phase_group(self):
+        """Skip to the next major phase group (e.g., from First March to Species Abilities)."""
+        current_phase = self.current_phase
+        
+        if current_phase == "FIRST_MARCH":
+            # Skip Second March and go to Species Abilities
+            self.current_phase_idx = get_turn_phases().index("SPECIES_ABILITIES")
+            self.current_phase = "SPECIES_ABILITIES"
+            self.current_march_step = ""
+            self.current_action_step = ""
+            print(f"TurnManager: Skipping Second March, advancing to {self.current_phase}")
+            self.current_phase_changed.emit(self._get_current_phase_display_string())
+        elif current_phase == "SECOND_MARCH":
+            # Normal advancement after Second March
+            self.advance_phase()
+        else:
+            # For other phases, just advance normally
+            self.advance_phase()
 
     def advance_player(self):
         """Advances to the next player and initializes their turn."""

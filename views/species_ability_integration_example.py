@@ -1,353 +1,384 @@
 """
-Integration example for DUA-dependent species abilities.
+Integration example for Species Abilities Phase in Dragon Dice.
 
-This file demonstrates how to integrate the species ability dialogs
-with the combat systems and game engine.
+This example demonstrates:
+1. How to use the SpeciesAbilitiesPhaseDialog
+2. Integration with DUA and Reserves managers
+3. Swamp Stalkers' Mutate ability workflow
+4. Save roll resolution and recruitment mechanics
+5. Turn sequence integration
 """
 
-from typing import Any, Dict, List, Optional
+import sys
+from typing import Any, Dict, List
 
-from views.species_ability_dialogs import MagicNegationDialog, FoulStenchDialog, CursedBulletsDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QTextEdit
+
+from game_logic.dua_manager import DUAManager
+from game_logic.reserves_manager import ReservesManager
+from models.unit_model import UnitModel
+from views.species_abilities_phase_dialog import SpeciesAbilitiesPhaseDialog
+from views.mutate_save_roll_dialog import MutateSaveRollDialog
 
 
-class SpeciesAbilityIntegration:
-    """
-    Integration class for managing DUA-dependent species abilities
-    during combat actions.
-    """
+class SpeciesAbilityIntegrationExample(QMainWindow):
+    """Example integration of Species Abilities Phase mechanics."""
 
-    def __init__(self, game_engine, main_view, dua_manager):
-        self.game_engine = game_engine
-        self.main_view = main_view
-        self.dua_manager = dua_manager
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Dragon Dice - Species Abilities Phase Integration Example")
+        self.setGeometry(100, 100, 1000, 700)
 
-    def check_magic_negation_opportunity(self, magic_result: Dict[str, Any]) -> bool:
-        """
-        Check if any opponents can use Magic Negation against a magic action.
+        # Initialize game components
+        self.dua_manager = DUAManager()
+        self.reserves_manager = ReservesManager()
 
-        Returns True if Magic Negation was used, False otherwise.
-        """
-        caster = magic_result.get("caster", "")
-        location = magic_result.get("location", "")
+        # Sample game state
+        self.current_player = "Player 1"
+        self.opponent_players = ["Player 2", "Player 3"]
+        self.game_points = 24
+        self.game_turn = 4
 
-        # Check all other players for Frostwings at the same location
-        all_players = self.game_engine.get_all_players_data()
+        # Setup sample data
+        self._setup_sample_data()
 
-        for player_name, player_data in all_players.items():
-            if player_name == caster:
-                continue  # Skip the caster
+        # Setup UI
+        self._setup_ui()
 
-            # Check if player has Frostwings at this location
-            if self._player_has_frostwings_at_location(player_name, location):
-                # Check DUA for dead Frostwings
-                dead_frostwings_count = self.dua_manager.get_dua_species_count(player_name, "Frostwings")
+    def _setup_sample_data(self):
+        """Setup sample game data for demonstration."""
+        # Sample player armies with Swamp Stalkers
+        self.sample_player_armies = [
+            {
+                "name": "Swamp Army Alpha",
+                "location": "Water/Death Swamp",
+                "units": [
+                    {
+                        "name": "Swamp Stalker Hunter",
+                        "species": "Swamp Stalkers",
+                        "health": 2,
+                        "elements": ["water", "death"],
+                    },
+                    {
+                        "name": "Swamp Stalker Scout",
+                        "species": "Swamp Stalkers",
+                        "health": 1,
+                        "elements": ["water", "death"],
+                    },
+                    {
+                        "name": "Frostwing Ally",
+                        "species": "Frostwings",
+                        "health": 2,
+                        "elements": ["air", "death"],
+                    },
+                ],
+                "terrain_elements": ["water", "death"],
+            },
+            {
+                "name": "Swamp Army Beta",
+                "location": "Earth/Water Valley",
+                "units": [
+                    {
+                        "name": "Swamp Stalker Champion",
+                        "species": "Swamp Stalkers",
+                        "health": 3,
+                        "elements": ["water", "death"],
+                    },
+                    {
+                        "name": "Coral Elf Mystic",
+                        "species": "Coral Elves",
+                        "health": 2,
+                        "elements": ["air", "water"],
+                    },
+                ],
+                "terrain_elements": ["earth", "water"],
+            },
+        ]
 
-                if dead_frostwings_count > 0:
-                    # Offer Magic Negation opportunity
-                    if self._offer_magic_negation(player_name, magic_result, dead_frostwings_count):
-                        return True  # Magic was negated
+        # Sample opponent reserves
+        self.sample_opponent_reserves = {
+            "Player 2": [
+                {
+                    "name": "Amazon Warrior",
+                    "species": "Amazons",
+                    "health": 2,
+                    "elements": ["any"],
+                },
+                {
+                    "name": "Amazon Scout",
+                    "species": "Amazons",
+                    "health": 1,
+                    "elements": ["any"],
+                },
+                {
+                    "name": "Dwarf Champion",
+                    "species": "Dwarves",
+                    "health": 3,
+                    "elements": ["fire", "earth"],
+                },
+            ],
+            "Player 3": [
+                {
+                    "name": "Firewalker Flyer",
+                    "species": "Firewalkers",
+                    "health": 2,
+                    "elements": ["air", "fire"],
+                },
+                {
+                    "name": "Goblin Raider",
+                    "species": "Goblins",
+                    "health": 1,
+                    "elements": ["fire", "earth"],
+                },
+            ],
+        }
 
-        return False  # No negation occurred
+        # Add dead Swamp Stalkers to DUA
+        dead_swamp_stalkers = [
+            UnitModel(
+                name="Dead Swamp Stalker Alpha",
+                species="Swamp Stalkers",
+                health=2,
+                elements=["water", "death"],
+                owner=self.current_player,
+            ),
+            UnitModel(
+                name="Dead Swamp Stalker Beta",
+                species="Swamp Stalkers",
+                health=1,
+                elements=["water", "death"],
+                owner=self.current_player,
+            ),
+            UnitModel(
+                name="Dead Swamp Stalker Gamma",
+                species="Swamp Stalkers",
+                health=1,
+                elements=["water", "death"],
+                owner=self.current_player,
+            ),
+        ]
 
-    def _player_has_frostwings_at_location(self, player_name: str, location: str) -> bool:
-        """Check if a player has Frostwings units at the specified location."""
-        player_data = self.game_engine.get_player_data(player_name)
-        if not player_data:
-            return False
+        for unit in dead_swamp_stalkers:
+            self.dua_manager.add_unit_to_dua(unit)
 
-        for army_name, army_data in player_data.get("armies", {}).items():
-            army_location = army_data.get("location", "")
-            if army_location == location:
-                # Check for Frostwings in this army
-                army_units = army_data.get("units", [])
-                for unit in army_units:
-                    if unit.get("species") == "Frostwings":
-                        return True
+        # Add opponent reserves to reserves manager
+        for opponent, reserve_units in self.sample_opponent_reserves.items():
+            for unit_data in reserve_units:
+                unit = UnitModel(
+                    name=unit_data["name"],
+                    species=unit_data["species"],
+                    health=unit_data["health"],
+                    elements=unit_data["elements"],
+                    owner=opponent,
+                )
+                self.reserves_manager.add_unit_to_reserves(unit, opponent, "previous_terrain", "retreat")
 
-        return False
+    def _setup_ui(self):
+        """Setup the user interface."""
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
 
-    def _offer_magic_negation(
-        self, frostwing_player: str, magic_result: Dict[str, Any], dead_frostwings_count: int
-    ) -> bool:
-        """Offer Magic Negation opportunity to Frostwing player."""
-        caster = magic_result.get("caster", "")
-        location = magic_result.get("location", "")
-        magic_results = magic_result.get("magic_results", {})
+        # Game state display
+        self.game_state_display = QTextEdit()
+        self.game_state_display.setMaximumHeight(200)
+        self.game_state_display.setReadOnly(True)
+        layout.addWidget(self.game_state_display)
 
-        # Get Frostwing army at location
-        frostwing_army = self._get_player_army_at_location(frostwing_player, location)
-        if not frostwing_army:
-            return False
+        # Species Abilities Phase button
+        self.species_abilities_button = QPushButton("🧬 Start Species Abilities Phase")
+        self.species_abilities_button.clicked.connect(self._start_species_abilities_phase)
+        layout.addWidget(self.species_abilities_button)
 
-        # Create Magic Negation dialog
-        dialog = MagicNegationDialog(
-            frostwing_player=frostwing_player,
-            frostwing_army=frostwing_army,
-            opponent_player=caster,
-            opponent_magic_results=magic_results,
-            dead_frostwings_count=dead_frostwings_count,
-            location=location,
-            parent=self.main_view,
+        # Direct Mutate demo button
+        self.mutate_demo_button = QPushButton("🎯 Direct Mutate Demo")
+        self.mutate_demo_button.clicked.connect(self._direct_mutate_demo)
+        layout.addWidget(self.mutate_demo_button)
+
+        # Show game state button
+        self.show_state_button = QPushButton("📊 Show Game State")
+        self.show_state_button.clicked.connect(self._show_game_state)
+        layout.addWidget(self.show_state_button)
+
+        # Results display
+        self.results_display = QTextEdit()
+        self.results_display.setReadOnly(True)
+        layout.addWidget(self.results_display)
+
+        # Initialize display
+        self._show_game_state()
+
+    def _start_species_abilities_phase(self):
+        """Start the Species Abilities Phase."""
+        self._log("=== Starting Species Abilities Phase ===")
+
+        # Create and show species abilities phase dialog
+        dialog = SpeciesAbilitiesPhaseDialog(
+            player_name=self.current_player,
+            player_armies=self.sample_player_armies,
+            opponent_reserves=self.sample_opponent_reserves,
+            dua_manager=self.dua_manager,
+            reserves_manager=self.reserves_manager,
+            game_points=self.game_points,
+            parent=self,
         )
 
-        # Handle results
-        negation_used = False
+        dialog.abilities_completed.connect(self._on_abilities_completed)
+        dialog.abilities_skipped.connect(self._on_abilities_skipped)
 
-        def on_negation_completed(negation_result: Dict[str, Any]):
-            nonlocal negation_used
-            negation_used = True
-            self._apply_magic_negation(magic_result, negation_result)
-
-        def on_negation_declined():
-            nonlocal negation_used
-            negation_used = False
-
-        dialog.negation_completed.connect(on_negation_completed)
-        dialog.negation_declined.connect(on_negation_declined)
-
-        # Show dialog and wait for result
         dialog.exec()
 
-        return negation_used
+    def _on_abilities_completed(self, results: Dict[str, Any]):
+        """Handle completed species abilities phase."""
+        self._log("=== Species Abilities Phase Completed ===")
+        self._log(f"Player: {results['player_name']}")
+        self._log(f"Phase: {results['phase_type']}")
+        self._log(f"Available abilities: {results['available_abilities']}")
+        self._log(f"Used abilities: {results['abilities_count']}")
 
-    def _apply_magic_negation(self, magic_result: Dict[str, Any], negation_result: Dict[str, Any]):
-        """Apply Magic Negation effects to the magic result."""
-        negation_amount = negation_result.get("magic_negation_amount", 0)
+        # Process each used ability
+        for ability_data in results.get("used_abilities", []):
+            ability_type = ability_data.get("ability_type", "unknown")
+            
+            if ability_type == "mutate":
+                self._process_mutate_ability(ability_data)
 
-        if negation_amount > 0:
-            # Reduce magic points by negation amount
-            # This is simplified - real implementation would need more complex logic
-            magic_points = magic_result.get("magic_points_by_element", {})
+    def _on_abilities_skipped(self):
+        """Handle skipped species abilities phase."""
+        self._log("=== Species Abilities Phase Skipped ===")
 
-            # Distribute negation across elements proportionally
-            total_magic = sum(magic_points.values())
-            if total_magic > 0:
-                reduction_ratio = min(1.0, negation_amount / total_magic)
+    def _process_mutate_ability(self, mutate_data: Dict[str, Any]):
+        """Process a Mutate ability use."""
+        self._log("\n--- Processing Mutate Ability ---")
+        self._log(f"Swamp Stalker Player: {mutate_data['swamp_stalker_player']}")
+        self._log(f"Targets: {len(mutate_data['targets'])}")
+        self._log(f"Max targets: {mutate_data['max_targets']}")
+        self._log(f"S-value: {mutate_data['s_value']}")
 
-                for element in magic_points:
-                    original_points = magic_points[element]
-                    reduced_points = int(original_points * (1 - reduction_ratio))
-                    magic_points[element] = reduced_points
+        # Show mutate save roll dialog
+        save_roll_dialog = MutateSaveRollDialog(mutate_data, parent=self)
+        save_roll_dialog.mutate_resolved.connect(self._on_mutate_resolved)
+        save_roll_dialog.exec()
 
-            # Update game state
-            self.game_engine.apply_magic_negation(magic_result, negation_result)
+    def _on_mutate_resolved(self, resolution_results: Dict[str, Any]):
+        """Handle resolved Mutate ability."""
+        self._log("\n--- Mutate Resolved ---")
+        self._log(f"Success: {resolution_results['success']}")
+        self._log(f"Units killed: {resolution_results['units_killed_count']}")
+        self._log(f"Units saved: {resolution_results['units_saved_count']}")
+        self._log(f"Total health killed: {resolution_results['total_health_killed']}")
 
-            # Show result
-            frostwing_player = negation_result.get("frostwing_player", "")
-            result_text = f"❄️ {frostwing_player} used Magic Negation: {negation_amount} magic results negated!"
-            self.main_view.combat_result_signal.emit(result_text)
+        # Process killed units
+        for killed_unit in resolution_results.get("killed_units", []):
+            unit_data = killed_unit["unit_data"]
+            opponent_name = killed_unit["opponent_name"]
+            self._log(f"  Killed: {unit_data['name']} ({opponent_name})")
 
-    def check_foul_stench_opportunity(self, melee_result: Dict[str, Any]) -> List[str]:
-        """
-        Check if Foul Stench affects the opponent's counter-attack.
+            # Remove from opponent's reserves
+            self.reserves_manager.remove_unit_from_reserves(
+                opponent_name, unit_data["name"], "killed_by_mutate"
+            )
 
-        Returns list of units that cannot counter-attack.
-        """
-        attacker = melee_result.get("attacker", "")
-        defender = melee_result.get("defender", "")
+        # Process saved units
+        for saved_unit in resolution_results.get("saved_units", []):
+            unit_data = saved_unit["unit_data"]
+            opponent_name = saved_unit["opponent_name"]
+            self._log(f"  Saved: {unit_data['name']} ({opponent_name})")
 
-        # Check if attacker has Goblins
-        attacker_army = melee_result.get("attacker_army", {})
-        has_goblins = any(unit.get("species") == "Goblins" for unit in attacker_army.get("units", []))
+        # Show recruitment opportunity
+        if resolution_results["total_health_killed"] > 0:
+            recruiting_army = resolution_results["recruiting_army"]
+            self._log(f"\n{resolution_results['swamp_stalker_player']} can recruit/promote {resolution_results['total_health_killed']} health-worth of Swamp Stalkers")
+            self._log(f"Recruiting army: {recruiting_army['name']} at {recruiting_army['location']}")
 
-        if not has_goblins:
-            return []
+    def _direct_mutate_demo(self):
+        """Demonstrate direct Mutate ability usage."""
+        self._log("=== Direct Mutate Demo ===")
 
-        # Check DUA for dead Goblins
-        dead_goblins_count = self.dua_manager.get_dua_species_count(attacker, "Goblins")
+        # Create sample mutate data
+        sample_targets = [
+            {
+                "unit_data": self.sample_opponent_reserves["Player 2"][0],
+                "opponent_name": "Player 2",
+            },
+            {
+                "unit_data": self.sample_opponent_reserves["Player 3"][0],
+                "opponent_name": "Player 3",
+            },
+        ]
 
-        if dead_goblins_count == 0:
-            return []
+        mutate_data = {
+            "ability_type": "mutate",
+            "swamp_stalker_player": self.current_player,
+            "targets": sample_targets,
+            "recruiting_army": self.sample_player_armies[0],
+            "dead_swamp_stalkers_count": 3,
+            "max_targets": 1,  # Based on s-value for 24 points
+            "s_value": 1,
+            "game_points": self.game_points,
+        }
 
-        # Apply Foul Stench
-        return self._apply_foul_stench(defender, melee_result, dead_goblins_count)
+        # Show save roll dialog
+        save_roll_dialog = MutateSaveRollDialog(mutate_data, parent=self)
+        save_roll_dialog.mutate_resolved.connect(self._on_mutate_resolved)
+        save_roll_dialog.exec()
 
-    def _apply_foul_stench(
-        self, opponent_player: str, melee_result: Dict[str, Any], dead_goblins_count: int
-    ) -> List[str]:
-        """Apply Foul Stench effect - opponent selects units that cannot counter-attack."""
-        goblin_player = melee_result.get("attacker", "")
-        opponent_army = melee_result.get("target_army", {})
+    def _show_game_state(self):
+        """Show current game state."""
+        game_state = []
+        game_state.append(f"=== Game State - Turn {self.game_turn} ===")
+        game_state.append(f"Current Player: {self.current_player}")
+        game_state.append(f"Game Points: {self.game_points}")
+        game_state.append("")
 
-        # Create Foul Stench dialog
-        dialog = FoulStenchDialog(
-            goblin_player=goblin_player,
-            opponent_player=opponent_player,
-            opponent_army=opponent_army,
-            dead_goblins_count=dead_goblins_count,
-            parent=self.main_view,
-        )
+        # Show player armies
+        game_state.append("Player Armies:")
+        for army in self.sample_player_armies:
+            swamp_stalkers = [u for u in army["units"] if u["species"] == "Swamp Stalkers"]
+            game_state.append(f"  {army['name']} at {army['location']}")
+            game_state.append(f"    Swamp Stalkers: {len(swamp_stalkers)}")
+            game_state.append(f"    Total units: {len(army['units'])}")
 
-        # Handle results
-        affected_units = []
+        game_state.append("")
 
-        def on_stench_completed(stench_result: Dict[str, Any]):
-            nonlocal affected_units
-            affected_units = stench_result.get("selected_units", [])
+        # Show DUA state
+        player_dua = self.dua_manager.get_player_dua(self.current_player)
+        dead_swamp_stalkers = [u for u in player_dua if u.species == "Swamp Stalkers"]
+        game_state.append("DUA (Dead Units Area):")
+        game_state.append(f"  Dead Swamp Stalkers: {len(dead_swamp_stalkers)}")
+        game_state.append(f"  Total dead units: {len(player_dua)}")
 
-            # Update game state
-            self.game_engine.apply_foul_stench(melee_result, stench_result)
+        game_state.append("")
 
-            # Show result
-            unit_names = ", ".join(affected_units)
-            result_text = f"🤢 Foul Stench: {unit_names} cannot counter-attack (DUA: {dead_goblins_count} dead Goblins)"
-            self.main_view.combat_result_signal.emit(result_text)
+        # Show opponent reserves
+        game_state.append("Opponent Reserves:")
+        for opponent, reserve_units in self.sample_opponent_reserves.items():
+            game_state.append(f"  {opponent}: {len(reserve_units)} units")
+            for unit in reserve_units:
+                game_state.append(f"    - {unit['name']} ({unit['species']}, Health: {unit['health']})")
 
-        dialog.stench_completed.connect(on_stench_completed)
+        self.game_state_display.setPlainText("\n".join(game_state))
 
-        # Show dialog and wait for result
-        dialog.exec()
-
-        return affected_units
-
-    def check_cursed_bullets_effect(self, missile_result: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Check if Cursed Bullets affect missile damage.
-
-        Returns modified missile result with cursed bullet information.
-        """
-        attacker = missile_result.get("attacker", "")
-
-        # Check if attacker has Lava Elves
-        attacker_army = missile_result.get("attacker_army", {})
-        has_lava_elves = any(unit.get("species") == "Lava Elves" for unit in attacker_army.get("units", []))
-
-        if not has_lava_elves:
-            return missile_result
-
-        # Check DUA for dead Lava Elves
-        dead_lava_elves_count = self.dua_manager.get_dua_species_count(attacker, "Lava Elves")
-
-        if dead_lava_elves_count == 0:
-            return missile_result
-
-        # Apply Cursed Bullets effect
-        return self._apply_cursed_bullets(missile_result, dead_lava_elves_count)
-
-    def _apply_cursed_bullets(self, missile_result: Dict[str, Any], dead_lava_elves_count: int) -> Dict[str, Any]:
-        """Apply Cursed Bullets effect to missile damage."""
-        attacker_results = missile_result.get("attacker_results", {})
-
-        # Count total missile results
-        total_missiles = 0
-        for unit_name, face_results in attacker_results.items():
-            missile_count = sum(1 for face in face_results if face.lower().strip() in ["mi", "missile"])
-            total_missiles += missile_count
-
-        # Determine cursed missiles (max 3 dead Lava Elves)
-        cursed_missiles = min(dead_lava_elves_count, total_missiles, 3)
-
-        if cursed_missiles > 0:
-            # Add cursed bullets information to result
-            missile_result["cursed_bullets"] = {
-                "cursed_missile_count": cursed_missiles,
-                "dead_lava_elves_count": dead_lava_elves_count,
-                "total_missiles": total_missiles,
-            }
-
-            # Show Cursed Bullets information dialog
-            self._show_cursed_bullets_info(missile_result, dead_lava_elves_count)
-
-        return missile_result
-
-    def _show_cursed_bullets_info(self, missile_result: Dict[str, Any], dead_lava_elves_count: int):
-        """Show information about Cursed Bullets effect."""
-        attacker = missile_result.get("attacker", "")
-        attacker_results = missile_result.get("attacker_results", {})
-        target_army = missile_result.get("target_army", {})
-
-        # Create information dialog
-        dialog = CursedBulletsDialog(
-            lava_elf_player=attacker,
-            missile_results=attacker_results,
-            dead_lava_elves_count=dead_lava_elves_count,
-            target_army=target_army,
-            parent=self.main_view,
-        )
-
-        # Show dialog
-        dialog.exec()
-
-        # Update game state
-        self.game_engine.apply_cursed_bullets(missile_result)
-
-        # Show result
-        cursed_count = missile_result.get("cursed_bullets", {}).get("cursed_missile_count", 0)
-        result_text = f"💀 Cursed Bullets: {cursed_count} missile results can only be reduced by spell saves"
-        self.main_view.combat_result_signal.emit(result_text)
-
-    def _get_player_army_at_location(self, player_name: str, location: str) -> Optional[Dict[str, Any]]:
-        """Get a player's army at a specific location."""
-        player_data = self.game_engine.get_player_data(player_name)
-        if not player_data:
-            return None
-
-        for army_name, army_data in player_data.get("armies", {}).items():
-            army_location = army_data.get("location", "")
-            if army_location == location:
-                return army_data
-
-        return None
-
-
-# Usage example for integrating into combat systems:
-"""
-To integrate these species abilities into your combat dialogs:
-
-1. **In MagicActionDialog**: Check for Magic Negation before completing
-```python
-class MagicActionDialog(QDialog):
-    def __init__(self, ...):
-        # ... existing initialization ...
-        self.species_abilities = SpeciesAbilityIntegration(game_engine, main_view, dua_manager)
-    
-    def _complete_magic_action(self):
-        magic_result = self._build_magic_result()
+    def _log(self, message: str):
+        """Log a message to the results display."""
+        current_text = self.results_display.toPlainText()
+        self.results_display.setPlainText(current_text + message + "\n")
         
-        # Check for Magic Negation
-        if self.species_abilities.check_magic_negation_opportunity(magic_result):
-            # Magic was negated, update results accordingly
-            pass
-        
-        self.magic_completed.emit(magic_result)
-        self.accept()
-```
+        # Auto-scroll to bottom
+        scrollbar = self.results_display.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
 
-2. **In MeleeCombatDialog**: Check for Foul Stench before counter-attack
-```python
-class MeleeCombatDialog(QDialog):
-    def _handle_counter_attack(self, melee_result):
-        # Check for Foul Stench
-        affected_units = self.species_abilities.check_foul_stench_opportunity(melee_result)
-        
-        if affected_units:
-            # Remove affected units from counter-attack
-            self._exclude_units_from_counter_attack(affected_units)
-        
-        # Proceed with counter-attack
-        self._show_counter_attack_step()
-```
+        # Also print to console
+        print(message)
 
-3. **In MissileCombatDialog**: Apply Cursed Bullets to damage calculation
-```python
-class MissileCombatDialog(QDialog):
-    def _calculate_final_damage(self):
-        missile_result = self._build_missile_result()
-        
-        # Apply Cursed Bullets effect
-        missile_result = self.species_abilities.check_cursed_bullets_effect(missile_result)
-        
-        # Use modified result for damage calculation
-        self._apply_missile_damage(missile_result)
-```
 
-4. **Enhanced Bone Magic**: Already integrated in SAI processor
-The Bone Magic ability is automatically handled by the SAI processor when a DUA manager is provided.
+def main():
+    """Run the species ability integration example."""
+    app = QApplication(sys.argv)
+    window = SpeciesAbilityIntegrationExample()
+    window.show()
+    sys.exit(app.exec())
 
-This integration provides:
-- Interactive species ability dialogs with proper DUA dependency
-- Automatic checking for ability opportunities during combat
-- Visual feedback for players about ability effects
-- Proper game state integration with DUA tracking
-- Support for all four DUA-dependent abilities
-"""
+
+if __name__ == "__main__":
+    main()

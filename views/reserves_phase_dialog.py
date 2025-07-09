@@ -20,8 +20,10 @@ from PySide6.QtWidgets import (
     QDialog,
     QGroupBox,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QListWidget,
+    QMessageBox,
     QPushButton,
     QScrollArea,
     QSizePolicy,
@@ -88,17 +90,20 @@ class ReinforceStepWidget(QWidget):
     reinforcements_ready = Signal(dict)  # Emits reinforcement data
 
     def __init__(
-        self, player_name: str, reserves_units: List[Dict[str, Any]], available_terrains: List[str], parent=None
+        self, player_name: str, reserves_units: List[Dict[str, Any]], available_terrains: List[str], 
+        existing_terrain_armies: Dict[str, Dict[str, Any]], parent=None
     ):
         super().__init__(parent)
         self.player_name = player_name
         self.reserves_units = reserves_units
         self.available_terrains = available_terrains
+        self.existing_terrain_armies = existing_terrain_armies
 
         # Widget state
         self.unit_widgets: List[ReserveUnitWidget] = []
         self.selected_units: List[str] = []
         self.reinforcement_plan: Dict[str, List[str]] = {}  # terrain -> list of unit names
+        self.new_army_names: Dict[str, str] = {}  # terrain -> new army name
 
         self._setup_ui()
 
@@ -214,6 +219,16 @@ class ReinforceStepWidget(QWidget):
 
         terrain = self.terrain_combo.currentText()
 
+        # Check if player has existing army at this terrain
+        has_existing_army = terrain in self.existing_terrain_armies
+        
+        # If no existing army, need to create new army and get name
+        if not has_existing_army and terrain not in self.new_army_names:
+            army_name = self._get_new_army_name(terrain)
+            if not army_name:
+                return  # User cancelled
+            self.new_army_names[terrain] = army_name
+
         # Add to deployment plan
         if terrain not in self.reinforcement_plan:
             self.reinforcement_plan[terrain] = []
@@ -228,13 +243,66 @@ class ReinforceStepWidget(QWidget):
         # Clear selection
         self._clear_selection()
 
+    def _get_new_army_name(self, terrain: str) -> str:
+        """Get a name for a new army at a terrain."""
+        dialog_title = "New Army Name"
+        dialog_text = (
+            f"You are sending units to {terrain} where you don't have an existing army.\n"
+            f"A new army will be created. What would you like to name this army?\n\n"
+            f"(Cannot be 'Home', 'Campaign', or 'Horde' as these are reserved names)"
+        )
+        
+        while True:
+            army_name, ok = QInputDialog.getText(
+                self, dialog_title, dialog_text, text=f"{terrain} Army"
+            )
+            
+            if not ok:
+                return ""  # User cancelled
+            
+            army_name = army_name.strip()
+            
+            # Validate army name
+            if not army_name:
+                QMessageBox.warning(self, "Invalid Name", "Army name cannot be empty.")
+                continue
+            
+            # Check for reserved names
+            reserved_names = ["Home", "Campaign", "Horde"]
+            if army_name in reserved_names:
+                QMessageBox.warning(
+                    self, "Invalid Name", 
+                    f"'{army_name}' is a reserved army name. Please choose a different name."
+                )
+                continue
+            
+            # Check for duplicate names (if we're creating multiple new armies)
+            if army_name in self.new_army_names.values():
+                QMessageBox.warning(
+                    self, "Invalid Name", 
+                    f"You've already chosen '{army_name}' for another new army. Please choose a different name."
+                )
+                continue
+            
+            return army_name
+
     def _update_deployment_list(self):
         """Update the deployment plan display."""
         self.deployment_list.clear()
 
         for terrain, unit_names in self.reinforcement_plan.items():
             if unit_names:
-                item_text = f"{terrain}: {', '.join(unit_names)}"
+                # Check if this terrain has existing army or needs new army
+                has_existing_army = terrain in self.existing_terrain_armies
+                new_army_name = self.new_army_names.get(terrain, "")
+                
+                if has_existing_army:
+                    item_text = f"{terrain}: {', '.join(unit_names)} (joining existing army)"
+                elif new_army_name:
+                    item_text = f"{terrain}: {', '.join(unit_names)} (new army: '{new_army_name}')"
+                else:
+                    item_text = f"{terrain}: {', '.join(unit_names)}"
+                    
                 self.deployment_list.addItem(item_text)
 
     def _select_all_units(self):
@@ -275,6 +343,7 @@ class RetreatStepWidget(QWidget):
         # Widget state
         self.retreat_plan: Dict[str, List[str]] = {}  # terrain -> list of unit names to retreat
         self.air_flight_plan: Dict[str, List[str]] = {}  # terrain -> list of Firewalker units for air flight
+        self.burial_plan: List[str] = []  # List of unit names to bury from DUA to BUA
 
         self._setup_ui()
 
@@ -304,6 +373,10 @@ class RetreatStepWidget(QWidget):
         # Air flight tab
         air_flight_tab = self._create_air_flight_tab()
         self.tab_widget.addTab(air_flight_tab, "🌪️ Firewalker Air Flight")
+
+        # Burial tab (for moving units from DUA to BUA)
+        burial_tab = self._create_burial_tab()
+        self.tab_widget.addTab(burial_tab, "⚰️ Bury Dead Units")
 
         main_layout.addWidget(self.tab_widget)
 
@@ -397,6 +470,9 @@ class RetreatStepWidget(QWidget):
                 unit_layout = QHBoxLayout()
 
                 checkbox = QCheckBox(f"{unit_name} (Health: {health})")
+                checkbox.stateChanged.connect(
+                    lambda state, t=terrain, u=unit_name: self._on_air_flight_unit_selected(t, u, state)
+                )
                 unit_layout.addWidget(checkbox)
 
                 # Destination selection
@@ -405,6 +481,9 @@ class RetreatStepWidget(QWidget):
                 for dest_terrain, _ in air_terrains_with_firewalkers:
                     if dest_terrain != terrain:  # Can't move to same terrain
                         dest_combo.addItem(dest_terrain)
+                dest_combo.currentTextChanged.connect(
+                    lambda destination, t=terrain, u=unit_name: self._on_air_flight_destination_changed(t, u, destination)
+                )
                 unit_layout.addWidget(dest_combo)
 
                 terrain_layout.addLayout(unit_layout)
@@ -412,6 +491,83 @@ class RetreatStepWidget(QWidget):
             layout.addWidget(terrain_group)
 
         return tab
+
+    def _create_burial_tab(self) -> QWidget:
+        """Create the burial tab for moving units from DUA to BUA."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+
+        # Instructions
+        instructions = QLabel(
+            "During the Retreat Step, you may bury dead units from your DUA (Dead Units Area) "
+            "to your BUA (Buried Units Area). Buried units can be targeted by spells but not by most other effects."
+        )
+        instructions.setWordWrap(True)
+        instructions.setStyleSheet("margin: 10px; padding: 10px; background-color: #f5f5f5; border: 1px solid #666;")
+        layout.addWidget(instructions)
+
+        # Check if player has dead units in DUA
+        # Note: This would need to be passed from the main dialog or retrieved from DUA manager
+        # For now, we'll create a placeholder that shows the concept
+        dua_placeholder = QLabel(
+            "📋 Dead Units in DUA:\n"
+            "• Select dead units below to bury them in your BUA\n"
+            "• Buried units are removed from DUA and placed in BUA\n"
+            "• This integration requires DUA Manager to be passed to this dialog"
+        )
+        dua_placeholder.setWordWrap(True)
+        dua_placeholder.setStyleSheet(
+            "font-size: 14px; margin: 10px; padding: 10px; background-color: #fff3e0; border: 1px solid #ff9800;"
+        )
+        layout.addWidget(dua_placeholder)
+
+        # Placeholder for DUA units selection
+        # This would be populated with actual DUA units when DUA manager is integrated
+        placeholder_group = QGroupBox("Dead Units Available for Burial")
+        placeholder_layout = QVBoxLayout(placeholder_group)
+        
+        placeholder_text = QLabel(
+            "This section will show dead units from your DUA when integrated with DUA Manager.\n"
+            "Each unit will have a checkbox to select it for burial."
+        )
+        placeholder_text.setWordWrap(True)
+        placeholder_text.setStyleSheet("color: #666; font-style: italic; margin: 10px;")
+        placeholder_layout.addWidget(placeholder_text)
+        
+        layout.addWidget(placeholder_group)
+
+        # Burial controls
+        burial_controls = QHBoxLayout()
+        
+        select_all_button = QPushButton("Select All for Burial")
+        select_all_button.clicked.connect(self._select_all_for_burial)
+        burial_controls.addWidget(select_all_button)
+        
+        clear_burial_button = QPushButton("Clear Burial Selection")
+        clear_burial_button.clicked.connect(self._clear_burial_selection)
+        burial_controls.addWidget(clear_burial_button)
+        
+        layout.addLayout(burial_controls)
+
+        return tab
+
+    def _select_all_for_burial(self):
+        """Select all dead units for burial."""
+        # Placeholder - would interact with DUA manager
+        print("BurialTab: Select all units for burial (placeholder)")
+
+    def _clear_burial_selection(self):
+        """Clear burial selection."""
+        self.burial_plan.clear()
+        print("BurialTab: Cleared burial selection")
+
+    def get_burial_plan(self) -> List[str]:
+        """Get the current burial plan."""
+        return self.burial_plan.copy()
+
+    def has_burials(self) -> bool:
+        """Check if there are any burials planned."""
+        return bool(self.burial_plan)
 
     def _on_retreat_unit_selected(self, terrain: str, unit_name: str, state: int):
         """Handle unit selection for retreat."""
@@ -429,6 +585,32 @@ class RetreatStepWidget(QWidget):
         if not self.retreat_plan[terrain]:
             del self.retreat_plan[terrain]
 
+    def _on_air_flight_unit_selected(self, terrain: str, unit_name: str, state: int):
+        """Handle Firewalker unit selection for air flight."""
+        is_selected = state == Qt.CheckState.Checked.value
+
+        if terrain not in self.air_flight_plan:
+            self.air_flight_plan[terrain] = []
+
+        if is_selected and unit_name not in self.air_flight_plan[terrain]:
+            self.air_flight_plan[terrain].append(unit_name)
+        elif not is_selected and unit_name in self.air_flight_plan[terrain]:
+            self.air_flight_plan[terrain].remove(unit_name)
+
+        # Clean up empty entries
+        if not self.air_flight_plan[terrain]:
+            del self.air_flight_plan[terrain]
+
+    def _on_air_flight_destination_changed(self, terrain: str, unit_name: str, destination: str):
+        """Handle destination change for air flight."""
+        if destination == "-- Select Destination --":
+            return
+        
+        # Store the destination choice for this specific unit
+        # This would need more complex handling to store unit->destination mappings
+        # For now, we'll keep it simple and just note that the destination was selected
+        print(f"AirFlight: {unit_name} from {terrain} selected destination {destination}")
+
     def get_retreat_plan(self) -> Dict[str, List[str]]:
         """Get the current retreat plan."""
         return self.retreat_plan.copy()
@@ -439,7 +621,7 @@ class RetreatStepWidget(QWidget):
 
     def has_retreats(self) -> bool:
         """Check if there are any retreats planned."""
-        return bool(self.retreat_plan) or bool(self.air_flight_plan)
+        return bool(self.retreat_plan) or bool(self.air_flight_plan) or bool(self.burial_plan)
 
     def _get_terrain_elements(self, terrain_name: str) -> List[str]:
         """Get the elements present in a terrain."""
@@ -518,7 +700,9 @@ class ReservesPhaseDialog(QDialog):
         self.step_tabs = QTabWidget()
 
         # Reinforce step
-        self.reinforce_widget = ReinforceStepWidget(self.player_name, self.reserves_units, self.available_terrains)
+        self.reinforce_widget = ReinforceStepWidget(
+            self.player_name, self.reserves_units, self.available_terrains, self.terrain_armies
+        )
         self.step_tabs.addTab(self.reinforce_widget, "🔄 Reinforce Step")
 
         # Retreat step
@@ -558,7 +742,10 @@ class ReservesPhaseDialog(QDialog):
     def _continue_to_retreat(self):
         """Continue to the retreat step."""
         # Store reinforce results
-        self.reinforcement_results = self.reinforce_widget.get_reinforcement_plan()
+        self.reinforcement_results = {
+            "reinforcement_plan": self.reinforce_widget.get_reinforcement_plan(),
+            "new_army_names": self.reinforce_widget.new_army_names.copy(),
+        }
 
         # Switch to retreat step
         self.current_step = "retreat"
@@ -589,6 +776,7 @@ class ReservesPhaseDialog(QDialog):
         self.retreat_results = {
             "retreat_plan": self.retreat_widget.get_retreat_plan(),
             "air_flight_plan": self.retreat_widget.get_air_flight_plan(),
+            "burial_plan": self.retreat_widget.get_burial_plan(),
         }
 
         # Create comprehensive results
@@ -597,14 +785,17 @@ class ReservesPhaseDialog(QDialog):
             "player_name": self.player_name,
             "phase_type": "reserves",
             "reinforce_step": {
-                "reinforcement_plan": self.reinforcement_results,
-                "units_reinforced": sum(len(units) for units in self.reinforcement_results.values()),
+                "reinforcement_plan": self.reinforcement_results.get("reinforcement_plan", {}),
+                "new_army_names": self.reinforcement_results.get("new_army_names", {}),
+                "units_reinforced": sum(len(units) for units in self.reinforcement_results.get("reinforcement_plan", {}).values()),
             },
             "retreat_step": {
                 "retreat_plan": self.retreat_results["retreat_plan"],
                 "air_flight_plan": self.retreat_results["air_flight_plan"],
+                "burial_plan": self.retreat_results["burial_plan"],
                 "units_retreated": sum(len(units) for units in self.retreat_results["retreat_plan"].values()),
                 "firewalkers_moved": sum(len(units) for units in self.retreat_results["air_flight_plan"].values()),
+                "units_buried": len(self.retreat_results["burial_plan"]),
             },
             "timestamp": "now",
         }

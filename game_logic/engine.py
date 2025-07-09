@@ -25,6 +25,7 @@ class GameEngine(QObject):
     march_step_change_requested = Signal(str)  # new_march_step
     action_step_change_requested = Signal(str)  # new_action_step
     phase_advance_requested = Signal()
+    phase_skip_requested = Signal()  # Skip to next phase group (e.g., skip Second March)
     player_advance_requested = Signal()
     effect_expiration_requested = Signal(str)  # player_name
     dice_roll_submitted = Signal(str, str, str)  # roll_type, results_string, player_name
@@ -85,6 +86,7 @@ class GameEngine(QObject):
         self.march_step_change_requested.connect(self.turn_manager.set_march_step)
         self.action_step_change_requested.connect(self.turn_manager.set_action_step)
         self.phase_advance_requested.connect(self.turn_manager.advance_phase)
+        self.phase_skip_requested.connect(self.turn_manager.skip_to_next_phase_group)
         self.player_advance_requested.connect(self.turn_manager.advance_player)
         self.effect_expiration_requested.connect(self.effect_manager.process_effect_expirations)
         self.effect_manager.effects_changed.connect(
@@ -145,6 +147,13 @@ class GameEngine(QObject):
     def advance_phase(self):
         """Request phase advancement through signal emission."""
         self.phase_advance_requested.emit()
+        self._handle_phase_entry()
+        self.current_phase_changed.emit(self.get_current_phase_display())
+        self.game_state_updated.emit()
+
+    def skip_to_next_phase_group(self):
+        """Skip to next phase group (e.g., skip Second March)."""
+        self.phase_skip_requested.emit()
         self._handle_phase_entry()
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
