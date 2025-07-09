@@ -9,14 +9,12 @@ This dialog provides:
 5. Spell casting with proper targeting
 """
 
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QCheckBox,
     QComboBox,
     QDialog,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -26,14 +24,13 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QSizePolicy,
     QSpacerItem,
-    QSpinBox,
     QTextEdit,
     QVBoxLayout,
     QWidget,
 )
 
 from game_logic.sai_processor import SAIProcessor
-from models.spell_model import SpellModel, get_spells_by_element, get_cantrip_spells, ALL_SPELLS
+from models.spell_model import ALL_SPELLS, SpellModel
 
 
 class MagicDieRollInputWidget(QWidget):
@@ -100,8 +97,10 @@ class MagicDieRollInputWidget(QWidget):
 class SpellSelectionWidget(QWidget):
     """Widget for selecting and casting spells."""
 
-    def __init__(self, parent=None):
+    def __init__(self, caster_location: str = "", caster_army: Optional[Dict[str, Any]] = None, parent=None):
         super().__init__(parent)
+        self.caster_location = caster_location
+        self.caster_army = caster_army or {}
         self.selected_spells: List[Tuple[SpellModel, int, str]] = []  # (spell, cost, element_used)
         self._setup_ui()
 
@@ -188,9 +187,20 @@ class SpellSelectionWidget(QWidget):
         """Get spells that can be cast with available magic points."""
         available_spells = []
 
+        # Check if army is in Reserve Area
+        is_in_reserves = self.caster_location.lower() == "reserve area" or self.caster_location.lower() == "reserves"
+
+        # Check for Amazon Ivory magic generation
+        army_units = self.caster_army.get("units", [])
+        amazon_units = [unit for unit in army_units if unit.get("species") == "Amazons"]
+        has_ivory_magic = is_in_reserves and amazon_units and magic_points_by_element.get("IVORY", 0) > 0
+
         for spell in ALL_SPELLS.values():
-            if spell.reserves:
-                continue  # Skip reserve spells
+            # Reserve spell restrictions
+            if is_in_reserves and not spell.reserves:
+                continue  # In reserves, can only cast reserve spells
+            if not is_in_reserves and spell.reserves:
+                continue  # Not in reserves, cannot cast reserve spells
 
             # Check species restrictions
             if spell.species != "Any" and spell.species not in army_species:
@@ -200,6 +210,14 @@ class SpellSelectionWidget(QWidget):
             if spell.element == "ELEMENTAL":
                 # Elemental spells can use any element
                 total_magic = sum(magic_points_by_element.values())
+
+                # Special case: Ivory magic can only cast Elemental spells
+                if has_ivory_magic and "IVORY" in magic_points_by_element:
+                    ivory_magic = magic_points_by_element["IVORY"]
+                    if spell.cost <= ivory_magic:
+                        available_spells.append(spell)
+                        continue
+
                 if spell.cost <= total_magic:
                     available_spells.append(spell)
             else:
@@ -221,8 +239,13 @@ class SpellSelectionWidget(QWidget):
 
             if spell.element == "ELEMENTAL":
                 # Can use any element
+                # Check for Ivory magic priority (can only cast Elemental spells)
+                ivory_magic = self.magic_points_by_element.get("IVORY", 0)
+                if ivory_magic >= spell.cost:
+                    self.element_combo.addItem(f"IVORY ({ivory_magic} available) - Elemental Only", "IVORY")
+
                 for element, points in self.magic_points_by_element.items():
-                    if points >= spell.cost:
+                    if element != "IVORY" and points >= spell.cost:
                         self.element_combo.addItem(f"{element} ({points} available)", element)
             else:
                 # Must use specific element
@@ -265,7 +288,7 @@ class SpellSelectionWidget(QWidget):
         """Update the display of selected spells."""
         self.selected_spells_list.clear()
 
-        total_cost_by_element = {}
+        total_cost_by_element: Dict[str, int] = {}
         for spell, cost, element in self.selected_spells:
             display_text = f"{spell.name} - Cost: {cost} ({element})"
             self.selected_spells_list.addItem(display_text)
@@ -447,10 +470,13 @@ class MagicActionDialog(QDialog):
         instructions.setStyleSheet("margin: 10px; padding: 10px; background-color: #f0f2ff;")
         self.content_layout.addWidget(instructions)
 
-        # Check for Amazon Terrain Harmony
+        # Check for Amazon Terrain Harmony and Ivory magic generation
         terrain_elements = self._get_terrain_elements()
         army_units = self.caster_army.get("units", [])
         amazon_units = [unit for unit in army_units if unit.get("species") == "Amazons"]
+
+        # Check if army is in Reserve Area (Amazon Ivory magic generation)
+        is_in_reserves = self.location.lower() == "reserve area" or self.location.lower() == "reserves"
 
         # Show terrain eighth face effect notice
         if self._check_terrain_eighth_face_control():
@@ -461,7 +487,19 @@ class MagicActionDialog(QDialog):
             )
             self.content_layout.addWidget(eighth_face_note)
 
-        if amazon_units and terrain_elements:
+        if amazon_units and is_in_reserves:
+            # Amazon Ivory magic generation in Reserve Area
+            ivory_note = QLabel(
+                "💎 <b>Amazon Ivory Magic:</b> Amazon units in Reserve Area generate Ivory magic, "
+                "which can only be used to cast Elemental spells."
+            )
+            ivory_note.setWordWrap(True)
+            ivory_note.setStyleSheet(
+                "background-color: #f6ffed; padding: 10px; border: 1px solid #52c41a; margin: 10px;"
+            )
+            self.content_layout.addWidget(ivory_note)
+        elif amazon_units and terrain_elements:
+            # Regular Amazon Terrain Harmony
             harmony_note = QLabel(
                 f"⚖️ <b>Terrain Harmony:</b> Amazon magic results can match any terrain element: "
                 f"{', '.join(terrain_elements)}"
@@ -499,15 +537,17 @@ class MagicActionDialog(QDialog):
 
         # Instructions
         instructions = QLabel(
-            f"<b>Select Spells:</b> Choose spells to cast with your available magic points.<br>"
-            f"Element-specific spells require magic of that element. Elemental spells can use any element."
+            "<b>Select Spells:</b> Choose spells to cast with your available magic points.<br>"
+            "Element-specific spells require magic of that element. Elemental spells can use any element."
         )
         instructions.setWordWrap(True)
         instructions.setStyleSheet("margin: 10px; padding: 10px; background-color: #f0f2ff;")
         self.content_layout.addWidget(instructions)
 
         # Spell selection widget
-        self.spell_selection_widget = SpellSelectionWidget()
+        self.spell_selection_widget = SpellSelectionWidget(
+            caster_location=self.location, caster_army=self.caster_army
+        )
         army_species = list(set(unit.get("species", "") for unit in self.caster_army.get("units", [])))
         terrain_elements = self._get_terrain_elements()
 
@@ -584,6 +624,11 @@ class MagicActionDialog(QDialog):
         # Initialize magic points
         self.magic_points_by_element = {"AIR": 0, "DEATH": 0, "EARTH": 0, "FIRE": 0, "WATER": 0}
 
+        # Check if in Reserve Area for Ivory magic
+        is_in_reserves = self.location.lower() == "reserve area" or self.location.lower() == "reserves"
+        if is_in_reserves:
+            self.magic_points_by_element["IVORY"] = 0
+
         # Calculate magic points by unit and element
         for unit_name, face_results in self.magic_results.items():
             # Find unit data
@@ -611,8 +656,14 @@ class MagicActionDialog(QDialog):
 
             if total_magic_count > 0:
                 if unit_species == "Amazons":
-                    # Amazon Terrain Harmony - magic can be any terrain element
-                    self.amazon_flexible_magic[unit_name] = total_magic_count
+                    if is_in_reserves:
+                        # Amazon Ivory magic generation in Reserve Area
+                        self.magic_points_by_element["IVORY"] = (
+                            self.magic_points_by_element.get("IVORY", 0) + total_magic_count
+                        )
+                    else:
+                        # Amazon Terrain Harmony - magic can be any terrain element
+                        self.amazon_flexible_magic[unit_name] = total_magic_count
                 else:
                     # Regular unit - magic matches unit elements
                     if unit_elements:

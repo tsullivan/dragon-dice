@@ -151,7 +151,9 @@ class SAIProcessor:
         self._process_id_faces(result, roll_results, army_units, combat_type, terrain_eighth_face_controlled)
 
         # Process species abilities
-        self._process_species_abilities(result, roll_results, army_units, combat_type, is_attacker, terrain_elements, player_name, opponent_name)
+        self._process_species_abilities(
+            result, roll_results, army_units, combat_type, is_attacker, terrain_elements, player_name, opponent_name
+        )
 
         return result
 
