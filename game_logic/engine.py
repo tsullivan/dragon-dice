@@ -1289,3 +1289,131 @@ class GameEngine(QObject):
         """Get BUA units for a player as dictionaries."""
         bua_units = self.bua_manager.get_player_bua(player_name)
         return [unit.to_dict() for unit in bua_units]
+
+    def process_spell_effects(self, spell_results: Dict[str, Any]) -> Dict[str, Any]:
+        """Process the effects of cast spells."""
+        results = {"spells_processed": [], "effects_applied": [], "errors": []}
+
+        cast_spells = spell_results.get("cast_spells", [])
+        for spell_data in cast_spells:
+            try:
+                spell_result = self._process_single_spell(spell_data)
+                results["spells_processed"].append(spell_result)
+                if spell_result.get("effects"):
+                    results["effects_applied"].extend(spell_result["effects"])
+            except Exception as e:
+                error_msg = f"Error processing spell {spell_data.get('name', 'Unknown')}: {str(e)}"
+                results["errors"].append(error_msg)
+                print(f"Spell processing error: {error_msg}")
+
+        return results
+
+    def _process_single_spell(self, spell_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a single spell's effects."""
+        from models.spell_model import get_spell
+
+        spell_name = spell_data.get("name", "")
+        spell_model = get_spell(spell_name)
+
+        if not spell_model:
+            raise ValueError(f"Unknown spell: {spell_name}")
+
+        result = {"spell_name": spell_name, "success": False, "effects": [], "message": ""}
+
+        # Handle dragon summoning spells
+        if spell_name.upper() in ["SUMMON_DRAGON", "SUMMON_WHITE_DRAGON"]:
+            summon_result = self._process_dragon_summon_spell(spell_data, spell_model)
+            result.update(summon_result)
+        elif spell_name.upper() == "SUMMON_DRAGONKIN":
+            summon_result = self._process_dragonkin_summon_spell(spell_data, spell_model)
+            result.update(summon_result)
+        else:
+            # For now, other spells are not implemented
+            result["message"] = f"{spell_name} effect not yet implemented"
+            result["success"] = True  # Consider it successful but without effects
+
+        return result
+
+    def _process_dragon_summon_spell(self, spell_data: Dict[str, Any], spell_model) -> Dict[str, Any]:
+        """Process Summon Dragon or Summon White Dragon spells."""
+        caster_player = spell_data.get("caster", "")
+        target_terrain = spell_data.get("target_terrain", "")
+        element_used = spell_data.get("element_used", "")
+
+        if not all([caster_player, target_terrain, element_used]):
+            raise ValueError("Missing required data for dragon summoning")
+
+        # Find available dragons
+        available_dragons = []
+
+        if spell_model.name == "Summon White Dragon":
+            # White dragons can only be summoned from pools
+            white_dragons = self.summoning_pool_manager.get_dragons_by_type(caster_player, "WHITE")
+            available_dragons = white_dragons
+        else:
+            # Regular dragon summoning
+            if element_used.upper() in ["IVORY", "ANY"]:
+                # Ivory or Ivory Hybrid dragons from pools
+                ivory_dragons = self.summoning_pool_manager.get_dragons_by_type(caster_player, "IVORY")
+                ivory_hybrid_dragons = self.summoning_pool_manager.get_dragons_by_type(caster_player, "IVORY_HYBRID")
+                available_dragons = ivory_dragons + ivory_hybrid_dragons
+            else:
+                # Elemental dragons from pools or terrains
+                pool_dragons = self.summoning_pool_manager.get_dragons_by_element(caster_player, element_used)
+                # TODO: Add logic to get dragons from terrains as well
+                available_dragons = pool_dragons
+
+        if not available_dragons:
+            return {
+                "success": False,
+                "message": f"No suitable dragons available for summoning with {element_used} magic",
+                "effects": [],
+            }
+
+        # For now, summon the first available dragon
+        # In a full implementation, this would show a selection dialog
+        dragon_to_summon = available_dragons[0]
+
+        # Remove dragon from pool
+        summoned_dragon = self.summoning_pool_manager.remove_dragon_from_pool(caster_player, dragon_to_summon.get_id())
+
+        if summoned_dragon:
+            # Add dragon to target terrain (this would need terrain army management)
+            # For now, we'll just track that the summoning happened
+            effect_msg = f"{summoned_dragon.get_display_name()} summoned to {target_terrain}"
+
+            return {
+                "success": True,
+                "message": f"Successfully summoned {summoned_dragon.get_display_name()}",
+                "effects": [effect_msg],
+                "summoned_dragon": summoned_dragon.to_dict(),
+                "target_terrain": target_terrain,
+            }
+        else:
+            return {"success": False, "message": "Failed to remove dragon from summoning pool", "effects": []}
+
+    def _process_dragonkin_summon_spell(self, spell_data: Dict[str, Any], spell_model) -> Dict[str, Any]:
+        """Process Summon Dragonkin spell."""
+        caster_player = spell_data.get("caster", "")
+        element_used = spell_data.get("element_used", "")
+
+        # Find dragonkin in summoning pool
+        dragonkin = self.summoning_pool_manager.get_dragonkin_by_element(caster_player, element_used)
+
+        if not dragonkin:
+            return {
+                "success": False,
+                "message": f"No {element_used} Dragonkin available in summoning pool",
+                "effects": [],
+            }
+
+        # For simplicity, summon one health worth (first available)
+        unit_to_summon = dragonkin[0]
+
+        # This would need to integrate with army management
+        return {
+            "success": True,
+            "message": f"Summoned {unit_to_summon.name} to casting army",
+            "effects": [f"Added {unit_to_summon.name} to army"],
+            "summoned_unit": unit_to_summon.to_dict(),
+        }

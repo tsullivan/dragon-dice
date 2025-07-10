@@ -801,7 +801,7 @@ class MagicActionDialog(QDialog):
             "magic_results": self.magic_results,
             "magic_points_by_element": self.magic_points_by_element,
             "amazon_flexible_magic": self.amazon_flexible_magic,
-            "cast_spells": [(spell.name, cost, element) for spell, cost, element in self.cast_spells],
+            "cast_spells": [self._create_spell_data(spell, cost, element) for spell, cost, element in self.cast_spells],
             "timestamp": "now",
         }
 
@@ -810,6 +810,24 @@ class MagicActionDialog(QDialog):
 
         self.magic_completed.emit(magic_result)
         self.accept()
+
+    def _create_spell_data(self, spell: SpellModel, cost: int, element: str) -> Dict[str, Any]:
+        """Create detailed spell data including targeting information."""
+        spell_data = {
+            "name": spell.name,
+            "cost": cost,
+            "element_used": element,
+            "caster": self.caster_name,
+            "effect": spell.effect,
+        }
+
+        # Add targeting information for dragon summoning spells
+        if spell.name in ["Summon Dragon", "Summon White Dragon", "Summon Dragonkin"]:
+            # For now, use the current location as target terrain
+            # In a full implementation, this would show a terrain selection dialog
+            spell_data["target_terrain"] = self.location
+
+        return spell_data
 
     def _check_magic_negation_opportunity(self, magic_result: Dict[str, Any]):
         """Check if opponents can use Magic Negation against this magic action."""

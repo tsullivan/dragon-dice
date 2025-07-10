@@ -82,6 +82,17 @@ class SummoningPoolManager(QObject):
         pool = self.get_player_pool(player_name)
         return [dragon for dragon in pool if element in dragon.elements]
 
+    def get_dragons_by_type(self, player_name: str, dragon_type: str) -> List[DragonModel]:
+        """Get dragons in a player's pool that match a specific type."""
+        pool = self.get_player_pool(player_name)
+        return [dragon for dragon in pool if dragon.dragon_type == dragon_type]
+
+    def get_dragonkin_by_element(self, player_name: str, element: str) -> List[DragonModel]:
+        """Get dragonkin units in a player's pool that match a specific element."""
+        pool = self.get_player_pool(player_name)
+        # Filter for dragonkin (assuming they have "dragonkin" in their name or type)
+        return [dragon for dragon in pool if "dragonkin" in dragon.name.lower() and element in dragon.elements]
+
     def get_pool_statistics(self, player_name: str) -> Dict[str, Any]:
         """Get statistics about a player's summoning pool."""
         pool = self.get_player_pool(player_name)

@@ -910,7 +910,18 @@ class MainGameplayView(QWidget):
         print(f"[MainGameplayView] Magic completed: {results}")
 
         # Apply magic results to game state
-        # TODO: Process magic results and update game state
+        if results.get("cast_spells"):
+            spell_effects = self.game_engine.process_spell_effects(results)
+            print(f"[MainGameplayView] Spell effects processed: {spell_effects}")
+
+            # Show feedback for spell effects
+            if spell_effects.get("effects_applied"):
+                effects_msg = "\n".join(spell_effects["effects_applied"])
+                print(f"Spell effects applied:\n{effects_msg}")
+
+            if spell_effects.get("errors"):
+                error_msg = "\n".join(spell_effects["errors"])
+                print(f"Spell processing errors:\n{error_msg}")
 
         # Continue to next action step or phase
         self.game_engine.advance_phase()

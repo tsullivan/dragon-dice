@@ -62,8 +62,10 @@ class SpellTargetingManager:
             elif target_type == TargetType.BUA:
                 valid_targets["bua_units"] = self._get_valid_bua_targets(spell, caster_player, game_state)
             elif target_type == TargetType.SUMMONING_POOL:
-                # Spells cannot target the Summoning Pool
-                pass
+                # Dragon summoning spells use summoning pool as source, not target
+                valid_targets["summoning_pool_sources"] = self._get_valid_summoning_pool_sources(
+                    spell, caster_player, game_state
+                )
 
         return valid_targets
 
@@ -92,10 +94,12 @@ class SpellTargetingManager:
         if "bua" in effect_lower or "buried units area" in effect_lower or "buried" in effect_lower:
             target_types.append(TargetType.BUA)
 
-        # Check for Summoning Pool (should not be valid)
-        if "summoning pool" in effect_lower:
-            # Log warning but don't add to valid targets
-            print(f"WARNING: Spell {spell.name} references Summoning Pool, but spells cannot target it")
+        # Check for dragon summoning spells (use summoning pool as source)
+        if "summon" in effect_lower and ("dragon" in effect_lower or "dragonkin" in effect_lower):
+            target_types.append(TargetType.SUMMONING_POOL)
+        elif "summoning pool" in effect_lower:
+            # Other summoning pool references (like Esfah's Gift)
+            target_types.append(TargetType.SUMMONING_POOL)
 
         return target_types
 
@@ -377,3 +381,51 @@ class SpellTargetingManager:
             return f"{unit_name} ({species}) - {player}'s BUA"
 
         return "Unknown target"
+
+    def _get_valid_summoning_pool_sources(
+        self, spell: SpellModel, caster_player: str, game_state: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """Get valid dragons/units from summoning pool for summoning spells."""
+        valid_sources = []
+
+        if not self.summoning_pool_manager:
+            return valid_sources
+
+        # Get caster's summoning pool
+        player_pool = self.summoning_pool_manager.get_player_pool(caster_player)
+
+        for dragon in player_pool:
+            dragon_info = {
+                "dragon_data": dragon.to_dict(),
+                "player": caster_player,
+                "location": "Summoning Pool",
+                "dragon_type": dragon.dragon_type,
+                "elements": dragon.elements,
+                "name": dragon.name,
+            }
+
+            # Apply spell-specific rules
+            if self._is_valid_summoning_source(spell, dragon_info, caster_player):
+                valid_sources.append(dragon_info)
+
+        return valid_sources
+
+    def _is_valid_summoning_source(self, spell: SpellModel, dragon_info: Dict[str, Any], caster_player: str) -> bool:
+        """Check if a dragon is a valid source for a summoning spell."""
+        effect_lower = spell.effect.lower()
+        dragon_data = dragon_info.get("dragon_data", {})
+
+        if spell.name == "Summon White Dragon":
+            # Only White Dragons can be summoned with this spell
+            return dragon_info.get("dragon_type") == "WHITE"
+
+        elif spell.name == "Summon Dragon":
+            # Regular dragons can be summoned (not White Dragons)
+            return dragon_info.get("dragon_type") != "WHITE"
+
+        elif spell.name == "Summon Dragonkin":
+            # Only dragonkin units
+            return "dragonkin" in dragon_info.get("name", "").lower()
+
+        # Default: allow all dragons for summoning spells
+        return "summon" in effect_lower
