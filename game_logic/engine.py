@@ -14,7 +14,6 @@ from game_logic.spell_database import SpellDatabase
 from game_logic.spell_targeting import SpellTargetingManager
 from game_logic.summoning_pool_manager import SummoningPoolManager
 from game_logic.turn_manager import TurnManager
-from game_logic.turn_state_singleton import TurnStateSingleton, get_turn_state
 from models.dragon_model import DragonModel
 from models.unit_model import UnitModel
 from models.terrain_model import get_terrain_icon
@@ -80,15 +79,15 @@ class GameEngine(QObject):
         self.effect_manager = EffectManager(parent=self)
         self.game_state_manager = GameStateManager(player_setup_data, frontier_terrain, distance_rolls, parent=self)
         self.action_resolver = ActionResolver(self.game_state_manager, self.effect_manager, parent=self)
-        
+
         # Advanced managers
-        self.dua_manager = DUAManager(parent=self)
+        self.dua_manager = DUAManager(turn_manager=self.turn_manager, parent=self)
         self.bua_manager = BUAManager(parent=self)
         self.summoning_pool_manager = SummoningPoolManager(parent=self)
         self.reserves_manager = ReservesManager(parent=self)
-        self.sai_processor = SAIProcessor(parent=self)
-        self.spell_database = SpellDatabase(parent=self)
-        
+        self.sai_processor = SAIProcessor(dua_manager=self.dua_manager)
+        self.spell_database = SpellDatabase()
+
         # Spell targeting manager (depends on other managers)
         self.spell_targeting_manager = SpellTargetingManager(
             self.dua_manager, self.bua_manager, self.summoning_pool_manager
@@ -117,26 +116,19 @@ class GameEngine(QObject):
         )  # If effects change, game state is updated
 
         # Connect advanced manager signals
-        self.dua_manager.dua_updated.connect(self.game_state_updated.emit)
-        self.bua_manager.bua_updated.connect(self.game_state_updated.emit)
-        self.summoning_pool_manager.pool_updated.connect(self.game_state_updated.emit)
-        self.reserves_manager.reserves_updated.connect(self.game_state_updated.emit)
+        self.dua_manager.dua_updated.connect(lambda: self.game_state_updated.emit())
+        self.bua_manager.bua_updated.connect(lambda: self.game_state_updated.emit())
+        self.summoning_pool_manager.pool_updated.connect(lambda: self.game_state_updated.emit())
+        self.reserves_manager.reserves_updated.connect(lambda: self.game_state_updated.emit())
 
         # Initialize all players in advanced managers
         for player_name in self.player_names:
             self.dua_manager.initialize_player_dua(player_name)
             self.bua_manager.initialize_player_bua(player_name)
-            self.summoning_pool_manager.initialize_player_pool(player_name)
+            self.summoning_pool_manager.initialize_player_pool(player_name, [])
             self.reserves_manager.initialize_player_reserves(player_name)
 
-        # Initialize and synchronize turn state singleton
-        self.turn_state = get_turn_state()
-        self.turn_state.set_player_names(self.player_names)
-        self.turn_state.set_current_player(self.first_player_name)
-        
-        # Connect turn manager changes to singleton
-        self.turn_manager.current_player_changed.connect(self.turn_state.set_current_player)
-        self.turn_manager.current_phase_changed.connect(self.turn_state.set_current_phase)
+        # Turn manager already has player names and current player set
 
         self._initialize_turn_for_current_player()
 
@@ -1196,10 +1188,12 @@ class GameEngine(QObject):
             original_owner=unit_dict.get("owner", "Unknown"),
             death_cause=death_info.get("cause", "combat"),
             death_location=death_info.get("location", ""),
-            death_turn=death_info.get("turn", self.turn_manager.current_turn)
+            death_turn=death_info.get("turn", self.turn_manager.current_turn),
         )
 
-    def dict_to_reserve_unit(self, unit_dict: Dict[str, Any], entry_info: Optional[Dict[str, Any]] = None) -> ReserveUnit:
+    def dict_to_reserve_unit(
+        self, unit_dict: Dict[str, Any], entry_info: Optional[Dict[str, Any]] = None
+    ) -> ReserveUnit:
         """Convert dictionary unit data to ReserveUnit object."""
         entry_info = entry_info or {}
         return ReserveUnit(
@@ -1210,7 +1204,7 @@ class GameEngine(QObject):
             owner=unit_dict.get("owner", "Unknown"),
             original_terrain=entry_info.get("terrain", ""),
             turn_entered=entry_info.get("turn", self.turn_manager.current_turn),
-            entry_reason=entry_info.get("reason", "retreat")
+            entry_reason=entry_info.get("reason", "retreat"),
         )
 
     def dua_unit_to_dict(self, dua_unit: DUAUnit) -> Dict[str, Any]:
@@ -1220,7 +1214,7 @@ class GameEngine(QObject):
             "species": dua_unit.species,
             "health": dua_unit.health,
             "elements": dua_unit.elements,
-            "owner": dua_unit.original_owner
+            "owner": dua_unit.original_owner,
         }
 
     def reserve_unit_to_dict(self, reserve_unit: ReserveUnit) -> Dict[str, Any]:
@@ -1230,7 +1224,7 @@ class GameEngine(QObject):
             "species": reserve_unit.species,
             "health": reserve_unit.health,
             "elements": reserve_unit.elements,
-            "owner": reserve_unit.owner
+            "owner": reserve_unit.owner,
         }
 
     def get_units_as_dua_objects(self, player_name: str, army_id: str) -> List[DUAUnit]:
@@ -1251,13 +1245,19 @@ class GameEngine(QObject):
 
     def add_unit_to_reserves(self, unit_dict: Dict[str, Any], entry_info: Optional[Dict[str, Any]] = None):
         """Add a unit to reserves."""
-        reserve_unit = self.dict_to_reserve_unit(unit_dict, entry_info)
-        self.reserves_manager.add_unit_to_reserves(reserve_unit)
+        entry_info = entry_info or {}
+        self.reserves_manager.add_unit_to_reserves(
+            unit_dict,
+            unit_dict.get("owner", "Unknown"),
+            entry_info.get("terrain", ""),
+            entry_info.get("reason", "retreat"),
+        )
 
     def bury_unit_in_bua(self, player_name: str, unit_dict: Dict[str, Any]):
         """Bury a unit in the BUA."""
         # Convert dict to UnitModel for BUA manager
         from models.unit_model import UnitModel
+
         unit_model = UnitModel(
             unit_id=unit_dict.get("id", unit_dict.get("name", "unknown")),
             name=unit_dict.get("name", "Unknown Unit"),
@@ -1265,7 +1265,7 @@ class GameEngine(QObject):
             health=unit_dict.get("health", 1),
             max_health=unit_dict.get("max_health", unit_dict.get("health", 1)),
             species=None,  # Would need to resolve from species name
-            faces=[]  # Would need to resolve from unit type
+            faces=[],  # Would need to resolve from unit type
         )
         self.bua_manager.bury_unit(player_name, unit_model)
 
@@ -1278,6 +1278,12 @@ class GameEngine(QObject):
         """Get reserve units for a player as dictionaries."""
         reserve_units = self.reserves_manager.get_player_reserves(player_name)
         return [self.reserve_unit_to_dict(unit) for unit in reserve_units]
+
+    def is_terrain_eighth_face_controlled(self, location: str, player_name: str) -> bool:
+        """Check if a player controls the eighth face of a terrain."""
+        # This is a stub implementation - would need actual game logic
+        # to check terrain face control
+        return False
 
     def get_player_bua_units(self, player_name: str) -> List[Dict[str, Any]]:
         """Get BUA units for a player as dictionaries."""

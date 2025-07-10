@@ -34,7 +34,7 @@ class BUAManager(QObject):
         """Bury a unit in a player's BUA (moved from DUA during Retreat step)."""
         if player_name not in self._player_buas:
             self.initialize_player_bua(player_name)
-        
+
         self._player_buas[player_name].append(unit)
         print(f"BUAManager: Buried {unit.name} ({unit.species}) in {player_name}'s BUA")
         self.bua_updated.emit(player_name)
@@ -43,7 +43,7 @@ class BUAManager(QObject):
         """Bury multiple units in a player's BUA."""
         if player_name not in self._player_buas:
             self.initialize_player_bua(player_name)
-        
+
         self._player_buas[player_name].extend(units)
         unit_names = [f"{unit.name} ({unit.species})" for unit in units]
         print(f"BUAManager: Buried {len(units)} units in {player_name}'s BUA: {', '.join(unit_names)}")
@@ -53,7 +53,7 @@ class BUAManager(QObject):
         """Remove a unit from a player's BUA (for special game effects)."""
         if player_name not in self._player_buas:
             return None
-        
+
         bua = self._player_buas[player_name]
         for i, unit in enumerate(bua):
             if unit.get_id() == unit_id or unit.name == unit_id:
@@ -61,7 +61,7 @@ class BUAManager(QObject):
                 print(f"BUAManager: Removed {removed_unit.name} from {player_name}'s BUA")
                 self.bua_updated.emit(player_name)
                 return removed_unit
-        
+
         print(f"BUAManager: Unit {unit_id} not found in {player_name}'s BUA")
         return None
 
@@ -99,26 +99,26 @@ class BUAManager(QObject):
     def get_bua_statistics(self, player_name: str) -> Dict[str, Any]:
         """Get statistics about a player's BUA."""
         bua = self.get_player_bua(player_name)
-        
+
         stats = {
             "total_units": len(bua),
             "total_health": 0,
             "species_breakdown": {},
             "element_breakdown": {},
         }
-        
+
         for unit in bua:
             # Total health
             stats["total_health"] += unit.health
-            
+
             # Species breakdown
             species = unit.species
             stats["species_breakdown"][species] = stats["species_breakdown"].get(species, 0) + 1
-            
+
             # Element breakdown
             for element in unit.elements:
                 stats["element_breakdown"][element] = stats["element_breakdown"].get(element, 0) + 1
-        
+
         return stats
 
     def get_all_buas_summary(self) -> Dict[str, Dict[str, Any]]:
@@ -172,10 +172,10 @@ class BUAManager(QObject):
         for unit_dict in bua_data:
             unit = UnitModel.from_dict(unit_dict)
             units.append(unit)
-        
+
         if player_name not in self._player_buas:
             self.initialize_player_bua(player_name)
-        
+
         self._player_buas[player_name] = units
         print(f"BUAManager: Imported {len(units)} units to {player_name}'s BUA")
         self.bua_updated.emit(player_name)
@@ -194,10 +194,10 @@ class BUAManager(QObject):
                 "message": "No units selected for burial",
                 "units_buried": 0,
             }
-        
+
         # Bury the selected units
         self.bury_units(player_name, selected_units)
-        
+
         return {
             "success": True,
             "message": f"Successfully buried {len(selected_units)} units",

@@ -158,7 +158,7 @@ class MutateSaveRollWidget(QWidget):
 class MutateSaveRollDialog(QDialog):
     """
     Dialog for resolving save rolls for units targeted by Mutate ability.
-    
+
     This dialog presents each targeted unit and allows the opponent to roll
     saves for them. Units that fail saves are killed, and the health-worth
     of killed units becomes available for Swamp Stalker recruitment/promotion.
@@ -275,7 +275,7 @@ class MutateSaveRollDialog(QDialog):
         """Evaluate all save rolls and update summary."""
         # Check if all units have been evaluated
         all_evaluated = all(widget.is_evaluated() for widget in self.save_widgets)
-        
+
         if not all_evaluated:
             self.results_label.setText("❌ Not all units have been evaluated yet")
             self.results_label.setStyleSheet(
@@ -292,35 +292,36 @@ class MutateSaveRollDialog(QDialog):
             target = self.targets[i]
             unit_data = target["unit_data"]
             opponent_name = target["opponent_name"]
-            
+
             if widget.get_save_result():
                 # Unit saved
-                self.saved_units.append({
-                    "unit_data": unit_data,
-                    "opponent_name": opponent_name,
-                })
+                self.saved_units.append(
+                    {
+                        "unit_data": unit_data,
+                        "opponent_name": opponent_name,
+                    }
+                )
             else:
                 # Unit killed
                 unit_health = unit_data.get("health", 1)
-                self.killed_units.append({
-                    "unit_data": unit_data,
-                    "opponent_name": opponent_name,
-                    "health": unit_health,
-                })
+                self.killed_units.append(
+                    {
+                        "unit_data": unit_data,
+                        "opponent_name": opponent_name,
+                        "health": unit_health,
+                    }
+                )
                 self.total_health_killed += unit_health
 
         # Update results display
         killed_count = len(self.killed_units)
         saved_count = len(self.saved_units)
-        
-        results_text = (
-            f"Results: {killed_count} killed ({self.total_health_killed} health-worth), "
-            f"{saved_count} saved"
-        )
-        
+
+        results_text = f"Results: {killed_count} killed ({self.total_health_killed} health-worth), {saved_count} saved"
+
         if killed_count > 0:
             results_text += f"\n{self.swamp_stalker_player} can recruit/promote {self.total_health_killed} health-worth of Swamp Stalkers"
-        
+
         self.results_label.setText(results_text)
         self.results_label.setStyleSheet(
             "font-weight: bold; margin: 10px; padding: 10px; background-color: #e8f5e8; color: #2e7d32;"

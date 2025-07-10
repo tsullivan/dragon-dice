@@ -12,6 +12,7 @@ This module handles the management of units in the Reserve Area, including:
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
+from PySide6.QtCore import QObject, Signal
 from models.spell_model import get_reserve_spells
 
 
@@ -60,10 +61,13 @@ class ReserveUnit:
         )
 
 
-class ReservesManager:
+class ReservesManager(QObject):
     """Manages the Reserve Area for all players."""
 
-    def __init__(self):
+    reserves_updated = Signal(str)  # Emitted when a player's reserves change
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
         # Reserve storage: player_name -> list of ReserveUnit
         self.reserves_by_player: Dict[str, List[ReserveUnit]] = {}
 
@@ -72,6 +76,11 @@ class ReservesManager:
 
         # Reserve spell casting restrictions
         self.reserve_spell_list = get_reserve_spells()
+
+    def initialize_player_reserves(self, player_name: str):
+        """Initialize reserves for a player."""
+        if player_name not in self.reserves_by_player:
+            self.reserves_by_player[player_name] = []
 
     def add_unit_to_reserves(
         self,
@@ -110,6 +119,9 @@ class ReservesManager:
 
         # Add to player's reserves
         self.reserves_by_player[owner].append(reserve_unit)
+
+        # Emit signal
+        self.reserves_updated.emit(owner)
 
         return reserve_unit
 

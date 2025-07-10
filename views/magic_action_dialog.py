@@ -545,9 +545,7 @@ class MagicActionDialog(QDialog):
         self.content_layout.addWidget(instructions)
 
         # Spell selection widget
-        self.spell_selection_widget = SpellSelectionWidget(
-            caster_location=self.location, caster_army=self.caster_army
-        )
+        self.spell_selection_widget = SpellSelectionWidget(caster_location=self.location, caster_army=self.caster_army)
         army_species = list(set(unit.get("species", "") for unit in self.caster_army.get("units", [])))
         terrain_elements = self._get_terrain_elements()
 

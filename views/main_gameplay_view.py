@@ -53,7 +53,7 @@ class MainGameplayView(QWidget):
     defender_save_results_submitted = Signal(str)
     continue_to_next_phase_signal = Signal()
     game_state_updated = Signal()
-    
+
     # Advanced phase signals
     species_abilities_phase_completed = Signal(dict)
     reserves_phase_completed = Signal(dict)
@@ -205,7 +205,7 @@ class MainGameplayView(QWidget):
         self.continue_button.setEnabled(False)  # Disabled by default until phase actions are completed
         self.continue_button.clicked.connect(self._on_continue_clicked)
         player_continue_layout.addWidget(self.continue_button, 0, Qt.AlignmentFlag.AlignCenter)
-        
+
         # Skip Second March Button (only shown after First March)
         self.skip_second_march_button = QPushButton("Skip Second March")
         self.skip_second_march_button.setMaximumWidth(220)
@@ -736,194 +736,167 @@ class MainGameplayView(QWidget):
     def _show_species_abilities_phase(self):
         """Show the Species Abilities Phase dialog."""
         print("[MainGameplayView] Showing Species Abilities Phase dialog")
-        
+
         current_player = self.game_engine.get_current_player_name()
-        
+
         # Get game state data needed for the dialog
         game_state = {
             "current_player": current_player,
             "all_players_data": self.game_engine.get_all_player_summary_data(),
             "terrain_data": self.game_engine.get_all_terrain_data(),
-            "current_turn": self.game_engine.turn_manager.current_turn
+            "current_turn": self.game_engine.turn_manager.current_turn,
         }
-        
-        dialog = SpeciesAbilitiesPhaseDialog(
-            current_player, 
-            game_state, 
-            parent=self
-        )
-        
+
+        dialog = SpeciesAbilitiesPhaseDialog(current_player, game_state, parent=self)
+
         # Connect dialog signals
         dialog.phase_completed.connect(self._on_species_abilities_completed)
         dialog.phase_cancelled.connect(lambda: self.game_engine.advance_phase())
-        
+
         # Show dialog
         dialog.show()
 
     def _show_reserves_phase(self):
         """Show the Reserves Phase dialog."""
         print("[MainGameplayView] Showing Reserves Phase dialog")
-        
+
         current_player = self.game_engine.get_current_player_name()
-        
+
         # Get reserves units for current player (convert to dict format)
         # For now, use placeholder data - this would need real reserves data
         reserves_units = []
-        
+
         # Get terrain armies for current player
         terrain_armies = {}
         all_terrain_data = self.game_engine.get_all_terrain_data()
         for terrain_name, terrain_info in all_terrain_data.items():
             armies = terrain_info.get("armies", {})
-            player_armies = {army_id: army_data for army_id, army_data in armies.items() 
-                           if army_data.get("player") == current_player}
+            player_armies = {
+                army_id: army_data for army_id, army_data in armies.items() if army_data.get("player") == current_player
+            }
             if player_armies:
                 # For simplicity, use the first army found
                 terrain_armies[terrain_name] = list(player_armies.values())[0]
-        
+
         # Get available terrains
         available_terrains = list(all_terrain_data.keys())
-        
-        dialog = ReservesPhaseDialog(
-            current_player,
-            reserves_units,
-            terrain_armies,
-            available_terrains,
-            parent=self
-        )
-        
+
+        dialog = ReservesPhaseDialog(current_player, reserves_units, terrain_armies, available_terrains, parent=self)
+
         # Connect dialog signals
         dialog.phase_completed.connect(self._on_reserves_phase_completed)
         dialog.phase_cancelled.connect(lambda: self.game_engine.advance_phase())
-        
+
         # Show dialog
         dialog.show()
 
     def _on_species_abilities_completed(self, results: dict):
         """Handle completion of Species Abilities Phase."""
         print(f"[MainGameplayView] Species Abilities Phase completed: {results}")
-        
+
         # Emit signal for any listeners
         self.species_abilities_phase_completed.emit(results)
-        
+
         # Advance to next phase
         self.game_engine.advance_phase()
 
     def _on_reserves_phase_completed(self, results: dict):
         """Handle completion of Reserves Phase."""
         print(f"[MainGameplayView] Reserves Phase completed: {results}")
-        
+
         # Process reserves phase results
         reinforce_step = results.get("reinforce_step", {})
         retreat_step = results.get("retreat_step", {})
-        
+
         # TODO: Apply reserves phase changes to game state
         # This would involve:
         # 1. Moving units from reserves to terrains (reinforcement)
         # 2. Moving units from terrains to reserves (retreat)
         # 3. Creating new armies with specified names
         # 4. Processing burial operations
-        
+
         # Emit signal for any listeners
         self.reserves_phase_completed.emit(results)
-        
+
         # Advance to next phase/player
         self.game_engine.advance_phase()
 
     def _show_melee_combat_dialog(self):
         """Show the advanced melee combat dialog."""
         print("[MainGameplayView] Showing melee combat dialog")
-        
+
         # Get current acting army and game state
         acting_army = self.game_engine.get_current_acting_army()
         if not acting_army:
             print("No acting army for melee combat")
             return
-            
+
         current_player = self.game_engine.get_current_player_name()
         all_players_data = self.game_engine.get_all_player_summary_data()
         terrain_data = self.game_engine.get_all_terrain_data()
-        
-        dialog = MeleeCombatDialog(
-            current_player,
-            acting_army,
-            all_players_data,
-            terrain_data,
-            parent=self
-        )
-        
+
+        dialog = MeleeCombatDialog(current_player, acting_army, all_players_data, terrain_data, parent=self)
+
         # Connect dialog completion signal
         dialog.combat_completed.connect(self._on_combat_completed)
         dialog.combat_cancelled.connect(self._on_combat_cancelled)
-        
+
         # Show dialog
         dialog.show()
 
     def _show_missile_combat_dialog(self):
         """Show the advanced missile combat dialog."""
         print("[MainGameplayView] Showing missile combat dialog")
-        
+
         # Get current acting army and game state
         acting_army = self.game_engine.get_current_acting_army()
         if not acting_army:
             print("No acting army for missile combat")
             return
-            
+
         current_player = self.game_engine.get_current_player_name()
         all_players_data = self.game_engine.get_all_player_summary_data()
         terrain_data = self.game_engine.get_all_terrain_data()
-        
-        dialog = MissileCombatDialog(
-            current_player,
-            acting_army,
-            all_players_data,
-            terrain_data,
-            parent=self
-        )
-        
+
+        dialog = MissileCombatDialog(current_player, acting_army, all_players_data, terrain_data, parent=self)
+
         # Connect dialog completion signal
         dialog.combat_completed.connect(self._on_combat_completed)
         dialog.combat_cancelled.connect(self._on_combat_cancelled)
-        
+
         # Show dialog
         dialog.show()
 
     def _show_magic_action_dialog(self):
         """Show the advanced magic action dialog."""
         print("[MainGameplayView] Showing magic action dialog")
-        
+
         # Get current acting army and game state
         acting_army = self.game_engine.get_current_acting_army()
         if not acting_army:
             print("No acting army for magic action")
             return
-            
+
         current_player = self.game_engine.get_current_player_name()
         all_players_data = self.game_engine.get_all_player_summary_data()
         terrain_data = self.game_engine.get_all_terrain_data()
-        
-        dialog = MagicActionDialog(
-            current_player,
-            acting_army,
-            all_players_data,
-            terrain_data,
-            parent=self
-        )
-        
+
+        dialog = MagicActionDialog(current_player, acting_army, all_players_data, terrain_data, parent=self)
+
         # Connect dialog completion signal
         dialog.magic_completed.connect(self._on_magic_completed)
         dialog.magic_cancelled.connect(self._on_magic_cancelled)
-        
+
         # Show dialog
         dialog.show()
 
     def _on_combat_completed(self, results: dict):
         """Handle completion of combat actions."""
         print(f"[MainGameplayView] Combat completed: {results}")
-        
+
         # Apply combat results to game state
         # TODO: Process combat results and update game state
-        
+
         # Continue to next action step or phase
         self.game_engine.advance_phase()
 
@@ -931,14 +904,14 @@ class MainGameplayView(QWidget):
         """Handle cancellation of combat actions."""
         print("[MainGameplayView] Combat cancelled")
         # Allow player to select a different action
-        
+
     def _on_magic_completed(self, results: dict):
         """Handle completion of magic actions."""
         print(f"[MainGameplayView] Magic completed: {results}")
-        
+
         # Apply magic results to game state
         # TODO: Process magic results and update game state
-        
+
         # Continue to next action step or phase
         self.game_engine.advance_phase()
 

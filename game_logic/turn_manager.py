@@ -10,6 +10,7 @@ class TurnManager(QObject):
 
     current_player_changed = Signal(str)
     current_phase_changed = Signal(str)  # Emits a display string for the phase/step
+    turn_changed = Signal(int)  # Emitted when turn number changes
 
     def __init__(
         self,
@@ -30,6 +31,7 @@ class TurnManager(QObject):
         self.current_march_step = ""
         self.current_action_step = ""  # For sub-steps within Melee, Missile, Magic
         self.is_first_turn_of_game = True  # Track if this is the very first turn
+        self.current_turn = 1  # Track the current turn number
 
         # self.initialize_turn() # Initial call might be better handled by GameEngine after all managers are set up
 
@@ -80,7 +82,7 @@ class TurnManager(QObject):
     def skip_to_next_phase_group(self):
         """Skip to the next major phase group (e.g., from First March to Species Abilities)."""
         current_phase = self.current_phase
-        
+
         if current_phase == "FIRST_MARCH":
             # Skip Second March and go to Species Abilities
             self.current_phase_idx = get_turn_phases().index("SPECIES_ABILITIES")
@@ -99,6 +101,11 @@ class TurnManager(QObject):
     def advance_player(self):
         """Advances to the next player and initializes their turn."""
         self.current_player_idx = (self.current_player_idx + 1) % self.num_players
+
+        # If we've cycled through all players, increment the turn number
+        if self.current_player_idx == 0:
+            self.advance_turn()
+
         print(f"TurnManager: Advancing to next player: {self.player_names[self.current_player_idx]}")
         self.initialize_turn()  # This will emit player_changed and phase_changed
 
@@ -161,3 +168,37 @@ class TurnManager(QObject):
     def get_all_players(self) -> List[str]:
         """Get list of all player names."""
         return self.player_names.copy()
+
+    def advance_turn(self):
+        """Advance to the next turn number."""
+        old_turn = self.current_turn
+        self.current_turn += 1
+        print(f"TurnManager: Turn advanced from {old_turn} to {self.current_turn}")
+        self.turn_changed.emit(self.current_turn)
+
+    def get_current_turn(self) -> int:
+        """Get the current turn number."""
+        return self.current_turn
+
+    def set_current_turn(self, turn_number: int):
+        """Set the current turn number."""
+        if self.current_turn != turn_number:
+            old_turn = self.current_turn
+            self.current_turn = turn_number
+            print(f"TurnManager: Turn changed from {old_turn} to {turn_number}")
+            self.turn_changed.emit(turn_number)
+
+    def get_current_player_name(self) -> str:
+        """Get the current player's name (alias for get_current_player)."""
+        return self.get_current_player()
+
+    def get_turn_info(self) -> dict:
+        """Get comprehensive turn information."""
+        return {
+            "turn": self.current_turn,
+            "current_player": self.get_current_player(),
+            "current_phase": self.current_phase,
+            "player_names": self.player_names.copy(),
+            "march_step": self.current_march_step,
+            "action_step": self.current_action_step,
+        }

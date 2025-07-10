@@ -895,6 +895,17 @@ class GameStateManager(QObject):
         active_army = self.get_active_army_data(player_name)
         return active_army.get("units", []) if active_army else []
 
+    def get_army_units(self, player_name: str, army_id: str) -> List[Dict[str, Any]]:
+        """Get units for a specific army."""
+        player_data = self.get_player_data(player_name)
+        if not player_data:
+            return []
+
+        armies = player_data.get("armies", {})
+        if army_id in armies:
+            return armies[army_id].get("units", [])
+        return []
+
     def get_all_armies_at_location(self, player_name: str, location: str) -> List[Dict[str, Any]]:
         """Get all armies for a player at a specific location."""
         player_data = self.get_player_data(player_name)

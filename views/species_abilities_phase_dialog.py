@@ -133,9 +133,7 @@ class MutateAbilityWidget(QWidget):
         army_group = QGroupBox("Select Army for Recruitment/Promotion")
         army_layout = QVBoxLayout(army_group)
 
-        army_info = QLabel(
-            "Choose which army containing Swamp Stalkers will receive the recruited/promoted units:"
-        )
+        army_info = QLabel("Choose which army containing Swamp Stalkers will receive the recruited/promoted units:")
         army_info.setWordWrap(True)
         army_layout.addWidget(army_info)
 
@@ -193,16 +191,16 @@ class MutateAbilityWidget(QWidget):
             # Add to selected targets
             unit_data = sender.property("unit_data")
             opponent_name = sender.property("opponent_name")
-            self.selected_targets.append({
-                "unit_data": unit_data,
-                "opponent_name": opponent_name,
-                "checkbox": sender,
-            })
+            self.selected_targets.append(
+                {
+                    "unit_data": unit_data,
+                    "opponent_name": opponent_name,
+                    "checkbox": sender,
+                }
+            )
         else:
             # Remove from selected targets
-            self.selected_targets = [
-                target for target in self.selected_targets if target["checkbox"] != sender
-            ]
+            self.selected_targets = [target for target in self.selected_targets if target["checkbox"] != sender]
 
         self._update_status()
 
@@ -280,7 +278,7 @@ class MutateAbilityWidget(QWidget):
 class SpeciesAbilitiesPhaseDialog(QDialog):
     """
     Dialog for managing the Species Abilities Phase.
-    
+
     This phase occurs during the marching player's turn after Dragon Attacks
     but before any marching. Each species has unique abilities that can be used.
     """
@@ -376,8 +374,7 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
         if not self.available_abilities:
             # No abilities available
             no_abilities_label = QLabel(
-                "No species abilities are available during this phase.\n"
-                "Click 'Skip Phase' to proceed to First March."
+                "No species abilities are available during this phase.\nClick 'Skip Phase' to proceed to First March."
             )
             no_abilities_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             no_abilities_label.setStyleSheet("font-size: 16px; color: #666; margin: 20px;")
@@ -425,7 +422,8 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
 
         # Get Swamp Stalker armies
         swamp_stalker_armies = [
-            army for army in self.player_armies
+            army
+            for army in self.player_armies
             if any(unit.get("species") == "Swamp Stalkers" for unit in army.get("units", []))
         ]
 
@@ -454,15 +452,14 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
 
         # Update UI to show the ability was used
         self.mutate_widget.setEnabled(False)
-        
+
         # Add a status message
         status_msg = QLabel(
-            f"🧬 Mutate ability used! Targeting {len(mutate_data['targets'])} units. "
-            f"Proceed to resolve save rolls."
+            f"🧬 Mutate ability used! Targeting {len(mutate_data['targets'])} units. Proceed to resolve save rolls."
         )
         status_msg.setStyleSheet("color: #2e7d32; font-weight: bold; margin: 10px;")
         status_msg.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+
         # Add to the mutate tab
         mutate_tab = self.abilities_tabs.widget(0)
         mutate_tab.layout().addWidget(status_msg)

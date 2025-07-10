@@ -27,13 +27,13 @@ class DragonModel:
         self.dragon_type = dragon_type.upper()
         self.elements = [element.upper() for element in elements]
         self.owner = owner
-        
+
         # Set health based on dragon type, defaulting to 5 (10 for White Dragons)
         if health is not None:
             self.health = health
         else:
             self.health = 10 if dragon_type.upper() == "WHITE" else 5
-        
+
         self.max_health = self.health  # Track original health
         self._validate()
 
@@ -41,16 +41,16 @@ class DragonModel:
         """Validate dragon instance data."""
         if not self.name:
             raise ValueError("Dragon must have a name")
-        
+
         if self.dragon_form not in ["DRAKE", "WYRM"]:
             raise ValueError(f"Invalid dragon form: {self.dragon_form}. Must be DRAKE or WYRM")
-        
+
         if not self.elements:
             raise ValueError("Dragon must have at least one element")
-        
+
         if self.health <= 0:
             raise ValueError("Dragon health must be positive")
-        
+
         if not self.owner:
             raise ValueError("Dragon must have an owner")
 
@@ -58,11 +58,11 @@ class DragonModel:
         """Get the unique ID of this dragon."""
         return self.unique_id
 
-    def get_form_data(self) -> Optional['Dragon']:
+    def get_form_data(self) -> Optional["Dragon"]:
         """Get the dragon form data (faces, etc.)."""
         return DRAGON_FORM_DATA.get(self.dragon_form)
 
-    def get_type_data(self) -> Optional['DragonTypeModel']:
+    def get_type_data(self) -> Optional["DragonTypeModel"]:
         """Get the dragon type data (rules, display info, etc.)."""
         return DRAGON_TYPE_DATA.get(self.dragon_type)
 
@@ -85,7 +85,7 @@ class DragonModel:
         """Apply damage to the dragon and return actual damage taken."""
         if damage <= 0:
             return 0
-        
+
         actual_damage = min(damage, self.health)
         self.health -= actual_damage
         print(f"DragonModel: {self.name} took {actual_damage} damage (health: {self.health}/{self.max_health})")
@@ -95,7 +95,7 @@ class DragonModel:
         """Heal the dragon and return actual healing done."""
         if amount <= 0:
             return 0
-        
+
         max_healing = self.max_health - self.health
         actual_healing = min(amount, max_healing)
         self.health += actual_healing
@@ -166,7 +166,7 @@ class DragonModel:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'DragonModel':
+    def from_dict(cls, data: Dict[str, Any]) -> "DragonModel":
         """Create dragon from dictionary data."""
         dragon = cls(
             name=data["name"],
@@ -180,7 +180,7 @@ class DragonModel:
         dragon.max_health = data.get("max_health", dragon.health)
         return dragon
 
-    def copy(self) -> 'DragonModel':
+    def copy(self) -> "DragonModel":
         """Create a copy of this dragon with a new unique ID."""
         return DragonModel(
             name=self.name,

@@ -14,7 +14,6 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
-from game_logic.turn_state_singleton import get_turn_state
 
 
 class DUAState(Enum):
@@ -82,10 +81,10 @@ class DUAUnit:
 
 class DUAManager(QObject):
     """Manages the Dead Unit Area for all players."""
-    
+
     dua_updated = Signal(str)  # Emitted when a player's DUA changes
 
-    def __init__(self, parent=None):
+    def __init__(self, turn_manager, parent=None):
         super().__init__(parent)
         # DUA storage: player_name -> list of DUAUnit
         self.dua_by_player: Dict[str, List[DUAUnit]] = {}
@@ -93,8 +92,8 @@ class DUAManager(QObject):
         # Burial conditions that apply to all units
         self.global_burial_conditions: List[str] = []
 
-        # Use singleton for turn tracking
-        self.turn_state = get_turn_state()
+        # Reference to turn manager for turn tracking
+        self.turn_manager = turn_manager
 
     def add_killed_unit(
         self,
@@ -129,7 +128,7 @@ class DUAManager(QObject):
             original_owner=owner,
             death_cause=death_cause,
             death_location=death_location,
-            death_turn=self.turn_state.get_turn(),
+            death_turn=self.turn_manager.get_current_turn(),
             burial_conditions=burial_conditions,
         )
 
@@ -139,7 +138,7 @@ class DUAManager(QObject):
 
         # Add to player's DUA
         self.dua_by_player[owner].append(dua_unit)
-        
+
         # Emit signal
         self.dua_updated.emit(owner)
 
@@ -331,8 +330,25 @@ class DUAManager(QObject):
         self.dua_by_player[player_name] = []
 
     def set_current_turn(self, turn: int):
-        """Set the current game turn (delegates to singleton)."""
-        self.turn_state.set_turn(turn)
+        """Set the current game turn (delegates to turn manager)."""
+        self.turn_manager.set_current_turn(turn)
+
+    def initialize_player_dua(self, player_name: str):
+        """Initialize DUA for a player."""
+        if player_name not in self.dua_by_player:
+            self.dua_by_player[player_name] = []
+
+    def add_unit_to_dua(self, dua_unit: DUAUnit):
+        """Add a DUA unit directly to the DUA."""
+        owner = dua_unit.original_owner
+        if owner not in self.dua_by_player:
+            self.dua_by_player[owner] = []
+
+        self.dua_by_player[owner].append(dua_unit)
+        self.dua_updated.emit(owner)
+
+        # Check for immediate burial conditions
+        self._check_burial_conditions(dua_unit)
 
     def export_dua_state(self) -> Dict[str, Any]:
         """Export DUA state for save/load."""
@@ -341,7 +357,7 @@ class DUAManager(QObject):
                 player: [unit.to_dict() for unit in units] for player, units in self.dua_by_player.items()
             },
             "global_burial_conditions": self.global_burial_conditions,
-            "current_turn": self.turn_state.get_turn(),
+            "current_turn": self.turn_manager.get_current_turn(),
         }
 
     def import_dua_state(self, state: Dict[str, Any]):
@@ -351,4 +367,4 @@ class DUAManager(QObject):
             for player, units in state.get("dua_by_player", {}).items()
         }
         self.global_burial_conditions = state.get("global_burial_conditions", [])
-        self.turn_state.set_turn(state.get("current_turn", 1))
+        self.turn_manager.set_current_turn(state.get("current_turn", 1))

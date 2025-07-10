@@ -26,7 +26,7 @@ class SummoningPoolManager(QObject):
         """Initialize a player's summoning pool with their starting dragons."""
         if player_name not in self._player_pools:
             self._player_pools[player_name] = []
-        
+
         self._player_pools[player_name] = initial_dragons.copy()
         print(f"SummoningPoolManager: Initialized {player_name}'s pool with {len(initial_dragons)} dragons")
         self.pool_updated.emit(player_name)
@@ -35,7 +35,7 @@ class SummoningPoolManager(QObject):
         """Add a dragon to a player's summoning pool (e.g., when dragon is killed)."""
         if player_name not in self._player_pools:
             self._player_pools[player_name] = []
-        
+
         self._player_pools[player_name].append(dragon)
         print(f"SummoningPoolManager: Added {dragon.name} to {player_name}'s summoning pool")
         self.pool_updated.emit(player_name)
@@ -44,7 +44,7 @@ class SummoningPoolManager(QObject):
         """Remove a dragon from a player's summoning pool (e.g., when summoned)."""
         if player_name not in self._player_pools:
             return None
-        
+
         pool = self._player_pools[player_name]
         for i, dragon in enumerate(pool):
             if dragon.get_id() == dragon_id or dragon.name == dragon_id:
@@ -52,7 +52,7 @@ class SummoningPoolManager(QObject):
                 print(f"SummoningPoolManager: Removed {removed_dragon.name} from {player_name}'s summoning pool")
                 self.pool_updated.emit(player_name)
                 return removed_dragon
-        
+
         print(f"SummoningPoolManager: Dragon {dragon_id} not found in {player_name}'s pool")
         return None
 
@@ -63,10 +63,10 @@ class SummoningPoolManager(QObject):
     def get_available_dragons(self, player_name: str, dragon_type: Optional[str] = None) -> List[DragonModel]:
         """Get available dragons for summoning, optionally filtered by type."""
         pool = self.get_player_pool(player_name)
-        
+
         if dragon_type:
             return [dragon for dragon in pool if dragon.dragon_type == dragon_type]
-        
+
         return pool
 
     def has_dragons(self, player_name: str) -> bool:
@@ -85,26 +85,26 @@ class SummoningPoolManager(QObject):
     def get_pool_statistics(self, player_name: str) -> Dict[str, Any]:
         """Get statistics about a player's summoning pool."""
         pool = self.get_player_pool(player_name)
-        
+
         stats = {
             "total_dragons": len(pool),
             "dragon_types": {},
             "elements": {},
             "health_total": 0,
         }
-        
+
         for dragon in pool:
             # Count by type
             dragon_type = dragon.dragon_type
             stats["dragon_types"][dragon_type] = stats["dragon_types"].get(dragon_type, 0) + 1
-            
+
             # Count by elements
             for element in dragon.elements:
                 stats["elements"][element] = stats["elements"].get(element, 0) + 1
-            
+
             # Total health
             stats["health_total"] += dragon.health
-        
+
         return stats
 
     def get_all_pools_summary(self) -> Dict[str, Dict[str, Any]]:
@@ -159,6 +159,6 @@ class SummoningPoolManager(QObject):
         for dragon_dict in pool_data:
             dragon = DragonModel.from_dict(dragon_dict)
             dragons.append(dragon)
-        
+
         self.initialize_player_pool(player_name, dragons)
         print(f"SummoningPoolManager: Imported {len(dragons)} dragons for {player_name}")

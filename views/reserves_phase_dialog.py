@@ -90,8 +90,12 @@ class ReinforceStepWidget(QWidget):
     reinforcements_ready = Signal(dict)  # Emits reinforcement data
 
     def __init__(
-        self, player_name: str, reserves_units: List[Dict[str, Any]], available_terrains: List[str], 
-        existing_terrain_armies: Dict[str, Dict[str, Any]], parent=None
+        self,
+        player_name: str,
+        reserves_units: List[Dict[str, Any]],
+        available_terrains: List[str],
+        existing_terrain_armies: Dict[str, Dict[str, Any]],
+        parent=None,
     ):
         super().__init__(parent)
         self.player_name = player_name
@@ -221,7 +225,7 @@ class ReinforceStepWidget(QWidget):
 
         # Check if player has existing army at this terrain
         has_existing_army = terrain in self.existing_terrain_armies
-        
+
         # If no existing army, need to create new army and get name
         if not has_existing_army and terrain not in self.new_army_names:
             army_name = self._get_new_army_name(terrain)
@@ -251,39 +255,37 @@ class ReinforceStepWidget(QWidget):
             f"A new army will be created. What would you like to name this army?\n\n"
             f"(Cannot be 'Home', 'Campaign', or 'Horde' as these are reserved names)"
         )
-        
+
         while True:
-            army_name, ok = QInputDialog.getText(
-                self, dialog_title, dialog_text, text=f"{terrain} Army"
-            )
-            
+            army_name, ok = QInputDialog.getText(self, dialog_title, dialog_text, text=f"{terrain} Army")
+
             if not ok:
                 return ""  # User cancelled
-            
+
             army_name = army_name.strip()
-            
+
             # Validate army name
             if not army_name:
                 QMessageBox.warning(self, "Invalid Name", "Army name cannot be empty.")
                 continue
-            
+
             # Check for reserved names
             reserved_names = ["Home", "Campaign", "Horde"]
             if army_name in reserved_names:
                 QMessageBox.warning(
-                    self, "Invalid Name", 
-                    f"'{army_name}' is a reserved army name. Please choose a different name."
+                    self, "Invalid Name", f"'{army_name}' is a reserved army name. Please choose a different name."
                 )
                 continue
-            
+
             # Check for duplicate names (if we're creating multiple new armies)
             if army_name in self.new_army_names.values():
                 QMessageBox.warning(
-                    self, "Invalid Name", 
-                    f"You've already chosen '{army_name}' for another new army. Please choose a different name."
+                    self,
+                    "Invalid Name",
+                    f"You've already chosen '{army_name}' for another new army. Please choose a different name.",
                 )
                 continue
-            
+
             return army_name
 
     def _update_deployment_list(self):
@@ -295,14 +297,14 @@ class ReinforceStepWidget(QWidget):
                 # Check if this terrain has existing army or needs new army
                 has_existing_army = terrain in self.existing_terrain_armies
                 new_army_name = self.new_army_names.get(terrain, "")
-                
+
                 if has_existing_army:
                     item_text = f"{terrain}: {', '.join(unit_names)} (joining existing army)"
                 elif new_army_name:
                     item_text = f"{terrain}: {', '.join(unit_names)} (new army: '{new_army_name}')"
                 else:
                     item_text = f"{terrain}: {', '.join(unit_names)}"
-                    
+
                 self.deployment_list.addItem(item_text)
 
     def _select_all_units(self):
@@ -482,7 +484,9 @@ class RetreatStepWidget(QWidget):
                     if dest_terrain != terrain:  # Can't move to same terrain
                         dest_combo.addItem(dest_terrain)
                 dest_combo.currentTextChanged.connect(
-                    lambda destination, t=terrain, u=unit_name: self._on_air_flight_destination_changed(t, u, destination)
+                    lambda destination, t=terrain, u=unit_name: self._on_air_flight_destination_changed(
+                        t, u, destination
+                    )
                 )
                 unit_layout.addWidget(dest_combo)
 
@@ -525,7 +529,7 @@ class RetreatStepWidget(QWidget):
         # This would be populated with actual DUA units when DUA manager is integrated
         placeholder_group = QGroupBox("Dead Units Available for Burial")
         placeholder_layout = QVBoxLayout(placeholder_group)
-        
+
         placeholder_text = QLabel(
             "This section will show dead units from your DUA when integrated with DUA Manager.\n"
             "Each unit will have a checkbox to select it for burial."
@@ -533,20 +537,20 @@ class RetreatStepWidget(QWidget):
         placeholder_text.setWordWrap(True)
         placeholder_text.setStyleSheet("color: #666; font-style: italic; margin: 10px;")
         placeholder_layout.addWidget(placeholder_text)
-        
+
         layout.addWidget(placeholder_group)
 
         # Burial controls
         burial_controls = QHBoxLayout()
-        
+
         select_all_button = QPushButton("Select All for Burial")
         select_all_button.clicked.connect(self._select_all_for_burial)
         burial_controls.addWidget(select_all_button)
-        
+
         clear_burial_button = QPushButton("Clear Burial Selection")
         clear_burial_button.clicked.connect(self._clear_burial_selection)
         burial_controls.addWidget(clear_burial_button)
-        
+
         layout.addLayout(burial_controls)
 
         return tab
@@ -605,7 +609,7 @@ class RetreatStepWidget(QWidget):
         """Handle destination change for air flight."""
         if destination == "-- Select Destination --":
             return
-        
+
         # Store the destination choice for this specific unit
         # This would need more complex handling to store unit->destination mappings
         # For now, we'll keep it simple and just note that the destination was selected
@@ -787,7 +791,9 @@ class ReservesPhaseDialog(QDialog):
             "reinforce_step": {
                 "reinforcement_plan": self.reinforcement_results.get("reinforcement_plan", {}),
                 "new_army_names": self.reinforcement_results.get("new_army_names", {}),
-                "units_reinforced": sum(len(units) for units in self.reinforcement_results.get("reinforcement_plan", {}).values()),
+                "units_reinforced": sum(
+                    len(units) for units in self.reinforcement_results.get("reinforcement_plan", {}).values()
+                ),
             },
             "retreat_step": {
                 "retreat_plan": self.retreat_results["retreat_plan"],
