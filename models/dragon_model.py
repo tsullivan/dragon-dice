@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 import uuid
 
 from models.die_face_model import DieFaceModel, DRAGON_DIE_FACES

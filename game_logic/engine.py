@@ -4,9 +4,19 @@ from PySide6.QtCore import QObject, Signal, Slot
 
 import constants
 from game_logic.action_resolver import ActionResolver
+from game_logic.bua_manager import BUAManager
+from game_logic.dua_manager import DUAManager, DUAUnit
 from game_logic.effect_manager import EffectManager
 from game_logic.game_state_manager import GameStateManager
+from game_logic.reserves_manager import ReservesManager, ReserveUnit
+from game_logic.sai_processor import SAIProcessor
+from game_logic.spell_database import SpellDatabase
+from game_logic.spell_targeting import SpellTargetingManager
+from game_logic.summoning_pool_manager import SummoningPoolManager
 from game_logic.turn_manager import TurnManager
+from game_logic.turn_state_singleton import TurnStateSingleton, get_turn_state
+from models.dragon_model import DragonModel
+from models.unit_model import UnitModel
 from models.terrain_model import get_terrain_icon
 
 
@@ -70,6 +80,19 @@ class GameEngine(QObject):
         self.effect_manager = EffectManager(parent=self)
         self.game_state_manager = GameStateManager(player_setup_data, frontier_terrain, distance_rolls, parent=self)
         self.action_resolver = ActionResolver(self.game_state_manager, self.effect_manager, parent=self)
+        
+        # Advanced managers
+        self.dua_manager = DUAManager(parent=self)
+        self.bua_manager = BUAManager(parent=self)
+        self.summoning_pool_manager = SummoningPoolManager(parent=self)
+        self.reserves_manager = ReservesManager(parent=self)
+        self.sai_processor = SAIProcessor(parent=self)
+        self.spell_database = SpellDatabase(parent=self)
+        
+        # Spell targeting manager (depends on other managers)
+        self.spell_targeting_manager = SpellTargetingManager(
+            self.dua_manager, self.bua_manager, self.summoning_pool_manager
+        )
 
         # Connect signals from managers to GameEngine signals or slots
         self.turn_manager.current_player_changed.connect(self._sync_player_state_from_turn_manager)
@@ -92,6 +115,28 @@ class GameEngine(QObject):
         self.effect_manager.effects_changed.connect(
             self.game_state_updated.emit
         )  # If effects change, game state is updated
+
+        # Connect advanced manager signals
+        self.dua_manager.dua_updated.connect(self.game_state_updated.emit)
+        self.bua_manager.bua_updated.connect(self.game_state_updated.emit)
+        self.summoning_pool_manager.pool_updated.connect(self.game_state_updated.emit)
+        self.reserves_manager.reserves_updated.connect(self.game_state_updated.emit)
+
+        # Initialize all players in advanced managers
+        for player_name in self.player_names:
+            self.dua_manager.initialize_player_dua(player_name)
+            self.bua_manager.initialize_player_bua(player_name)
+            self.summoning_pool_manager.initialize_player_pool(player_name)
+            self.reserves_manager.initialize_player_reserves(player_name)
+
+        # Initialize and synchronize turn state singleton
+        self.turn_state = get_turn_state()
+        self.turn_state.set_player_names(self.player_names)
+        self.turn_state.set_current_player(self.first_player_name)
+        
+        # Connect turn manager changes to singleton
+        self.turn_manager.current_player_changed.connect(self.turn_state.set_current_player)
+        self.turn_manager.current_phase_changed.connect(self.turn_state.set_current_phase)
 
         self._initialize_turn_for_current_player()
 
@@ -1138,3 +1183,103 @@ class GameEngine(QObject):
 
         self.current_phase_changed.emit(self.get_current_phase_display())
         self.game_state_updated.emit()
+
+    # Data conversion methods for advanced manager integration
+    def dict_to_dua_unit(self, unit_dict: Dict[str, Any], death_info: Optional[Dict[str, Any]] = None) -> DUAUnit:
+        """Convert dictionary unit data to DUAUnit object."""
+        death_info = death_info or {}
+        return DUAUnit(
+            name=unit_dict.get("name", "Unknown Unit"),
+            species=unit_dict.get("species", "Unknown"),
+            health=unit_dict.get("health", 1),
+            elements=unit_dict.get("elements", []),
+            original_owner=unit_dict.get("owner", "Unknown"),
+            death_cause=death_info.get("cause", "combat"),
+            death_location=death_info.get("location", ""),
+            death_turn=death_info.get("turn", self.turn_manager.current_turn)
+        )
+
+    def dict_to_reserve_unit(self, unit_dict: Dict[str, Any], entry_info: Optional[Dict[str, Any]] = None) -> ReserveUnit:
+        """Convert dictionary unit data to ReserveUnit object."""
+        entry_info = entry_info or {}
+        return ReserveUnit(
+            name=unit_dict.get("name", "Unknown Unit"),
+            species=unit_dict.get("species", "Unknown"),
+            health=unit_dict.get("health", 1),
+            elements=unit_dict.get("elements", []),
+            owner=unit_dict.get("owner", "Unknown"),
+            original_terrain=entry_info.get("terrain", ""),
+            turn_entered=entry_info.get("turn", self.turn_manager.current_turn),
+            entry_reason=entry_info.get("reason", "retreat")
+        )
+
+    def dua_unit_to_dict(self, dua_unit: DUAUnit) -> Dict[str, Any]:
+        """Convert DUAUnit object back to dictionary format."""
+        return {
+            "name": dua_unit.name,
+            "species": dua_unit.species,
+            "health": dua_unit.health,
+            "elements": dua_unit.elements,
+            "owner": dua_unit.original_owner
+        }
+
+    def reserve_unit_to_dict(self, reserve_unit: ReserveUnit) -> Dict[str, Any]:
+        """Convert ReserveUnit object back to dictionary format."""
+        return {
+            "name": reserve_unit.name,
+            "species": reserve_unit.species,
+            "health": reserve_unit.health,
+            "elements": reserve_unit.elements,
+            "owner": reserve_unit.owner
+        }
+
+    def get_units_as_dua_objects(self, player_name: str, army_id: str) -> List[DUAUnit]:
+        """Get army units as DUA objects for advanced manager integration."""
+        units_dict = self.game_state_manager.get_army_units(player_name, army_id)
+        return [self.dict_to_dua_unit(unit) for unit in units_dict]
+
+    def get_units_as_reserve_objects(self, player_name: str, army_id: str) -> List[ReserveUnit]:
+        """Get army units as Reserve objects for advanced manager integration."""
+        units_dict = self.game_state_manager.get_army_units(player_name, army_id)
+        return [self.dict_to_reserve_unit(unit) for unit in units_dict]
+
+    # Advanced manager access methods
+    def add_unit_to_dua(self, unit_dict: Dict[str, Any], death_info: Optional[Dict[str, Any]] = None):
+        """Add a unit to the DUA when it dies."""
+        dua_unit = self.dict_to_dua_unit(unit_dict, death_info)
+        self.dua_manager.add_unit_to_dua(dua_unit)
+
+    def add_unit_to_reserves(self, unit_dict: Dict[str, Any], entry_info: Optional[Dict[str, Any]] = None):
+        """Add a unit to reserves."""
+        reserve_unit = self.dict_to_reserve_unit(unit_dict, entry_info)
+        self.reserves_manager.add_unit_to_reserves(reserve_unit)
+
+    def bury_unit_in_bua(self, player_name: str, unit_dict: Dict[str, Any]):
+        """Bury a unit in the BUA."""
+        # Convert dict to UnitModel for BUA manager
+        from models.unit_model import UnitModel
+        unit_model = UnitModel(
+            unit_id=unit_dict.get("id", unit_dict.get("name", "unknown")),
+            name=unit_dict.get("name", "Unknown Unit"),
+            unit_type=unit_dict.get("type", "standard"),
+            health=unit_dict.get("health", 1),
+            max_health=unit_dict.get("max_health", unit_dict.get("health", 1)),
+            species=None,  # Would need to resolve from species name
+            faces=[]  # Would need to resolve from unit type
+        )
+        self.bua_manager.bury_unit(player_name, unit_model)
+
+    def get_player_dua_units(self, player_name: str) -> List[Dict[str, Any]]:
+        """Get DUA units for a player as dictionaries."""
+        dua_units = self.dua_manager.get_player_dua(player_name)
+        return [self.dua_unit_to_dict(unit) for unit in dua_units]
+
+    def get_player_reserve_units(self, player_name: str) -> List[Dict[str, Any]]:
+        """Get reserve units for a player as dictionaries."""
+        reserve_units = self.reserves_manager.get_player_reserves(player_name)
+        return [self.reserve_unit_to_dict(unit) for unit in reserve_units]
+
+    def get_player_bua_units(self, player_name: str) -> List[Dict[str, Any]]:
+        """Get BUA units for a player as dictionaries."""
+        bua_units = self.bua_manager.get_player_bua(player_name)
+        return [unit.to_dict() for unit in bua_units]
