@@ -5,9 +5,11 @@ from PySide6.QtCore import QObject, Signal, Slot
 import constants
 from game_logic.action_resolver import ActionResolver
 from game_logic.bua_manager import BUAManager
+from game_logic.dragon_attack_manager import DragonAttackManager
 from game_logic.dua_manager import DUAManager, DUAUnit
 from game_logic.effect_manager import EffectManager
 from game_logic.game_state_manager import GameStateManager
+from game_logic.promotion_manager import PromotionManager
 from game_logic.reserves_manager import ReservesManager, ReserveUnit
 from game_logic.sai_processor import SAIProcessor
 from game_logic.spell_database import SpellDatabase
@@ -29,6 +31,11 @@ class GameEngine(QObject):
     current_phase_changed = Signal(str)
     unit_selection_required = Signal(str, int, list)  # player_name, damage_amount, available_units
     damage_allocation_completed = Signal(str, int)  # player_name, total_damage_applied
+    promotion_opportunities_available = Signal(dict)  # promotion_data with trigger, player, opportunities
+
+    # Dragon Attack Phase signals
+    dragon_attack_phase_started = Signal(str)  # marching_player
+    dragon_attack_phase_completed = Signal(dict)  # phase_result
 
     # New signals to replace direct calls
     march_step_change_requested = Signal(str)  # new_march_step
@@ -92,6 +99,14 @@ class GameEngine(QObject):
         self.spell_targeting_manager = SpellTargetingManager(
             self.dua_manager, self.bua_manager, self.summoning_pool_manager
         )
+
+        # Promotion manager (depends on DUA and Summoning Pool managers)
+        self.promotion_manager = PromotionManager(
+            dua_manager=self.dua_manager, summoning_pool_manager=self.summoning_pool_manager, parent=self
+        )
+
+        # Dragon Attack manager (depends on summoning pool manager)
+        self.dragon_attack_manager = DragonAttackManager(parent=self)
 
         # Connect signals from managers to GameEngine signals or slots
         self.turn_manager.current_player_changed.connect(self._sync_player_state_from_turn_manager)
@@ -163,8 +178,12 @@ class GameEngine(QObject):
             # Request effect expiration processing through signal
             self.effect_expiration_requested.emit(self.get_current_player_name())
             self.phase_advance_requested.emit()
-        elif current_phase == "EIGHTH_FACE" or current_phase == "DRAGON_ATTACK":
+        elif current_phase == "EIGHTH_FACE":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
+            # Eighth Face phase is handled by UI dialogs
+        elif current_phase == "DRAGON_ATTACK":
+            print(f"Phase: {current_phase} for {self.get_current_player_name()}")
+            self._execute_dragon_attack_phase()
         else:
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
 
@@ -757,7 +776,12 @@ class GameEngine(QObject):
 
         if action_type == "melee_complete":
             damage_dealt = action_result.get("damage_dealt", 0)
+            units_killed = action_result.get("units_killed", [])
             print(f"GameEngine: Melee action complete, {damage_dealt} damage dealt")
+
+            # Check for promotion opportunities after successful melee combat
+            if damage_dealt > 0:
+                self._check_promotion_after_combat("melee", action_result)
 
             # Check for counter-attack
             if action_result.get("counter_attack_possible", False):
@@ -768,7 +792,13 @@ class GameEngine(QObject):
 
         elif action_type == "missile_complete":
             damage_dealt = action_result.get("damage_dealt", 0)
+            units_killed = action_result.get("units_killed", [])
             print(f"GameEngine: Missile action complete, {damage_dealt} damage dealt")
+
+            # Check for promotion opportunities after successful missile combat
+            if damage_dealt > 0:
+                self._check_promotion_after_combat("missile", action_result)
+
             self._complete_current_action()
 
         elif action_type == "magic_complete":
@@ -1044,6 +1074,7 @@ class GameEngine(QObject):
         """
         total_damage_applied = 0
         army_id = army_identifier or "home"  # Default to home army
+        units_killed = []
 
         print(f"GameEngine: Allocating damage to {player_name}'s units: {damage_allocations}")
 
@@ -1060,12 +1091,22 @@ class GameEngine(QObject):
             # Calculate new health after damage
             new_health = max(0, current_health - damage_amount)
 
+            # Track if unit was killed
+            if current_health > 0 and new_health == 0:
+                units_killed.append(
+                    {"name": unit_name, "player": player_name, "army": army_id, "pre_damage_health": current_health}
+                )
+
             try:
                 self.game_state_manager.update_unit_health(player_name, army_id, unit_name, new_health)
                 total_damage_applied += damage_amount
                 print(f"GameEngine: Applied {damage_amount} damage to {unit_name}")
             except Exception as e:
                 print(f"GameEngine: Failed to apply damage to {unit_name}: {e}")
+
+        # Check for promotion opportunities for attacking player after dealing damage
+        if total_damage_applied > 0 and units_killed:
+            self._check_promotion_after_unit_kills(units_killed)
 
         print(f"GameEngine: Total damage applied: {total_damage_applied}")
         self.damage_allocation_completed.emit(player_name, total_damage_applied)
@@ -1417,3 +1458,398 @@ class GameEngine(QObject):
             "effects": [f"Added {unit_to_summon.name} to army"],
             "summoned_unit": unit_to_summon.to_dict(),
         }
+
+    def find_promotion_opportunities(self, player_name: str, army_type: str = None) -> Dict[str, Any]:
+        """Find all promotion opportunities for a player's armies."""
+        promotion_data = {"player": player_name, "opportunities": [], "total_count": 0}
+
+        # Get armies to check
+        armies_to_check = []
+        if army_type:
+            army_data = self.game_state_manager.get_army_data(player_name, army_type)
+            if army_data:
+                armies_to_check.append({"type": army_type, "data": army_data})
+        else:
+            # Check all armies
+            for army_type in ["home", "campaign", "horde"]:
+                army_data = self.game_state_manager.get_army_data(player_name, army_type)
+                if army_data and army_data.get("units"):
+                    armies_to_check.append({"type": army_type, "data": army_data})
+
+        # Find promotion options for each army
+        for army_info in armies_to_check:
+            army_units = army_info["data"].get("units", [])
+            if army_units:
+                options = self.promotion_manager.find_promotion_options(army_units, player_name)
+                if options:
+                    promotion_data["opportunities"].append(
+                        {
+                            "army_type": army_info["type"],
+                            "army_name": army_info["data"].get("name", f"{army_info['type']} Army"),
+                            "options": [self._promotion_option_to_dict(option) for option in options],
+                        }
+                    )
+                    promotion_data["total_count"] += len(options)
+
+        return promotion_data
+
+    def _promotion_option_to_dict(self, option) -> Dict[str, Any]:
+        """Convert a PromotionOption to a dictionary for serialization."""
+        return {
+            "source_unit": option.source_unit,
+            "target_unit": option.target_unit,
+            "health_increase": option.health_increase,
+            "source_location": option.source_location,
+            "promotion_type": "single_unit",
+        }
+
+    def execute_single_promotion(
+        self, player_name: str, army_type: str, unit_id: str, target_unit_id: str, source_location: str
+    ) -> Dict[str, Any]:
+        """Execute a single unit promotion."""
+        try:
+            # Get the army data
+            army_data = self.game_state_manager.get_army_data(player_name, army_type)
+            if not army_data:
+                return {"success": False, "message": f"Army {army_type} not found for {player_name}"}
+
+            # Find the source unit in the army
+            army_units = army_data.get("units", [])
+            source_unit = None
+            for unit in army_units:
+                if unit.get("unit_id") == unit_id:
+                    source_unit = unit
+                    break
+
+            if not source_unit:
+                return {"success": False, "message": f"Unit {unit_id} not found in {army_type} army"}
+
+            # Find the target unit in DUA or Summoning Pool
+            target_unit = None
+            if source_location == "DUA":
+                dua_units = self.dua_manager.get_player_dua(player_name)
+                for dua_unit in dua_units:
+                    if dua_unit.unit_data.get("unit_id") == target_unit_id:
+                        target_unit = dua_unit.unit_data
+                        break
+            elif source_location == "SUMMONING_POOL":
+                # For now, not implemented
+                return {"success": False, "message": "Summoning Pool promotion not yet implemented"}
+
+            if not target_unit:
+                return {"success": False, "message": f"Target unit {target_unit_id} not found in {source_location}"}
+
+            # Create promotion option and execute
+            from game_logic.promotion_manager import PromotionOption
+
+            promotion_option = PromotionOption(
+                source_unit=source_unit, target_unit=target_unit, health_increase=1, source_location=source_location
+            )
+
+            result = self.promotion_manager.execute_promotion(promotion_option, player_name)
+
+            if result.success:
+                # Update the game state (this is a simplified version)
+                # In a full implementation, this would update the actual army data
+                print(f"Promotion successful: {result.message}")
+                self.game_state_updated.emit()
+
+            return {
+                "success": result.success,
+                "message": result.message,
+                "promoted_units": result.promoted_units,
+                "errors": result.errors,
+            }
+
+        except Exception as e:
+            return {"success": False, "message": f"Promotion failed: {str(e)}"}
+
+    def execute_mass_promotion(
+        self, player_name: str, army_type: str, promotion_type: str = "as_many_as_possible"
+    ) -> Dict[str, Any]:
+        """Execute mass promotion for an army (e.g., after killing a dragon)."""
+        try:
+            # Get the army data
+            army_data = self.game_state_manager.get_army_data(player_name, army_type)
+            if not army_data:
+                return {"success": False, "message": f"Army {army_type} not found for {player_name}"}
+
+            army_units = army_data.get("units", [])
+            if not army_units:
+                return {"success": False, "message": f"No units in {army_type} army to promote"}
+
+            result = self.promotion_manager.execute_mass_promotion(army_units, player_name, promotion_type)
+
+            if result.success:
+                print(f"Mass promotion completed: {result.message}")
+                self.game_state_updated.emit()
+
+            return {
+                "success": result.success,
+                "message": result.message,
+                "promoted_count": len(result.promoted_units),
+                "promoted_units": result.promoted_units,
+                "errors": result.errors,
+            }
+
+        except Exception as e:
+            return {"success": False, "message": f"Mass promotion failed: {str(e)}"}
+
+    def check_promotion_after_dragon_kill(
+        self, victorious_army_data: Dict[str, Any], player_name: str
+    ) -> Dict[str, Any]:
+        """Check and potentially execute promotions after killing a dragon."""
+        army_units = victorious_army_data.get("units", [])
+        if not army_units:
+            return {"success": False, "message": "No units in army to promote"}
+
+        # Find promotion opportunities
+        opportunities = self.promotion_manager.find_promotion_options(army_units, player_name)
+
+        if not opportunities:
+            return {
+                "success": True,
+                "message": "No promotion opportunities available",
+                "promotions_available": False,
+                "opportunities": [],
+            }
+
+        return {
+            "success": True,
+            "message": f"Found {len(opportunities)} promotion opportunities after dragon kill",
+            "promotions_available": True,
+            "opportunities": [self._promotion_option_to_dict(option) for option in opportunities],
+            "auto_promote": True,  # Dragon kills allow "as many as possible" promotion
+        }
+
+    def add_promotion_trigger_to_spell_effect(self, spell_data: Dict[str, Any], spell_model) -> Dict[str, Any]:
+        """Add promotion effects to spell processing."""
+        enhanced_data = spell_data.copy()
+
+        # Check if this spell provides promotion effects
+        spell_name = spell_model.name
+        if "growth" in spell_name.lower() or "promote" in spell_model.effect.lower():
+            enhanced_data["promotion_effect"] = {
+                "type": "single_unit",
+                "health_increase": 1,
+                "requires_selection": True,
+            }
+
+        return enhanced_data
+
+    def _check_promotion_after_combat(self, combat_type: str, action_result: Dict[str, Any]):
+        """Check for promotion opportunities after successful combat."""
+        try:
+            attacking_player = self.get_current_player_name()
+            attacking_army_data = self.get_current_acting_army()
+
+            if not attacking_army_data:
+                print(f"GameEngine: No attacking army data for promotion check after {combat_type}")
+                return
+
+            army_units = attacking_army_data.get("units", [])
+            if not army_units:
+                print(f"GameEngine: No units in attacking army for promotion check after {combat_type}")
+                return
+
+            # Check for promotion opportunities
+            opportunities = self.promotion_manager.find_promotion_options(army_units, attacking_player)
+
+            if opportunities:
+                print(
+                    f"GameEngine: Found {len(opportunities)} promotion opportunities after successful {combat_type} combat"
+                )
+
+                # Emit signal to UI for promotion selection (low priority - don't force promotion)
+                promotion_data = {
+                    "trigger": f"{combat_type}_combat",
+                    "player_name": attacking_player,
+                    "army_data": attacking_army_data,
+                    "opportunities": [self._promotion_option_to_dict(option) for option in opportunities],
+                    "auto_promote": False,  # Combat promotions require player choice
+                    "priority": "low",
+                }
+
+                # Emit signal for UI to handle promotion selection
+                self.promotion_opportunities_available.emit(promotion_data)
+                print(f"GameEngine: Promotion opportunity available for {attacking_player} after {combat_type}")
+            else:
+                print(f"GameEngine: No promotion opportunities available after {combat_type} combat")
+
+        except Exception as e:
+            print(f"GameEngine: Error checking promotion after {combat_type} combat: {e}")
+
+    def _check_promotion_after_unit_kills(self, units_killed: List[Dict[str, Any]]):
+        """Check for promotion opportunities after killing enemy units."""
+        try:
+            attacking_player = self.get_current_player_name()
+            attacking_army_data = self.get_current_acting_army()
+
+            if not attacking_army_data:
+                print("GameEngine: No attacking army data for promotion check after unit kills")
+                return
+
+            # Calculate total health-worth of killed units for promotion eligibility
+            total_health_worth = sum(unit.get("pre_damage_health", 1) for unit in units_killed)
+
+            if total_health_worth >= 2:  # Minimum threshold for promotion rewards
+                army_units = attacking_army_data.get("units", [])
+                opportunities = self.promotion_manager.find_promotion_options(army_units, attacking_player)
+
+                if opportunities:
+                    # Scale promotion opportunities based on health-worth killed
+                    max_promotions = min(len(opportunities), total_health_worth // 2)
+                    available_promotions = opportunities[:max_promotions]
+
+                    print(
+                        f"GameEngine: Earned {max_promotions} promotion opportunities from killing {total_health_worth} health-worth of units"
+                    )
+
+                    promotion_data = {
+                        "trigger": "unit_kills",
+                        "player_name": attacking_player,
+                        "army_data": attacking_army_data,
+                        "opportunities": [self._promotion_option_to_dict(option) for option in available_promotions],
+                        "health_worth_killed": total_health_worth,
+                        "max_promotions": max_promotions,
+                        "auto_promote": False,
+                        "priority": "medium",
+                    }
+
+                    # Emit signal for UI to handle promotion selection
+                    self.promotion_opportunities_available.emit(promotion_data)
+                    print(
+                        f"GameEngine: {max_promotions} promotion opportunities earned by {attacking_player} for unit kills"
+                    )
+                else:
+                    print(
+                        f"GameEngine: No promotion opportunities available despite killing {total_health_worth} health-worth"
+                    )
+            else:
+                print(f"GameEngine: Insufficient health-worth killed ({total_health_worth}) for promotion eligibility")
+
+        except Exception as e:
+            print(f"GameEngine: Error checking promotion after unit kills: {e}")
+
+    def _execute_dragon_attack_phase(self):
+        """Execute the Dragon Attack Phase for the current marching player."""
+        try:
+            marching_player = self.get_current_player_name()
+            print(f"GameEngine: Executing Dragon Attack Phase for {marching_player}")
+
+            # Emit signal that Dragon Attack Phase has started
+            self.dragon_attack_phase_started.emit(marching_player)
+
+            # Execute the phase using the Dragon Attack Manager
+            phase_result = self.dragon_attack_manager.execute_dragon_attack_phase(
+                marching_player=marching_player,
+                game_state_manager=self.game_state_manager,
+                dua_manager=self.dua_manager,
+                summoning_pool_manager=self.summoning_pool_manager,
+            )
+
+            # Process phase results
+            if phase_result.phase_completed:
+                print(f"GameEngine: Dragon Attack Phase completed - {phase_result.message}")
+
+                # Handle dragon kills and promotions
+                if phase_result.dragons_killed:
+                    print(f"GameEngine: {len(phase_result.dragons_killed)} dragon(s) were killed")
+
+                    # Check for promotion opportunities after killing dragons
+                    for army_id in phase_result.armies_affected:
+                        self._check_promotion_after_dragon_kill_victory(
+                            army_id, marching_player, len(phase_result.dragons_killed)
+                        )
+
+                # Apply any breath effects to armies
+                self._apply_dragon_breath_effects(phase_result)
+
+                # Emit completion signal
+                self.dragon_attack_phase_completed.emit({"result": phase_result, "marching_player": marching_player})
+
+                # Advance to next phase
+                print("GameEngine: Dragon Attack Phase completed, advancing to next phase")
+                self.advance_phase()
+            else:
+                print(f"GameEngine: Dragon Attack Phase incomplete: {phase_result.message}")
+
+        except Exception as e:
+            print(f"GameEngine: Error executing Dragon Attack Phase: {e}")
+            # Skip to next phase if there's an error
+            self.advance_phase()
+
+    def _check_promotion_after_dragon_kill_victory(self, army_id: str, player_name: str, dragons_killed: int):
+        """Check for promotion opportunities after successfully killing dragons."""
+        try:
+            # Parse army identifier to get army data
+            army_parts = army_id.split("_")
+            if len(army_parts) >= 2:
+                army_type = army_parts[-1]  # Assume last part is army type
+                army_data = self.game_state_manager.get_army_data(player_name, army_type)
+
+                if army_data:
+                    result = self.check_promotion_after_dragon_kill(army_data, player_name)
+
+                    if result.get("promotions_available", False):
+                        print(f"GameEngine: Army {army_id} earned promotions for killing {dragons_killed} dragon(s)")
+
+                        # Create promotion data for UI
+                        promotion_data = {
+                            "trigger": "dragon_kill_victory",
+                            "player_name": player_name,
+                            "army_data": army_data,
+                            "opportunities": result.get("opportunities", []),
+                            "dragons_killed": dragons_killed,
+                            "auto_promote": True,  # Dragon kills allow automatic mass promotion
+                            "priority": "high",
+                        }
+
+                        # Emit promotion opportunity signal
+                        self.promotion_opportunities_available.emit(promotion_data)
+                    else:
+                        print(f"GameEngine: No promotion opportunities available for army {army_id}")
+
+        except Exception as e:
+            print(f"GameEngine: Error checking promotion after dragon kill victory: {e}")
+
+    def _apply_dragon_breath_effects(self, phase_result):
+        """Apply lingering dragon breath effects from the attack phase."""
+        try:
+            for terrain_attack in phase_result.terrain_attacks:
+                for attack_result in terrain_attack.get("attack_results", []):
+                    breath_effects = attack_result.get("breath_effects", [])
+
+                    for breath_effect in breath_effects:
+                        if breath_effect.get("duration") == "next_turn":
+                            # Apply temporary effect to the army
+                            army_id = terrain_attack.get("armies_affected", [""])[0]
+                            if army_id:
+                                self._apply_temporary_breath_effect(army_id, breath_effect)
+
+        except Exception as e:
+            print(f"GameEngine: Error applying dragon breath effects: {e}")
+
+    def _apply_temporary_breath_effect(self, army_id: str, breath_effect: Dict[str, Any]):
+        """Apply a temporary breath effect to an army."""
+        try:
+            effect_name = breath_effect.get("name", "Dragon Breath")
+            effect_description = breath_effect.get("effect", "")
+            modifier_type = breath_effect.get("modifier_type", "")
+
+            # Use the effect manager to apply the breath effect
+            self.effect_manager.add_effect(
+                description=f"{effect_name}: {effect_description}",
+                source="Dragon Breath Attack",
+                target_type=constants.EFFECT_TARGET_ARMY,
+                target_identifier=army_id,
+                duration_type=constants.EFFECT_DURATION_NEXT_TURN_TARGET,
+                duration_value=1,
+                caster_player_name=self.get_current_player_name(),
+                effect_data={"modifier_type": modifier_type},
+            )
+
+            print(f"GameEngine: Applied breath effect '{effect_name}' to army {army_id}")
+
+        except Exception as e:
+            print(f"GameEngine: Error applying temporary breath effect: {e}")

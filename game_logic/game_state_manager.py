@@ -924,3 +924,33 @@ class GameStateManager(QObject):
                 )
 
         return armies_at_location
+
+    def get_all_terrain_names(self) -> List[str]:
+        """Get a list of all terrain names in the game."""
+        return list(self.terrains.keys())
+
+    def get_armies_at_terrain(self, terrain_name: str) -> List[Dict[str, Any]]:
+        """Get all armies present at a specific terrain from all players."""
+        armies_at_terrain = []
+
+        for player_name, player_data in self.players.items():
+            armies = player_data.get("armies", {})
+
+            for army_type, army_data in armies.items():
+                if army_data.get("location") == terrain_name:
+                    # Create army identifier for this army
+                    army_identifier = f"{player_name}_{army_type}"
+
+                    armies_at_terrain.append(
+                        {
+                            "owner": player_name,
+                            "army_type": army_type,
+                            "army_id": army_identifier,
+                            "army_data": army_data,
+                            "location": terrain_name,
+                            "units": army_data.get("units", []),
+                            "points": army_data.get("points_value", 0),
+                        }
+                    )
+
+        return armies_at_terrain

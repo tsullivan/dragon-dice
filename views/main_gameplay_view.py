@@ -34,6 +34,7 @@ from views.magic_action_dialog import MagicActionDialog
 from views.maneuver_dialog import ManeuverDialog
 from views.melee_combat_dialog import MeleeCombatDialog
 from views.missile_combat_dialog import MissileCombatDialog
+from views.dragon_attack_dialog import DragonAttackDialog
 from views.reserves_phase_dialog import ReservesPhaseDialog
 from views.species_abilities_phase_dialog import SpeciesAbilitiesPhaseDialog
 
@@ -57,6 +58,7 @@ class MainGameplayView(QWidget):
     # Advanced phase signals
     species_abilities_phase_completed = Signal(dict)
     reserves_phase_completed = Signal(dict)
+    dragon_attack_phase_completed = Signal(dict)
 
     def __init__(self, game_engine: GameEngine, parent=None):
         super().__init__(parent)
@@ -170,11 +172,17 @@ class MainGameplayView(QWidget):
         self.dynamic_actions_layout.addWidget(self.melee_action_widget)
         self.melee_action_widget.hide()
 
-        self.dragon_attack_prompt_label = QLabel("<b>Dragon Attack Phase:</b> Resolve dragon attacks.")
+        self.dragon_attack_prompt_label = QLabel(
+            "<b>Dragon Attack Phase:</b> Resolve dragon attacks at terrains with marching armies."
+        )
+        self.dragon_attack_execute_button = QPushButton("🐲 Execute Dragon Attacks")
+        self.dragon_attack_execute_button.setMaximumWidth(250)  # Limit button width
+        self.dragon_attack_execute_button.clicked.connect(self._show_dragon_attack_dialog)
         self.dragon_attack_continue_button = QPushButton("Continue Past Dragon Attacks")
         self.dragon_attack_continue_button.setMaximumWidth(250)  # Limit button width
         self.dragon_attack_continue_button.clicked.connect(lambda: self.game_engine.advance_phase())
         self.dynamic_actions_layout.addWidget(self.dragon_attack_prompt_label)
+        self.dynamic_actions_layout.addWidget(self.dragon_attack_execute_button)
         self.dynamic_actions_layout.addWidget(self.dragon_attack_continue_button)
 
         phase_actions_v_layout.addLayout(self.dynamic_actions_layout)
@@ -222,6 +230,10 @@ class MainGameplayView(QWidget):
         self.game_engine.game_state_updated.connect(self.update_ui)
         self.game_engine.current_phase_changed.connect(self.update_ui)
         self.game_engine.current_player_changed.connect(self.update_ui)
+
+        # Connect dragon attack phase signals
+        self.game_engine.dragon_attack_phase_started.connect(self._handle_dragon_attack_phase_started)
+        self.game_engine.dragon_attack_phase_completed.connect(self._handle_dragon_attack_phase_completed)
 
         # Connect critical signals for debug logging
         self.game_engine.unit_selection_required.connect(self._handle_unit_selection_required)
@@ -530,6 +542,7 @@ class MainGameplayView(QWidget):
         self.action_choice_widget.hide()
         self.melee_action_widget.hide()
         self.dragon_attack_prompt_label.hide()
+        self.dragon_attack_execute_button.hide()
         self.dragon_attack_continue_button.hide()
 
         # Update Phase Title
@@ -674,6 +687,7 @@ class MainGameplayView(QWidget):
         elif not current_march_step and not current_action_step:
             if current_phase == "DRAGON_ATTACK":
                 self.dragon_attack_prompt_label.show()
+                self.dragon_attack_execute_button.show()
                 self.dragon_attack_continue_button.show()
             elif current_phase == "SPECIES_ABILITIES":
                 self._show_species_abilities_phase()
@@ -930,3 +944,98 @@ class MainGameplayView(QWidget):
         """Handle cancellation of magic actions."""
         print("[MainGameplayView] Magic cancelled")
         # Allow player to select a different action
+
+    def _show_dragon_attack_dialog(self):
+        """Show the Dragon Attack Phase dialog."""
+        print("[MainGameplayView] Showing Dragon Attack Phase dialog")
+
+        current_player = self.game_engine.get_current_player_name()
+
+        # Find terrains where the marching player has armies
+        terrains_with_armies = []
+        all_terrain_data = self.game_engine.get_all_terrain_data()
+
+        for terrain_name, terrain_info in all_terrain_data.items():
+            armies = terrain_info.get("armies", {})
+            for army_id, army_data in armies.items():
+                if army_data.get("player") == current_player:
+                    terrains_with_armies.append(terrain_name)
+                    break
+
+        if not terrains_with_armies:
+            print(f"[MainGameplayView] No terrains with {current_player}'s armies found")
+            # Skip dragon attack phase
+            self.game_engine.advance_phase()
+            return
+
+        # For now, use the first terrain with armies (in a full implementation, would handle multiple terrains)
+        target_terrain = terrains_with_armies[0]
+
+        # Get dragons at this terrain
+        dragons_present = self.game_engine.summoning_pool_manager.get_dragons_at_terrain(target_terrain)
+
+        if not dragons_present:
+            print(f"[MainGameplayView] No dragons at terrain {target_terrain}")
+            # Skip dragon attack phase
+            self.game_engine.advance_phase()
+            return
+
+        # Get marching army at this terrain
+        terrain_info = all_terrain_data[target_terrain]
+        marching_army = None
+        for army_id, army_data in terrain_info.get("armies", {}).items():
+            if army_data.get("player") == current_player:
+                marching_army = army_data
+                break
+
+        if not marching_army:
+            print(f"[MainGameplayView] No marching army found at {target_terrain}")
+            self.game_engine.advance_phase()
+            return
+
+        # Create dragon attack dialog
+        dialog = DragonAttackDialog(
+            marching_player=current_player,
+            terrain_name=target_terrain,
+            dragons_present=dragons_present,
+            marching_army=marching_army,
+            parent=self,
+        )
+
+        # Connect dialog signals
+        dialog.attack_completed.connect(self._on_dragon_attack_completed)
+        dialog.attack_cancelled.connect(self._on_dragon_attack_cancelled)
+
+        # Show dialog
+        dialog.show()
+
+    def _on_dragon_attack_completed(self, attack_results: dict):
+        """Handle completion of dragon attack dialog."""
+        print(f"[MainGameplayView] Dragon Attack completed: {attack_results}")
+
+        # Process dragon attack results
+        # TODO: Apply damage to armies, handle dragon kills, process promotions
+
+        # Emit signal for any listeners
+        self.dragon_attack_phase_completed.emit(attack_results)
+
+        # Advance to next phase
+        self.game_engine.advance_phase()
+
+    def _on_dragon_attack_cancelled(self):
+        """Handle cancellation of dragon attack dialog."""
+        print("[MainGameplayView] Dragon Attack cancelled")
+        # Continue without dragon attacks
+        self.game_engine.advance_phase()
+
+    def _handle_dragon_attack_phase_started(self, marching_player: str):
+        """Handle when dragon attack phase starts."""
+        print(f"[MainGameplayView] Dragon Attack Phase started for {marching_player}")
+        # Update UI to show dragon attack is available
+        self.update_ui()
+
+    def _handle_dragon_attack_phase_completed(self, phase_result: dict):
+        """Handle when dragon attack phase completes."""
+        print(f"[MainGameplayView] Dragon Attack Phase completed: {phase_result}")
+        # Process any game state changes from dragon attacks
+        # Update UI to reflect completed dragon attacks

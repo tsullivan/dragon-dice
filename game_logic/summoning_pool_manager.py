@@ -21,6 +21,8 @@ class SummoningPoolManager(QObject):
         super().__init__(parent)
         # Player name -> List of DragonModel
         self._player_pools: Dict[str, List[DragonModel]] = {}
+        # Track summoned dragons: terrain_name -> List of dragon data
+        self._summoned_dragons: Dict[str, List[Dict[str, Any]]] = {}
 
     def initialize_player_pool(self, player_name: str, initial_dragons: List[DragonModel]):
         """Initialize a player's summoning pool with their starting dragons."""
@@ -173,3 +175,73 @@ class SummoningPoolManager(QObject):
 
         self.initialize_player_pool(player_name, dragons)
         print(f"SummoningPoolManager: Imported {len(dragons)} dragons for {player_name}")
+
+    def summon_dragon_to_terrain(self, player_name: str, dragon_id: str, terrain_name: str) -> bool:
+        """Summon a dragon from a player's pool to a terrain."""
+        dragon = self.remove_dragon_from_pool(player_name, dragon_id)
+        if dragon:
+            # Add to summoned dragons tracking
+            if terrain_name not in self._summoned_dragons:
+                self._summoned_dragons[terrain_name] = []
+
+            dragon_data = {
+                "dragon_id": dragon.get_id(),
+                "name": dragon.name,
+                "owner": player_name,
+                "elements": dragon.elements,
+                "dragon_type": dragon.dragon_type,
+                "health": dragon.health,
+                "max_health": dragon.max_health,
+                "terrain": terrain_name,
+            }
+
+            self._summoned_dragons[terrain_name].append(dragon_data)
+            print(f"SummoningPoolManager: Summoned {dragon.name} to {terrain_name}")
+            return True
+        return False
+
+    def get_dragons_at_terrain(self, terrain_name: str) -> List[Dict[str, Any]]:
+        """Get all dragons currently at a specific terrain."""
+        return self._summoned_dragons.get(terrain_name, []).copy()
+
+    def return_dragon_to_pool(self, terrain_name: str, dragon_id: str) -> bool:
+        """Return a dragon from a terrain to its owner's summoning pool."""
+        if terrain_name in self._summoned_dragons:
+            dragons_at_terrain = self._summoned_dragons[terrain_name]
+
+            for i, dragon_data in enumerate(dragons_at_terrain):
+                if dragon_data.get("dragon_id") == dragon_id:
+                    # Remove from terrain
+                    removed_dragon = dragons_at_terrain.pop(i)
+
+                    # Create DragonModel and return to pool
+                    dragon_model = DragonModel(
+                        name=removed_dragon["name"],
+                        dragon_type=removed_dragon["dragon_type"],
+                        elements=removed_dragon["elements"],
+                    )
+                    dragon_model.health = removed_dragon["health"]
+
+                    self.add_dragon_to_pool(removed_dragon["owner"], dragon_model)
+                    print(f"SummoningPoolManager: Returned {dragon_model.name} to {removed_dragon['owner']}'s pool")
+                    return True
+        return False
+
+    def kill_dragon_at_terrain(self, terrain_name: str, dragon_id: str) -> bool:
+        """Kill a dragon and return it to its owner's summoning pool."""
+        return self.return_dragon_to_pool(terrain_name, dragon_id)
+
+    def get_all_summoned_dragons(self) -> Dict[str, List[Dict[str, Any]]]:
+        """Get all summoned dragons across all terrains."""
+        return self._summoned_dragons.copy()
+
+    def clear_terrain_dragons(self, terrain_name: str):
+        """Clear all dragons from a terrain (for testing/reset purposes)."""
+        if terrain_name in self._summoned_dragons:
+            dragons_count = len(self._summoned_dragons[terrain_name])
+            self._summoned_dragons[terrain_name] = []
+            print(f"SummoningPoolManager: Cleared {dragons_count} dragons from {terrain_name}")
+
+    def get_dragon_count_at_terrain(self, terrain_name: str) -> int:
+        """Get the number of dragons at a specific terrain."""
+        return len(self._summoned_dragons.get(terrain_name, []))

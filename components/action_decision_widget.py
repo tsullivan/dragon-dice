@@ -9,7 +9,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-import constants
 
 
 class ActionDecisionWidget(QWidget):
