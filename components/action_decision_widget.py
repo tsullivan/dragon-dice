@@ -10,7 +10,6 @@ from PySide6.QtWidgets import (
 )
 
 
-
 class ActionDecisionWidget(QWidget):
     """
     A widget for deciding whether to take an action with the acting army.

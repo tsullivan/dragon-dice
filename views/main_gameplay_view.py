@@ -18,7 +18,10 @@ from components.active_effects_widget import ActiveEffectsWidget
 from components.maneuver_input_widget import ManeuverInputWidget
 from components.melee_action_widget import MeleeActionWidget
 from components.player_summary_widget import PlayerSummaryWidget
+from components.reserves_widget import ReservesWidget
+from components.summoning_pool_widget import SummoningPoolWidget
 from components.tabbed_view_widget import TabbedViewWidget
+from components.unit_areas_widget import UnitAreasWidget
 
 # No change, good comment
 from game_logic.engine import GameEngine
@@ -118,6 +121,32 @@ class MainGameplayView(QWidget):
 
         top_main_content_h_layout.addWidget(self.current_player_terrains_group, 1)
         main_content_v_layout.addLayout(top_main_content_h_layout)
+
+        # 2.1.1.b Game Areas Section (Summoning Pool, Reserves, DUA/BUA)
+        game_areas_layout = QHBoxLayout()
+        game_areas_layout.setSpacing(8)
+
+        # Summoning Pool Widget
+        self.summoning_pool_widget = SummoningPoolWidget()
+        self.summoning_pool_widget.dragon_selected.connect(self._handle_dragon_selected)
+        self.summoning_pool_widget.refresh_requested.connect(self._refresh_summoning_pool)
+        game_areas_layout.addWidget(self.summoning_pool_widget, 1)
+
+        # Reserves Widget
+        self.reserves_widget = ReservesWidget()
+        self.reserves_widget.unit_selected.connect(self._handle_reserve_unit_selected)
+        self.reserves_widget.refresh_requested.connect(self._refresh_reserves)
+        self.reserves_widget.deploy_requested.connect(self._handle_deploy_unit)
+        game_areas_layout.addWidget(self.reserves_widget, 1)
+
+        # Unit Areas Widget (DUA/BUA)
+        self.unit_areas_widget = UnitAreasWidget()
+        self.unit_areas_widget.unit_selected.connect(self._handle_area_unit_selected)
+        self.unit_areas_widget.refresh_requested.connect(self._refresh_unit_areas)
+        self.unit_areas_widget.resurrect_requested.connect(self._handle_resurrect_unit)
+        game_areas_layout.addWidget(self.unit_areas_widget, 1)
+
+        main_content_v_layout.addLayout(game_areas_layout)
 
         # 2.1.1.c Active Effects Display
         self.active_effects_widget = ActiveEffectsWidget()
@@ -710,6 +739,11 @@ class MainGameplayView(QWidget):
         # Update continue button state based on current phase requirements
         self._update_continue_button_state()
 
+        # Update game areas displays
+        self._update_summoning_pool_display()
+        self._update_reserves_display()
+        self._update_unit_areas_display()
+
     # Critical signal debug handlers
     def _handle_unit_selection_required(self, player_name: str, damage_amount: int, available_units: list):
         """Debug handler for unit selection requirement."""
@@ -1039,3 +1073,104 @@ class MainGameplayView(QWidget):
         print(f"[MainGameplayView] Dragon Attack Phase completed: {phase_result}")
         # Process any game state changes from dragon attacks
         # Update UI to reflect completed dragon attacks
+
+    # Game Areas Widget Handlers
+    def _handle_dragon_selected(self, dragon_data: dict):
+        """Handle dragon selection from summoning pool."""
+        print(f"[MainGameplayView] Dragon selected: {dragon_data.get('dragon_type', 'Unknown')}")
+        # Could show dragon details, enable summoning actions, etc.
+
+    def _handle_reserve_unit_selected(self, unit_data: dict):
+        """Handle reserve unit selection."""
+        print(f"[MainGameplayView] Reserve unit selected: {unit_data.get('name', 'Unknown')}")
+        # Could show unit details, enable deployment actions, etc.
+
+    def _handle_area_unit_selected(self, unit_data: dict, area_type: str):
+        """Handle unit selection from DUA/BUA."""
+        print(f"[MainGameplayView] {area_type} unit selected: {unit_data.get('name', 'Unknown')}")
+        # Could show unit details, enable resurrection actions for DUA, etc.
+
+    def _handle_deploy_unit(self, unit_data: dict):
+        """Handle unit deployment request from reserves."""
+        print(f"[MainGameplayView] Deploy unit requested: {unit_data.get('name', 'Unknown')}")
+        # TODO: Implement deployment logic
+        # Would need to show terrain selection, handle deployment rules, etc.
+
+    def _handle_resurrect_unit(self, unit_data: dict):
+        """Handle unit resurrection request from DUA."""
+        print(f"[MainGameplayView] Resurrect unit requested: {unit_data.get('name', 'Unknown')}")
+        # TODO: Implement resurrection logic
+        # Would need to check for resurrection spells, handle costs, etc.
+
+    def _refresh_summoning_pool(self):
+        """Refresh summoning pool data."""
+        print("[MainGameplayView] Refreshing summoning pool")
+        self._update_summoning_pool_display()
+
+    def _refresh_reserves(self):
+        """Refresh reserves data."""
+        print("[MainGameplayView] Refreshing reserves")
+        self._update_reserves_display()
+
+    def _refresh_unit_areas(self):
+        """Refresh DUA/BUA data."""
+        print("[MainGameplayView] Refreshing unit areas")
+        self._update_unit_areas_display()
+
+    def _update_summoning_pool_display(self):
+        """Update the summoning pool widget with current data."""
+        try:
+            # Get summoning pool data from game engine
+            pool_data = {}
+            all_players_data = self.game_engine.get_all_players_data()
+
+            for player_name in all_players_data.keys():
+                # Get dragons for this player
+                player_dragons = self.game_engine.summoning_pool_manager.get_player_pool(player_name)
+                if player_dragons:
+                    pool_data[player_name] = [dragon.to_dict() for dragon in player_dragons]
+
+            self.summoning_pool_widget.update_pool_data(pool_data)
+        except Exception as e:
+            print(f"[MainGameplayView] Error updating summoning pool: {e}")
+
+    def _update_reserves_display(self):
+        """Update the reserves widget with current data."""
+        try:
+            # Get reserves data from game engine
+            reserves_data = {}
+            all_players_data = self.game_engine.get_all_players_data()
+
+            for player_name in all_players_data.keys():
+                # Get reserve units for this player
+                player_reserves = self.game_engine.reserves_manager.get_player_reserves(player_name)
+                if player_reserves:
+                    reserves_data[player_name] = [unit.to_dict() for unit in player_reserves]
+
+            self.reserves_widget.update_reserves_data(reserves_data)
+        except Exception as e:
+            print(f"[MainGameplayView] Error updating reserves: {e}")
+
+    def _update_unit_areas_display(self):
+        """Update the unit areas widget with current DUA/BUA data."""
+        try:
+            # Get DUA data
+            dua_data = {}
+            bua_data = {}
+            all_players_data = self.game_engine.get_all_players_data()
+
+            for player_name in all_players_data.keys():
+                # Get DUA units for this player
+                player_dua = self.game_engine.dua_manager.get_player_dua(player_name)
+                if player_dua:
+                    dua_data[player_name] = [unit.to_dict() for unit in player_dua]
+
+                # Get BUA units for this player
+                player_bua = self.game_engine.bua_manager.get_player_bua(player_name)
+                if player_bua:
+                    bua_data[player_name] = [unit.to_dict() for unit in player_bua]
+
+            self.unit_areas_widget.update_dua_data(dua_data)
+            self.unit_areas_widget.update_bua_data(bua_data)
+        except Exception as e:
+            print(f"[MainGameplayView] Error updating unit areas: {e}")
