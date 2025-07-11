@@ -130,6 +130,19 @@ class TurnManager(QObject):
         """Get the formatted display string for the current phase/step."""
         return self._get_current_phase_display_string()
 
+    def set_phase(self, phase_name: str) -> None:
+        """Set the current phase directly (for testing purposes)."""
+        turn_phases = get_turn_phases()
+        if phase_name not in turn_phases:
+            raise ValueError(f"Invalid phase name: {phase_name}. Valid phases: {turn_phases}")
+
+        self.current_phase_idx = turn_phases.index(phase_name)
+        self.current_phase = phase_name
+        self.current_march_step = ""
+        self.current_action_step = ""
+        print(f"TurnManager: Setting phase to {phase_name} for {self.player_names[self.current_player_idx]}")
+        self.current_phase_changed.emit(self._get_current_phase_display_string())
+
     # Setter methods
     def set_march_step(self, step: str):
         """Set the current march step and emit phase change signal."""

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional  # Import typing
+from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal, Slot
 
@@ -8,6 +8,7 @@ from game_logic.bua_manager import BUAManager
 from game_logic.dragon_attack_manager import DragonAttackManager
 from game_logic.dua_manager import DUAManager, DUAUnit
 from game_logic.effect_manager import EffectManager
+from game_logic.eighth_face_manager import EighthFaceManager
 from game_logic.game_state_manager import GameStateManager
 from game_logic.promotion_manager import PromotionManager
 from game_logic.reserves_manager import ReservesManager, ReserveUnit
@@ -107,6 +108,11 @@ class GameEngine(QObject):
         # Dragon Attack manager (depends on summoning pool manager)
         self.dragon_attack_manager = DragonAttackManager(parent=self)
 
+        # Eighth Face manager (depends on other managers)
+        self.eighth_face_manager = EighthFaceManager(
+            self.game_state_manager, self.dua_manager, self.bua_manager, self.summoning_pool_manager, parent=self
+        )
+
         # Connect signals from managers to GameEngine signals or slots
         self.turn_manager.current_player_changed.connect(self._sync_player_state_from_turn_manager)
         self.turn_manager.current_phase_changed.connect(
@@ -179,7 +185,7 @@ class GameEngine(QObject):
             self.phase_advance_requested.emit()
         elif current_phase == "EIGHTH_FACE":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
-            # Eighth Face phase is handled by UI dialogs
+            self._execute_eighth_face_phase()
         elif current_phase == "DRAGON_ATTACK":
             print(f"Phase: {current_phase} for {self.get_current_player_name()}")
             self._execute_dragon_attack_phase()
@@ -1844,6 +1850,141 @@ class GameEngine(QObject):
 
         except Exception as e:
             print(f"GameEngine: Error applying dragon breath effects: {e}")
+
+    def _execute_eighth_face_phase(self):
+        """Execute the Eighth Face Phase for the current player."""
+        try:
+            current_player = self.get_current_player_name()
+            print(f"GameEngine: Executing Eighth Face Phase for {current_player}")
+
+            # Execute the phase using the Eighth Face Manager
+            phase_result = self.eighth_face_manager.start_eighth_face_phase(current_player)
+
+            # Process phase results
+            if phase_result.get("victory_achieved", False):
+                winning_player = phase_result.get("winning_player", "Unknown")
+                victory_type = phase_result.get("victory_type", "terrain_control")
+                print(f"GameEngine: Victory achieved by {winning_player} via {victory_type}")
+
+                # Handle victory - this would typically end the game
+                # For now, just emit the victory signal (already emitted by manager)
+                return
+
+            # Handle eighth face effects that require choices
+            choices_required = phase_result.get("choices_required", [])
+            if choices_required:
+                print(f"GameEngine: {len(choices_required)} eighth face choices required for {current_player}")
+                # UI will handle choice prompts via signals from EighthFaceManager
+                # For now, we'll auto-advance the phase
+                # In a full implementation, this would wait for player choices
+
+            # Process any automatic effects
+            eighth_face_effects = phase_result.get("eighth_face_effects", [])
+            for effect in eighth_face_effects:
+                if effect.get("automatic_effect", False):
+                    self._apply_eighth_face_automatic_effect(effect)
+
+            print("GameEngine: Eighth Face Phase completed, advancing to next phase")
+            self.advance_phase()
+
+        except Exception as e:
+            print(f"GameEngine: Error executing Eighth Face Phase: {e}")
+            # Skip to next phase if there's an error
+            self.advance_phase()
+
+    def _apply_eighth_face_automatic_effect(self, effect: Dict[str, Any]):
+        """Apply automatic eighth face effects that don't require player choice."""
+        effect_type = effect.get("effect_type", "unknown")
+        terrain_name = effect.get("terrain_name", "Unknown")
+        player_name = effect.get("player", "Unknown")
+
+        print(f"GameEngine: Applying automatic {effect_type} eighth face effect for {player_name} at {terrain_name}")
+
+        # Handle persistent effects
+        if effect.get("persistent_effect", False):
+            effect_details = effect.get("effect_details", {})
+
+            if effect_type == "standing_stones":
+                # Standing Stones: Magic conversion ability
+                self._apply_standing_stones_effect(player_name, terrain_name, effect_details)
+            elif effect_type == "temple":
+                # Temple: Death magic immunity
+                self._apply_temple_immunity_effect(player_name, terrain_name, effect_details)
+            elif effect_type == "vortex":
+                # Vortex: Reroll ability
+                self._apply_vortex_reroll_effect(player_name, terrain_name, effect_details)
+
+    def _apply_standing_stones_effect(self, player_name: str, terrain_name: str, effect_details: Dict[str, Any]):
+        """Apply Standing Stones eighth face effect - magic result conversion."""
+        available_colors = effect_details.get("available_colors", [])
+
+        # Add effect to effect manager for duration tracking
+        self.effect_manager.add_effect(
+            description=f"Magic results may be converted to terrain colors: {', '.join(available_colors)}",
+            source=f"Standing Stones: {terrain_name}",
+            target_type=constants.EFFECT_TARGET_ARMY,
+            target_identifier=f"{player_name}_controlling_army_{terrain_name}",
+            duration_type=constants.EFFECT_DURATION_PERMANENT,
+            duration_value=0,  # Until terrain face changes
+            caster_player_name=player_name,
+        )
+
+    def _apply_temple_immunity_effect(self, player_name: str, terrain_name: str, effect_details: Dict[str, Any]):
+        """Apply Temple eighth face effect - death magic immunity."""
+        # Add death magic immunity effect
+        self.effect_manager.add_effect(
+            description="Immune to all death (black) magic effects",
+            source=f"Temple: {terrain_name}",
+            target_type=constants.EFFECT_TARGET_ARMY,
+            target_identifier=f"{player_name}_controlling_army_{terrain_name}",
+            duration_type=constants.EFFECT_DURATION_PERMANENT,
+            duration_value=0,  # Until terrain face changes
+            caster_player_name=player_name,
+        )
+
+    def _apply_vortex_reroll_effect(self, player_name: str, terrain_name: str, effect_details: Dict[str, Any]):
+        """Apply Vortex eighth face effect - reroll ability during army rolls."""
+        # Add reroll ability effect
+        self.effect_manager.add_effect(
+            description="May reroll one unit during non-maneuver army rolls (before resolving SAIs)",
+            source=f"Vortex: {terrain_name}",
+            target_type=constants.EFFECT_TARGET_TERRAIN,
+            target_identifier=terrain_name,
+            duration_type=constants.EFFECT_DURATION_PERMANENT,
+            duration_value=0,  # Until terrain face changes
+            caster_player_name=player_name,
+        )
+
+    def apply_eighth_face_player_choice(
+        self, player_name: str, choice_type: str, choice_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Apply a player's choice for an eighth face effect.
+        This method is called by the UI when the player makes a choice.
+
+        Args:
+            player_name: The player making the choice
+            choice_type: The type of eighth face choice
+            choice_data: The specific choice and its parameters
+
+        Returns:
+            Result of applying the choice
+        """
+        try:
+            result = self.eighth_face_manager.apply_player_choice(player_name, choice_type, choice_data)
+
+            if result.get("success", False):
+                print(f"GameEngine: Applied eighth face choice for {player_name}: {choice_type}")
+                self.game_state_updated.emit()
+            else:
+                print(f"GameEngine: Failed to apply eighth face choice: {result.get('error', 'Unknown error')}")
+
+            return result
+
+        except Exception as e:
+            error_msg = f"Error applying eighth face choice: {str(e)}"
+            print(f"GameEngine: {error_msg}")
+            return {"success": False, "error": error_msg}
 
     def _apply_temporary_breath_effect(self, army_id: str, breath_effect: Dict[str, Any]):
         """Apply a temporary breath effect to an army."""

@@ -103,7 +103,7 @@ class GameStateManager(QObject):
         self.terrains: Dict[str, Dict[str, Any]] = {}  # Keyed by terrain name
         # Example terrain entry:
         # "Frontier Name": {"name": "Frontier Name", "type": "Frontier", "face": 3, "controller": None, "armies_present": ["P1_Campaign", "P2_Campaign"]}
-        # "Player 1 Home": {"name": "Player 1 Home", "type": "Home", "face": 1, "controller": "Player 1", "armies_present": ["P1_Home"]}
+        # "Player 1 Home": {"name": "Player 1 Home", "type": "Home", "face": 1, "controller": None, "armies_present": ["P1_Home"]}
 
         self._initialize_state(initial_player_setup_data, frontier_terrain, distance_rolls)
 
@@ -202,7 +202,7 @@ class GameStateManager(QObject):
                 "name": unique_home_terrain_name,
                 "type": "Home",
                 "face": distance,
-                "controller": player_name,
+                "controller": None,  # Terrains are only controlled when at eighth face
                 "armies_present": [],
             }
         # Add unique identifiers to all armies
@@ -978,3 +978,15 @@ class GameStateManager(QObject):
                     )
 
         return armies_at_terrain
+
+    def get_current_state(self) -> Dict[str, Any]:
+        """
+        Get the current game state formatted for eighth face manager and other systems.
+
+        Returns:
+            Dictionary containing terrain_data and all_players_data
+        """
+        return {
+            "terrain_data": self.terrains,
+            "all_players_data": self.players,
+        }

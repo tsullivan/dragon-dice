@@ -282,7 +282,7 @@ TERRAIN_DATA = {
             {"name": "Melee Terrain", "description": "This icon on the terrain sets the current action to melee."},
             {
                 "name": "Vortex",
-                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
+                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
         elements=["AIR", "WATER"],
@@ -442,7 +442,7 @@ TERRAIN_DATA = {
             {"name": "Melee Terrain", "description": "This icon on the terrain sets the current action to melee."},
             {
                 "name": "Vortex",
-                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
+                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
         elements=["WATER", "FIRE"],
@@ -602,7 +602,7 @@ TERRAIN_DATA = {
             {"name": "Melee Terrain", "description": "This icon on the terrain sets the current action to melee."},
             {
                 "name": "Vortex",
-                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
+                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
         elements=["AIR", "EARTH"],
@@ -762,7 +762,7 @@ TERRAIN_DATA = {
             {"name": "Melee Terrain", "description": "This icon on the terrain sets the current action to melee."},
             {
                 "name": "Vortex",
-                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
+                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
         elements=["FIRE", "EARTH"],
@@ -922,7 +922,7 @@ TERRAIN_DATA = {
             {"name": "Melee Terrain", "description": "This icon on the terrain sets the current action to melee."},
             {
                 "name": "Vortex",
-                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
+                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
         elements=["WATER", "EARTH"],
@@ -1082,7 +1082,7 @@ TERRAIN_DATA = {
             {"name": "Melee Terrain", "description": "This icon on the terrain sets the current action to melee."},
             {
                 "name": "Vortex",
-                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
+                "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
         elements=["AIR", "FIRE"],
