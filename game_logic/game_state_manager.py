@@ -450,9 +450,16 @@ class GameStateManager(QObject):
             # Specific identifier - parse to get army
             parsed_player, army = self.get_army_by_identifier(army_identifier)
 
-        for unit in army.get("units", []):
-            if unit.get("name") == unit_name:
-                return int(unit.get("health", 0))
+        if "units" not in army:
+            raise ValueError(f"Army '{army_identifier}' missing required 'units' field")
+
+        for unit in army["units"]:
+            if "name" not in unit:
+                raise ValueError(f"Unit in army '{army_identifier}' missing required 'name' field")
+            if unit["name"] == unit_name:
+                if "health" not in unit:
+                    raise ValueError(f"Unit '{unit_name}' missing required 'health' field")
+                return int(unit["health"])
 
         raise UnitNotFoundError(unit_name, army_identifier)
 
@@ -472,9 +479,16 @@ class GameStateManager(QObject):
             # Specific identifier - parse to get army
             target_player, army = self.get_army_by_identifier(army_identifier)
 
-        for unit in army.get("units", []):
-            if unit.get("name") == unit_name:
-                unit["health"] = max(0, new_health)  # Ensure health doesn't go negative
+        if "units" not in army:
+            raise ValueError(f"Army '{army_identifier}' missing required 'units' field")
+
+        for unit in army["units"]:
+            if "name" not in unit:
+                raise ValueError(f"Unit in army '{army_identifier}' missing required 'name' field")
+            if unit["name"] == unit_name:
+                if new_health < 0:
+                    raise ValueError(f"Cannot set negative health {new_health} for unit '{unit_name}'")
+                unit["health"] = new_health
                 if unit["health"] <= 0:
                     self._move_unit_to_dua(target_player, unit)
                     army["units"].remove(unit)
@@ -486,20 +500,30 @@ class GameStateManager(QObject):
     def move_unit_between_armies(self, player_name: str, unit_name: str, from_army: str, to_army: str) -> None:
         """Move a unit from one army to another."""
         player_data = self.get_player_data(player_name)
-        armies = player_data.get("armies", {})
+        if "armies" not in player_data:
+            raise ValueError(f"Player '{player_name}' missing required 'armies' field")
+        armies = player_data["armies"]
 
-        source_army = armies.get(from_army)
-        if not source_army:
+        if from_army not in armies:
             raise ArmyNotFoundError(player_name, from_army)
+        source_army = armies[from_army]
 
-        target_army = armies.get(to_army)
-        if not target_army:
+        if to_army not in armies:
             raise ArmyNotFoundError(player_name, to_army)
+        target_army = armies[to_army]
+
+        # Validate army structure
+        if "units" not in source_army:
+            raise ValueError(f"Source army '{from_army}' missing required 'units' field")
+        if "units" not in target_army:
+            raise ValueError(f"Target army '{to_army}' missing required 'units' field")
 
         # Find and remove unit from source army
         unit_to_move = None
-        for unit in source_army.get("units", []):
-            if unit.get("name") == unit_name:
+        for unit in source_army["units"]:
+            if "name" not in unit:
+                raise ValueError(f"Unit in army '{from_army}' missing required 'name' field")
+            if unit["name"] == unit_name:
                 unit_to_move = unit
                 break
 

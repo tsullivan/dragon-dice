@@ -112,9 +112,16 @@ class UnitSorter:
         """
 
         def get_sort_key(unit):
-            primary = unit.get(criteria.primary_key, "")
-            secondary = unit.get(criteria.secondary_key, "")
-            tertiary = unit.get(criteria.tertiary_key, "")
+            if criteria.primary_key not in unit:
+                raise ValueError(f"Unit missing required sort key '{criteria.primary_key}'")
+            if criteria.secondary_key not in unit:
+                raise ValueError(f"Unit missing required sort key '{criteria.secondary_key}'")
+            if criteria.tertiary_key not in unit:
+                raise ValueError(f"Unit missing required sort key '{criteria.tertiary_key}'")
+
+            primary = unit[criteria.primary_key]
+            secondary = unit[criteria.secondary_key]
+            tertiary = unit[criteria.tertiary_key]
 
             # Handle numeric vs string sorting
             if isinstance(primary, (int, float)) and criteria.reverse_primary:
@@ -129,7 +136,7 @@ class UnitSorter:
         sorted_units = sorted(units, key=get_sort_key)
 
         # Apply reverse flags for string-based sorting
-        if criteria.reverse_primary and not isinstance(units[0].get(criteria.primary_key, ""), (int, float)):
+        if criteria.reverse_primary and units and not isinstance(units[0][criteria.primary_key], (int, float)):
             sorted_units.reverse()
 
         return sorted_units

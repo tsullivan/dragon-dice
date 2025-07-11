@@ -60,7 +60,11 @@ class SummoningPoolManager(QObject):
 
     def get_player_pool(self, player_name: str) -> List[DragonModel]:
         """Get all dragons in a player's summoning pool."""
-        return self._player_pools.get(player_name, []).copy()
+        if player_name not in self._player_pools:
+            raise ValueError(
+                f"Player '{player_name}' not found in summoning pool system. Available players: {list(self._player_pools.keys())}"
+            )
+        return self._player_pools[player_name].copy()
 
     def get_available_dragons(self, player_name: str, dragon_type: Optional[str] = None) -> List[DragonModel]:
         """Get available dragons for summoning, optionally filtered by type."""
@@ -109,11 +113,15 @@ class SummoningPoolManager(QObject):
         for dragon in pool:
             # Count by type
             dragon_type = dragon.dragon_type
-            stats["dragon_types"][dragon_type] = stats["dragon_types"].get(dragon_type, 0) + 1
+            if dragon_type not in stats["dragon_types"]:
+                stats["dragon_types"][dragon_type] = 0
+            stats["dragon_types"][dragon_type] += 1
 
             # Count by elements
             for element in dragon.elements:
-                stats["elements"][element] = stats["elements"].get(element, 0) + 1
+                if element not in stats["elements"]:
+                    stats["elements"][element] = 0
+                stats["elements"][element] += 1
 
             # Total health
             stats["health_total"] += dragon.health
@@ -202,7 +210,10 @@ class SummoningPoolManager(QObject):
 
     def get_dragons_at_terrain(self, terrain_name: str) -> List[Dict[str, Any]]:
         """Get all dragons currently at a specific terrain."""
-        return self._summoned_dragons.get(terrain_name, []).copy()
+        if terrain_name not in self._summoned_dragons:
+            # No dragons at this terrain is a valid state, return empty list
+            return []
+        return self._summoned_dragons[terrain_name].copy()
 
     def return_dragon_to_pool(self, terrain_name: str, dragon_id: str) -> bool:
         """Return a dragon from a terrain to its owner's summoning pool."""
@@ -210,7 +221,9 @@ class SummoningPoolManager(QObject):
             dragons_at_terrain = self._summoned_dragons[terrain_name]
 
             for i, dragon_data in enumerate(dragons_at_terrain):
-                if dragon_data.get("dragon_id") == dragon_id:
+                if "dragon_id" not in dragon_data:
+                    raise ValueError(f"Dragon data at terrain '{terrain_name}' missing required 'dragon_id' field")
+                if dragon_data["dragon_id"] == dragon_id:
                     # Remove from terrain
                     removed_dragon = dragons_at_terrain.pop(i)
 
@@ -244,4 +257,6 @@ class SummoningPoolManager(QObject):
 
     def get_dragon_count_at_terrain(self, terrain_name: str) -> int:
         """Get the number of dragons at a specific terrain."""
-        return len(self._summoned_dragons.get(terrain_name, []))
+        if terrain_name not in self._summoned_dragons:
+            return 0
+        return len(self._summoned_dragons[terrain_name])

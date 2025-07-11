@@ -33,16 +33,29 @@ class ActionResolver(QObject):
 
     def set_combat_context(
         self,
-        location: str = None,
-        attacking_army_id: str = None,
-        defending_army_id: str = None,
+        location: str,
+        attacking_army_id: str,
+        defending_army_id: str,
     ):
         """Set the context for combat to determine specific armies being involved."""
+        if location is None:
+            raise ValueError("Combat location cannot be None")
+        if not location:
+            raise ValueError("Combat location is required (empty string provided)")
+        if attacking_army_id is None:
+            raise ValueError("Attacking army ID cannot be None")
+        if not attacking_army_id:
+            raise ValueError("Attacking army ID is required (empty string provided)")
+        if defending_army_id is None:
+            raise ValueError("Defending army ID cannot be None")
+        if not defending_army_id:
+            raise ValueError("Defending army ID is required (empty string provided)")
+
         self._current_combat_location = location
         self._current_attacking_army = attacking_army_id
         self._current_defending_army = defending_army_id
 
-    def determine_defending_army_identifier(self, defending_player_name: str, combat_location: str = None) -> str:
+    def determine_defending_army_identifier(self, defending_player_name: str, combat_location: str) -> str:
         """
         Determine the specific army identifier for the defending player.
         Returns a specific army identifier instead of the placeholder.
@@ -76,7 +89,7 @@ class ActionResolver(QObject):
         # Final fallback to home army
         return self.game_state_manager.generate_army_identifier(defending_player_name, "home")
 
-    def determine_attacking_army_identifier(self, attacking_player_name: str, combat_location: str = None) -> str:
+    def determine_attacking_army_identifier(self, attacking_player_name: str, combat_location: str) -> str:
         """
         Determine the specific army identifier for the attacking player.
         """

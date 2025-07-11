@@ -150,7 +150,11 @@ class ReservesManager(QObject):
 
     def get_player_reserves(self, player_name: str) -> List[ReserveUnit]:
         """Get all units in a player's Reserve Area."""
-        return self.reserves_by_player.get(player_name, [])
+        if player_name not in self.reserves_by_player:
+            raise ValueError(
+                f"Player '{player_name}' not found in reserves system. Available players: {list(self.reserves_by_player.keys())}"
+            )
+        return self.reserves_by_player[player_name]
 
     def get_reserve_units_by_species(self, player_name: str, species: str) -> List[ReserveUnit]:
         """Get reserve units of a specific species."""
@@ -329,34 +333,38 @@ class ReservesManager(QObject):
         """Get statistics about a player's Reserve Area."""
         player_reserves = self.get_player_reserves(player_name)
 
+        species_breakdown: Dict[str, int] = {}
+        element_breakdown: Dict[str, int] = {}
+        turns_breakdown: Dict[int, int] = {}
+
         stats = {
             "total_units": len(player_reserves),
             "total_health": sum(unit.health for unit in player_reserves),
-            "species_breakdown": {},
-            "element_breakdown": {},
+            "species_breakdown": species_breakdown,
+            "element_breakdown": element_breakdown,
             "amazon_ivory_magic_potential": self.get_amazon_ivory_magic_generation(player_name),
-            "turns_in_reserves": {},
+            "turns_in_reserves": turns_breakdown,
         }
 
         # Calculate breakdowns
         for unit in player_reserves:
             # Species breakdown
             species = unit.species
-            if species not in stats["species_breakdown"]:
-                stats["species_breakdown"][species] = 0
-            stats["species_breakdown"][species] += 1
+            if species not in species_breakdown:
+                species_breakdown[species] = 0
+            species_breakdown[species] += 1
 
             # Element breakdown
             for element in unit.elements:
-                if element not in stats["element_breakdown"]:
-                    stats["element_breakdown"][element] = 0
-                stats["element_breakdown"][element] += 1
+                if element not in element_breakdown:
+                    element_breakdown[element] = 0
+                element_breakdown[element] += 1
 
             # Turns in reserves
             turns_in_reserves = self.current_turn - unit.turn_entered
-            if turns_in_reserves not in stats["turns_in_reserves"]:
-                stats["turns_in_reserves"][turns_in_reserves] = 0
-            stats["turns_in_reserves"][turns_in_reserves] += 1
+            if turns_in_reserves not in turns_breakdown:
+                turns_breakdown[turns_in_reserves] = 0
+            turns_breakdown[turns_in_reserves] += 1
 
         return stats
 

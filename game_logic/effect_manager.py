@@ -18,9 +18,12 @@ class EffectManager(QObject):
     def remove_effect_by_id(self, effect_id: str) -> bool:
         """Remove a specific effect by its ID. Returns True if found and removed."""
         for effect in self.active_effects:
-            if effect.get("id") == effect_id:
+            if "id" not in effect:
+                raise ValueError("Effect missing required 'id' field")
+            if effect["id"] == effect_id:
                 self.active_effects.remove(effect)
-                print(f"EffectManager: Removed effect: {effect.get('description', 'Unknown')}")
+                description = effect.get("description", "Unknown")  # Description is optional for logging
+                print(f"EffectManager: Removed effect: {description}")
                 self.effects_changed.emit()
                 return True
         return False
@@ -34,11 +37,19 @@ class EffectManager(QObject):
 
     def get_effects_by_player(self, player_name: str) -> List[Dict[str, Any]]:
         """Get all effects affecting a specific player."""
-        return [effect for effect in self.active_effects if effect.get("affected_player_name") == player_name]
+        return [
+            effect for effect in self.active_effects if effect.get("affected_player_name") == player_name
+        ]  # affected_player_name can be None
 
     def get_effects_by_caster(self, caster_name: str) -> List[Dict[str, Any]]:
         """Get all effects cast by a specific player."""
-        return [effect for effect in self.active_effects if effect.get("caster_player_name") == caster_name]
+        result = []
+        for effect in self.active_effects:
+            if "caster_player_name" not in effect:
+                raise ValueError("Effect missing required 'caster_player_name' field")
+            if effect["caster_player_name"] == caster_name:
+                result.append(effect)
+        return result
 
     def _generate_unique_effect_id(self):
         return str(uuid.uuid4())
@@ -77,9 +88,14 @@ class EffectManager(QObject):
 
         for effect in self.active_effects:
             should_expire = False
-            duration_type = effect.get("duration_type", "")
-            caster_name = effect.get("caster_player_name", "")
-            affected_name = effect.get("affected_player_name", "")
+            if "duration_type" not in effect:
+                raise ValueError("Effect missing required 'duration_type' field")
+            if "caster_player_name" not in effect:
+                raise ValueError("Effect missing required 'caster_player_name' field")
+
+            duration_type = effect["duration_type"]
+            caster_name = effect["caster_player_name"]
+            affected_name = effect.get("affected_player_name", "")  # Can be None/empty for some effects
 
             # Check expiration conditions based on duration type
             if duration_type == constants.EFFECT_DURATION_NEXT_TURN_CASTER:
@@ -105,7 +121,9 @@ class EffectManager(QObject):
 
             elif duration_type == "COUNTER_BASED":
                 # Decrement counter and check if expired
-                duration_value = effect.get("duration_value", 0)
+                if "duration_value" not in effect:
+                    raise ValueError("Counter-based effect missing required 'duration_value' field")
+                duration_value = effect["duration_value"]
                 if duration_value <= 1:
                     should_expire = True
                     print(f"EffectManager: Effect '{effect['description']}' expires (counter reached 0)")

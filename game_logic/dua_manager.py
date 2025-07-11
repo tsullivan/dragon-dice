@@ -161,7 +161,11 @@ class DUAManager(QObject):
 
     def get_player_dua(self, player_name: str) -> List[DUAUnit]:
         """Get all units in a player's DUA."""
-        return self.dua_by_player.get(player_name, [])
+        if player_name not in self.dua_by_player:
+            raise ValueError(
+                f"Player '{player_name}' not found in DUA system. Available players: {list(self.dua_by_player.keys())}"
+            )
+        return self.dua_by_player[player_name]
 
     def get_resurrectable_units(self, player_name: str) -> List[DUAUnit]:
         """Get units that can be resurrected for a player."""

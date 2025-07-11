@@ -568,8 +568,15 @@ class GameEngine(QObject):
         print(f"GameEngine: Parsed attacker melee via ActionResolver: {parsed_results}")
 
         # Set combat context for proper army targeting
-        attacking_location = self._current_acting_army.get("location") if self._current_acting_army else None
-        attacking_army_id = self._current_acting_army.get("unique_id") if self._current_acting_army else None
+        if not self._current_acting_army:
+            raise ValueError("No current acting army set for melee combat")
+        if "location" not in self._current_acting_army:
+            raise ValueError("Current acting army missing required 'location' field")
+        if "unique_id" not in self._current_acting_army:
+            raise ValueError("Current acting army missing required 'unique_id' field")
+
+        attacking_location = self._current_acting_army["location"]
+        attacking_army_id = self._current_acting_army["unique_id"]
 
         # Note: determine_primary_defending_army_id expects the defending player name,
         # but we want to find the defending player. Let's use the more general method.
@@ -600,6 +607,10 @@ class GameEngine(QObject):
                 defending_army_id = self.game_state_manager.generate_army_identifier(
                     first_army["player"], first_army["army_id"]
                 )
+
+        # Validate we have all required combat context
+        if not defending_army_id:
+            raise ValueError(f"No defending army found at location '{attacking_location}' for melee combat")
 
         self.action_resolver.set_combat_context(
             location=attacking_location,
@@ -1010,30 +1021,40 @@ class GameEngine(QObject):
         """Returns a list of strings representing active effects for UI display."""
         return self.effect_manager.get_displayable_effects()
 
-    def get_available_units_for_damage(
-        self, player_name: str, army_identifier: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+    def get_available_units_for_damage(self, player_name: str, army_identifier: str) -> List[Dict[str, Any]]:
         """Get units that can receive damage for a specific player/army."""
-        if army_identifier:
-            # Get units from specific army
-            player_data = self.game_state_manager.get_player_data(player_name)
-            if not player_data:
-                return []
+        if not army_identifier:
+            raise ValueError("army_identifier is required for damage allocation")
 
-            army = player_data.get("armies", {}).get(army_identifier, {})
-            units = army.get("units", [])
-        else:
-            # Get units from active army
-            units = self.game_state_manager.get_active_army_units(player_name)
+        # Get units from specific army
+        player_data = self.game_state_manager.get_player_data(player_name)
+        if not player_data:
+            raise ValueError(f"Player '{player_name}' not found")
+
+        if "armies" not in player_data:
+            raise ValueError(f"Player '{player_name}' missing armies data")
+
+        if army_identifier not in player_data["armies"]:
+            raise ValueError(f"Army '{army_identifier}' not found for player '{player_name}'")
+
+        army = player_data["armies"][army_identifier]
+        if "units" not in army:
+            raise ValueError(f"Army '{army_identifier}' missing units data")
+
+        units = army["units"]
 
         # Filter to only units that can take damage (health > 0)
-        available_units = [unit for unit in units if unit.get("health", 0) > 0]
+        # Use fail-fast approach instead of .get() with default
+        available_units = []
+        for unit in units:
+            if "health" not in unit:
+                raise ValueError(f"Unit '{unit.get('name', 'UNKNOWN')}' missing health data")
+            if unit["health"] > 0:
+                available_units.append(unit)
 
         return available_units
 
-    def request_unit_damage_allocation(
-        self, player_name: str, damage_amount: int, army_identifier: Optional[str] = None
-    ):
+    def request_unit_damage_allocation(self, player_name: str, damage_amount: int, army_identifier: str):
         """Request that the player allocate damage to specific units."""
         available_units = self.get_available_units_for_damage(player_name, army_identifier)
 
@@ -1095,7 +1116,10 @@ class GameEngine(QObject):
                 total_damage_applied += damage_amount
                 print(f"GameEngine: Applied {damage_amount} damage to {unit_name}")
             except Exception as e:
-                print(f"GameEngine: Failed to apply damage to {unit_name}: {e}")
+                # Critical: Damage allocation failure should not be silently ignored
+                error_msg = f"Failed to apply damage to {unit_name}: {e}"
+                print(f"GameEngine: {error_msg}")
+                raise RuntimeError(f"Damage allocation failed for player '{player_name}'. {error_msg}") from e
 
         # Check for promotion opportunities for attacking player after dealing damage
         if total_damage_applied > 0 and units_killed:
@@ -1105,7 +1129,7 @@ class GameEngine(QObject):
         self.damage_allocation_completed.emit(player_name, total_damage_applied)
         self.game_state_updated.emit()
 
-    def auto_allocate_damage(self, player_name: str, damage_amount: int, army_identifier: Optional[str] = None):
+    def auto_allocate_damage(self, player_name: str, damage_amount: int, army_identifier: str):
         """Automatically allocate damage to units (for AI or quick resolution)."""
         available_units = self.get_available_units_for_damage(player_name, army_identifier)
 

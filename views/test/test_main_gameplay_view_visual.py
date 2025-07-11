@@ -123,10 +123,18 @@ def test_main_gameplay_view_attacker_melee_roll(qtbot):
 def test_main_gameplay_view_defender_saves_roll(qtbot):
     game_engine = setup_game_engine()
     # Navigate to AWAITING_ATTACKER_MELEE_ROLL state
+    # First choose an acting army (required before maneuver decision)
+    mock_army = {
+        "name": "Player 1 Home Army",
+        "army_type": "home",
+        "location": "Player 1 Highland",
+        "unique_id": "Player 1_home",
+    }
+    game_engine.choose_acting_army(mock_army)
     game_engine.decide_maneuver(False)
     game_engine.select_action("MELEE")
     # Submit attacker results to move to defender saves
-    game_engine.submit_attacker_melee_results("5 hits")
+    game_engine.submit_attacker_melee_results("5 melee")
 
     main_gameplay_view = MainGameplayView(game_engine=game_engine)
     QApplication.processEvents()

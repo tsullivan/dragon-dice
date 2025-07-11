@@ -110,18 +110,27 @@ class SpellTargetingManager:
         valid_armies = []
 
         # Get all armies from game state
-        all_players_data = game_state.get("all_players_data", {})
+        if "all_players_data" not in game_state:
+            raise ValueError("Game state missing required 'all_players_data' field")
+        all_players_data = game_state["all_players_data"]
 
         for player_name, player_data in all_players_data.items():
-            armies = player_data.get("armies", {})
+            if "armies" not in player_data:
+                raise ValueError(f"Player '{player_name}' missing required 'armies' field in game state")
+            armies = player_data["armies"]
 
             for army_id, army_data in armies.items():
+                if "location" not in army_data:
+                    raise ValueError(f"Army '{army_id}' for player '{player_name}' missing required 'location' field")
+                if "units" not in army_data:
+                    raise ValueError(f"Army '{army_id}' for player '{player_name}' missing required 'units' field")
+
                 army_info = {
                     "player": player_name,
                     "army_id": army_id,
                     "army_data": army_data,
-                    "location": army_data.get("location", "Unknown"),
-                    "units": army_data.get("units", []),
+                    "location": army_data["location"],
+                    "units": army_data["units"],
                     "is_own_army": player_name == caster_player,
                 }
 
@@ -138,20 +147,28 @@ class SpellTargetingManager:
         valid_units = []
 
         # Get all units from all armies
-        all_players_data = game_state.get("all_players_data", {})
+        if "all_players_data" not in game_state:
+            raise ValueError("Game state missing required 'all_players_data' field")
+        all_players_data = game_state["all_players_data"]
 
         for player_name, player_data in all_players_data.items():
-            armies = player_data.get("armies", {})
+            if "armies" not in player_data:
+                raise ValueError(f"Player '{player_name}' missing required 'armies' field in game state")
+            armies = player_data["armies"]
 
             for army_id, army_data in armies.items():
-                units = army_data.get("units", [])
+                if "units" not in army_data:
+                    raise ValueError(f"Army '{army_id}' for player '{player_name}' missing required 'units' field")
+                if "location" not in army_data:
+                    raise ValueError(f"Army '{army_id}' for player '{player_name}' missing required 'location' field")
+                units = army_data["units"]
 
                 for unit in units:
                     unit_info = {
                         "player": player_name,
                         "army_id": army_id,
                         "unit_data": unit,
-                        "location": army_data.get("location", "Unknown"),
+                        "location": army_data["location"],
                         "is_own_unit": player_name == caster_player,
                     }
 
@@ -167,15 +184,22 @@ class SpellTargetingManager:
         """Get valid terrain targets for a spell."""
         valid_terrains = []
 
-        terrain_data = game_state.get("terrain_data", {})
+        if "terrain_data" not in game_state:
+            raise ValueError("Game state missing required 'terrain_data' field")
+        terrain_data = game_state["terrain_data"]
 
         for terrain_id, terrain_info in terrain_data.items():
+            if "name" not in terrain_info:
+                raise ValueError(f"Terrain '{terrain_id}' missing required 'name' field")
+            if "elements" not in terrain_info:
+                raise ValueError(f"Terrain '{terrain_id}' missing required 'elements' field")
+
             terrain_target = {
                 "terrain_id": terrain_id,
                 "terrain_data": terrain_info,
-                "name": terrain_info.get("name", "Unknown Terrain"),
-                "elements": terrain_info.get("elements", []),
-                "controller": terrain_info.get("controller"),
+                "name": terrain_info["name"],
+                "elements": terrain_info["elements"],
+                "controller": terrain_info.get("controller"),  # Controller can be None/optional
             }
 
             # Apply spell-specific targeting rules
@@ -244,7 +268,9 @@ class SpellTargetingManager:
             # Check if army has units with matching elements
             army_elements = set()
             for unit in army_info["units"]:
-                army_elements.update(unit.get("elements", []))
+                if "elements" not in unit:
+                    raise ValueError(f"Unit in army '{army_info['army_id']}' missing required 'elements' field")
+                army_elements.update(unit["elements"])
 
             if spell.element not in army_elements:
                 return False
@@ -261,12 +287,17 @@ class SpellTargetingManager:
             return False
 
         # Check for species restrictions
-        if spell.species != "Any" and unit_data.get("species") != spell.species:
-            return False
+        if spell.species != "Any":
+            if "species" not in unit_data:
+                raise ValueError("Unit data missing required 'species' field when checking species restriction")
+            if unit_data["species"] != spell.species:
+                return False
 
         # Check for element matching if required
         if spell.element != "ANY" and spell.element != "ELEMENTAL":
-            unit_elements = unit_data.get("elements", [])
+            if "elements" not in unit_data:
+                raise ValueError("Unit data missing required 'elements' field when checking element restriction")
+            unit_elements = unit_data["elements"]
             if spell.element not in unit_elements:
                 return False
 
@@ -288,7 +319,9 @@ class SpellTargetingManager:
 
         # Check for element matching if required
         if spell.element != "ANY" and spell.element != "ELEMENTAL":
-            unit_elements = unit_data.get("elements", [])
+            if "elements" not in unit_data:
+                raise ValueError("DUA unit data missing required 'elements' field when checking element restriction")
+            unit_elements = unit_data["elements"]
             if spell.element not in unit_elements:
                 return False
 
@@ -305,7 +338,9 @@ class SpellTargetingManager:
 
         # Check for element matching if required
         if spell.element != "ANY" and spell.element != "ELEMENTAL":
-            unit_elements = unit_data.get("elements", [])
+            if "elements" not in unit_data:
+                raise ValueError("BUA unit data missing required 'elements' field when checking element restriction")
+            unit_elements = unit_data["elements"]
             if spell.element not in unit_elements:
                 return False
 
