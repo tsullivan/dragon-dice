@@ -42,7 +42,6 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
 
         armies = player_data.get("armies", [])
         for army in armies:
-            army_name = army.get("name", "N/A")
             army_type = army.get("army_type", "home")  # Default to home army
             army_points = army.get("points", 0)
             army_location = army.get("location", "N/A")

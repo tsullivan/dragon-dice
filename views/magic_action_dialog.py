@@ -340,7 +340,7 @@ class SpellSelectionWidget(QWidget):
     def clear_selections(self):
         """Clear all spell selections."""
         # Restore all magic points
-        for spell, cost, element in self.selected_spells:
+        for _spell, cost, element in self.selected_spells:
             self.magic_points_by_element[element] += cost
 
         self.selected_spells = []
@@ -546,7 +546,7 @@ class MagicActionDialog(QDialog):
 
         # Spell selection widget
         self.spell_selection_widget = SpellSelectionWidget(caster_location=self.location, caster_army=self.caster_army)
-        army_species = list(set(unit.get("species", "") for unit in self.caster_army.get("units", [])))
+        army_species = list({unit.get("species", "") for unit in self.caster_army.get("units", [])})
         terrain_elements = self._get_terrain_elements()
 
         self.spell_selection_widget.update_available_spells(
@@ -610,7 +610,7 @@ class MagicActionDialog(QDialog):
         terrain_eighth_face_controlled = self._check_terrain_eighth_face_control()
 
         # Process magic roll with SAI effects
-        magic_result = self.sai_processor.process_combat_roll(
+        self.sai_processor.process_combat_roll(
             self.magic_results,
             "magic",
             army_units,
@@ -679,7 +679,7 @@ class MagicActionDialog(QDialog):
 
         # Handle Amazon flexible magic - will be assigned during spell selection
         total_amazon_magic = sum(self.amazon_flexible_magic.values())
-        if total_amazon_magic > 0:
+        if total_amazon_magic > 0:  # noqa: SIM102
             # For now, distribute evenly among terrain elements
             if terrain_elements:
                 magic_per_element = total_amazon_magic // len(terrain_elements)
@@ -720,7 +720,7 @@ class MagicActionDialog(QDialog):
 
         # Check if location indicates eighth face control
         # This is a placeholder - real implementation would check game state
-        if "eighth" in self.location.lower() or "controlled" in self.location.lower():
+        if "eighth" in self.location.lower() or "controlled" in self.location.lower():  # noqa: SIM103
             return True
 
         # In a full implementation, this would check:

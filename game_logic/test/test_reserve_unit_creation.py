@@ -65,19 +65,19 @@ class TestReserveUnitCreation(unittest.TestCase):
         reserves = manager._create_reserve_units("Player 1", 5)
 
         # Should create units within point limit
-        self.assertGreater(len(reserves), 0)
-        self.assertLessEqual(len(reserves), 5)  # Max 5 units with 1 health each
+        assert len(reserves) > 0
+        assert len(reserves) <= 5  # Max 5 units with 1 health each
 
         # Verify unit structure
         for unit in reserves:
-            self.assertIn("id", unit)
-            self.assertIn("name", unit)
-            self.assertIn("health", unit)
-            self.assertIn("max_health", unit)
-            self.assertIn("point_cost", unit)
-            self.assertIn("unit_type", unit)
-            self.assertIn("faces", unit)
-            self.assertEqual(unit["location"], "Reserve Pool")
+            assert "id" in unit
+            assert "name" in unit
+            assert "health" in unit
+            assert "max_health" in unit
+            assert "point_cost" in unit
+            assert "unit_type" in unit
+            assert "faces" in unit
+            assert unit["location"] == "Reserve Pool"
 
     @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_variety(self, mock_roster_class):
@@ -119,12 +119,12 @@ class TestReserveUnitCreation(unittest.TestCase):
         reserves = manager._create_reserve_units("Player 1", 6)
 
         # Should create 6 units (cycling through the 3 types)
-        self.assertEqual(len(reserves), 6)
+        assert len(reserves) == 6
 
         # Should have variety in unit types
         unit_types = [unit["unit_type"] for unit in reserves]
         unique_types = set(unit_types)
-        self.assertGreater(len(unique_types), 1)  # Should have more than one type
+        assert len(unique_types) > 1  # Should have more than one type
 
     @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_cost_limits(self, mock_roster_class):
@@ -166,10 +166,10 @@ class TestReserveUnitCreation(unittest.TestCase):
 
         # Calculate total cost used
         total_cost = sum(unit["point_cost"] for unit in reserves)
-        self.assertLessEqual(total_cost, 5)  # Should not exceed budget
+        assert total_cost <= 5  # Should not exceed budget
 
         # Should create some units
-        self.assertGreater(len(reserves), 0)
+        assert len(reserves) > 0
 
     @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_no_affordable_units(self, mock_roster_class):
@@ -192,7 +192,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         reserves = manager._create_reserve_units("Player 1", 5)
 
         # Should create no units if none are affordable
-        self.assertEqual(len(reserves), 0)
+        assert len(reserves) == 0
 
     @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_empty_roster(self, mock_roster_class):
@@ -208,7 +208,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         reserves = manager._create_reserve_units("Player 1", 10)
 
         # Should create no units with empty roster
-        self.assertEqual(len(reserves), 0)
+        assert len(reserves) == 0
 
     @patch("models.unit_roster_model.UnitRosterModel")
     def test_create_reserve_units_cap_limit(self, mock_roster_class):
@@ -241,7 +241,7 @@ class TestReserveUnitCreation(unittest.TestCase):
         reserves = manager._create_reserve_units("Player 1", 100)
 
         # Should be capped at 15 units regardless of points available
-        self.assertLessEqual(len(reserves), 15)
+        assert len(reserves) <= 15
 
 
 if __name__ == "__main__":

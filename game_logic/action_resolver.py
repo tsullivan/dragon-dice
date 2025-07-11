@@ -2,8 +2,6 @@ from typing import Optional
 
 from PySide6.QtCore import QObject, Signal
 
-from models.unit_model import UnitFace
-
 from .effect_manager import EffectManager
 
 # Forward declaration for type hinting if GameStateManager and EffectManager are in different files
@@ -172,9 +170,9 @@ class ActionResolver(QObject):
 
         id_icons_to_convert = 0
         for icon_data in remaining_icons:  # Iterate over the copy
-            if icon_data.get("type") == UnitFace.ICON_ID:
+            if icon_data.get("type") == "ID":
                 id_icons_to_convert += icon_data.get("count", 0)
-            elif icon_data.get("type") == UnitFace.ICON_MELEE:
+            elif icon_data.get("type") == "Melee":
                 calculated_results["hits"] += icon_data.get("count", 0)
             # TODO: Handle SAIs that modify attacker's roll (e.g., Doubler) here or in a dedicated step
 
@@ -187,7 +185,7 @@ class ActionResolver(QObject):
                 if unit_id not in units_that_used_id:
                     # For now, use a default ID ability since we don't have die_faces data
                     # This would normally come from unit definitions
-                    unit_def = (
+                    (
                         self.game_state_manager.unit_roster.get_unit_definition(unit.get("unit_type", ""))
                         if hasattr(self.game_state_manager, "unit_roster")
                         else None
@@ -205,8 +203,8 @@ class ActionResolver(QObject):
         # TODO: 4. Apply SAIs from parsed_dice_results that modify the attacker's roll (e.g., Doubler). (This was TODO #3 before ID conversion)
         # Example:
         for icon_data in remaining_icons:
-            if icon_data.get("type") == UnitFace.ICON_SAI and icon_data.get("name") == UnitFace.SAI_DOUBLER:
-                print(f"ActionResolver: Applying {UnitFace.SAI_DOUBLER}. Current hits: {calculated_results['hits']}")
+            if icon_data.get("type") == "SAI" and icon_data.get("name") == "Doubler":
+                print(f"ActionResolver: Applying Doubler. Current hits: {calculated_results['hits']}")
                 calculated_results["hits"] *= 2  # Assuming one Doubler for now
                 # TODO: Handle multiple doublers/triplers (usually best one applies)
                 break  # Typically only one such SAI is effective
@@ -224,9 +222,9 @@ class ActionResolver(QObject):
 
         # --- Stage 4: Identify SAIs affecting defender's save roll ---
         for icon_data in remaining_icons:
-            if icon_data.get("type") == UnitFace.ICON_SAI and icon_data.get("name") == UnitFace.SAI_BULLSEYE:
-                calculated_results["sais_for_defender"].append(UnitFace.SAI_BULLSEYE)
-                print(f"ActionResolver: {UnitFace.SAI_BULLSEYE} identified for defender's save.")
+            if icon_data.get("type") == "SAI" and icon_data.get("name") == "Bullseye":
+                calculated_results["sais_for_defender"].append("Bullseye")
+                print("ActionResolver: Bullseye identified for defender's save.")
         # TODO: 7. Identify SAIs that will affect the defender's save roll.
 
         # After processing, determine the next step
@@ -268,7 +266,7 @@ class ActionResolver(QObject):
         attacker_hits = attacker_outcome.get("hits", 0)
 
         # Apply SAIs from attacker that affect saves
-        bullseye_active = UnitFace.SAI_BULLSEYE in sais_from_attacker
+        bullseye_active = "Bullseye" in sais_from_attacker
         if bullseye_active:
             print("ActionResolver: Attacker Bullseye is active, preventing ID conversion to saves.")
 
@@ -280,9 +278,7 @@ class ActionResolver(QObject):
         # Convert ID icons to save results based on defending unit abilities
         converted_id_saves = 0
         units_that_used_id = set()  # To ensure a unit's ID is used only once per roll
-        id_icons_to_convert = sum(
-            item.get("count", 0) for item in parsed_save_dice if item.get("type") == UnitFace.ICON_ID
-        )
+        id_icons_to_convert = sum(item.get("count", 0) for item in parsed_save_dice if item.get("type") == "ID")
 
         for _ in range(id_icons_to_convert):
             # If Bullseye is active, ID icons might not convert to saves (rule dependent)
@@ -303,7 +299,7 @@ class ActionResolver(QObject):
 
         # Apply SAIs from save dice that generate additional saves
         for icon_data in parsed_save_dice:
-            if icon_data.get("type") == UnitFace.ICON_SAI:
+            if icon_data.get("type") == "SAI":
                 sai_type = icon_data.get("sai_type")
                 count = icon_data.get("count", 1)
                 # Handle save-generating SAIs
@@ -323,7 +319,7 @@ class ActionResolver(QObject):
 
         # Placeholder for direct save icons
         for item in parsed_save_dice:
-            if item.get("type") == UnitFace.ICON_SAVE:
+            if item.get("type") == "Save":
                 successful_saves += item.get("count", 0)
 
         # --- Calculate final damage ---
@@ -344,9 +340,7 @@ class ActionResolver(QObject):
         counter_attack_possible = False
         if final_damage < attacker_hits:  # Some damage was saved
             # Check if defender has melee icons in their save roll
-            defender_melee_icons = sum(
-                item.get("count", 0) for item in parsed_save_dice if item.get("type") == UnitFace.ICON_MELEE
-            )
+            defender_melee_icons = sum(item.get("count", 0) for item in parsed_save_dice if item.get("type") == "Melee")
             # Check if defender still has units capable of counter-attacking
             surviving_units = [unit for unit in defending_units if unit.get("health", 0) > 0]
 
@@ -389,36 +383,36 @@ class ActionResolver(QObject):
         # Icon name mappings (full names and abbreviations)
         icon_mappings = {
             # Full names
-            "melee": UnitFace.ICON_MELEE,
-            "missile": UnitFace.ICON_MISSILE,
-            "magic": UnitFace.ICON_MAGIC,
-            "save": UnitFace.ICON_SAVE,
-            "id": UnitFace.ICON_ID,
-            "sai": UnitFace.ICON_SAI,
-            "maneuver": UnitFace.ICON_MANEUVER,
+            "melee": "Melee",
+            "missile": "Missile",
+            "magic": "Magic",
+            "save": "Save",
+            "id": "ID",
+            "sai": "SAI",
+            "maneuver": "Maneuver",
             # Common abbreviations
-            "m": UnitFace.ICON_MELEE,
-            "mel": UnitFace.ICON_MELEE,
-            "mi": UnitFace.ICON_MISSILE,
-            "mis": UnitFace.ICON_MISSILE,
-            "mag": UnitFace.ICON_MAGIC,
-            "sv": UnitFace.ICON_SAVE,
-            "s": UnitFace.ICON_SAI,  # When not followed by 'ai'
-            "man": UnitFace.ICON_MANEUVER,
+            "m": "Melee",
+            "mel": "Melee",
+            "mi": "Missile",
+            "mis": "Missile",
+            "mag": "Magic",
+            "sv": "Save",
+            "s": "SAI",  # When not followed by 'ai'
+            "man": "Maneuver",
             # Dragon-specific icons
-            "claw": UnitFace.ICON_DRAGON_ATTACK_CLAW,
-            "bite": UnitFace.ICON_DRAGON_ATTACK_BITE,
-            "tail": UnitFace.ICON_DRAGON_ATTACK_TAIL,
-            "breath": UnitFace.ICON_DRAGON_BREATH,
+            "claw": "Claw",
+            "bite": "Jaws",
+            "tail": "Tail",
+            "breath": "Firebreath",
         }
 
         # Valid SAI types
         valid_sais = {
-            "bullseye": UnitFace.SAI_BULLSEYE,
-            "doubler": UnitFace.SAI_DOUBLER,
-            "tripler": UnitFace.SAI_TRIPLER,
-            "recruit": UnitFace.SAI_RECRUIT,
-            "magic_bolt": UnitFace.SAI_MAGIC_BOLT,
+            "bullseye": "Bullseye",
+            "doubler": "Doubler",
+            "tripler": "Tripler",
+            "recruit": "Recruit",
+            "magic_bolt": "Magic Bolt",
         }
 
         # Split on commas and process each part
@@ -447,7 +441,7 @@ class ActionResolver(QObject):
                     result_dict = {"type": icon_type, "count": count}
 
                     # Handle SAI-specific processing
-                    if icon_type == UnitFace.ICON_SAI and sai_type:
+                    if icon_type == "SAI" and sai_type:
                         sai_constant = valid_sais.get(sai_type)
                         if sai_constant:
                             result_dict["sai_type"] = sai_constant
@@ -472,7 +466,7 @@ class ActionResolver(QObject):
 
                         result_dict = {"type": icon_type, "count": 1}
 
-                        if icon_type == UnitFace.ICON_SAI and sai_type:
+                        if icon_type == "SAI" and sai_type:
                             sai_constant = valid_sais.get(sai_type)
                             if sai_constant:
                                 result_dict["sai_type"] = sai_constant
@@ -539,10 +533,10 @@ class ActionResolver(QObject):
         effects = []
 
         for die_result in parsed_dice:
-            if die_result.get("type") == UnitFace.ICON_MELEE:
+            if die_result.get("type") == "Melee":
                 hits += die_result.get("count", 0)
                 damage += die_result.get("count", 0)  # Each melee hit does 1 damage
-            elif die_result.get("type") == UnitFace.ICON_SAI:
+            elif die_result.get("type") == "SAI":
                 effects.append(
                     {
                         "type": "sai",
@@ -574,9 +568,9 @@ class ActionResolver(QObject):
         effects = []
 
         for die_result in parsed_dice:
-            if die_result.get("type") == UnitFace.ICON_MAGIC:
+            if die_result.get("type") == "Magic":
                 magic_icons += die_result.get("count", 0)
-            elif die_result.get("type") == UnitFace.ICON_SAI:
+            elif die_result.get("type") == "SAI":
                 effects.append(
                     {
                         "type": "sai",
@@ -609,10 +603,10 @@ class ActionResolver(QObject):
         effects = []
 
         for die_result in parsed_dice:
-            if die_result.get("type") == UnitFace.ICON_MISSILE:
+            if die_result.get("type") == "Missile":
                 hits += die_result.get("count", 0)
                 damage += die_result.get("count", 0)  # Each missile hit does 1 damage
-            elif die_result.get("type") == UnitFace.ICON_SAI:
+            elif die_result.get("type") == "SAI":
                 effects.append(
                     {
                         "type": "sai",
@@ -643,7 +637,7 @@ class ActionResolver(QObject):
         # Calculate missile hits (similar to melee but no save phase)
         missile_hits = 0
         for icon_data in parsed_missile_dice:
-            if icon_data.get("type") == UnitFace.ICON_MISSILE:
+            if icon_data.get("type") == "Missile":
                 missile_hits += icon_data.get("count", 0)
 
         # Apply missile damage directly (no saves)
@@ -672,10 +666,10 @@ class ActionResolver(QObject):
 
         magic_effects = []
         for icon_data in parsed_magic_dice:
-            if icon_data.get("type") == UnitFace.ICON_MAGIC:
+            if icon_data.get("type") == "Magic":
                 # Magic icons might generate effects
                 magic_effects.append(f"Magic effect x{icon_data.get('count', 1)}")
-            elif icon_data.get("type") == UnitFace.ICON_SAI:
+            elif icon_data.get("type") == "SAI":
                 # SAIs from magic might have special effects
                 sai_type = icon_data.get("sai_type", "unknown")
                 magic_effects.append(f"SAI: {sai_type}")
@@ -701,9 +695,9 @@ class ActionResolver(QObject):
         maneuver_effects = []
 
         for icon_data in parsed_maneuver_dice:
-            if icon_data.get("type") == UnitFace.ICON_MANEUVER:
+            if icon_data.get("type") == "Maneuver":
                 maneuver_successes += icon_data.get("count", 0)
-            elif icon_data.get("type") == UnitFace.ICON_SAI:
+            elif icon_data.get("type") == "SAI":
                 # SAIs from maneuver might have special movement effects
                 sai_type = icon_data.get("sai_type", "unknown")
                 maneuver_effects.append(f"Maneuver SAI: {sai_type}")
@@ -745,7 +739,7 @@ class ActionResolver(QObject):
         # Process counter-attack (simplified - no saves for counter-attacks)
         counter_hits = 0
         for icon_data in parsed_counter_dice:
-            if icon_data.get("type") == UnitFace.ICON_MELEE:
+            if icon_data.get("type") == "Melee":
                 counter_hits += icon_data.get("count", 0)
 
         # Apply counter-attack damage directly

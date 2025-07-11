@@ -37,9 +37,9 @@ fi
 run_check() {
     local check_name="$1"
     local script_path="$2"
-    
+
     echo "🔄 Running $check_name..."
-    
+
     if python "$script_path"; then
         echo "✅ $check_name passed"
         return 0
@@ -62,7 +62,7 @@ if ! run_check "Type checking" "scripts/run_typecheck.py"; then
     exit 1
 fi
 
-# Run linting (strict - must pass)  
+# Run linting (strict - must pass)
 if ! run_check "Code linting" "scripts/run_linter.py"; then
     echo "❌ Commit blocked due to linting errors"
     exit 1
@@ -95,9 +95,9 @@ fi
 run_check() {
     local check_name="$1"
     local script_path="$2"
-    
+
     echo "🔄 Running $check_name..."
-    
+
     if python "$script_path"; then
         echo "✅ $check_name passed"
         return 0
@@ -159,9 +159,8 @@ def remove_hook():
             hook_path.unlink()
             print("🗑️  Removed pre-commit hook")
         return True
-    else:
-        print("ℹ️  No pre-commit hook found")
-        return False
+    print("ℹ️  No pre-commit hook found")
+    return False
 
 
 def main():
@@ -192,19 +191,19 @@ def main():
                     print("   Use 'git commit --no-verify' to bypass if needed")
                 break
 
-            elif choice == "2":
+            if choice == "2":
                 hook_content = create_lenient_hook()
                 if install_hook(hook_content, "LENIENT"):
                     print("\n✅ Lenient mode enabled!")
                     print("   You'll see warnings but commits won't be blocked")
                 break
 
-            elif choice == "3":
+            if choice == "3":
                 if remove_hook():
                     print("\n✅ Hook removed successfully")
                 break
 
-            elif choice == "4":
+            if choice == "4":
                 hook_path = Path(".git/hooks/pre-commit")
                 if hook_path.exists():
                     print(f"\n📋 Hook exists: {hook_path}")
@@ -221,13 +220,12 @@ def main():
                     print("\n📋 No pre-commit hook installed")
                 continue
 
-            elif choice == "5":
+            if choice == "5":
                 print("\n👋 Goodbye!")
                 break
 
-            else:
-                print("❌ Invalid choice. Please enter 1-5.")
-                continue
+            print("❌ Invalid choice. Please enter 1-5.")
+            continue
 
         except KeyboardInterrupt:
             print("\n\n👋 Goodbye!")

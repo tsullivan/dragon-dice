@@ -20,8 +20,8 @@ class TestResourceManager(unittest.TestCase):
         """Test that ResourceManager focuses on file I/O operations."""
         # ResourceManager should only handle file operations like load_names()
         # Unit definitions are now handled by AppDataModel
-        self.assertTrue(hasattr(self.resource_manager, "load_names"))
-        self.assertFalse(hasattr(self.resource_manager, "load_unit_definitions"))
+        assert hasattr(self.resource_manager, "load_names")
+        assert not hasattr(self.resource_manager, "load_unit_definitions")
 
     def test_resource_manager_only_handles_files(self):
         """Test that ResourceManager only handles external file operations."""
@@ -33,7 +33,7 @@ class TestResourceManager(unittest.TestCase):
 
         # Should only have file I/O related methods
         for method in file_io_methods:
-            self.assertIn(method, expected_methods, f"Unexpected method: {method}")
+            assert method in expected_methods, f"Unexpected method: {method}"
 
     def test_load_names_success(self):
         """Test successful loading of names file."""
@@ -51,35 +51,34 @@ Fire Brigade
         with patch("builtins.open", mock_open(read_data=test_names_content)):
             result = self.resource_manager.load_names()
 
-            self.assertIn("Player", result)
-            self.assertIn("Army", result)
+            assert "Player" in result
+            assert "Army" in result
 
-            self.assertEqual(len(result["Player"]), 3)
-            self.assertIn("Alice", result["Player"])
-            self.assertIn("Bob", result["Player"])
-            self.assertIn("Charlie", result["Player"])
+            assert len(result["Player"]) == 3
+            assert "Alice" in result["Player"]
+            assert "Bob" in result["Player"]
+            assert "Charlie" in result["Player"]
 
-            self.assertEqual(len(result["Army"]), 3)
-            self.assertIn("Iron Legion", result["Army"])
-            self.assertIn("Storm Guard", result["Army"])
-            self.assertIn("Fire Brigade", result["Army"])
+            assert len(result["Army"]) == 3
+            assert "Iron Legion" in result["Army"]
+            assert "Storm Guard" in result["Army"]
+            assert "Fire Brigade" in result["Army"]
 
     def test_load_names_file_not_found(self):
         """Test handling of missing names file."""
-        with patch("builtins.open", side_effect=FileNotFoundError()):
-            with patch("builtins.print") as mock_print:
-                result = self.resource_manager.load_names()
+        with patch("builtins.open", side_effect=FileNotFoundError()), patch("builtins.print") as mock_print:
+            result = self.resource_manager.load_names()
 
-                # Should return default names
-                self.assertIn("Player", result)
-                self.assertIn("Army", result)
+            # Should return default names
+            assert "Player" in result
+            assert "Army" in result
 
-                self.assertEqual(result["Player"], ["Player 1", "Player 2", "Player 3", "Player 4"])
-                self.assertEqual(result["Army"], ["Army 1", "Army 2", "Army 3", "Army 4"])
+            assert result["Player"] == ["Player 1", "Player 2", "Player 3", "Player 4"]
+            assert result["Army"] == ["Army 1", "Army 2", "Army 3", "Army 4"]
 
-                mock_print.assert_called()
-                warning_call = mock_print.call_args[0][0]
-                self.assertIn("not found", warning_call)
+            mock_print.assert_called()
+            warning_call = mock_print.call_args[0][0]
+            assert "not found" in warning_call
 
     def test_load_names_empty_categories(self):
         """Test handling of empty categories in names file."""
@@ -89,16 +88,16 @@ Fire Brigade
 Single Army
 """
 
-        with patch("builtins.open", mock_open(read_data=test_names_content)):
+        with patch("builtins.open", mock_open(read_data=test_names_content)):  # noqa: SIM117
             with patch("builtins.print") as mock_print:
                 result = self.resource_manager.load_names()
 
                 # Player category should get default names
-                self.assertEqual(result["Player"], ["Player 1", "Player 2", "Player 3", "Player 4"])
+                assert result["Player"] == ["Player 1", "Player 2", "Player 3", "Player 4"]
 
                 # Army category should have the provided name
-                self.assertEqual(len(result["Army"]), 1)
-                self.assertIn("Single Army", result["Army"])
+                assert len(result["Army"]) == 1
+                assert "Single Army" in result["Army"]
 
                 mock_print.assert_called()
 
@@ -114,18 +113,18 @@ SomeValue
 Test Army
 """
 
-        with patch("builtins.open", mock_open(read_data=test_names_content)):
+        with patch("builtins.open", mock_open(read_data=test_names_content)):  # noqa: SIM117
             with patch("builtins.print") as mock_print:
                 result = self.resource_manager.load_names()
 
                 # Should only have known categories
-                self.assertIn("Player", result)
-                self.assertIn("Army", result)
-                self.assertNotIn("UnknownCategory", result)
+                assert "Player" in result
+                assert "Army" in result
+                assert "UnknownCategory" not in result
 
                 # Known categories should have correct data
-                self.assertIn("Alice", result["Player"])
-                self.assertIn("Test Army", result["Army"])
+                assert "Alice" in result["Player"]
+                assert "Test Army" in result["Army"]
 
                 # Should warn about unknown category
                 mock_print.assert_called()
@@ -137,7 +136,7 @@ Test Army
 Alice
 
 Bob
-  Charlie  
+  Charlie
 
 [Army]
 
@@ -151,14 +150,14 @@ Storm Guard
             result = self.resource_manager.load_names()
 
             # Should handle whitespace and empty lines correctly
-            self.assertEqual(len(result["Player"]), 3)
-            self.assertIn("Alice", result["Player"])
-            self.assertIn("Bob", result["Player"])
-            self.assertIn("Charlie", result["Player"])  # Stripped whitespace
+            assert len(result["Player"]) == 3
+            assert "Alice" in result["Player"]
+            assert "Bob" in result["Player"]
+            assert "Charlie" in result["Player"]  # Stripped whitespace
 
-            self.assertEqual(len(result["Army"]), 2)
-            self.assertIn("Iron Legion", result["Army"])
-            self.assertIn("Storm Guard", result["Army"])
+            assert len(result["Army"]) == 2
+            assert "Iron Legion" in result["Army"]
+            assert "Storm Guard" in result["Army"]
 
     def test_default_paths_usage(self):
         """Test ResourceManager with default paths."""
@@ -170,14 +169,14 @@ Storm Guard
 
             # Should have created ProjectPaths instance
             mock_paths_class.assert_called_once()
-            self.assertEqual(resource_manager.paths, mock_paths_instance)
+            assert resource_manager.paths == mock_paths_instance
 
     def test_provided_paths_usage(self):
         """Test ResourceManager with provided paths."""
         custom_paths = Mock(spec=ProjectPaths)
         resource_manager = ResourceManager(custom_paths)
 
-        self.assertEqual(resource_manager.paths, custom_paths)
+        assert resource_manager.paths == custom_paths
 
     def test_resource_manager_integration(self):
         """Test ResourceManager integration with file operations."""
@@ -187,11 +186,11 @@ Storm Guard
             names = self.resource_manager.load_names()
 
             # Names should load from mocked file
-            self.assertIn("Alice", names["Player"])
-            self.assertIn("Test Army", names["Army"])
+            assert "Alice" in names["Player"]
+            assert "Test Army" in names["Army"]
 
             # ResourceManager should not handle unit definitions anymore
-            self.assertFalse(hasattr(self.resource_manager, "load_unit_definitions"))
+            assert not hasattr(self.resource_manager, "load_unit_definitions")
 
 
 if __name__ == "__main__":

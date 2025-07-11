@@ -1,5 +1,5 @@
 # components/die_face_display_widget.py
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -59,22 +59,6 @@ class DieFaceDisplayWidget(QWidget):
             label.setText("—")
             label.setStyleSheet("background-color: #f8f8f8; border: 1px solid #ddd; color: #999;")
 
-    def _get_face_display_info(self, face_name: str, face_description: str) -> Tuple[str, str, str]:
-        """Get display information for a die face.
-
-        Returns:
-            tuple: (display_text, background_color, tooltip)
-        """
-        if not face_name:
-            return "?", "#f0f0f0", "Unknown face type"
-
-        # Import UnitFace here to avoid circular imports
-        from models.unit_model import UnitFace
-
-        # Create a temporary UnitFace to get display info
-        temp_face = UnitFace(face_name, face_description)
-        return temp_face.get_display_info()
-
     def _clear_faces_layout(self):
         """Clear all face labels from the layout."""
         for label in self.face_labels:
@@ -89,10 +73,10 @@ class DieFaceDisplayWidget(QWidget):
         # Determine grid layout based on face count
         if num_faces <= 6:
             # Regular units: 2 rows, 3 columns
-            rows, cols = 2, 3
+            cols = 3
         else:
             # Monsters: 2 rows, 5 columns
-            rows, cols = 2, 5
+            cols = 5
 
         for i in range(num_faces):
             face_label = QLabel("?")
@@ -131,12 +115,13 @@ class DieFaceDisplayWidget(QWidget):
             if i < len(self.face_labels):
                 label = self.face_labels[i]
 
-                # Use the face's built-in display methods if it's a UnitFace object
-                if hasattr(face, "get_display_info"):
-                    display_text, background_color, tooltip = face.get_display_info()
-                else:
-                    # Fallback for legacy face data
-                    display_text, background_color, tooltip = self._get_face_display_info(face.name, face.description)
+                # Expect face objects to have the get_display_info method
+                if not hasattr(face, "get_display_info"):
+                    raise AttributeError(
+                        f"Face object must have 'get_display_info' method. "
+                        f"Got {type(face).__name__} with attributes: {dir(face)}"
+                    )
+                display_text, background_color, tooltip = face.get_display_info()
 
                 label.setText(display_text)
                 label.setStyleSheet(

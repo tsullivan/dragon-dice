@@ -11,26 +11,21 @@ This dialog manages the 7-step Dragon Attack process:
 7. Handle promotions and wing effects
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from PySide6.QtCore import Qt, Signal, QTimer
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QDialog,
     QFrame,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
+    QProgressBar,
     QPushButton,
     QScrollArea,
-    QSizePolicy,
     QTextEdit,
     QVBoxLayout,
     QWidget,
-    QProgressBar,
-    QCheckBox,
 )
-
-from models.dragon_model import DragonModel
 
 
 class DragonDisplayWidget(QWidget):
@@ -97,7 +92,7 @@ class DragonTargetingWidget(QWidget):
         layout.addWidget(header)
 
         # Targeting results
-        for dragon_id, target_info in self.targeting_info.items():
+        for _dragon_id, target_info in self.targeting_info.items():
             target_frame = QFrame()
             target_frame.setFrameStyle(QFrame.Shape.Box)
             target_frame.setStyleSheet(

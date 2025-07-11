@@ -1,7 +1,7 @@
-from typing import Any, Dict, List, Optional, Union
 import uuid
+from typing import Any, Dict, List, Optional
 
-from models.die_face_model import DieFaceModel, DRAGON_DIE_FACES
+from models.die_face_model import DRAGON_DIE_FACES, DieFaceModel
 from models.element_model import ELEMENT_DATA
 
 
@@ -125,17 +125,17 @@ class DragonModel:
     def is_hybrid_dragon(self) -> bool:
         """Check if this is a Hybrid Dragon."""
         type_data = self.get_type_data()
-        return type_data and type_data.dragon_type in [DragonTypeModel.HYBRID, DragonTypeModel.IVORY_HYBRID]
+        return type_data is not None and type_data.dragon_type in [DragonTypeModel.HYBRID, DragonTypeModel.IVORY_HYBRID]
 
     def is_ivory_dragon(self) -> bool:
         """Check if this is an Ivory Dragon."""
         type_data = self.get_type_data()
-        return type_data and type_data.dragon_type in [DragonTypeModel.IVORY, DragonTypeModel.IVORY_HYBRID]
+        return type_data is not None and type_data.dragon_type in [DragonTypeModel.IVORY, DragonTypeModel.IVORY_HYBRID]
 
     def can_be_summoned_from_terrain(self) -> bool:
         """Check if this dragon can be summoned from terrain (not just summoning pool)."""
         type_data = self.get_type_data()
-        return type_data and type_data.can_summon_from_terrain()
+        return type_data is not None and type_data.can_summon_from_terrain()
 
     def get_force_value(self) -> int:
         """Get how many dragons this counts as for force assembly."""
@@ -145,12 +145,12 @@ class DragonModel:
     def has_doubled_damage(self) -> bool:
         """Check if this dragon has doubled damage."""
         type_data = self.get_type_data()
-        return type_data and type_data.has_doubled_damage()
+        return type_data is not None and type_data.has_doubled_damage()
 
     def has_doubled_treasure(self) -> bool:
         """Check if this dragon has doubled treasure results."""
         type_data = self.get_type_data()
-        return type_data and type_data.has_doubled_treasure()
+        return type_data is not None and type_data.has_doubled_treasure()
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert dragon to dictionary for serialization."""
@@ -330,24 +330,24 @@ class DragonTypeModel:
                 base_name = f"White {base_name}"
             return f"{''.join(element_icons)} {base_name}"
 
-        elif self.dragon_type == self.HYBRID:
+        if self.dragon_type == self.HYBRID:
             # "{green_icon}{blue_icon} Water/Air Hybrid"
             element_names = [ELEMENT_DATA[elem].display_name for elem in self.elements]
             base_name = f"{'/'.join(element_names)} Hybrid"
             return f"{''.join(element_icons)} {base_name}"
 
-        elif self.dragon_type == self.IVORY:
+        if self.dragon_type == self.IVORY:
             # Same as Elemental but Ivory rules
             base_name = f"{ELEMENT_DATA[self.elements[0]].display_name} Elemental"
             return f"{''.join(element_icons)} {base_name}"
 
-        elif self.dragon_type == self.IVORY_HYBRID:
+        if self.dragon_type == self.IVORY_HYBRID:
             # Ivory Hybrid: element + ivory
             element_name = ELEMENT_DATA[self.elements[0]].display_name
             base_name = f"Ivory/{element_name} Hybrid Dragon"
             return f"🟫{''.join(element_icons)} {base_name}"
 
-        elif self.dragon_type == self.WHITE:
+        if self.dragon_type == self.WHITE:
             # White Dragon
             return f"{''.join(element_icons)} White Dragon"
 
@@ -358,20 +358,20 @@ class DragonTypeModel:
         if self.dragon_type == self.ELEMENTAL:
             return "The standard dragon is an Elemental Dragon. It is made up of one of the five elements."
 
-        elif self.dragon_type == self.HYBRID:
+        if self.dragon_type == self.HYBRID:
             return (
                 "Hybrid Dragons are composed of two elements.\n"
                 "When a breath result is rolled, apply both elemental breath effects.\n"
                 "Hybrid Dragons are affected by any spell or effect that can affect either of its elements."
             )
 
-        elif self.dragon_type == self.IVORY:
+        if self.dragon_type == self.IVORY:
             return (
                 "Ivory Dragons may be summoned by using any one single element of magic or by any effect of a single element (such as a Dragon's Lair or Dragon Staff).\n"
                 "Ivory Dragons may only be summoned from the Summoning Pool. They may not be summoned from another terrain."
             )
 
-        elif self.dragon_type == self.IVORY_HYBRID:
+        if self.dragon_type == self.IVORY_HYBRID:
             return (
                 "Ivory Hybrid Dragons are composed of one element and ivory.\n"
                 "When a breath result is rolled, apply the elemental breath effect.\n"
@@ -379,7 +379,7 @@ class DragonTypeModel:
                 "Ivory Hybrid Dragons can only be summoned from a terrain by magic or an effect that matches their element."
             )
 
-        elif self.dragon_type == self.WHITE:
+        if self.dragon_type == self.WHITE:
             return (
                 "White Dragons have ten health instead of five.\n"
                 "All damage inflicted from a White Dragon's claws, jaws, tail and wing results are doubled.\n"
@@ -675,5 +675,5 @@ def calculate_required_dragons(force_size_points: int) -> int:
     """
     import math
 
-    POINTS_PER_DRAGON = 24
+    POINTS_PER_DRAGON = 24  # noqa: N806
     return math.ceil(force_size_points / POINTS_PER_DRAGON)

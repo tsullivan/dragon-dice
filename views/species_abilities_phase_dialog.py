@@ -24,7 +24,6 @@ from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QPushButton,
-    QScrollArea,
     QSizePolicy,
     QSpacerItem,
     QTabWidget,
@@ -155,7 +154,7 @@ class MutateAbilityWidget(QWidget):
         main_layout.addWidget(army_group)
 
         # Selection status
-        self.status_label = QLabel("Select up to {} target units and a recruiting army".format(self.max_targets))
+        self.status_label = QLabel(f"Select up to {self.max_targets} target units and a recruiting army")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status_label.setStyleSheet("font-weight: bold; margin: 10px; padding: 5px; background-color: #f0f0f0;")
         main_layout.addWidget(self.status_label)
@@ -231,7 +230,7 @@ class MutateAbilityWidget(QWidget):
         if status_parts:
             self.status_label.setText(" | ".join(status_parts))
         else:
-            self.status_label.setText("Select up to {} target units and a recruiting army".format(self.max_targets))
+            self.status_label.setText(f"Select up to {self.max_targets} target units and a recruiting army")
 
         # Update button states
         can_mutate = targets_selected > 0 and army_selected
@@ -349,10 +348,7 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
 
         # An opposing player must have at least one unit in their Reserves Area
         total_opponent_reserves = sum(len(units) for units in self.opponent_reserves.values())
-        if total_opponent_reserves == 0:
-            return False
-
-        return True
+        return total_opponent_reserves != 0
 
     def _setup_ui(self):
         """Setup the species abilities phase UI."""

@@ -194,13 +194,13 @@ class EffectManager(QObject):
             # Check if effect applies to the target
             if target_type == constants.EFFECT_TARGET_ARMY:
                 # Effect targets a specific army
-                if affected_player == target_player_name:
+                if affected_player == target_player_name:  # noqa: SIM102
                     if target_army_identifier is None or target_id == target_army_identifier:
                         effect_applies = True
             elif target_type == constants.EFFECT_TARGET_TERRAIN:
                 # Effect targets terrain (affects all units on that terrain)
                 effect_applies = True  # Simplified - would need terrain location checking
-            elif target_type == "PLAYER":
+            elif target_type == "PLAYER":  # noqa: SIM102
                 # Effect targets the entire player
                 if affected_player == target_player_name:
                     effect_applies = True

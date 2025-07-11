@@ -67,7 +67,7 @@ class DistanceRollsView(QWidget):
         for i, p_data in enumerate(self.player_setup_data):
             player_name = p_data.get("name", f"Player {i + 1}")
             home_terrain = p_data.get("home_terrain", "N/A")
-            frontier_terrain_proposal = p_data.get("frontier_terrain_proposal", "")
+            p_data.get("frontier_terrain_proposal", "")
 
             # Create section for this player
             formatted_home_terrain = format_terrain_type(home_terrain)

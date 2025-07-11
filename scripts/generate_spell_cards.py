@@ -10,7 +10,7 @@ from pathlib import Path
 def load_spell_data():
     """Load spell data from snapshot."""
     spell_file = Path("models/test/snapshots/spell_data.json")
-    with open(spell_file, "r") as f:
+    with open(spell_file) as f:
         return json.load(f)
 
 
@@ -40,7 +40,7 @@ def get_element_display_name(element):
     return element_names.get(element, element)
 
 
-def generate_spell_card(spell_key, spell_data):
+def generate_spell_card(spell_key, spell_data):  # noqa: ARG001
     """Generate HTML for a single spell card."""
     element_class = get_element_class(spell_data["element"])
 
@@ -79,7 +79,7 @@ def generate_complete_html():
     spell_data = load_spell_data()
 
     # Read the base HTML template
-    with open("assets/spell_cards_template.html", "r") as f:
+    with open("assets/spell_cards_template.html") as f:
         template = f.read()
 
     # Group spells by element
@@ -145,7 +145,7 @@ def main():
     with open("assets/spell_cards.html", "w") as f:
         f.write(html_content)
 
-    print(f"\nGenerated complete spell cards HTML: assets/spell_cards.html")
+    print("\nGenerated complete spell cards HTML: assets/spell_cards.html")
     print(f"Total spells: {len(spell_data)}")
 
 

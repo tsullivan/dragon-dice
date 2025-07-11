@@ -6,10 +6,9 @@ and promotion chain management according to Dragon Dice rules.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from PySide6.QtCore import QObject, Signal
-from models.unit_model import UnitModel
 
 
 @dataclass
@@ -152,7 +151,7 @@ class PromotionManager(QObject):
             if promotion_option.source_location == "DUA":
                 if not self._is_unit_available_in_dua(target_unit, player_name):
                     return False, "Target unit not available in DUA"
-            elif promotion_option.source_location == "SUMMONING_POOL":
+            elif promotion_option.source_location == "SUMMONING_POOL":  # noqa: SIM102
                 if not self._is_unit_available_in_pool(target_unit, player_name):
                     return False, "Target unit not available in Summoning Pool"
 
@@ -201,17 +200,16 @@ class PromotionManager(QObject):
             # Perform the exchange
             if promotion_option.source_location == "DUA":
                 return self._execute_dua_promotion(promotion_option, player_name)
-            elif promotion_option.source_location == "SUMMONING_POOL":
+            if promotion_option.source_location == "SUMMONING_POOL":
                 return self._execute_pool_promotion(promotion_option, player_name)
-            else:
-                return PromotionResult(
-                    success=False,
-                    promoted_units=[],
-                    exchanged_from_dua=[],
-                    exchanged_from_pool=[],
-                    message="Unknown promotion source",
-                    errors=["Unknown promotion source location"],
-                )
+            return PromotionResult(
+                success=False,
+                promoted_units=[],
+                exchanged_from_dua=[],
+                exchanged_from_pool=[],
+                message="Unknown promotion source",
+                errors=["Unknown promotion source location"],
+            )
 
         except Exception as e:
             return PromotionResult(

@@ -6,7 +6,7 @@ Targeted units in the opponent's Reserves Area must make save rolls, and those t
 fail are killed, allowing the Swamp Stalker player to recruit/promote accordingly.
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -56,7 +56,7 @@ class MutateSaveRollWidget(QWidget):
         roll_layout.addWidget(QLabel("Roll die faces:"))
 
         self.die_inputs: List[QLineEdit] = []
-        for i in range(unit_health):  # Number of dice = health
+        for _i in range(unit_health):  # Number of dice = health
             die_input = QLineEdit()
             die_input.setMaximumWidth(50)
             die_input.setPlaceholderText("Face")

@@ -48,7 +48,7 @@ class TestUnitRosterModel(unittest.TestCase):
 
         # Should have loaded unit definitions
         mock_app_data_model.get_unit_definitions.assert_called_once()
-        self.assertEqual(len(roster._unit_definitions), 3)  # 2 Goblin + 1 Amazon
+        assert len(roster._unit_definitions) == 3  # 2 Goblin + 1 Amazon
 
     def test_get_available_unit_types(self):
         """Test getting available unit types."""
@@ -58,26 +58,26 @@ class TestUnitRosterModel(unittest.TestCase):
         roster = UnitRosterModel(mock_app_data_model)
         unit_types = roster.get_available_unit_types()
 
-        self.assertEqual(len(unit_types), 3)
+        assert len(unit_types) == 3
 
         # Check structure
         for unit_type in unit_types:
-            self.assertIn("id", unit_type)
-            self.assertIn("name", unit_type)
-            self.assertIn("cost", unit_type)
+            assert "id" in unit_type
+            assert "name" in unit_type
+            assert "cost" in unit_type
 
         # Check specific units
         unit_ids = [unit["id"] for unit in unit_types]
-        self.assertIn("goblin_thug", unit_ids)
-        self.assertIn("goblin_cutthroat", unit_ids)
-        self.assertIn("amazon_warrior", unit_ids)
+        assert "goblin_thug" in unit_ids
+        assert "goblin_cutthroat" in unit_ids
+        assert "amazon_warrior" in unit_ids
 
         # Check cost calculation (using max_health as cost)
         thug_unit = next(u for u in unit_types if u["id"] == "goblin_thug")
-        self.assertEqual(thug_unit["cost"], 1)
+        assert thug_unit["cost"] == 1
 
         cutthroat_unit = next(u for u in unit_types if u["id"] == "goblin_cutthroat")
-        self.assertEqual(cutthroat_unit["cost"], 2)
+        assert cutthroat_unit["cost"] == 2
 
     def test_get_available_unit_types_by_species(self):
         """Test getting unit types grouped by species."""
@@ -88,19 +88,19 @@ class TestUnitRosterModel(unittest.TestCase):
         units_by_species = roster.get_available_unit_types_by_species()
 
         # Should have two species
-        self.assertIn("Goblin", units_by_species)
-        self.assertIn("Amazon", units_by_species)
+        assert "Goblin" in units_by_species
+        assert "Amazon" in units_by_species
 
         # Goblin should have 2 units
-        self.assertEqual(len(units_by_species["Goblin"]), 2)
+        assert len(units_by_species["Goblin"]) == 2
         goblin_unit_ids = [unit["id"] for unit in units_by_species["Goblin"]]
-        self.assertIn("goblin_thug", goblin_unit_ids)
-        self.assertIn("goblin_cutthroat", goblin_unit_ids)
+        assert "goblin_thug" in goblin_unit_ids
+        assert "goblin_cutthroat" in goblin_unit_ids
 
         # Amazon should have 1 unit
-        self.assertEqual(len(units_by_species["Amazon"]), 1)
+        assert len(units_by_species["Amazon"]) == 1
         amazon_unit_ids = [unit["id"] for unit in units_by_species["Amazon"]]
-        self.assertIn("amazon_warrior", amazon_unit_ids)
+        assert "amazon_warrior" in amazon_unit_ids
 
     def test_get_unit_definition(self):
         """Test getting specific unit definitions."""
@@ -111,14 +111,14 @@ class TestUnitRosterModel(unittest.TestCase):
 
         # Test existing unit
         thug_def = roster.get_unit_definition("goblin_thug")
-        self.assertIsNotNone(thug_def)
-        self.assertEqual(thug_def["display_name"], "Thug")
-        self.assertEqual(thug_def["max_health"], 1)
-        self.assertEqual(thug_def["unit_class_type"], "Heavy Melee")
+        assert thug_def is not None
+        assert thug_def["display_name"] == "Thug"
+        assert thug_def["max_health"] == 1
+        assert thug_def["unit_class_type"] == "Heavy Melee"
 
         # Test non-existing unit
         invalid_def = roster.get_unit_definition("invalid_unit")
-        self.assertIsNone(invalid_def)
+        assert invalid_def is None
 
     def test_create_unit_instance(self):
         """Test creating unit instances from definitions."""
@@ -130,13 +130,13 @@ class TestUnitRosterModel(unittest.TestCase):
         # Test creating valid unit instance
         unit_instance = roster.create_unit_instance("goblin_thug", "test_instance_id", "Custom Thug Name")
 
-        self.assertIsNotNone(unit_instance)
-        self.assertIsInstance(unit_instance, UnitModel)
-        self.assertEqual(unit_instance.unit_id, "test_instance_id")
-        self.assertEqual(unit_instance.name, "Custom Thug Name")
-        self.assertEqual(unit_instance.unit_type, "goblin_thug")
-        self.assertEqual(unit_instance.health, 1)
-        self.assertEqual(unit_instance.max_health, 1)
+        assert unit_instance is not None
+        assert isinstance(unit_instance, UnitModel)
+        assert unit_instance.unit_id == "test_instance_id"
+        assert unit_instance.name == "Custom Thug Name"
+        assert unit_instance.unit_type == "goblin_thug"
+        assert unit_instance.health == 1
+        assert unit_instance.max_health == 1
 
     def test_create_unit_instance_with_default_name(self):
         """Test creating unit instance with default name."""
@@ -147,10 +147,10 @@ class TestUnitRosterModel(unittest.TestCase):
 
         unit_instance = roster.create_unit_instance("goblin_cutthroat", "test_instance_id")
 
-        self.assertIsNotNone(unit_instance)
-        self.assertEqual(unit_instance.name, "Cutthroat")  # Default display name
-        self.assertEqual(unit_instance.health, 2)
-        self.assertEqual(unit_instance.max_health, 2)
+        assert unit_instance is not None
+        assert unit_instance.name == "Cutthroat"  # Default display name
+        assert unit_instance.health == 2
+        assert unit_instance.max_health == 2
 
     def test_create_unit_instance_invalid_type(self):
         """Test creating unit instance with invalid unit type."""
@@ -161,7 +161,7 @@ class TestUnitRosterModel(unittest.TestCase):
 
         unit_instance = roster.create_unit_instance("invalid_unit_type", "test_instance_id")
 
-        self.assertIsNone(unit_instance)
+        assert unit_instance is None
 
     def test_abilities_mapping(self):
         """Test that faces are properly available in unit creation."""
@@ -172,13 +172,13 @@ class TestUnitRosterModel(unittest.TestCase):
 
         unit_instance = roster.create_unit_instance("amazon_warrior", "test_instance_id")
 
-        self.assertIsNotNone(unit_instance)
+        assert unit_instance is not None
         # The new UnitModel uses faces instead of abilities
-        self.assertIsNotNone(unit_instance.faces)
-        self.assertIsInstance(unit_instance.faces, list)
+        assert unit_instance.faces is not None
+        assert isinstance(unit_instance.faces, list)
         # Check that faces have been populated (exact validation depends on actual unit data structure)
         face_names = unit_instance.get_face_names()
-        self.assertIsInstance(face_names, list)
+        assert isinstance(face_names, list)
 
     def test_empty_unit_data_handling(self):
         """Test handling of empty unit data."""
@@ -189,13 +189,13 @@ class TestUnitRosterModel(unittest.TestCase):
 
         # Should handle empty data gracefully
         unit_types = roster.get_available_unit_types()
-        self.assertEqual(len(unit_types), 0)
+        assert len(unit_types) == 0
 
         units_by_species = roster.get_available_unit_types_by_species()
-        self.assertEqual(len(units_by_species), 0)
+        assert len(units_by_species) == 0
 
         unit_def = roster.get_unit_definition("any_unit")
-        self.assertIsNone(unit_def)
+        assert unit_def is None
 
     def test_unit_roster_caching(self):
         """Test that unit roster data is cached properly."""

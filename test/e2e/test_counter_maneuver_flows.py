@@ -4,11 +4,12 @@ Comprehensive End-to-end tests for Counter-Maneuver scenarios.
 Tests all variations of counter-maneuver flows in Dragon Dice.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
+import unittest
+from unittest.mock import MagicMock, patch
+
 from PySide6.QtCore import QTimer
-from unittest.mock import patch, MagicMock
+from PySide6.QtWidgets import QApplication
 
 from game_logic.engine import GameEngine
 from game_logic.game_state_manager import GameStateManager
@@ -160,7 +161,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
 
         # Find the army across all players
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     # Create the army data structure expected by choose_acting_army
@@ -223,10 +224,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
         counter_signals = [
             s for s in self.signals_received if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_signals), 1)
-        self.assertIn(
-            "armies: 2", counter_signals[0]
-        )  # Player 2 has horde + campaign at Coastland
+        assert len(counter_signals) == 1
+        assert "armies: 2" in counter_signals[0]  # Player 2 has horde + campaign at Coastland
 
         # Step 3: Player 2 declines counter-maneuver
         print("Step 3: Player 2 declines counter-maneuver")
@@ -236,20 +235,20 @@ class TestCounterManeuverFlows(unittest.TestCase):
         simultaneous_signals = [
             s for s in self.signals_received if "simultaneous_rolls_requested" in s
         ]
-        self.assertEqual(len(simultaneous_signals), 0)
+        assert len(simultaneous_signals) == 0
 
         # Should directly request terrain direction choice (automatic success)
         terrain_direction_signals = [
             s for s in self.signals_received if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_direction_signals), 1)
+        assert len(terrain_direction_signals) == 1
 
         # Step 4: Player 1 chooses terrain direction
         print("Step 4: Player 1 chooses terrain direction")
         self.engine.submit_terrain_direction_choice("UP")
 
         # Should advance to action selection
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
         print("✅ Test completed - counter-maneuver declined, automatic success")
 
@@ -280,14 +279,14 @@ class TestCounterManeuverFlows(unittest.TestCase):
         terrain_direction_signals = [
             s for s in self.signals_received if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_direction_signals), 1)
+        assert len(terrain_direction_signals) == 1
 
         # Complete the maneuver by choosing direction
         print("Step 2: Player 1 chooses terrain direction")
         self.engine.submit_terrain_direction_choice("UP")
 
         # Should advance to action selection (maneuver succeeded)
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
         print("✅ Test completed - tie correctly resolved in favor of maneuvering army")
 
@@ -349,7 +348,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
         # Helper for 3-player engine
         def choose_army_3p(army_unique_id):
             all_players_data = three_player_engine.get_all_players_data()
-            for player_name, player_data in all_players_data.items():
+            for _player_name, player_data in all_players_data.items():
                 for army_type, army_data in player_data.get("armies", {}).items():
                     if army_data.get("unique_id") == army_unique_id:
                         army_choice_data = {
@@ -370,10 +369,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
         counter_signals = [
             s for s in three_player_signals if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_signals), 1)
-        self.assertIn(
-            "armies: 3", counter_signals[0]
-        )  # Player 2 (horde + campaign) + Player 3 (campaign)
+        assert len(counter_signals) == 1
+        assert "armies: 3" in counter_signals[0]  # Player 2 (horde + campaign) + Player 3 (campaign)
 
         # Step 2: Mixed responses
         print("Step 2: Player 2 accepts counter-maneuver")
@@ -386,7 +383,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
         simultaneous_signals = [
             s for s in three_player_signals if "simultaneous_rolls_requested" in s
         ]
-        self.assertEqual(len(simultaneous_signals), 1)
+        assert len(simultaneous_signals) == 1
 
         print("✅ Test completed - mixed responses handled correctly")
 
@@ -490,7 +487,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
         # Helper
         def choose_army_priority(army_unique_id):
             all_players_data = priority_engine.get_all_players_data()
-            for player_name, player_data in all_players_data.items():
+            for _player_name, player_data in all_players_data.items():
                 for army_type, army_data in player_data.get("armies", {}).items():
                     if army_data.get("unique_id") == army_unique_id:
                         army_choice_data = {
@@ -511,8 +508,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
         counter_signals = [
             s for s in priority_signals if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_signals), 1)
-        self.assertIn("armies: 3", counter_signals[0])  # home + campaign + horde
+        assert len(counter_signals) == 1
+        assert "armies: 3" in counter_signals[0]  # home + campaign + horde
 
         print("✅ Test completed - army priority system working correctly")
 
@@ -573,7 +570,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
         # Helper
         def choose_army_isolated(army_unique_id):
             all_players_data = isolated_engine.get_all_players_data()
-            for player_name, player_data in all_players_data.items():
+            for _player_name, player_data in all_players_data.items():
                 for army_type, army_data in player_data.get("armies", {}).items():
                     if army_data.get("unique_id") == army_unique_id:
                         army_choice_data = {
@@ -594,13 +591,13 @@ class TestCounterManeuverFlows(unittest.TestCase):
         counter_signals = [
             s for s in isolated_signals if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_signals), 0)
+        assert len(counter_signals) == 0
 
         # Should directly request terrain direction (automatic success)
         terrain_signals = [
             s for s in isolated_signals if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_signals), 1)
+        assert len(terrain_signals) == 1
 
         print("✅ Test completed - edge case handled correctly")
 
@@ -624,10 +621,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
         after_maneuver_signals = len(self.signals_received)
 
         # Should have counter-maneuver request signal
-        self.assertGreater(after_maneuver_signals, initial_signals)
-        self.assertTrue(
-            any("counter_maneuver_requested" in s for s in self.signals_received)
-        )
+        assert after_maneuver_signals > initial_signals
+        assert any("counter_maneuver_requested" in s for s in self.signals_received)
 
         # Step 2: Counter-maneuver accepted
         before_counter_count = len(self.signals_received)
@@ -635,10 +630,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
         after_counter_count = len(self.signals_received)
 
         # Should have simultaneous rolls request signal
-        self.assertGreater(after_counter_count, before_counter_count)
-        self.assertTrue(
-            any("simultaneous_rolls_requested" in s for s in self.signals_received)
-        )
+        assert after_counter_count > before_counter_count
+        assert any("simultaneous_rolls_requested" in s for s in self.signals_received)
 
         # Step 3: Roll resolution
         before_roll_count = len(self.signals_received)
@@ -646,10 +639,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
         after_roll_count = len(self.signals_received)
 
         # Should have terrain direction request signal
-        self.assertGreater(after_roll_count, before_roll_count)
-        self.assertTrue(
-            any("terrain_direction_requested" in s for s in self.signals_received)
-        )
+        assert after_roll_count > before_roll_count
+        assert any("terrain_direction_requested" in s for s in self.signals_received)
 
         # Verify signal order
         signal_order = []
@@ -662,7 +653,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                 signal_order.append("terrain_direction")
 
         expected_order = ["counter_maneuver", "simultaneous_rolls", "terrain_direction"]
-        self.assertEqual(signal_order, expected_order)
+        assert signal_order == expected_order
 
         print("✅ Test completed - signal timing and ordering verified")
 

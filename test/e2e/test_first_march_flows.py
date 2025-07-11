@@ -4,11 +4,12 @@ End-to-end tests for First March phase flows.
 These tests simulate complete user workflows to catch integration issues.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
+import unittest
+from unittest.mock import MagicMock, patch
+
 from PySide6.QtCore import QTimer
-from unittest.mock import patch, MagicMock
+from PySide6.QtWidgets import QApplication
 
 from game_logic.engine import GameEngine
 from game_logic.game_state_manager import GameStateManager
@@ -146,7 +147,7 @@ class TestFirstMarchFlows(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
 
         # Find the army across all players
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     # Create the army data structure expected by choose_acting_army
@@ -203,35 +204,35 @@ class TestFirstMarchFlows(unittest.TestCase):
         self._choose_army_by_id("player_1_campaign")
 
         # Verify we're at maneuver decision step
-        self.assertEqual(self.engine.current_march_step, "DECIDE_MANEUVER")
+        assert self.engine.current_march_step == "DECIDE_MANEUVER"
 
         # Step 2: Player 1 decides to maneuver
         print("Step 2: Player 1 decides to maneuver")
         self.engine.decide_maneuver(True)
 
         # Should trigger counter-maneuver request
-        self.assertIn("counter_maneuver_requested: Coastland", self.signals_received)
+        assert "counter_maneuver_requested: Coastland" in self.signals_received
 
         # Step 3: Player 2 decides to counter-maneuver
         print("Step 3: Player 2 chooses to counter-maneuver")
         self.engine.submit_counter_maneuver_decision("Player 2", True)
 
         # Should trigger simultaneous rolls request
-        self.assertIn("simultaneous_rolls_requested", self.signals_received)
+        assert "simultaneous_rolls_requested" in self.signals_received
 
         # Step 4: Submit roll results - Player 1 wins
         print("Step 4: Simultaneous rolls - Player 1: 3, Player 2: 2")
         self.engine.submit_maneuver_roll_results(3, 2)  # Player 1 wins
 
         # Should request terrain direction choice
-        self.assertIn("terrain_direction_requested: Coastland", self.signals_received)
+        assert "terrain_direction_requested: Coastland" in self.signals_received
 
         # Step 5: Player 1 chooses terrain direction
         print("Step 5: Player 1 chooses to turn terrain UP")
         self.engine.submit_terrain_direction_choice("UP")
 
         # Should advance to action selection
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
         print(
             "✅ Test completed successfully - maneuver succeeded and advanced to action selection"
@@ -271,10 +272,10 @@ class TestFirstMarchFlows(unittest.TestCase):
         terrain_direction_signals = [
             s for s in self.signals_received if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_direction_signals), 0)
+        assert len(terrain_direction_signals) == 0
 
         # Should advance to action selection
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
         print(
             "✅ Test completed successfully - maneuver failed and advanced to action selection"
@@ -303,22 +304,20 @@ class TestFirstMarchFlows(unittest.TestCase):
         self.engine.decide_maneuver(False)
 
         # Should advance directly to action selection
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
         # Should NOT have any counter-maneuver requests
         counter_maneuver_signals = [
             s for s in self.signals_received if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_maneuver_signals), 0)
+        assert len(counter_maneuver_signals) == 0
 
         # Step 3: Player 1 chooses melee action
         print("Step 3: Player 1 chooses Melee Action")
         self.engine.select_action("MELEE")
 
         # Should advance to awaiting melee roll
-        self.assertEqual(
-            self.engine.current_action_step, "AWAITING_ATTACKER_MELEE_ROLL"
-        )
+        assert self.engine.current_action_step == "AWAITING_ATTACKER_MELEE_ROLL"
 
         print(
             "✅ Test completed successfully - skipped maneuver and advanced to melee action"
@@ -349,11 +348,9 @@ class TestFirstMarchFlows(unittest.TestCase):
         self.engine.select_action("SKIP")
 
         # Should automatically advance to Second March
-        self.assertEqual(self.engine.current_phase, "SECOND_MARCH")
-        self.assertEqual(
-            self.engine.get_current_player_name(), "Player 1"
-        )  # Still Player 1's turn
-        self.assertEqual(self.engine.current_march_step, "CHOOSE_ACTING_ARMY")
+        assert self.engine.current_phase == "SECOND_MARCH"
+        assert self.engine.get_current_player_name() == "Player 1"  # Still Player 1's turn
+        assert self.engine.current_march_step == "CHOOSE_ACTING_ARMY"
 
         print(
             "✅ Test completed successfully - advanced from First March to Second March"
@@ -385,19 +382,17 @@ class TestFirstMarchFlows(unittest.TestCase):
         counter_maneuver_signals = [
             s for s in self.signals_received if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_maneuver_signals), 0)
+        assert len(counter_maneuver_signals) == 0
 
         # Should directly request terrain direction choice (automatic success)
-        self.assertIn(
-            "terrain_direction_requested: Player 1 Highland", self.signals_received
-        )
+        assert "terrain_direction_requested: Player 1 Highland" in self.signals_received
 
         # Step 3: Player 1 chooses terrain direction
         print("Step 3: Player 1 chooses to turn terrain DOWN")
         self.engine.submit_terrain_direction_choice("DOWN")
 
         # Should advance to action selection
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
         print(
             "✅ Test completed successfully - automatic maneuver success with no opposition"

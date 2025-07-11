@@ -6,19 +6,19 @@ showing available dragons with their elements, health, and ownership.
 Based on the design from assets/playmat.html.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
+    QFrame,
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QScrollArea,
     QVBoxLayout,
     QWidget,
-    QFrame,
-    QPushButton,
 )
-from PySide6.QtGui import QFont, QPalette
 
 
 class DragonDisplayItem(QFrame):
@@ -110,7 +110,7 @@ class DragonDisplayItem(QFrame):
         }
         return icons.get(element.lower(), "❓")
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event):  # noqa: N802
         """Handle mouse click to select dragon."""
         if event.button() == Qt.MouseButton.LeftButton:
             self.dragon_selected.emit(self.dragon_data)
@@ -165,8 +165,8 @@ class SummoningPoolWidget(QGroupBox):
         # Pool statistics
         self.stats_label = QLabel("Dragons Available: 0")
         self.stats_label.setStyleSheet("""
-            color: #dda0dd; 
-            font-size: 12px; 
+            color: #dda0dd;
+            font-size: 12px;
             font-weight: normal;
         """)
         header_layout.addWidget(self.stats_label)

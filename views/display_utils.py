@@ -10,7 +10,7 @@ from typing import Optional
 import constants
 from models.action_model import get_action_icon
 from models.location_model import LOCATION_DATA
-from models.terrain_model import TERRAIN_DATA, get_terrain_icon, resolve_terrain_name, get_clean_terrain_display_name
+from models.terrain_model import TERRAIN_DATA, get_clean_terrain_display_name, get_terrain_icon, resolve_terrain_name
 
 
 def format_terrain_type(terrain_type: str) -> str:
@@ -170,8 +170,6 @@ def format_terrain_summary_with_description(
     Returns:
         Formatted terrain summary string with face description
     """
-    from models.terrain_model import TERRAIN_DATA
-    from models.location_model import LOCATION_DATA
 
     # Use terrain model to get clean display name and terrain object
     display_name = get_clean_terrain_display_name(terrain_name)

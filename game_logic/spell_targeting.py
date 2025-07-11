@@ -10,8 +10,8 @@ This module handles spell targeting logic including:
 - Summoning Pool restrictions (spells cannot target the Summoning Pool)
 """
 
-from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Any, Dict, List, Tuple
 
 from models.spell_model import SpellModel
 
@@ -39,7 +39,7 @@ class SpellTargetingManager:
         self, spell: SpellModel, caster_player: str, game_state: Dict[str, Any]
     ) -> Dict[str, List[Dict[str, Any]]]:
         """Get all valid targets for a spell."""
-        valid_targets = {
+        valid_targets: Dict[str, List[Dict[str, Any]]] = {
             "armies": [],
             "units": [],
             "terrains": [],
@@ -324,22 +324,22 @@ class SpellTargetingManager:
                 return True, "Valid army target"
             return False, "Invalid army target"
 
-        elif target_type == "unit":
+        if target_type == "unit":
             if self._is_valid_unit_target(spell, target_data, caster_player):
                 return True, "Valid unit target"
             return False, "Invalid unit target"
 
-        elif target_type == "terrain":
+        if target_type == "terrain":
             if self._is_valid_terrain_target(spell, target_data, caster_player):
                 return True, "Valid terrain target"
             return False, "Invalid terrain target"
 
-        elif target_type == "dua":
+        if target_type == "dua":
             if self._is_valid_dua_target(spell, target_data, caster_player):
                 return True, "Valid DUA target"
             return False, "Invalid DUA target"
 
-        elif target_type == "bua":
+        if target_type == "bua":
             if self._is_valid_bua_target(spell, target_data, caster_player):
                 return True, "Valid BUA target"
             return False, "Invalid BUA target"
@@ -353,7 +353,7 @@ class SpellTargetingManager:
             location = target_data.get("location", "Unknown")
             return f"{player}'s army at {location}"
 
-        elif target_type == "unit":
+        if target_type == "unit":
             unit_data = target_data.get("unit_data", {})
             player = target_data.get("player", "Unknown")
             location = target_data.get("location", "Unknown")
@@ -361,19 +361,19 @@ class SpellTargetingManager:
             species = unit_data.get("species", "Unknown")
             return f"{unit_name} ({species}) - {player}'s unit at {location}"
 
-        elif target_type == "terrain":
+        if target_type == "terrain":
             name = target_data.get("name", "Unknown Terrain")
             controller = target_data.get("controller", "Neutral")
             return f"{name} (controlled by {controller})"
 
-        elif target_type == "dua":
+        if target_type == "dua":
             unit_data = target_data.get("unit_data", {})
             player = target_data.get("player", "Unknown")
             unit_name = unit_data.get("name", "Unknown Unit")
             species = unit_data.get("species", "Unknown")
             return f"{unit_name} ({species}) - {player}'s DUA"
 
-        elif target_type == "bua":
+        if target_type == "bua":
             unit_data = target_data.get("unit_data", {})
             player = target_data.get("player", "Unknown")
             unit_name = unit_data.get("name", "Unknown Unit")
@@ -386,7 +386,7 @@ class SpellTargetingManager:
         self, spell: SpellModel, caster_player: str, game_state: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """Get valid dragons/units from summoning pool for summoning spells."""
-        valid_sources = []
+        valid_sources: List[Dict[str, Any]] = []
 
         if not self.summoning_pool_manager:
             return valid_sources
@@ -413,17 +413,17 @@ class SpellTargetingManager:
     def _is_valid_summoning_source(self, spell: SpellModel, dragon_info: Dict[str, Any], caster_player: str) -> bool:
         """Check if a dragon is a valid source for a summoning spell."""
         effect_lower = spell.effect.lower()
-        dragon_data = dragon_info.get("dragon_data", {})
+        dragon_info.get("dragon_data", {})
 
         if spell.name == "Summon White Dragon":
             # Only White Dragons can be summoned with this spell
             return dragon_info.get("dragon_type") == "WHITE"
 
-        elif spell.name == "Summon Dragon":
+        if spell.name == "Summon Dragon":
             # Regular dragons can be summoned (not White Dragons)
             return dragon_info.get("dragon_type") != "WHITE"
 
-        elif spell.name == "Summon Dragonkin":
+        if spell.name == "Summon Dragonkin":
             # Only dragonkin units
             return "dragonkin" in dragon_info.get("name", "").lower()
 

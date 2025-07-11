@@ -65,7 +65,7 @@ class UnitRosterModel:
         """Returns a dict of unit types grouped by species."""
         units_by_species: Dict[str, List[Dict[str, Any]]] = {}
         # First, group units by species
-        for unit_id, data in self._unit_definitions.items():
+        for _unit_id, data in self._unit_definitions.items():
             species = data.get("species", "Unknown")
             if species not in units_by_species:
                 units_by_species[species] = []

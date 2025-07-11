@@ -4,10 +4,11 @@ End-to-end tests for phase transitions and turn management.
 Tests the broader game flow beyond individual march phases.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
+import unittest
 from unittest.mock import patch
+
+from PySide6.QtWidgets import QApplication
 
 from game_logic.engine import GameEngine
 
@@ -97,7 +98,7 @@ class TestPhaseTransitions(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
 
         # Find the army across all players
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     # Create the army data structure expected by choose_acting_army
@@ -126,8 +127,8 @@ class TestPhaseTransitions(unittest.TestCase):
         print("=" * 50)
 
         # Verify starting state
-        self.assertEqual(self.engine.get_current_player_name(), "Player 1")
-        self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+        assert self.engine.get_current_player_name() == "Player 1"
+        assert self.engine.current_phase == "FIRST_MARCH"
 
         # === Player 1 First March ===
         print("=== Player 1 First March ===")
@@ -145,8 +146,8 @@ class TestPhaseTransitions(unittest.TestCase):
         self.engine.select_action("SKIP")
 
         # Should advance to Second March
-        self.assertEqual(self.engine.current_phase, "SECOND_MARCH")
-        self.assertEqual(self.engine.get_current_player_name(), "Player 1")
+        assert self.engine.current_phase == "SECOND_MARCH"
+        assert self.engine.get_current_player_name() == "Player 1"
 
         # === Player 1 Second March ===
         print("\n=== Player 1 Second March ===")
@@ -163,9 +164,13 @@ class TestPhaseTransitions(unittest.TestCase):
         print("Step 6: Skip action")
         self.engine.select_action("SKIP")
 
+        # Complete reserves phase to advance to Player 2
+        assert self.engine.current_phase == "RESERVES"
+        self.engine.advance_phase()
+
         # Should advance to Player 2's turn
-        self.assertEqual(self.engine.get_current_player_name(), "Player 2")
-        self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+        assert self.engine.get_current_player_name() == "Player 2"
+        assert self.engine.current_phase == "FIRST_MARCH"
 
         print(
             "✅ Test completed successfully - Player 1 turn completed, advanced to Player 2"
@@ -188,7 +193,7 @@ class TestPhaseTransitions(unittest.TestCase):
             print(f"\n--- Completing {player_name}'s turn ---")
 
             # First March
-            self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+            assert self.engine.current_phase == "FIRST_MARCH"
 
             # Get available armies for this player
             all_players_data = self.engine.get_all_players_data()
@@ -208,9 +213,7 @@ class TestPhaseTransitions(unittest.TestCase):
                 available_armies.append(army_info)
 
             armies = available_armies
-            self.assertGreater(
-                len(armies), 0, f"{player_name} should have available armies"
-            )
+            assert len(armies) > 0, f"{player_name} should have available armies"
 
             # Choose first available army
             first_army_id = armies[0]["unique_id"]
@@ -220,7 +223,7 @@ class TestPhaseTransitions(unittest.TestCase):
             self.engine.select_action("SKIP")
 
             # Second March
-            self.assertEqual(self.engine.current_phase, "SECOND_MARCH")
+            assert self.engine.current_phase == "SECOND_MARCH"
 
             # Choose second available army if possible, otherwise same army
             # Get available armies again for second march
@@ -249,12 +252,16 @@ class TestPhaseTransitions(unittest.TestCase):
             self.engine.decide_maneuver(False)
             self.engine.select_action("SKIP")
 
+            # Complete reserves phase to advance to next player
+            assert self.engine.current_phase == "RESERVES"
+            self.engine.advance_phase()
+
         # Complete Player 1's turn
-        self.assertEqual(self.engine.get_current_player_name(), "Player 1")
+        assert self.engine.get_current_player_name() == "Player 1"
         complete_player_turn("Player 1")
 
         # Should advance to Player 2
-        self.assertEqual(self.engine.get_current_player_name(), "Player 2")
+        assert self.engine.get_current_player_name() == "Player 2"
         complete_player_turn("Player 2")
 
         # After both players complete their turns, check state
@@ -280,7 +287,7 @@ class TestPhaseTransitions(unittest.TestCase):
 
         # The game should start in FIRST_MARCH, not in earlier phases that might be skipped
         # (like EXPIRE_EFFECTS, EIGHTH_FACE, etc. which might not apply on turn 1)
-        self.assertEqual(initial_phase, "FIRST_MARCH")
+        assert initial_phase == "FIRST_MARCH"
 
         print("✅ Test completed successfully - phase skip conditions working")
 
@@ -312,10 +319,10 @@ class TestPhaseTransitions(unittest.TestCase):
         mid_armies = self.engine.get_available_acting_armies()
 
         # Terrain count should remain the same
-        self.assertEqual(len(initial_terrains), len(mid_terrains))
+        assert len(initial_terrains) == len(mid_terrains)
 
         # Army structure should remain consistent
-        self.assertEqual(len(initial_armies), len(mid_armies))
+        assert len(initial_armies) == len(mid_armies)
 
         print("✅ Test completed successfully - game state remains consistent")
 

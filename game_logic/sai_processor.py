@@ -5,7 +5,7 @@ This module handles the complex SAI calculations and interactions during combat,
 including cantrips, combat modifications, and other special effects.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 
@@ -20,11 +20,7 @@ class SAIResult:
     magic_bonus: int = 0
     save_bonus: int = 0
     maneuver_bonus: int = 0
-    special_effects: Optional[List[str]] = None
-
-    def __post_init__(self):
-        if self.special_effects is None:
-            self.special_effects = []
+    special_effects: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -46,14 +42,8 @@ class CombatRollResult:
     final_save: int = 0
     final_maneuver: int = 0
 
-    sai_results: Optional[List[SAIResult]] = None
-    special_notes: Optional[List[str]] = None
-
-    def __post_init__(self):
-        if self.sai_results is None:
-            self.sai_results = []
-        if self.special_notes is None:
-            self.special_notes = []
+    sai_results: List[SAIResult] = field(default_factory=list)
+    special_notes: List[str] = field(default_factory=list)
 
 
 class SAIProcessor:
@@ -116,7 +106,7 @@ class SAIProcessor:
         result = CombatRollResult()
 
         # Count raw results
-        for unit_name, face_results in roll_results.items():
+        for _unit_name, face_results in roll_results.items():
             for face_result in face_results:
                 if face_result:
                     normalized = face_result.lower().strip()
@@ -205,18 +195,25 @@ class SAIProcessor:
                     )
                 )
 
-        elif combat_type == "melee" and not is_attacker:
+        elif (
+            combat_type == "melee"
+            and not is_attacker
+            and species
+            in [  # noqa: C901
+                "Coral Elves",
+                "Treefolk",
+            ]
+        ):  # Examples
             # Example: Some units get bonus saves from SAI
-            if species in ["Coral Elves", "Treefolk"]:  # Examples
-                bonus_saves = sai_count
-                result.final_save += bonus_saves
-                result.sai_results.append(
-                    SAIResult(
-                        sai_type="save_bonus",
-                        effect_description=f"{unit_name} SAI: +{bonus_saves} save",
-                        save_bonus=bonus_saves,
-                    )
+            bonus_saves = sai_count
+            result.final_save += bonus_saves
+            result.sai_results.append(
+                SAIResult(
+                    sai_type="save_bonus",
+                    effect_description=f"{unit_name} SAI: +{bonus_saves} save",
+                    save_bonus=bonus_saves,
                 )
+            )
 
         # Cantrip effects
         if combat_type in ["melee", "missile"] and not is_attacker:

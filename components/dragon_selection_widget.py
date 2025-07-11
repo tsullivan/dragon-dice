@@ -12,7 +12,7 @@ from models.dragon_model import DRAGON_TYPE_DATA, DragonTypeModel, get_available
 class DragonSelectionWidget(QWidget):
     """Widget for selecting both dragon type and whether it's a dragon or wyrm."""
 
-    valueChanged = Signal(dict)  # Emits {"dragon_type": str, "dragon_form": str}
+    value_changed = Signal(dict)  # Emits {"dragon_type": str, "dragon_form": str}
 
     def __init__(self, dragon_number: int = 1, parent=None):
         super().__init__(parent)
@@ -25,9 +25,11 @@ class DragonSelectionWidget(QWidget):
         # Build mappings from dragon types, filtering hybrids if disabled
         for type_key, dragon_type in DRAGON_TYPE_DATA.items():
             # Skip hybrid dragons if not allowed
-            if not constants.ALLOW_HYBRID_DRAGONS:
-                if dragon_type.dragon_type in [DragonTypeModel.HYBRID, DragonTypeModel.IVORY_HYBRID]:
-                    continue
+            if not constants.ALLOW_HYBRID_DRAGONS and dragon_type.dragon_type in [
+                DragonTypeModel.HYBRID,
+                DragonTypeModel.IVORY_HYBRID,
+            ]:
+                continue
 
             display_name = dragon_type.get_display_name()
             self.dragon_type_display_options[display_name] = type_key
@@ -80,8 +82,8 @@ class DragonSelectionWidget(QWidget):
         main_layout.addLayout(dragon_form_layout)
 
     def _connect_signals(self):
-        self.dragon_type_carousel.valueChanged.connect(self._on_dragon_type_changed)
-        self.dragon_form_carousel.valueChanged.connect(self._on_dragon_form_changed)
+        self.dragon_type_carousel.value_changed.connect(self._on_dragon_type_changed)
+        self.dragon_form_carousel.value_changed.connect(self._on_dragon_form_changed)
 
     def _on_dragon_type_changed(self, new_display_name):
         # Convert from display name to type key
@@ -98,7 +100,7 @@ class DragonSelectionWidget(QWidget):
             "dragon_type": self._current_dragon_type,
             "dragon_form": self._current_dragon_form,
         }
-        self.valueChanged.emit(current_value)
+        self.value_changed.emit(current_value)
 
     def value(self) -> Dict[str, Any]:
         """Get the current dragon selection as a dictionary."""
@@ -107,7 +109,7 @@ class DragonSelectionWidget(QWidget):
             "dragon_form": self._current_dragon_form,
         }
 
-    def setValue(self, dragon_data: Dict[str, Any]):
+    def set_value(self, dragon_data: Dict[str, Any]):
         """Set the dragon selection from a dictionary."""
         if not isinstance(dragon_data, dict):
             return
@@ -118,19 +120,21 @@ class DragonSelectionWidget(QWidget):
             # Check if hybrid dragons are allowed before setting
             if dragon_type in DRAGON_TYPE_DATA:
                 dragon_type_model = DRAGON_TYPE_DATA[dragon_type]
-                if not constants.ALLOW_HYBRID_DRAGONS:
-                    if dragon_type_model.dragon_type in [DragonTypeModel.HYBRID, DragonTypeModel.IVORY_HYBRID]:
-                        # Skip setting hybrid dragon if not allowed
-                        return
+                if not constants.ALLOW_HYBRID_DRAGONS and dragon_type_model.dragon_type in [
+                    DragonTypeModel.HYBRID,
+                    DragonTypeModel.IVORY_HYBRID,
+                ]:
+                    # Skip setting hybrid dragon if not allowed
+                    return
 
             self._current_dragon_type = dragon_type
-            self.dragon_type_carousel.setValue(self.type_to_display[dragon_type])
+            self.dragon_type_carousel.set_value(self.type_to_display[dragon_type])
 
         # Update dragon form if provided
         dragon_form = dragon_data.get("dragon_form")
         if dragon_form and dragon_form in get_available_dragon_forms():
             self._current_dragon_form = dragon_form
-            self.dragon_form_carousel.setValue(dragon_form)
+            self.dragon_form_carousel.set_value(dragon_form)
 
         self._emit_current_value()
 
@@ -138,8 +142,8 @@ class DragonSelectionWidget(QWidget):
         """Reset to default values."""
         self._current_dragon_type = list(self.type_to_display.keys())[0]
         self._current_dragon_form = get_available_dragon_forms()[0]
-        self.dragon_type_carousel.setValue(self.type_to_display[self._current_dragon_type])
-        self.dragon_form_carousel.setValue(self._current_dragon_form)
+        self.dragon_type_carousel.set_value(self.type_to_display[self._current_dragon_type])
+        self.dragon_form_carousel.set_value(self._current_dragon_form)
         self._emit_current_value()
 
     def get_display_text(self) -> str:

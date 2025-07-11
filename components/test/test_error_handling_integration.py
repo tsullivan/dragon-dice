@@ -34,18 +34,18 @@ class TestErrorHandlingIntegration(unittest.TestCase):
             user_friendly=True,
         )
 
-        self.assertEqual(error.message, "Test game error occurred")
-        self.assertEqual(error.details, "Detailed error information for debugging")
-        self.assertTrue(error.user_friendly)
-        self.assertEqual(str(error), "Test game error occurred")
+        assert error.message == "Test game error occurred"
+        assert error.details == "Detailed error information for debugging"
+        assert error.user_friendly
+        assert str(error) == "Test game error occurred"
 
     def test_game_error_minimal(self):
         """Test GameError creation with minimal information."""
         error = GameError("Simple error")
 
-        self.assertEqual(error.message, "Simple error")
-        self.assertIsNone(error.details)
-        self.assertTrue(error.user_friendly)  # Default value
+        assert error.message == "Simple error"
+        assert error.details is None
+        assert error.user_friendly  # Default value
 
     def test_error_handler_game_error_with_dialogs(self):
         """Test ErrorHandler handling GameError with dialog display."""
@@ -80,10 +80,10 @@ class TestErrorHandlingIntegration(unittest.TestCase):
             mock_show_error.assert_called_once()
             call_args = mock_show_error.call_args[0]
 
-            self.assertEqual(call_args[0], self.parent_widget)
-            self.assertEqual(call_args[1], "Dragon Dice - Test Context Error")
-            self.assertIn("unexpected error", call_args[2])
-            self.assertIn("ValueError", call_args[3])
+            assert call_args[0] == self.parent_widget
+            assert call_args[1] == "Dragon Dice - Test Context Error"
+            assert "unexpected error" in call_args[2]
+            assert "ValueError" in call_args[3]
 
     def test_error_handler_context_manager_success(self):
         """Test ErrorHandler as context manager with successful operation."""
@@ -94,7 +94,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
                 # No exception should occur
                 result = 2 + 2
 
-            self.assertEqual(result, 4)
+            assert result == 4
             mock_print.assert_not_called()
 
     def test_error_handler_context_manager_exception(self):
@@ -118,7 +118,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
         except ValueError:
             exception_raised = True
 
-        self.assertFalse(exception_raised)
+        assert not exception_raised
 
     @patch("components.error_dialog.QMessageBox")
     def test_error_dialog_show_error_with_details(self, mock_msgbox):
@@ -170,7 +170,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
             "This action cannot be undone.",
         )
 
-        self.assertTrue(result)
+        assert result
         mock_box.setDetailedText.assert_called_once_with("This action cannot be undone.")
 
     @patch("components.error_dialog.QMessageBox")
@@ -182,7 +182,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
 
         result = ErrorDialog.ask_question(self.parent_widget, "Confirm Action", "Are you sure you want to proceed?")
 
-        self.assertFalse(result)
+        assert not result
 
     def test_error_handler_non_user_friendly_game_error(self):
         """Test ErrorHandler with non-user-friendly GameError."""
@@ -215,7 +215,7 @@ class TestErrorHandlingIntegration(unittest.TestCase):
                 handler.handle_error(error, context)
 
         # Should have handled all errors
-        self.assertEqual(mock_print.call_count, len(test_scenarios))
+        assert mock_print.call_count == len(test_scenarios)
 
 
 if __name__ == "__main__":

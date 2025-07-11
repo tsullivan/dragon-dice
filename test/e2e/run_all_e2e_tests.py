@@ -4,12 +4,13 @@ Test runner for all E2E tests in the Dragon Dice application.
 Provides comprehensive testing with reporting and CI/CD integration.
 """
 
-import pytest
-import sys
-import os
 import argparse
+import os
+import sys
 import time
 from pathlib import Path
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -97,7 +98,7 @@ def run_e2e_tests(
 
     # Print summary
     print("\n" + "=" * 50)
-    print(f"🏁 E2E Tests Completed")
+    print("🏁 E2E Tests Completed")
     print(f"⏱️ Total time: {end_time - start_time:.1f} seconds")
 
     if result == 0:
@@ -222,12 +223,12 @@ if __name__ == "__main__":
 
         if result.failures:
             print(f"\n❌ FAILURES ({len(result.failures)}):")
-            for test, traceback in result.failures:
+            for test, _traceback in result.failures:
                 print(f"  - {test}")
 
         if result.errors:
             print(f"\n💥 ERRORS ({len(result.errors)}):")
-            for test, traceback in result.errors:
+            for test, _traceback in result.errors:
                 print(f"  - {test}")
 
         if result.skipped:

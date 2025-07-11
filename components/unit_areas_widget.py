@@ -6,20 +6,19 @@ for all players, showing units that have been killed or buried.
 Based on the design from assets/playmat.html.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QGroupBox,
+    QFrame,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QScrollArea,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
-    QFrame,
-    QPushButton,
-    QTabWidget,
 )
-from PySide6.QtGui import QFont, QPalette
 
 
 class UnitAreaItem(QFrame):
@@ -94,7 +93,7 @@ class UnitAreaItem(QFrame):
         death_info = QVBoxLayout()
 
         # Death cause/time
-        death_cause = unit_data.get("death_cause", "Combat")
+        unit_data.get("death_cause", "Combat")
         turn_died = unit_data.get("turn_died", "?")
         death_label = QLabel(f"⚔️ T{turn_died}")
         death_label.setStyleSheet("color: #ddd; font-size: 9px;")
@@ -109,7 +108,7 @@ class UnitAreaItem(QFrame):
 
         layout.addLayout(death_info)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event):  # noqa: N802
         """Handle mouse click to select unit."""
         if event.button() == Qt.MouseButton.LeftButton:
             self.unit_selected.emit(self.unit_data)
@@ -186,8 +185,8 @@ class UnitAreasWidget(QWidget):
         # Area statistics
         stats_label = QLabel(f"Units in {area_type}: 0")
         stats_label.setStyleSheet(f"""
-            color: {border_color}; 
-            font-size: 12px; 
+            color: {border_color};
+            font-size: 12px;
             font-weight: bold;
         """)
         header_layout.addWidget(stats_label)
@@ -224,7 +223,7 @@ class UnitAreasWidget(QWidget):
             header_layout.addWidget(resurrect_btn)
 
             # Store reference for enabling/disabling
-            setattr(tab_widget, "resurrect_btn", resurrect_btn)
+            tab_widget.resurrect_btn = resurrect_btn
 
         refresh_btn = QPushButton("🔄")
         refresh_btn.setStyleSheet(f"""
@@ -292,10 +291,10 @@ class UnitAreasWidget(QWidget):
         tab_layout.addWidget(scroll_area)
 
         # Store references for updates
-        setattr(tab_widget, "stats_label", stats_label)
-        setattr(tab_widget, "content_layout", content_layout)
-        setattr(tab_widget, "empty_label", empty_label)
-        setattr(tab_widget, "selected_unit", None)
+        tab_widget.stats_label = stats_label
+        tab_widget.content_layout = content_layout
+        tab_widget.empty_label = empty_label
+        tab_widget.selected_unit = None
 
         return tab_widget
 
@@ -309,9 +308,9 @@ class UnitAreasWidget(QWidget):
 
     def _update_area_data(self, tab_widget: QWidget, data: Dict[str, List[Dict[str, Any]]], area_type: str):
         """Update area display with new data."""
-        content_layout = getattr(tab_widget, "content_layout")
-        stats_label = getattr(tab_widget, "stats_label")
-        empty_label = getattr(tab_widget, "empty_label")
+        content_layout = tab_widget.content_layout
+        stats_label = tab_widget.stats_label
+        empty_label = tab_widget.empty_label
 
         # Clear existing content
         while content_layout.count() > 0:
@@ -359,13 +358,13 @@ class UnitAreasWidget(QWidget):
         content_layout.addStretch()
 
         # Reset selection
-        setattr(tab_widget, "selected_unit", None)
+        tab_widget.selected_unit = None
         if hasattr(tab_widget, "resurrect_btn"):
             tab_widget.resurrect_btn.setEnabled(False)
 
     def _handle_unit_selected(self, unit_data: Dict[str, Any], area_type: str, tab_widget: QWidget):
         """Handle unit selection."""
-        setattr(tab_widget, "selected_unit", unit_data)
+        tab_widget.selected_unit = unit_data
         if area_type == "DUA" and hasattr(tab_widget, "resurrect_btn"):
             tab_widget.resurrect_btn.setEnabled(True)
         self.unit_selected.emit(unit_data, area_type)
@@ -387,7 +386,7 @@ class UnitAreasWidget(QWidget):
 
     def _get_area_count(self, tab_widget: QWidget) -> int:
         """Get number of units in an area."""
-        content_layout = getattr(tab_widget, "content_layout")
+        content_layout = tab_widget.content_layout
         count = 0
         for i in range(content_layout.count()):
             widget = content_layout.itemAt(i).widget()

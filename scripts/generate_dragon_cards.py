@@ -4,28 +4,27 @@ Generate dragon reference cards HTML combining dragon types and forms with detai
 """
 
 import json
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the project root to the path so we can import models
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from models.dragon_model import DRAGON_FORM_DATA, DRAGON_TYPE_DATA
 from models.die_face_model import DRAGON_DIE_FACES
 
 
 def load_dragon_type_data():
     """Load dragon type data from snapshot."""
     dragon_type_file = Path("models/test/snapshots/dragon_type_data.json")
-    with open(dragon_type_file, "r") as f:
+    with open(dragon_type_file) as f:
         return json.load(f)
 
 
 def load_dragon_form_data():
     """Load dragon form data from snapshot."""
     dragon_form_file = Path("models/test/snapshots/dragon_form_data.json")
-    with open(dragon_form_file, "r") as f:
+    with open(dragon_form_file) as f:
         return json.load(f)
 
 
@@ -65,7 +64,7 @@ def generate_dragon_types_section():
     hybrid_dragons = []
     special_dragons = []
 
-    for dragon_key, dragon_data in dragon_types.items():
+    for _dragon_key, dragon_data in dragon_types.items():
         dragon_type = dragon_data["dragon_type"]
         elements = dragon_data["elements"]
         health = dragon_data["health"]
@@ -160,7 +159,7 @@ def generate_dragon_forms_section():
 
     html = ""
 
-    for form_key, form_data in dragon_forms.items():
+    for _form_key, form_data in dragon_forms.items():
         display_name = form_data["display_name"]
         face_names = form_data["face_names"]
 
@@ -202,27 +201,27 @@ def generate_summoning_rules_section():
     """Generate the summoning rules section HTML."""
     return """                <div class="summoning-rules">
                     <div class="rules-title">Dragon Summoning Rules</div>
-                    
+
                     <div class="rule-item">
                         <span class="rule-category">Elemental Dragons:</span> Can be summoned from terrain or summoning pool using matching element magic
                     </div>
-                    
+
                     <div class="rule-item">
                         <span class="rule-category">Hybrid Dragons:</span> Can be summoned from terrain using either element's magic
                     </div>
-                    
+
                     <div class="rule-item">
                         <span class="rule-category">Ivory Dragons:</span> Can only be summoned from summoning pool using any single element magic
                     </div>
-                    
+
                     <div class="rule-item">
                         <span class="rule-category">Ivory Hybrids:</span> Can be summoned from terrain using their element's magic or ivory effects
                     </div>
-                    
+
                     <div class="rule-item">
                         <span class="rule-category">White Dragons:</span> Can only be summoned using "Summon White Dragon" spell (14 cost, any element combination)
                     </div>
-                    
+
                     <div class="rule-item">
                         <span class="rule-category">Force Values:</span> Most dragons count as 1 force, White Dragons count as 2 force when assembling armies
                     </div>
@@ -246,7 +245,7 @@ def generate_complete_html():
     <title>Dragon Dice Dragon Reference Cards</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap');
-        
+
         body {{
             margin: 0;
             padding: 10mm;
@@ -500,12 +499,12 @@ def generate_complete_html():
 <body>
     <div class="page-container">
         <h1 class="page-title">Dragon Reference Cards</h1>
-        
+
         <div class="sections-container">
             <!-- Dragon Types Section -->
             <div class="section">
                 <div class="section-title">Dragon Types</div>
-                
+
                 <div class="dragon-types-grid">
 {dragon_types_html}
                 </div>
@@ -516,7 +515,7 @@ def generate_complete_html():
             <!-- Dragon Forms Section -->
             <div class="section">
                 <div class="section-title">Dragon Forms</div>
-                
+
                 <div class="forms-container">
 {dragon_forms_html}
                 </div>
@@ -550,7 +549,7 @@ def main():
     with open("assets/dragon_cards.html", "w") as f:
         f.write(html_content)
 
-    print(f"\\nGenerated complete dragon reference cards: assets/dragon_cards.html")
+    print("\\nGenerated complete dragon reference cards: assets/dragon_cards.html")
     print(f"Total dragon types: {len(dragon_types)}")
     print(f"Total dragon forms: {len(dragon_forms)}")
 

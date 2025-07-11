@@ -22,19 +22,19 @@ class TestDieFaceCount(unittest.TestCase):
 
     def test_creation_with_icon(self):
         """Test creating DieFaceCount with explicit icon."""
-        face_count = DieFaceCount(face_type=UnitFace.ICON_MELEE, count=3, icon="⚔️")
+        face_count = DieFaceCount(face_type="Melee", count=3, icon="⚔️")
 
-        self.assertEqual(face_count.face_type, UnitFace.ICON_MELEE)
-        self.assertEqual(face_count.count, 3)
-        self.assertEqual(face_count.icon, "⚔️")
+        assert face_count.face_type == "Melee"
+        assert face_count.count == 3
+        assert face_count.icon == "⚔️"
 
     def test_creation_with_auto_icon(self):
         """Test creating DieFaceCount with automatic icon assignment."""
-        face_count = DieFaceCount(face_type=UnitFace.ICON_MISSILE, count=2)
+        face_count = DieFaceCount(face_type="Missile", count=2)
 
-        self.assertEqual(face_count.face_type, UnitFace.ICON_MISSILE)
-        self.assertEqual(face_count.count, 2)
-        self.assertEqual(face_count.icon, "🏹")  # Should auto-assign missile icon
+        assert face_count.face_type == "Missile"
+        assert face_count.count == 2
+        assert face_count.icon == "🏹"  # Should auto-assign missile icon
 
 
 class TestDieFaceAnalyzer(unittest.TestCase):
@@ -48,27 +48,27 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         # Create test unit definitions with die faces
         self.melee_unit_def = {
             "die_faces": {
-                "face_1": UnitFace.ICON_MELEE,
-                "face_2": UnitFace.ICON_MELEE,
-                "face_3": UnitFace.ICON_SAVE,
-                "face_4": UnitFace.ICON_ID,
-                "face_5": UnitFace.ICON_MANEUVER,
-                "face_6": UnitFace.ICON_SAI,
-                "eighth_face_1": UnitFace.ICON_MELEE,
-                "eighth_face_2": UnitFace.ICON_SAVE,
+                "face_1": "Melee",
+                "face_2": "Melee",
+                "face_3": "Save",
+                "face_4": "ID",
+                "face_5": "Maneuver",
+                "face_6": "SAI",
+                "eighth_face_1": "Melee",
+                "eighth_face_2": "Save",
             }
         }
 
         self.missile_unit_def = {
             "die_faces": {
-                "face_1": UnitFace.ICON_MISSILE,
-                "face_2": UnitFace.ICON_MISSILE,
-                "face_3": UnitFace.ICON_MISSILE,
-                "face_4": UnitFace.ICON_SAVE,
-                "face_5": UnitFace.ICON_ID,
-                "face_6": UnitFace.ICON_MANEUVER,
-                "eighth_face_1": UnitFace.ICON_MISSILE,
-                "eighth_face_2": UnitFace.ICON_SAVE,
+                "face_1": "Missile",
+                "face_2": "Missile",
+                "face_3": "Missile",
+                "face_4": "Save",
+                "face_5": "ID",
+                "face_6": "Maneuver",
+                "eighth_face_1": "Missile",
+                "eighth_face_2": "Save",
             }
         }
 
@@ -103,13 +103,13 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         # Expected: 3 melee (2 standard + 1 eighth), 2 save (1 standard + 1 eighth), 1 maneuver, 1 SAI
         # ID faces should be excluded
         expected = {
-            UnitFace.ICON_MELEE: 3,
-            UnitFace.ICON_SAVE: 2,
-            UnitFace.ICON_MANEUVER: 1,
-            UnitFace.ICON_SAI: 1,
+            "Melee": 3,
+            "Save": 2,
+            "Maneuver": 1,
+            "SAI": 1,
         }
 
-        self.assertEqual(face_counts, expected)
+        assert face_counts == expected
 
     def test_count_die_faces_multiple_units(self):
         """Test counting die faces for multiple units."""
@@ -120,14 +120,14 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         # Melee unit: 3 melee, 2 save, 1 maneuver, 1 SAI
         # Missile unit: 4 missile, 2 save, 1 maneuver
         expected = {
-            UnitFace.ICON_MELEE: 3,
-            UnitFace.ICON_MISSILE: 4,
-            UnitFace.ICON_SAVE: 4,  # 2 + 2
-            UnitFace.ICON_MANEUVER: 2,  # 1 + 1
-            UnitFace.ICON_SAI: 1,
+            "Melee": 3,
+            "Missile": 4,
+            "Save": 4,  # 2 + 2
+            "Maneuver": 2,  # 1 + 1
+            "SAI": 1,
         }
 
-        self.assertEqual(face_counts, expected)
+        assert face_counts == expected
 
     def test_count_die_faces_with_dict_units(self):
         """Test counting die faces with dictionary-style units."""
@@ -136,24 +136,24 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         face_counts = self.analyzer.count_die_faces(units)
 
         expected = {
-            UnitFace.ICON_MELEE: 3,
-            UnitFace.ICON_SAVE: 2,
-            UnitFace.ICON_MANEUVER: 1,
-            UnitFace.ICON_SAI: 1,
+            "Melee": 3,
+            "Save": 2,
+            "Maneuver": 1,
+            "SAI": 1,
         }
 
-        self.assertEqual(face_counts, expected)
+        assert face_counts == expected
 
     def test_count_die_faces_no_units(self):
         """Test counting die faces with no units."""
         face_counts = self.analyzer.count_die_faces([])
-        self.assertEqual(face_counts, {})
+        assert face_counts == {}
 
     def test_count_die_faces_no_roster(self):
         """Test counting die faces without unit roster."""
         analyzer = DieFaceAnalyzer(None)
         face_counts = analyzer.count_die_faces([self.melee_unit])
-        self.assertEqual(face_counts, {})
+        assert face_counts == {}
 
     def test_count_die_faces_unit_not_found(self):
         """Test counting die faces for unit not in roster."""
@@ -161,15 +161,15 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         unknown_unit.unit_type = "unknown_unit"
 
         face_counts = self.analyzer.count_die_faces([unknown_unit])
-        self.assertEqual(face_counts, {})
+        assert face_counts == {}
 
     def test_get_sorted_face_counts(self):
         """Test sorting face counts by priority and count."""
         face_counts = {
-            UnitFace.ICON_SAI: 1,
-            UnitFace.ICON_MELEE: 3,
-            UnitFace.ICON_SAVE: 2,
-            UnitFace.ICON_MISSILE: 3,
+            "SAI": 1,
+            "Melee": 3,
+            "Save": 2,
+            "Missile": 3,
         }
 
         sorted_faces = self.analyzer.get_sorted_face_counts(face_counts)
@@ -177,15 +177,15 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         # Should be sorted by priority order first, then by count (descending)
         # Priority: MELEE, MISSILE, MAGIC, SAVE, MANEUVER, SAI
         expected_order = [
-            (UnitFace.ICON_MELEE, 3),
-            (UnitFace.ICON_MISSILE, 3),
-            (UnitFace.ICON_SAVE, 2),
-            (UnitFace.ICON_SAI, 1),
+            ("Melee", 3),
+            ("Missile", 3),
+            ("Save", 2),
+            ("SAI", 1),
         ]
 
         for i, (face_type, count) in enumerate(expected_order):
-            self.assertEqual(sorted_faces[i].face_type, face_type)
-            self.assertEqual(sorted_faces[i].count, count)
+            assert sorted_faces[i].face_type == face_type
+            assert sorted_faces[i].count == count
 
     def test_analyze_unit_die_faces(self):
         """Test complete analysis of unit die faces."""
@@ -194,10 +194,10 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         sorted_faces = self.analyzer.analyze_unit_die_faces(units)
 
         # Should return sorted DieFaceCount objects
-        self.assertEqual(len(sorted_faces), 4)
-        self.assertEqual(sorted_faces[0].face_type, UnitFace.ICON_MELEE)
-        self.assertEqual(sorted_faces[0].count, 3)
-        self.assertEqual(sorted_faces[0].icon, "⚔️")
+        assert len(sorted_faces) == 4
+        assert sorted_faces[0].face_type == "Melee"
+        assert sorted_faces[0].count == 3
+        assert sorted_faces[0].icon == "⚔️"
 
     def test_get_face_distribution_summary(self):
         """Test comprehensive face distribution summary."""
@@ -205,17 +205,17 @@ class TestDieFaceAnalyzer(unittest.TestCase):
 
         summary = self.analyzer.get_face_distribution_summary(units)
 
-        self.assertEqual(summary["total_faces"], 7)  # 3 melee + 2 save + 1 maneuver + 1 SAI
-        self.assertEqual(summary["unique_face_types"], 4)
-        self.assertIn("face_counts", summary)
-        self.assertIn("sorted_faces", summary)
-        self.assertIn("percentages", summary)
-        self.assertIsNotNone(summary["most_common"])
-        self.assertIsNotNone(summary["least_common"])
+        assert summary["total_faces"] == 7  # 3 melee + 2 save + 1 maneuver + 1 SAI
+        assert summary["unique_face_types"] == 4
+        assert "face_counts" in summary
+        assert "sorted_faces" in summary
+        assert "percentages" in summary
+        assert summary["most_common"] is not None
+        assert summary["least_common"] is not None
 
         # Check percentages
         expected_melee_percentage = round((3 / 7) * 100, 1)  # ~42.9%
-        self.assertEqual(summary["percentages"][UnitFace.ICON_MELEE], expected_melee_percentage)
+        assert summary["percentages"]["Melee"] == expected_melee_percentage
 
     def test_compare_army_compositions(self):
         """Test comparison between two army compositions."""
@@ -224,20 +224,18 @@ class TestDieFaceAnalyzer(unittest.TestCase):
 
         comparison = self.analyzer.compare_army_compositions(army1_units, army2_units)
 
-        self.assertEqual(comparison["army1_total"], 7)
-        self.assertEqual(comparison["army2_total"], 7)
+        assert comparison["army1_total"] == 7
+        assert comparison["army2_total"] == 7
 
         # Check differences
-        self.assertEqual(comparison["face_differences"][UnitFace.ICON_MELEE]["difference"], 3)  # Army1 has 3 more melee
-        self.assertEqual(
-            comparison["face_differences"][UnitFace.ICON_MISSILE]["difference"], -4
-        )  # Army1 has 4 fewer missile
-        self.assertEqual(comparison["face_differences"][UnitFace.ICON_SAVE]["difference"], 0)  # Equal saves
+        assert comparison["face_differences"]["Melee"]["difference"] == 3  # Army1 has 3 more melee
+        assert comparison["face_differences"]["Missile"]["difference"] == -4  # Army1 has 4 fewer missile
+        assert comparison["face_differences"]["Save"]["difference"] == 0  # Equal saves
 
         # Check advantages
-        self.assertIn((UnitFace.ICON_MELEE, 3), comparison["army1_advantages"])
-        self.assertIn((UnitFace.ICON_MISSILE, 4), comparison["army2_advantages"])
-        self.assertIn(UnitFace.ICON_SAVE, comparison["equal_faces"])
+        assert ("Melee", 3) in comparison["army1_advantages"]
+        assert ("Missile", 4) in comparison["army2_advantages"]
+        assert "Save" in comparison["equal_faces"]
 
     def test_get_tactical_analysis(self):
         """Test tactical analysis of unit composition."""
@@ -245,48 +243,48 @@ class TestDieFaceAnalyzer(unittest.TestCase):
 
         analysis = self.analyzer.get_tactical_analysis(units)
 
-        self.assertEqual(analysis["offensive_strength"], 3)  # 3 melee
-        self.assertEqual(analysis["defensive_strength"], 2)  # 2 save
-        self.assertEqual(analysis["utility_strength"], 2)  # 1 maneuver + 1 SAI
-        self.assertEqual(analysis["total_combat_faces"], 5)  # 3 melee + 2 save
-        self.assertEqual(analysis["primary_strength"], "offensive")
+        assert analysis["offensive_strength"] == 3  # 3 melee
+        assert analysis["defensive_strength"] == 2  # 2 save
+        assert analysis["utility_strength"] == 2  # 1 maneuver + 1 SAI
+        assert analysis["total_combat_faces"] == 5  # 3 melee + 2 save
+        assert analysis["primary_strength"] == "offensive"
 
         # With only 3/7 offensive faces, this should not have major weaknesses
-        self.assertIsInstance(analysis["weaknesses"], list)
-        self.assertIsInstance(analysis["balanced"], bool)
+        assert isinstance(analysis["weaknesses"], list)
+        assert isinstance(analysis["balanced"], bool)
 
     def test_get_icon_for_face_type(self):
         """Test icon retrieval for face types."""
-        self.assertEqual(DieFaceAnalyzer.get_icon_for_face_type(UnitFace.ICON_MELEE), "⚔️")
-        self.assertEqual(DieFaceAnalyzer.get_icon_for_face_type(UnitFace.ICON_MISSILE), "🏹")
-        self.assertEqual(DieFaceAnalyzer.get_icon_for_face_type(UnitFace.ICON_SAVE), "🛡️")
-        self.assertEqual(DieFaceAnalyzer.get_icon_for_face_type("unknown"), "❓")
+        assert DieFaceAnalyzer.get_icon_for_face_type("Melee") == "⚔️"
+        assert DieFaceAnalyzer.get_icon_for_face_type("Missile") == "🏹"
+        assert DieFaceAnalyzer.get_icon_for_face_type("Save") == "🛡️"
+        assert DieFaceAnalyzer.get_icon_for_face_type("unknown") == "❓"
 
     def test_format_face_summary_compact(self):
         """Test compact face summary formatting."""
         face_counts = {
-            UnitFace.ICON_MELEE: 3,
-            UnitFace.ICON_SAVE: 2,
-            UnitFace.ICON_MISSILE: 1,
+            "Melee": 3,
+            "Save": 2,
+            "Missile": 1,
         }
 
         summary = self.analyzer.format_face_summary(face_counts, compact=True)
 
         # Should be in priority order: melee, missile, save
-        self.assertEqual(summary, "⚔️3 🏹1 🛡️2")
+        assert summary == "⚔️3 🏹1 🛡️2"
 
     def test_format_face_summary_detailed(self):
         """Test detailed face summary formatting."""
-        face_counts = {UnitFace.ICON_MELEE: 3, UnitFace.ICON_SAVE: 2}
+        face_counts = {"Melee": 3, "Save": 2}
 
         summary = self.analyzer.format_face_summary(face_counts, compact=False)
 
-        self.assertEqual(summary, "Melee: 3, Save: 2")
+        assert summary == "Melee: 3, Save: 2"
 
     def test_format_face_summary_empty(self):
         """Test formatting empty face summary."""
         summary = self.analyzer.format_face_summary({})
-        self.assertEqual(summary, "No die faces")
+        assert summary == "No die faces"
 
 
 class TestUnitDieFaceExtractor(unittest.TestCase):
@@ -296,14 +294,14 @@ class TestUnitDieFaceExtractor(unittest.TestCase):
         """Test extracting die faces from unit definition."""
         unit_def = {
             "die_faces": {
-                "face_1": UnitFace.ICON_MELEE,
-                "face_2": UnitFace.ICON_SAVE,
-                "face_3": UnitFace.ICON_ID,
-                "face_4": UnitFace.ICON_MISSILE,
-                "face_5": UnitFace.ICON_MANEUVER,
-                "face_6": UnitFace.ICON_SAI,
-                "eighth_face_1": UnitFace.ICON_MELEE,
-                "eighth_face_2": UnitFace.ICON_MAGIC,
+                "face_1": "Melee",
+                "face_2": "Save",
+                "face_3": "ID",
+                "face_4": "Missile",
+                "face_5": "Maneuver",
+                "face_6": "SAI",
+                "eighth_face_1": "Melee",
+                "eighth_face_2": "Magic",
                 "extra_field": "ignored",  # Should be ignored
             }
         }
@@ -311,17 +309,17 @@ class TestUnitDieFaceExtractor(unittest.TestCase):
         extracted = UnitDieFaceExtractor.extract_from_unit_definition(unit_def)
 
         expected = {
-            "face_1": UnitFace.ICON_MELEE,
-            "face_2": UnitFace.ICON_SAVE,
-            "face_3": UnitFace.ICON_ID,
-            "face_4": UnitFace.ICON_MISSILE,
-            "face_5": UnitFace.ICON_MANEUVER,
-            "face_6": UnitFace.ICON_SAI,
-            "eighth_face_1": UnitFace.ICON_MELEE,
-            "eighth_face_2": UnitFace.ICON_MAGIC,
+            "face_1": "Melee",
+            "face_2": "Save",
+            "face_3": "ID",
+            "face_4": "Missile",
+            "face_5": "Maneuver",
+            "face_6": "SAI",
+            "eighth_face_1": "Melee",
+            "eighth_face_2": "Magic",
         }
 
-        self.assertEqual(extracted, expected)
+        assert extracted == expected
 
     def test_extract_from_unit_definition_no_die_faces(self):
         """Test extracting from unit definition without die_faces."""
@@ -329,77 +327,77 @@ class TestUnitDieFaceExtractor(unittest.TestCase):
 
         extracted = UnitDieFaceExtractor.extract_from_unit_definition(unit_def)
 
-        self.assertEqual(extracted, {})
+        assert extracted == {}
 
     def test_extract_from_unit_definition_partial(self):
         """Test extracting from unit definition with partial die_faces."""
         unit_def = {
             "die_faces": {
-                "face_1": UnitFace.ICON_MELEE,
-                "face_3": UnitFace.ICON_SAVE,
-                "eighth_face_1": UnitFace.ICON_MISSILE,
+                "face_1": "Melee",
+                "face_3": "Save",
+                "eighth_face_1": "Missile",
             }
         }
 
         extracted = UnitDieFaceExtractor.extract_from_unit_definition(unit_def)
 
         expected = {
-            "face_1": UnitFace.ICON_MELEE,
-            "face_3": UnitFace.ICON_SAVE,
-            "eighth_face_1": UnitFace.ICON_MISSILE,
+            "face_1": "Melee",
+            "face_3": "Save",
+            "eighth_face_1": "Missile",
         }
 
-        self.assertEqual(extracted, expected)
+        assert extracted == expected
 
     def test_validate_face_structure_valid(self):
         """Test validation of valid face structure."""
         die_faces = {
-            "face_1": UnitFace.ICON_MELEE,
-            "face_2": UnitFace.ICON_MISSILE,
-            "face_3": UnitFace.ICON_MAGIC,
-            "face_4": UnitFace.ICON_SAVE,
-            "face_5": UnitFace.ICON_ID,
-            "face_6": UnitFace.ICON_MANEUVER,
-            "eighth_face_1": UnitFace.ICON_SAI,
-            "eighth_face_2": UnitFace.ICON_MELEE,
+            "face_1": "Melee",
+            "face_2": "Missile",
+            "face_3": "Magic",
+            "face_4": "Save",
+            "face_5": "ID",
+            "face_6": "Maneuver",
+            "eighth_face_1": "SAI",
+            "eighth_face_2": "Melee",
         }
 
         is_valid, errors = UnitDieFaceExtractor.validate_face_structure(die_faces)
 
-        self.assertTrue(is_valid)
-        self.assertEqual(len(errors), 0)
+        assert is_valid
+        assert len(errors) == 0
 
     def test_validate_face_structure_missing_faces(self):
         """Test validation of face structure with missing required faces."""
         die_faces = {
-            "face_1": UnitFace.ICON_MELEE,
-            "face_2": UnitFace.ICON_SAVE,
+            "face_1": "Melee",
+            "face_2": "Save",
             # Missing face_3 through face_6
         }
 
         is_valid, errors = UnitDieFaceExtractor.validate_face_structure(die_faces)
 
-        self.assertFalse(is_valid)
-        self.assertEqual(len(errors), 4)  # Missing face_3, face_4, face_5, face_6
-        self.assertIn("Missing required face position: face_3", errors)
+        assert not is_valid
+        assert len(errors) == 4  # Missing face_3, face_4, face_5, face_6
+        assert "Missing required face position: face_3" in errors
 
     def test_validate_face_structure_invalid_face_types(self):
         """Test validation of face structure with invalid face types."""
         die_faces = {
-            "face_1": UnitFace.ICON_MELEE,
+            "face_1": "Melee",
             "face_2": "INVALID_FACE",
-            "face_3": UnitFace.ICON_SAVE,
+            "face_3": "Save",
             "face_4": "ANOTHER_INVALID",
-            "face_5": UnitFace.ICON_ID,
-            "face_6": UnitFace.ICON_MANEUVER,
+            "face_5": "ID",
+            "face_6": "Maneuver",
         }
 
         is_valid, errors = UnitDieFaceExtractor.validate_face_structure(die_faces)
 
-        self.assertFalse(is_valid)
-        self.assertEqual(len(errors), 2)  # Two invalid face types
-        self.assertTrue(any("Invalid face type 'INVALID_FACE'" in error for error in errors))
-        self.assertTrue(any("Invalid face type 'ANOTHER_INVALID'" in error for error in errors))
+        assert not is_valid
+        assert len(errors) == 2  # Two invalid face types
+        assert any("Invalid face type 'INVALID_FACE'" in error for error in errors)
+        assert any("Invalid face type 'ANOTHER_INVALID'" in error for error in errors)
 
 
 if __name__ == "__main__":

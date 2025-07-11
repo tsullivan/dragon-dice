@@ -35,7 +35,7 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
 
         # Set to FIRE_ELEMENTAL dragon type with Wyrm form
-        widget.setValue({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
+        widget.set_value({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
 
         value = widget.value()
         assert value["dragon_type"] == "FIRE_ELEMENTAL"
@@ -47,7 +47,7 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
 
         # Set to AIR_ELEMENTAL dragon type with Wyrm form
-        widget.setValue({"dragon_type": "AIR_ELEMENTAL", "dragon_form": "Wyrm"})
+        widget.set_value({"dragon_type": "AIR_ELEMENTAL", "dragon_form": "Wyrm"})
 
         value = widget.value()
         assert value["dragon_type"] == "AIR_ELEMENTAL"
@@ -62,7 +62,7 @@ class TestDragonSelectionWidget:
         assert "Drake" in widget.get_display_text()
 
         # Test after change
-        widget.setValue({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
+        widget.set_value({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
         assert "Wyrm" in widget.get_display_text()
         assert "Fire Elemental" in widget.get_display_text()
 
@@ -72,7 +72,7 @@ class TestDragonSelectionWidget:
         qtbot.addWidget(widget)
 
         # Change values
-        widget.setValue({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
+        widget.set_value({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
 
         # Clear and check defaults
         widget.clear()
@@ -81,17 +81,17 @@ class TestDragonSelectionWidget:
         assert value["dragon_form"] == get_available_dragon_forms()[0]
 
     def test_signal_emission(self, qtbot):
-        """Test that valueChanged signal is emitted properly."""
+        """Test that value_changed signal is emitted properly."""
         widget = DragonSelectionWidget(dragon_number=1)
         qtbot.addWidget(widget)
 
         # Connect to signal
         signal_received = []
-        widget.valueChanged.connect(lambda x: signal_received.append(x))
+        widget.value_changed.connect(lambda x: signal_received.append(x))
 
         # Change value and verify signal
         new_value = {"dragon_type": "WATER_ELEMENTAL", "dragon_form": "Wyrm"}
-        widget.setValue(new_value)
+        widget.set_value(new_value)
 
         assert len(signal_received) > 0
         assert signal_received[-1] == new_value
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     print(f"✓ Default value: {widget.value()}")
 
     # Test setting values
-    widget.setValue({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
+    widget.set_value({"dragon_type": "FIRE_ELEMENTAL", "dragon_form": "Wyrm"})
     print(f"✓ Set value: {widget.value()}")
     print(f"✓ Display text: {widget.get_display_text()}")
 

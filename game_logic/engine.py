@@ -16,9 +16,8 @@ from game_logic.spell_database import SpellDatabase
 from game_logic.spell_targeting import SpellTargetingManager
 from game_logic.summoning_pool_manager import SummoningPoolManager
 from game_logic.turn_manager import TurnManager
-from models.dragon_model import DragonModel
-from models.unit_model import UnitModel
 from models.terrain_model import get_terrain_icon
+from models.unit_model import UnitModel
 
 
 class GameEngine(QObject):
@@ -562,8 +561,6 @@ class GameEngine(QObject):
         # For now, use direct calls until signal system is fully implemented
         parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MELEE")
         if not parsed_results:
-            error_msg = "Could not parse the dice roll results. Please check the format."
-            details = f"Input received: '{results}'\nExpected format: 'MM,S,SAI' or '2 melee, 1 save, 1 SAI'"
             print("GameEngine: Error: Could not parse attacker melee results via ActionResolver.")
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
@@ -681,8 +678,6 @@ class GameEngine(QObject):
         # For now, use direct calls until signal system is fully implemented
         parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MAGIC")
         if not parsed_results:
-            error_msg = "Could not parse the dice roll results. Please check the format."
-            details = f"Input received: '{results}'\nExpected format: 'MA,MA,SAI' or '2 magic, 1 SAI'"
             print("GameEngine: Error: Could not parse magic results via ActionResolver.")
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
@@ -713,8 +708,6 @@ class GameEngine(QObject):
         # For now, use direct calls until signal system is fully implemented
         parsed_results = self.action_resolver.parse_dice_string(results, roll_type="MISSILE")
         if not parsed_results:
-            error_msg = "Could not parse the dice roll results. Please check the format."
-            details = f"Input received: '{results}'\nExpected format: 'MI,MI,SAI' or '2 missile, 1 SAI'"
             print("GameEngine: Error: Could not parse attacker missile results via ActionResolver.")
             # In a real implementation, this would emit a signal to show user error
             # For now, continue with empty results to avoid blocking the game
@@ -776,7 +769,7 @@ class GameEngine(QObject):
 
         if action_type == "melee_complete":
             damage_dealt = action_result.get("damage_dealt", 0)
-            units_killed = action_result.get("units_killed", [])
+            action_result.get("units_killed", [])
             print(f"GameEngine: Melee action complete, {damage_dealt} damage dealt")
 
             # Check for promotion opportunities after successful melee combat
@@ -792,7 +785,7 @@ class GameEngine(QObject):
 
         elif action_type == "missile_complete":
             damage_dealt = action_result.get("damage_dealt", 0)
-            units_killed = action_result.get("units_killed", [])
+            action_result.get("units_killed", [])
             print(f"GameEngine: Missile action complete, {damage_dealt} damage dealt")
 
             # Check for promotion opportunities after successful missile combat
@@ -1297,7 +1290,6 @@ class GameEngine(QObject):
     def bury_unit_in_bua(self, player_name: str, unit_dict: Dict[str, Any]):
         """Bury a unit in the BUA."""
         # Convert dict to UnitModel for BUA manager
-        from models.unit_model import UnitModel
 
         unit_model = UnitModel(
             unit_id=unit_dict.get("id", unit_dict.get("name", "unknown")),
@@ -1430,8 +1422,7 @@ class GameEngine(QObject):
                 "summoned_dragon": summoned_dragon.to_dict(),
                 "target_terrain": target_terrain,
             }
-        else:
-            return {"success": False, "message": "Failed to remove dragon from summoning pool", "effects": []}
+        return {"success": False, "message": "Failed to remove dragon from summoning pool", "effects": []}
 
     def _process_dragonkin_summon_spell(self, spell_data: Dict[str, Any], spell_model) -> Dict[str, Any]:
         """Process Summon Dragonkin spell."""

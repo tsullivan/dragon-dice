@@ -366,7 +366,7 @@ class UnitInstanceManager:
             army_name: If specified, only reset counts for this army
         """
         if army_name:
-            keys_to_reset = [key for key in self.instance_counts.keys() if key.startswith(f"{army_name}_")]
+            keys_to_reset = [key for key in self.instance_counts if key.startswith(f"{army_name}_")]
             for key in keys_to_reset:
                 self.instance_counts[key] = 0
         else:

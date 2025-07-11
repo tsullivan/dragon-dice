@@ -1,5 +1,5 @@
 # models/army_model.py
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from .location_model import LocationModel, get_location
 from .unit_model import UnitModel
@@ -20,17 +20,16 @@ class ArmyModel:
         """Convert location input to LocationModel if possible, otherwise store as string."""
         if location is None:
             return None
-        elif isinstance(location, LocationModel):
+        if isinstance(location, LocationModel):
             return location
-        elif isinstance(location, str):
+        if isinstance(location, str):
             # Try to get a LocationModel if it's a known location name
             location_model = get_location(location)
             if location_model:
                 return location_model
             # For terrain names or custom locations, we'll store as string in a custom LocationModel
             return LocationModel(name=location.upper().replace(" ", "_"), display_name=location)
-        else:
-            raise ValueError(f"Invalid location type: {type(location)}")
+        raise ValueError(f"Invalid location type: {type(location)}")
 
     def _get_display_name(self) -> str:
         """Get the display name for this army type."""

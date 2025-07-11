@@ -42,29 +42,29 @@ class TestArmyComposition(unittest.TestCase):
             units=[self.mock_unit_1pt, self.mock_unit_2pt, self.mock_unit_3pt],
         )
 
-        self.assertEqual(army.get_total_points(), 6)
+        assert army.get_total_points() == 6
 
     def test_get_total_points_with_dict_units(self):
         """Test point calculation with dictionary-style units."""
         army = ArmyComposition(army_type="Campaign", units=[self.dict_unit_1pt, self.dict_unit_2pt])
 
-        self.assertEqual(army.get_total_points(), 3)
+        assert army.get_total_points() == 3
 
     def test_get_total_points_empty_army(self):
         """Test point calculation for empty army."""
         army = ArmyComposition(army_type="Horde", units=[])
-        self.assertEqual(army.get_total_points(), 0)
+        assert army.get_total_points() == 0
 
     def test_get_unit_count(self):
         """Test unit count calculation."""
         army = ArmyComposition(army_type="Home", units=[self.mock_unit_1pt, self.mock_unit_2pt])
 
-        self.assertEqual(army.get_unit_count(), 2)
+        assert army.get_unit_count() == 2
 
     def test_get_unit_count_empty(self):
         """Test unit count for empty army."""
         army = ArmyComposition(army_type="Campaign", units=[])
-        self.assertEqual(army.get_unit_count(), 0)
+        assert army.get_unit_count() == 0
 
 
 class TestDragonDiceArmyValidator(unittest.TestCase):
@@ -106,9 +106,9 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         result = self.validator.validate_army_composition(armies, force_size=12, num_players=2)
 
-        self.assertTrue(result.is_valid, f"Expected valid but got errors: {result.errors}")
-        self.assertEqual(len(result.errors), 0)
-        self.assertEqual(result.total_force_points, 12)
+        assert result.is_valid, f"Expected valid but got errors: {result.errors}"
+        assert len(result.errors) == 0
+        assert result.total_force_points == 12
 
     def test_rule_1_empty_army_fails(self):
         """Test Rule 1: Each army must have at least 1 unit."""
@@ -119,8 +119,8 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         result = self.validator.validate_army_composition(armies, force_size=10, num_players=2)
 
-        self.assertFalse(result.is_valid)
-        self.assertIn("Home Army must have at least 1 unit", result.errors)
+        assert not result.is_valid
+        assert "Home Army must have at least 1 unit" in result.errors
 
     def test_rule_2_army_exceeds_50_percent_fails(self):
         """Test Rule 2: No army can exceed 50% of total force points."""
@@ -131,8 +131,8 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         result = self.validator.validate_army_composition(armies, force_size=20, num_players=2)
 
-        self.assertFalse(result.is_valid)
-        self.assertTrue(any("exceeds maximum 10 pts" in error for error in result.errors))
+        assert not result.is_valid
+        assert any("exceeds maximum 10 pts" in error for error in result.errors)
 
     def test_rule_3_magic_units_exceed_50_percent_fails(self):
         """Test Rule 3: Magic units cannot exceed 50% of total force points."""
@@ -155,8 +155,8 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         result = self.validator.validate_army_composition(armies, force_size=10, num_players=2)
 
-        self.assertFalse(result.is_valid)
-        self.assertTrue(any("Magic units (6 pts) exceed maximum 5 pts" in error for error in result.errors))
+        assert not result.is_valid
+        assert any("Magic units (6 pts) exceed maximum 5 pts" in error for error in result.errors)
 
     def test_rule_4_total_points_not_equal_force_size_fails(self):
         """Test Rule 4: Total army points must equal selected force size."""
@@ -168,9 +168,9 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         result = self.validator.validate_army_composition(armies, force_size=10, num_players=2)
 
-        self.assertFalse(result.is_valid)
-        self.assertTrue(
-            any("Total army points (3 pts) must equal selected force size (10 pts)" in error for error in result.errors)
+        assert not result.is_valid
+        assert any(
+            "Total army points (3 pts) must equal selected force size (10 pts)" in error for error in result.errors
         )
 
     def test_horde_army_skipped_for_single_player(self):
@@ -185,10 +185,10 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
         result = self.validator.validate_army_composition(armies, force_size=20, num_players=1)
 
         # Should fail due to total points mismatch (10 != 20), but horde army error should not appear
-        self.assertFalse(result.is_valid)
+        assert not result.is_valid
         # Check that horde army error is NOT in the errors (it should be skipped)
         horde_errors = [error for error in result.errors if "Horde" in error]
-        self.assertEqual(len(horde_errors), 0, "Horde army should be skipped for single player")
+        assert len(horde_errors) == 0, "Horde army should be skipped for single player"
 
     def test_validate_single_army_valid(self):
         """Test validation of a single army within limits."""
@@ -196,8 +196,8 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         is_valid, errors = self.validator.validate_single_army(army, max_points=5)
 
-        self.assertTrue(is_valid)
-        self.assertEqual(len(errors), 0)
+        assert is_valid
+        assert len(errors) == 0
 
     def test_validate_single_army_exceeds_limit(self):
         """Test validation of a single army exceeding point limit."""
@@ -205,8 +205,8 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         is_valid, errors = self.validator.validate_single_army(army, max_points=5)
 
-        self.assertFalse(is_valid)
-        self.assertIn("Campaign Army (8 pts) exceeds maximum 5 pts", errors)
+        assert not is_valid
+        assert "Campaign Army (8 pts) exceeds maximum 5 pts" in errors
 
     def test_validate_single_army_empty(self):
         """Test validation of empty single army."""
@@ -214,8 +214,8 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
 
         is_valid, errors = self.validator.validate_single_army(army, max_points=10)
 
-        self.assertFalse(is_valid)
-        self.assertIn("Home Army must have at least 1 unit", errors)
+        assert not is_valid
+        assert "Home Army must have at least 1 unit" in errors
 
     def test_get_force_size_limits(self):
         """Test calculation of force size limits."""
@@ -227,7 +227,7 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
             "total_force_size": 24,
         }
 
-        self.assertEqual(limits, expected)
+        assert limits == expected
 
     def test_get_force_size_limits_odd_number(self):
         """Test calculation of force size limits with odd force size (rounding down)."""
@@ -239,7 +239,7 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
             "total_force_size": 15,
         }
 
-        self.assertEqual(limits, expected)
+        assert limits == expected
 
     def test_create_validation_summary_valid(self):
         """Test summary creation for valid composition."""
@@ -252,7 +252,7 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
         )
 
         summary = self.validator.create_validation_summary(result)
-        self.assertEqual(summary, "✅ Army composition is valid")
+        assert summary == "✅ Army composition is valid"
 
     def test_create_validation_summary_invalid(self):
         """Test summary creation for invalid composition."""
@@ -265,9 +265,9 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
         )
 
         summary = self.validator.create_validation_summary(result)
-        self.assertIn("❌ Army composition validation failed:", summary)
-        self.assertIn("• Home Army must have at least 1 unit", summary)
-        self.assertIn("• Total points mismatch", summary)
+        assert "❌ Army composition validation failed:" in summary
+        assert "• Home Army must have at least 1 unit" in summary
+        assert "• Total points mismatch" in summary
 
 
 class TestArmyCompositionBuilder(unittest.TestCase):
@@ -286,11 +286,11 @@ class TestArmyCompositionBuilder(unittest.TestCase):
 
         armies = ArmyCompositionBuilder.from_army_widgets(army_widgets)
 
-        self.assertEqual(len(armies), 2)
-        self.assertEqual(armies[0].army_type, "Home")
-        self.assertEqual(armies[0].get_total_points(), 5)
-        self.assertEqual(armies[1].army_type, "Campaign")
-        self.assertEqual(armies[1].get_total_points(), 1)
+        assert len(armies) == 2
+        assert armies[0].army_type == "Home"
+        assert armies[0].get_total_points() == 5
+        assert armies[1].army_type == "Campaign"
+        assert armies[1].get_total_points() == 1
 
     def test_from_army_widgets_no_current_units(self):
         """Test building army compositions from widgets without current_units attribute."""
@@ -299,9 +299,9 @@ class TestArmyCompositionBuilder(unittest.TestCase):
 
         armies = ArmyCompositionBuilder.from_army_widgets(army_widgets)
 
-        self.assertEqual(len(armies), 1)
-        self.assertEqual(armies[0].army_type, "Home")
-        self.assertEqual(armies[0].get_unit_count(), 0)
+        assert len(armies) == 1
+        assert armies[0].army_type == "Home"
+        assert armies[0].get_unit_count() == 0
 
     def test_from_player_data(self):
         """Test building army compositions from player data."""
@@ -319,11 +319,11 @@ class TestArmyCompositionBuilder(unittest.TestCase):
 
         armies = ArmyCompositionBuilder.from_player_data(player_data)
 
-        self.assertEqual(len(armies), 2)
-        self.assertEqual(armies[0].army_type, "Home")
-        self.assertEqual(armies[0].get_total_points(), 3)
-        self.assertEqual(armies[1].army_type, "Campaign")
-        self.assertEqual(armies[1].get_total_points(), 3)
+        assert len(armies) == 2
+        assert armies[0].army_type == "Home"
+        assert armies[0].get_total_points() == 3
+        assert armies[1].army_type == "Campaign"
+        assert armies[1].get_total_points() == 3
 
     def test_from_player_data_no_armies(self):
         """Test building army compositions from player data without armies."""
@@ -331,7 +331,7 @@ class TestArmyCompositionBuilder(unittest.TestCase):
 
         armies = ArmyCompositionBuilder.from_player_data(player_data)
 
-        self.assertEqual(len(armies), 0)
+        assert len(armies) == 0
 
 
 if __name__ == "__main__":

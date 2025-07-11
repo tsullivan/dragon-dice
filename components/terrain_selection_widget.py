@@ -24,16 +24,16 @@ class TerrainSelectionWidget(QWidget):
         # Home Terrain Selection
         self.home_terrain_label = QLabel("🏠 Home Terrain:")
         self.home_terrain_carousel = CarouselInputWidget(self.all_terrain_options)
-        self.home_terrain_carousel.valueChanged.connect(self.home_terrain_changed.emit)
-        self.home_terrain_carousel.valueChanged.connect(self._update_home_terrain_label)
+        self.home_terrain_carousel.value_changed.connect(self.home_terrain_changed.emit)
+        self.home_terrain_carousel.value_changed.connect(self._update_home_terrain_label)
         layout.addWidget(self.home_terrain_label, 0, 0)
         layout.addWidget(self.home_terrain_carousel, 0, 1)
 
         # Proposed Frontier Terrain Selection
         self.frontier_proposal_label = QLabel("🗺️ Proposed Frontier Terrain:")
         self.frontier_proposal_carousel = CarouselInputWidget(self.all_terrain_options)
-        self.frontier_proposal_carousel.valueChanged.connect(self.frontier_proposal_changed.emit)
-        self.frontier_proposal_carousel.valueChanged.connect(self._update_frontier_proposal_label)
+        self.frontier_proposal_carousel.value_changed.connect(self.frontier_proposal_changed.emit)
+        self.frontier_proposal_carousel.value_changed.connect(self._update_frontier_proposal_label)
         layout.addWidget(self.frontier_proposal_label, 1, 0)
         layout.addWidget(self.frontier_proposal_carousel, 1, 1)
 
@@ -44,9 +44,9 @@ class TerrainSelectionWidget(QWidget):
     def set_home_terrain(self, terrain_name: Optional[str]):
         if terrain_name:
             formatted_value = self._find_formatted_terrain(terrain_name)
-            self.home_terrain_carousel.setValue(formatted_value)
+            self.home_terrain_carousel.set_value(formatted_value)
         else:
-            self.home_terrain_carousel.setValue(None)
+            self.home_terrain_carousel.set_value(None)
 
     def get_frontier_proposal(self) -> Optional[str]:
         value = self.frontier_proposal_carousel.value()
@@ -55,14 +55,14 @@ class TerrainSelectionWidget(QWidget):
     def set_frontier_proposal(self, terrain_name: Optional[str]):
         if terrain_name:
             formatted_value = self._find_formatted_terrain(terrain_name)
-            self.frontier_proposal_carousel.setValue(formatted_value)
+            self.frontier_proposal_carousel.set_value(formatted_value)
         else:
-            self.frontier_proposal_carousel.setValue(None)
+            self.frontier_proposal_carousel.set_value(None)
 
     def clear_selections(self):
         if self.all_terrain_options:
-            self.home_terrain_carousel.setValue(self.all_terrain_options[0])
-            self.frontier_proposal_carousel.setValue(self.all_terrain_options[0])
+            self.home_terrain_carousel.set_value(self.all_terrain_options[0])
+            self.frontier_proposal_carousel.set_value(self.all_terrain_options[0])
             # Update labels with the first terrain option
             self._update_home_terrain_label(self.all_terrain_options[0])
             self._update_frontier_proposal_label(self.all_terrain_options[0])

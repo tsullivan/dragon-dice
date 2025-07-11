@@ -4,14 +4,15 @@ Complete E2E tests for Dragon Dice application.
 Tests the full user journey from startup through actual gameplay.
 """
 
-import pytest
-import sys
 import os
-from unittest.mock import patch, MagicMock
-from PySide6.QtWidgets import QApplication, QPushButton, QLineEdit, QComboBox
+import sys
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtTest import QTest
-import time
+from PySide6.QtWidgets import QApplication, QComboBox, QLineEdit, QPushButton
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -206,7 +207,7 @@ class TestGameplayInteractions:
         start_time = time.time()
 
         # Wait and monitor responsiveness
-        for i in range(3):
+        for _i in range(3):
             QTest.qWait(1000)  # Wait 1 second
             assert self.main_window.isVisible(), "Main window should remain visible"
 

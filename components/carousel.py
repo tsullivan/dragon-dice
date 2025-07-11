@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget
 
 
 class CarouselInputWidget(QWidget):
-    valueChanged = Signal(object)  # Can emit int or str
+    value_changed = Signal(object)  # Can emit int or str
 
     def __init__(
         self,
@@ -52,12 +52,11 @@ class CarouselInputWidget(QWidget):
 
         # Determine initial index
         current_val_to_set = self._allowed_values[0]  # Default to first value
-        if initial_value is not None:
-            if initial_value in self._allowed_values:
-                self._current_index = self._allowed_values.index(initial_value)
-                current_val_to_set = initial_value
-            # If initial_value is not in allowed_values, it defaults to the first allowed_value
-            # or the initial_value itself if allowed_values was empty and got populated by it.
+        if initial_value is not None and initial_value in self._allowed_values:
+            self._current_index = self._allowed_values.index(initial_value)
+            current_val_to_set = initial_value
+        # If initial_value is not in allowed_values, it defaults to the first allowed_value
+        # or the initial_value itself if allowed_values was empty and got populated by it.
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -91,11 +90,11 @@ class CarouselInputWidget(QWidget):
                 new_index = len(self._allowed_values) - 1
             else:
                 new_index = current_index - 1
-            self.setValue(self._allowed_values[new_index])
+            self.set_value(self._allowed_values[new_index])
         except (ValueError, IndexError):
             # Fallback to last item if something unexpected happens or list is empty
             if self._allowed_values:
-                self.setValue(self._allowed_values[-1])
+                self.set_value(self._allowed_values[-1])
 
     def _next_value(self):
         if not self._allowed_values:
@@ -110,20 +109,20 @@ class CarouselInputWidget(QWidget):
                 new_index = 0
             else:
                 new_index = current_index + 1
-            self.setValue(self._allowed_values[new_index])
+            self.set_value(self._allowed_values[new_index])
         except (
             ValueError,
             IndexError,
         ):  # ValueError if not found, IndexError if list is empty after check
             # Fallback to first item if something unexpected happens or list is empty
             if self._allowed_values:
-                self.setValue(self._allowed_values[0])
+                self.set_value(self._allowed_values[0])
 
     def _update_display_and_emit(self):
         if not self._allowed_values:  # Should not happen if constructor ensures _allowed_values is never empty
             self.value_label.setText("")
             self._update_button_states()
-            self.valueChanged.emit(None)  # Or some other indicator of no value
+            self.value_changed.emit(None)  # Or some other indicator of no value
             return
 
         current_val = self._allowed_values[self._current_index]
@@ -131,7 +130,7 @@ class CarouselInputWidget(QWidget):
         display_text = self._format_display_value(current_val)
         self.value_label.setText(display_text)
         self._update_button_states()
-        self.valueChanged.emit(current_val)
+        self.value_changed.emit(current_val)
 
     def _format_display_value(self, value: Any) -> str:
         """Simple display formatting - just return the value as a string."""
@@ -148,7 +147,7 @@ class CarouselInputWidget(QWidget):
             return None
         return self._allowed_values[self._current_index]
 
-    def setValue(self, new_value: Any):
+    def set_value(self, new_value: Any):
         if not self._allowed_values:
             # If allowed_values is empty, we might want to update it
             # or handle this case based on expected behavior.
@@ -160,7 +159,7 @@ class CarouselInputWidget(QWidget):
             else:  # new_value is None, and no allowed_values
                 self.value_label.setText("")  # Or some placeholder
                 self._update_button_states()  # Disables buttons
-                self.valueChanged.emit(None)
+                self.value_changed.emit(None)
             return
 
         if new_value in self._allowed_values:
@@ -187,4 +186,4 @@ class CarouselInputWidget(QWidget):
         self._current_index = 0
         self.value_label.setText("")  # Or a placeholder like "N/A"
         self._update_button_states()  # Disables buttons
-        self.valueChanged.emit(None)  # Emit that value is now None or invalid
+        self.value_changed.emit(None)  # Emit that value is now None or invalid

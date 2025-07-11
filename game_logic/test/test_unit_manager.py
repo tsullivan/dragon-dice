@@ -25,21 +25,21 @@ class TestSortCriteria(unittest.TestCase):
         """Test creating SortCriteria with defaults."""
         criteria = SortCriteria()
 
-        self.assertEqual(criteria.primary_key, "max_health")
-        self.assertEqual(criteria.secondary_key, "unit_class_type")
-        self.assertEqual(criteria.tertiary_key, "display_name")
-        self.assertFalse(criteria.reverse_primary)
-        self.assertFalse(criteria.reverse_secondary)
-        self.assertFalse(criteria.reverse_tertiary)
+        assert criteria.primary_key == "max_health"
+        assert criteria.secondary_key == "unit_class_type"
+        assert criteria.tertiary_key == "display_name"
+        assert not criteria.reverse_primary
+        assert not criteria.reverse_secondary
+        assert not criteria.reverse_tertiary
 
     def test_custom_creation(self):
         """Test creating SortCriteria with custom values."""
         criteria = SortCriteria(primary_key="display_name", reverse_primary=True, reverse_secondary=True)
 
-        self.assertEqual(criteria.primary_key, "display_name")
-        self.assertTrue(criteria.reverse_primary)
-        self.assertTrue(criteria.reverse_secondary)
-        self.assertFalse(criteria.reverse_tertiary)
+        assert criteria.primary_key == "display_name"
+        assert criteria.reverse_primary
+        assert criteria.reverse_secondary
+        assert not criteria.reverse_tertiary
 
 
 class TestUnitInstanceConfig(unittest.TestCase):
@@ -50,7 +50,7 @@ class TestUnitInstanceConfig(unittest.TestCase):
         config = UnitInstanceConfig(army_name="Home Guard", unit_type_id="goblin_thug", instance_count=2)
 
         instance_id = config.generate_instance_id()
-        self.assertEqual(instance_id, "home_guard_goblin_thug_3")
+        assert instance_id == "home_guard_goblin_thug_3"
 
     def test_generate_instance_id_custom_pattern(self):
         """Test generating instance ID with custom pattern."""
@@ -62,7 +62,7 @@ class TestUnitInstanceConfig(unittest.TestCase):
         )
 
         instance_id = config.generate_instance_id()
-        self.assertEqual(instance_id, "orc_warrior_campaign_army_01")
+        assert instance_id == "orc_warrior_campaign_army_01"
 
 
 class TestUnitSorter(unittest.TestCase):
@@ -94,7 +94,7 @@ class TestUnitSorter(unittest.TestCase):
         expected_order = ["Thug", "Wizard", "Cutthroat", "Archer", "Berserker"]
         actual_order = [unit["display_name"] for unit in sorted_units]
 
-        self.assertEqual(actual_order, expected_order)
+        assert actual_order == expected_order
 
     def test_sort_units_alphabetical(self):
         """Test sorting alphabetically."""
@@ -103,7 +103,7 @@ class TestUnitSorter(unittest.TestCase):
         expected_order = ["Archer", "Berserker", "Cutthroat", "Thug", "Wizard"]
         actual_order = [unit["display_name"] for unit in sorted_units]
 
-        self.assertEqual(actual_order, expected_order)
+        assert actual_order == expected_order
 
     def test_sort_units_by_cost(self):
         """Test sorting by cost (health points)."""
@@ -113,7 +113,7 @@ class TestUnitSorter(unittest.TestCase):
         expected_costs = [1, 1, 2, 2, 3]
         actual_costs = [unit["max_health"] for unit in sorted_units]
 
-        self.assertEqual(actual_costs, expected_costs)
+        assert actual_costs == expected_costs
 
     def test_sort_units_by_power_desc(self):
         """Test sorting by power descending."""
@@ -123,7 +123,7 @@ class TestUnitSorter(unittest.TestCase):
         expected_costs = [3, 2, 2, 1, 1]
         actual_costs = [unit["max_health"] for unit in sorted_units]
 
-        self.assertEqual(actual_costs, expected_costs)
+        assert actual_costs == expected_costs
 
     def test_sort_units_by_criteria(self):
         """Test sorting with custom criteria."""
@@ -137,8 +137,8 @@ class TestUnitSorter(unittest.TestCase):
 
         # Should group by class type first
         class_types = [unit["unit_class_type"] for unit in sorted_units]
-        self.assertTrue(class_types.index("Heavy Melee") < class_types.index("Magic"))
-        self.assertTrue(class_types.index("Heavy Melee") < class_types.index("Missile"))
+        assert class_types.index("Heavy Melee") < class_types.index("Magic")
+        assert class_types.index("Heavy Melee") < class_types.index("Missile")
 
     def test_sort_units_custom(self):
         """Test sorting with custom key function."""
@@ -148,12 +148,12 @@ class TestUnitSorter(unittest.TestCase):
         expected_order = ["Cutthroat", "Berserker", "Archer", "Wizard", "Thug"]
         actual_order = [unit["display_name"] for unit in sorted_units]
 
-        self.assertEqual(actual_order, expected_order)
+        assert actual_order == expected_order
 
     def test_sort_units_empty_list(self):
         """Test sorting empty list."""
         sorted_units = UnitSorter.sort_units([])
-        self.assertEqual(sorted_units, [])
+        assert sorted_units == []
 
 
 class TestUnitOrganizer(unittest.TestCase):
@@ -200,76 +200,76 @@ class TestUnitOrganizer(unittest.TestCase):
         mock_roster = Mock()
         groups = UnitOrganizer.group_by_species(self.test_units, mock_roster)
 
-        self.assertIn("Goblin", groups)
-        self.assertIn("Feral", groups)
-        self.assertIn("Orc", groups)
+        assert "Goblin" in groups
+        assert "Feral" in groups
+        assert "Orc" in groups
 
         # Check that goblin units are grouped together
         goblin_units = groups["Goblin"]
         goblin_names = [unit["display_name"] for unit in goblin_units]
-        self.assertIn("Thug", goblin_names)
-        self.assertIn("Archer", goblin_names)
-        self.assertIn("Berserker", goblin_names)
+        assert "Thug" in goblin_names
+        assert "Archer" in goblin_names
+        assert "Berserker" in goblin_names
 
         # Check single unit groups
-        self.assertEqual(len(groups["Feral"]), 1)
-        self.assertEqual(len(groups["Orc"]), 1)
+        assert len(groups["Feral"]) == 1
+        assert len(groups["Orc"]) == 1
 
     def test_group_by_species_no_roster(self):
         """Test grouping by species without roster."""
         groups = UnitOrganizer.group_by_species(self.test_units, None)
 
-        self.assertEqual(groups, {"All Units": self.test_units})
+        assert groups == {"All Units": self.test_units}
 
     def test_group_by_class_type(self):
         """Test grouping units by class type."""
         groups = UnitOrganizer.group_by_class_type(self.test_units)
 
-        self.assertIn("Heavy Melee", groups)
-        self.assertIn("Missile", groups)
-        self.assertIn("Magic", groups)
+        assert "Heavy Melee" in groups
+        assert "Missile" in groups
+        assert "Magic" in groups
 
         # Check Heavy Melee group has 3 units
         heavy_melee_units = groups["Heavy Melee"]
-        self.assertEqual(len(heavy_melee_units), 3)
+        assert len(heavy_melee_units) == 3
 
         # Check single unit groups
-        self.assertEqual(len(groups["Missile"]), 1)
-        self.assertEqual(len(groups["Magic"]), 1)
+        assert len(groups["Missile"]) == 1
+        assert len(groups["Magic"]) == 1
 
     def test_group_by_cost_range_default(self):
         """Test grouping by default cost ranges."""
         groups = UnitOrganizer.group_by_cost_range(self.test_units)
 
-        self.assertIn("1 pt", groups)
-        self.assertIn("2 pt", groups)
-        self.assertIn("3 pt", groups)
-        self.assertIn("4-6 pts", groups)
+        assert "1 pt" in groups
+        assert "2 pt" in groups
+        assert "3 pt" in groups
+        assert "4-6 pts" in groups
 
         # Check 1 pt group has 2 units
         one_pt_units = groups["1 pt"]
-        self.assertEqual(len(one_pt_units), 2)
+        assert len(one_pt_units) == 2
 
         # Check 4 pt unit is in 4-6 pts range
         four_pt_units = groups["4-6 pts"]
-        self.assertEqual(len(four_pt_units), 1)
-        self.assertEqual(four_pt_units[0]["display_name"], "Berserker")
+        assert len(four_pt_units) == 1
+        assert four_pt_units[0]["display_name"] == "Berserker"
 
     def test_group_by_cost_range_custom(self):
         """Test grouping by custom cost ranges."""
         custom_ranges = [(1, 2), (3, 5)]
         groups = UnitOrganizer.group_by_cost_range(self.test_units, custom_ranges)
 
-        self.assertIn("1-2 pts", groups)
-        self.assertIn("3-5 pts", groups)
+        assert "1-2 pts" in groups
+        assert "3-5 pts" in groups
 
         # Check 1-2 pts group has 3 units (1, 1, 2 health)
         low_cost_units = groups["1-2 pts"]
-        self.assertEqual(len(low_cost_units), 3)
+        assert len(low_cost_units) == 3
 
         # Check 3-5 pts group has 2 units (3, 4 health)
         high_cost_units = groups["3-5 pts"]
-        self.assertEqual(len(high_cost_units), 2)
+        assert len(high_cost_units) == 2
 
     def test_filter_units_string(self):
         """Test filtering units by string criteria."""
@@ -278,9 +278,9 @@ class TestUnitOrganizer(unittest.TestCase):
         filtered_units = UnitOrganizer.filter_units(self.test_units, filters)
 
         # Should find 3 Heavy Melee units
-        self.assertEqual(len(filtered_units), 3)
+        assert len(filtered_units) == 3
         for unit in filtered_units:
-            self.assertIn("Heavy", unit["unit_class_type"])
+            assert "Heavy" in unit["unit_class_type"]
 
     def test_filter_units_numeric(self):
         """Test filtering units by numeric criteria."""
@@ -289,9 +289,9 @@ class TestUnitOrganizer(unittest.TestCase):
         filtered_units = UnitOrganizer.filter_units(self.test_units, filters)
 
         # Should find 2 units with 1 health
-        self.assertEqual(len(filtered_units), 2)
+        assert len(filtered_units) == 2
         for unit in filtered_units:
-            self.assertEqual(unit["max_health"], 1)
+            assert unit["max_health"] == 1
 
     def test_filter_units_list(self):
         """Test filtering units by list criteria."""
@@ -300,9 +300,9 @@ class TestUnitOrganizer(unittest.TestCase):
         filtered_units = UnitOrganizer.filter_units(self.test_units, filters)
 
         # Should find 3 units (2 with health 1, 1 with health 3)
-        self.assertEqual(len(filtered_units), 3)
+        assert len(filtered_units) == 3
         for unit in filtered_units:
-            self.assertIn(unit["max_health"], [1, 3])
+            assert unit["max_health"] in [1, 3]
 
     def test_filter_units_function(self):
         """Test filtering units by function criteria."""
@@ -311,9 +311,9 @@ class TestUnitOrganizer(unittest.TestCase):
         filtered_units = UnitOrganizer.filter_units(self.test_units, filters)
 
         # Should find 2 units with health > 2
-        self.assertEqual(len(filtered_units), 2)
+        assert len(filtered_units) == 2
         for unit in filtered_units:
-            self.assertGreater(unit["max_health"], 2)
+            assert unit["max_health"] > 2
 
     def test_filter_units_multiple_criteria(self):
         """Test filtering units by multiple criteria."""
@@ -322,10 +322,10 @@ class TestUnitOrganizer(unittest.TestCase):
         filtered_units = UnitOrganizer.filter_units(self.test_units, filters)
 
         # Should find 2 Heavy Melee units with 1 health
-        self.assertEqual(len(filtered_units), 2)
+        assert len(filtered_units) == 2
         for unit in filtered_units:
-            self.assertIn("Heavy", unit["unit_class_type"])
-            self.assertEqual(unit["max_health"], 1)
+            assert "Heavy" in unit["unit_class_type"]
+            assert unit["max_health"] == 1
 
 
 class TestUnitInstanceManager(unittest.TestCase):
@@ -349,7 +349,7 @@ class TestUnitInstanceManager(unittest.TestCase):
 
         unit = self.manager.create_unit_instance(config)
 
-        self.assertIsNotNone(unit)
+        assert unit is not None
         self.mock_roster.create_unit_instance.assert_called_once_with("goblin_thug", "home_guard_goblin_thug_1")
 
     def test_create_unit_instance_with_existing_units(self):
@@ -358,7 +358,7 @@ class TestUnitInstanceManager(unittest.TestCase):
 
         config = UnitInstanceConfig(army_name="Home Guard", unit_type_id="goblin_thug")
 
-        unit = self.manager.create_unit_instance(config, existing_units)
+        self.manager.create_unit_instance(config, existing_units)
 
         # Should create instance with count 3 (2 existing + 1)
         self.mock_roster.create_unit_instance.assert_called_once_with("goblin_thug", "home_guard_goblin_thug_3")
@@ -370,7 +370,7 @@ class TestUnitInstanceManager(unittest.TestCase):
 
         unit = manager.create_unit_instance(config)
 
-        self.assertIsNone(unit)
+        assert unit is None
 
     def test_get_instance_count(self):
         """Test getting instance count."""
@@ -380,7 +380,7 @@ class TestUnitInstanceManager(unittest.TestCase):
         self.manager.create_unit_instance(config)
 
         count = self.manager.get_instance_count("Home Guard", "goblin_thug")
-        self.assertEqual(count, 1)
+        assert count == 1
 
     def test_reset_instance_counts_specific_army(self):
         """Test resetting instance counts for specific army."""
@@ -393,8 +393,8 @@ class TestUnitInstanceManager(unittest.TestCase):
         # Reset only Home Guard counts
         self.manager.reset_instance_counts("Home Guard")
 
-        self.assertEqual(self.manager.get_instance_count("Home Guard", "goblin_thug"), 0)
-        self.assertEqual(self.manager.get_instance_count("Campaign Army", "orc_warrior"), 1)
+        assert self.manager.get_instance_count("Home Guard", "goblin_thug") == 0
+        assert self.manager.get_instance_count("Campaign Army", "orc_warrior") == 1
 
     def test_reset_instance_counts_all(self):
         """Test resetting all instance counts."""
@@ -407,8 +407,8 @@ class TestUnitInstanceManager(unittest.TestCase):
         # Reset all counts
         self.manager.reset_instance_counts()
 
-        self.assertEqual(self.manager.get_instance_count("Home Guard", "goblin_thug"), 0)
-        self.assertEqual(self.manager.get_instance_count("Campaign Army", "orc_warrior"), 0)
+        assert self.manager.get_instance_count("Home Guard", "goblin_thug") == 0
+        assert self.manager.get_instance_count("Campaign Army", "orc_warrior") == 0
 
     def test_bulk_create_instances(self):
         """Test creating multiple instances in bulk."""
@@ -420,8 +420,8 @@ class TestUnitInstanceManager(unittest.TestCase):
 
         instances = self.manager.bulk_create_instances(configs)
 
-        self.assertEqual(len(instances), 3)
-        self.assertEqual(self.mock_roster.create_unit_instance.call_count, 3)
+        assert len(instances) == 3
+        assert self.mock_roster.create_unit_instance.call_count == 3
 
 
 class TestUnitCollectionManager(unittest.TestCase):
@@ -463,80 +463,80 @@ class TestUnitCollectionManager(unittest.TestCase):
         """Test organizing units by species for display."""
         groups = self.manager.organize_units_for_display(self.test_units, "species")
 
-        self.assertIn("Goblin", groups)
-        self.assertIn("Feral", groups)
-        self.assertIn("Orc", groups)
+        assert "Goblin" in groups
+        assert "Feral" in groups
+        assert "Orc" in groups
 
         # Units within groups should be sorted
         goblin_units = groups["Goblin"]
-        self.assertEqual(len(goblin_units), 2)
+        assert len(goblin_units) == 2
 
     def test_organize_units_for_display_class(self):
         """Test organizing units by class for display."""
         groups = self.manager.organize_units_for_display(self.test_units, "class")
 
-        self.assertIn("Heavy Melee", groups)
-        self.assertIn("Missile", groups)
-        self.assertIn("Magic", groups)
+        assert "Heavy Melee" in groups
+        assert "Missile" in groups
+        assert "Magic" in groups
 
     def test_organize_units_for_display_cost(self):
         """Test organizing units by cost for display."""
         groups = self.manager.organize_units_for_display(self.test_units, "cost")
 
-        self.assertIn("1 pt", groups)
-        self.assertIn("2 pt", groups)
-        self.assertIn("3 pt", groups)
+        assert "1 pt" in groups
+        assert "2 pt" in groups
+        assert "3 pt" in groups
 
     def test_search_units(self):
         """Test searching units by term."""
         # Search for "arch" should find "Archer"
         results = self.manager.search_units(self.test_units, "arch")
 
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["display_name"], "Archer")
+        assert len(results) == 1
+        assert results[0]["display_name"] == "Archer"
 
     def test_search_units_multiple_fields(self):
         """Test searching units across multiple fields."""
         # Search for "Heavy" should find units with Heavy Melee class
         results = self.manager.search_units(self.test_units, "Heavy")
 
-        self.assertEqual(len(results), 2)
+        assert len(results) == 2
         for unit in results:
-            self.assertEqual(unit["unit_class_type"], "Heavy Melee")
+            assert unit["unit_class_type"] == "Heavy Melee"
 
     def test_search_units_empty_term(self):
         """Test searching with empty term returns all units."""
         results = self.manager.search_units(self.test_units, "")
 
-        self.assertEqual(len(results), len(self.test_units))
+        assert len(results) == len(self.test_units)
 
     def test_search_units_no_matches(self):
         """Test searching with term that matches nothing."""
         results = self.manager.search_units(self.test_units, "nonexistent")
 
-        self.assertEqual(len(results), 0)
+        assert len(results) == 0
 
     def test_get_unit_statistics(self):
         """Test generating unit collection statistics."""
         stats = self.manager.get_unit_statistics(self.test_units)
 
-        self.assertEqual(stats["total_units"], 4)
-        self.assertEqual(stats["total_cost"], 7)  # 1+2+1+3
-        self.assertEqual(stats["average_cost"], 1.8)  # 7/4 rounded
-        self.assertEqual(stats["min_cost"], 1)
-        self.assertEqual(stats["max_cost"], 3)
-        self.assertEqual(stats["unique_classes"], 3)
+        assert stats["total_units"] == 4
+        assert stats["total_cost"] == 7  # 1+2+1+3
+        assert stats["average_cost"] == 1.8  # 7/4 rounded
+        assert stats["min_cost"] == 1
+        assert stats["max_cost"] == 3
+        assert stats["unique_classes"] == 3
 
         # Check class distribution
-        self.assertEqual(stats["class_distribution"]["Heavy Melee"], 2)
-        self.assertEqual(stats["class_distribution"]["Missile"], 1)
-        self.assertEqual(stats["class_distribution"]["Magic"], 1)
+        assert stats["class_distribution"]["Heavy Melee"] == 2
+        assert stats["class_distribution"]["Missile"] == 1
+        assert stats["class_distribution"]["Magic"] == 1
 
     def test_get_unit_statistics_empty(self):
         """Test statistics for empty unit collection."""
         stats = self.manager.get_unit_statistics([])
 
-        self.assertEqual(stats, {"total_units": 0})
+        assert stats == {"total_units": 0}
 
 
 if __name__ == "__main__":

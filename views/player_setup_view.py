@@ -27,7 +27,7 @@ from components.terrain_selection_widget import (
     TerrainSelectionWidget,
 )
 from config.resource_manager import ResourceManager
-from models.army_model import get_all_army_types, ARMY_DATA
+from models.army_model import ARMY_DATA, get_all_army_types
 from models.help_text_model import HelpTextModel
 from models.unit_roster_model import UnitRosterModel
 
@@ -136,7 +136,7 @@ class PlayerSetupView(QWidget):
         for i in range(self.required_dragons):
             dragon_widget = DragonSelectionWidget(dragon_number=i + 1)
             self.dragon_selection_widgets.append(dragon_widget)
-            dragon_widget.valueChanged.connect(self._validate_and_update_button_state)
+            dragon_widget.value_changed.connect(self._validate_and_update_button_state)
             dragon_selection_layout.addWidget(dragon_widget)
 
         game_content_layout.addWidget(dragon_selection_group)
@@ -449,7 +449,7 @@ class PlayerSetupView(QWidget):
             if species:
                 element_icons = "".join(species.get_element_icons())
                 return f"{element_icons} {species_name}"
-        except:
+        except Exception:
             pass
 
         # Fallback to original species name
@@ -477,10 +477,10 @@ class PlayerSetupView(QWidget):
                     dragon_data = selected_dragons_data[i]
                     # Handle both old format (string) and new format (dict)
                     if isinstance(dragon_data, dict):
-                        widget.setValue(dragon_data)
+                        widget.set_value(dragon_data)
                     else:
                         # Convert old string format to new dict format
-                        widget.setValue(
+                        widget.set_value(
                             {
                                 "dragon_type": dragon_data,
                                 "die_type": "Drake",

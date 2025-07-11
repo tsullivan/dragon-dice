@@ -61,21 +61,21 @@ class TestEngineIntegration(unittest.TestCase):
 
     def test_engine_initialization(self):
         """Test proper engine initialization."""
-        self.assertEqual(self.engine.player_names, ["Player 1", "Player 2"])
-        self.assertEqual(self.engine.first_player_name, "Player 1")
-        self.assertEqual(self.engine.frontier_terrain, self.frontier_terrain)
-        self.assertEqual(self.engine.distance_rolls, self.distance_rolls)
+        assert self.engine.player_names == ["Player 1", "Player 2"]
+        assert self.engine.first_player_name == "Player 1"
+        assert self.engine.frontier_terrain == self.frontier_terrain
+        assert self.engine.distance_rolls == self.distance_rolls
 
         # Check that managers are properly initialized
-        self.assertIsNotNone(self.engine.turn_manager)
-        self.assertIsNotNone(self.engine.effect_manager)
-        self.assertIsNotNone(self.engine.game_state_manager)
-        self.assertIsNotNone(self.engine.action_resolver)
+        assert self.engine.turn_manager is not None
+        assert self.engine.effect_manager is not None
+        assert self.engine.game_state_manager is not None
+        assert self.engine.action_resolver is not None
 
     def test_current_player_tracking(self):
         """Test current player tracking."""
         current_player = self.engine.get_current_player_name()
-        self.assertEqual(current_player, "Player 1")  # First player
+        assert current_player == "Player 1"  # First player
 
     def test_acting_army_selection(self):
         """Test acting army selection and tracking."""
@@ -88,28 +88,22 @@ class TestEngineIntegration(unittest.TestCase):
         self.engine.choose_acting_army(test_army)
 
         current_acting_army = self.engine.get_current_acting_army()
-        self.assertEqual(current_acting_army, test_army)
-        self.assertEqual(current_acting_army["name"], "Test Army")
+        assert current_acting_army == test_army
+        assert current_acting_army["name"] == "Test Army"
 
     def test_action_selection(self):
         """Test action selection and state transitions."""
         # Test melee action selection
         self.engine.select_action("MELEE")
-        self.assertEqual(
-            self.engine.current_action_step,
-            "AWAITING_ATTACKER_MELEE_ROLL",
-        )
+        assert self.engine.current_action_step == "AWAITING_ATTACKER_MELEE_ROLL"
 
         # Test missile action selection
         self.engine.select_action("MISSILE")
-        self.assertEqual(
-            self.engine.current_action_step,
-            "AWAITING_ATTACKER_MISSILE_ROLL",
-        )
+        assert self.engine.current_action_step == "AWAITING_ATTACKER_MISSILE_ROLL"
 
         # Test magic action selection
         self.engine.select_action("MAGIC")
-        self.assertEqual(self.engine.current_action_step, "AWAITING_MAGIC_ROLL")
+        assert self.engine.current_action_step == "AWAITING_MAGIC_ROLL"
 
     def test_submit_defender_save_results_no_pending_outcome(self):
         """Test defender save submission without pending attacker outcome."""
@@ -138,7 +132,7 @@ class TestEngineIntegration(unittest.TestCase):
 
             success = self.engine.apply_maneuver_results(maneuver_result)
 
-            self.assertTrue(success)
+            assert success
             mock_update.assert_called_once_with("Player 1 Highland", "3")
 
     def test_maneuver_results_application_failure(self):
@@ -149,13 +143,13 @@ class TestEngineIntegration(unittest.TestCase):
         with patch.object(self.engine.game_state_manager, "update_terrain_face") as mock_update:
             result = self.engine.apply_maneuver_results(maneuver_result)
 
-            self.assertIsNone(result)
+            assert result is None
             mock_update.assert_not_called()
 
     def test_phase_management(self):
         """Test phase management and transitions."""
         # Test initial phase
-        self.assertIsNotNone(self.engine.current_phase)
+        assert self.engine.current_phase is not None
 
         # Test phase advancement
         with patch.object(self.engine, "phase_advance_requested") as mock_signal:
@@ -166,7 +160,7 @@ class TestEngineIntegration(unittest.TestCase):
         """Test march step management."""
         # Test march step transitions
         self.engine._current_march_step = "CHOOSE_ACTING_ARMY"
-        self.assertEqual(self.engine.current_march_step, "CHOOSE_ACTING_ARMY")
+        assert self.engine.current_march_step == "CHOOSE_ACTING_ARMY"
 
     def test_get_current_phase_display(self):
         """Test phase display formatting."""
@@ -176,7 +170,7 @@ class TestEngineIntegration(unittest.TestCase):
         self.engine._current_march_step = "DECIDE_MANEUVER"
 
         display = self.engine.get_current_phase_display()
-        self.assertIn("Game Start", display)
+        assert "Game Start" in display
 
         # Test normal phase display
         self.engine._is_very_first_turn = False
@@ -184,23 +178,23 @@ class TestEngineIntegration(unittest.TestCase):
         self.engine._current_march_step = ""
 
         display = self.engine.get_current_phase_display()
-        self.assertIn("Eighth Face", display)
+        assert "Eighth Face" in display
 
     def test_data_retrieval_methods(self):
         """Test data retrieval methods."""
         # Test player data retrieval
         all_players = self.engine.get_all_players_data()
-        self.assertIsInstance(all_players, dict)
-        self.assertIn("Player 1", all_players)
-        self.assertIn("Player 2", all_players)
+        assert isinstance(all_players, dict)
+        assert "Player 1" in all_players
+        assert "Player 2" in all_players
 
         # Test terrain data retrieval
         terrain_data = self.engine.get_all_terrain_data()
-        self.assertIsInstance(terrain_data, dict)
+        assert isinstance(terrain_data, dict)
 
         # Test terrain type extraction
         terrain_type = self.engine.extract_terrain_type_from_location("Player 1 Highland")
-        self.assertEqual(terrain_type, "Highland")
+        assert terrain_type == "Highland"
 
     def test_error_handling_in_action_flow(self):
         """Test error handling in action flow."""
@@ -208,7 +202,7 @@ class TestEngineIntegration(unittest.TestCase):
         self.engine.select_action("INVALID_ACTION")
 
         # Should not crash - engine should handle gracefully
-        self.assertIsNotNone(self.engine.current_action_step)
+        assert self.engine.current_action_step is not None
 
 
 if __name__ == "__main__":

@@ -363,7 +363,7 @@ class ManeuverDialog(QDialog):
         print(f"ManeuverDialog: Opposing armies: {opposing_armies}")
 
         # Get unique opposing players
-        opposing_players = list(set(army["player"] for army in opposing_armies))
+        opposing_players = list({army["player"] for army in opposing_armies})
         print(f"ManeuverDialog: Opposing players: {opposing_players}")
 
         self.pending_decisions: Dict[str, Any] = {}
@@ -453,7 +453,7 @@ class ManeuverDialog(QDialog):
         except Exception as e:
             print(f"[ManeuverDialog] Error checking game state: {e}")
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):  # noqa: N802
         """Handle dialog close event."""
         print("[ManeuverDialog] Dialog closing")
         self.maneuver_cancelled.emit()

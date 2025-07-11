@@ -4,11 +4,12 @@ E2E test specifically for counter-maneuver dialog button functionality.
 Tests that the dialog buttons properly trigger the expected game engine calls.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
+import unittest
+from unittest.mock import MagicMock, patch
+
 from PySide6.QtCore import QTimer
-from unittest.mock import patch, MagicMock
+from PySide6.QtWidgets import QApplication
 
 from game_logic.engine import GameEngine
 from views.maneuver_dialog import CounterManeuverDecisionDialog
@@ -116,7 +117,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
 
         # Find the army across all players
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     # Create the army data structure expected by choose_acting_army
@@ -168,10 +169,10 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         dialog._make_decision(False)  # False = allow maneuver
 
         # Verify the signal was emitted correctly
-        self.assertEqual(len(decision_received), 1)
+        assert len(decision_received) == 1
         player, decision = decision_received[0]
-        self.assertEqual(player, "Player 2")
-        self.assertEqual(decision, False)  # False = allow maneuver
+        assert player == "Player 2"
+        assert not decision  # False = allow maneuver
 
         print(
             f"✅ Signal emitted correctly: Player {player}, Decision: {'Allow' if not decision else 'Counter'}"
@@ -181,9 +182,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         self.engine.submit_counter_maneuver_decision("Player 2", False)
 
         # Verify engine method was called
-        self.assertIn(
-            "submit_counter_maneuver_decision(Player 2, False)", self.engine_calls
-        )
+        assert "submit_counter_maneuver_decision(Player 2, False)" in self.engine_calls
 
         print("✅ Test completed - Allow Maneuver button works correctly")
 
@@ -220,10 +219,10 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         dialog._make_decision(True)  # True = counter-maneuver
 
         # Verify the signal was emitted correctly
-        self.assertEqual(len(decision_received), 1)
+        assert len(decision_received) == 1
         player, decision = decision_received[0]
-        self.assertEqual(player, "Player 2")
-        self.assertEqual(decision, True)  # True = counter-maneuver
+        assert player == "Player 2"
+        assert decision  # True = counter-maneuver
 
         print(
             f"✅ Signal emitted correctly: Player {player}, Decision: {'Counter' if decision else 'Allow'}"
@@ -233,9 +232,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         self.engine.submit_counter_maneuver_decision("Player 2", True)
 
         # Verify engine method was called
-        self.assertIn(
-            "submit_counter_maneuver_decision(Player 2, True)", self.engine_calls
-        )
+        assert "submit_counter_maneuver_decision(Player 2, True)" in self.engine_calls
 
         print("✅ Test completed - Counter-Maneuver button works correctly")
 
@@ -272,9 +269,9 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         dialog.allow_button.click()
 
         # Verify both button clicks were registered
-        self.assertEqual(len(decision_calls), 2)
-        self.assertEqual(decision_calls[0], True)  # Counter button
-        self.assertEqual(decision_calls[1], False)  # Allow button
+        assert len(decision_calls) == 2
+        assert decision_calls[0]  # Counter button
+        assert not decision_calls[1]  # Allow button
 
         print("✅ Both buttons correctly connected to _make_decision method")
         print(f"   Counter button call: {decision_calls[0]}")
@@ -307,7 +304,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         # Step 1: Set up contested maneuver
         print("Step 1: Setting up contested maneuver scenario")
         self._choose_army_by_id("player_1_campaign")
-        self.assertEqual(self.engine.current_march_step, "DECIDE_MANEUVER")
+        assert self.engine.current_march_step == "DECIDE_MANEUVER"
 
         # Step 2: Initiate maneuver
         print("Step 2: Player 1 decides to maneuver")
@@ -315,8 +312,8 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
 
         # Step 3: Verify counter-maneuver signal was emitted
         print("Step 3: Verifying counter-maneuver signal")
-        self.assertEqual(len(signals_received), 1)
-        self.assertIn("counter_maneuver_requested: Coastland", signals_received[0])
+        assert len(signals_received) == 1
+        assert "counter_maneuver_requested: Coastland" in signals_received[0]
         print("✅ Counter-maneuver signal emitted correctly")
 
         # Step 4: Simulate dialog interaction
@@ -326,9 +323,7 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
         self.engine.submit_counter_maneuver_decision("Player 2", False)
 
         # Verify the call was tracked
-        self.assertIn(
-            "submit_counter_maneuver_decision(Player 2, False)", self.engine_calls
-        )
+        assert "submit_counter_maneuver_decision(Player 2, False)" in self.engine_calls
         print("✅ Decision processed by engine")
 
         # Step 5: Verify game progresses correctly

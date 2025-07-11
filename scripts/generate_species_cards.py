@@ -5,27 +5,27 @@ Only includes spells for elements that each species actually possesses.
 """
 
 import json
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the project root to the path so we can import models
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from models.spell_model import ALL_SPELLS, SPELLS_BY_ELEMENT
+from models.spell_model import SPELLS_BY_ELEMENT
 
 
 def load_species_data():
     """Load species data from snapshot."""
     species_file = Path("models/test/snapshots/species_data.json")
-    with open(species_file, "r") as f:
+    with open(species_file) as f:
         return json.load(f)
 
 
 def load_unit_data():
     """Load unit data from snapshot."""
     units_file = Path("models/test/snapshots/unit_data.json")
-    with open(units_file, "r") as f:
+    with open(units_file) as f:
         return json.load(f)
 
 
@@ -154,7 +154,7 @@ def organize_units_by_type(units, species_name):
     """Organize units by type for a specific species."""
     species_units = {}
 
-    for unit_id, unit_data in units.items():
+    for _unit_id, unit_data in units.items():
         if unit_data.get("species_name") == species_name:
             unit_type = unit_data.get("unit_type", "Unknown")
             health = unit_data.get("health", 1)
@@ -249,7 +249,7 @@ def generate_species_card(species_name, species_data, units_data):
 {abilities_html.rstrip()}
                     </div>
                 </div>
-                
+
                 <div class="section">
                     <div class="section-title">Units</div>
                     <div class="units-grid">
@@ -276,7 +276,7 @@ def generate_complete_html(cards_html):
     """Generate complete HTML with CSS and structure."""
     # Read CSS from existing file
     try:
-        with open("assets/species_cards.html", "r") as f:
+        with open("assets/species_cards.html") as f:
             existing_content = f.read()
 
         # Extract CSS section
@@ -300,7 +300,7 @@ def generate_complete_html(cards_html):
 </head>
 <body>
     <h1 class="header-title">DRAGON DICE SPECIES REFERENCE</h1>
-    
+
     <div class="cards-container">
 {cards_html}
     </div>

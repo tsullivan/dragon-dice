@@ -8,7 +8,7 @@ This dialog handles the complete missile combat flow:
 4. Handle Coral Elf Defensive Volley counter-attack if applicable
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -436,7 +436,7 @@ class MissileCombatDialog(QDialog):
         self._update_final_results_display()
 
         # Combat summary
-        summary_text = f"<b>Missile Combat Complete</b><br>"
+        summary_text = "<b>Missile Combat Complete</b><br>"
         if self.final_damage > 0:
             summary_text += f"Defender takes {self.final_damage} damage.<br>"
         else:
@@ -465,7 +465,7 @@ class MissileCombatDialog(QDialog):
         army_name = army_data.get("name", "Unknown Army")
         units = army_data.get("units", [])
 
-        details_text = f"<b>Target Details:</b><br>"
+        details_text = "<b>Target Details:</b><br>"
         details_text += f"Player: {player_name}<br>"
         details_text += f"Army: {army_name}<br>"
         details_text += f"Location: {target_location}<br>"
@@ -500,8 +500,8 @@ class MissileCombatDialog(QDialog):
 
         # Instructions for defensive volley
         instructions = QLabel(
-            f"<b>Defensive Volley:</b> Coral Elves roll missile dice for counter-attack.<br>"
-            f"Enter die face results for Coral Elf units only."
+            "<b>Defensive Volley:</b> Coral Elves roll missile dice for counter-attack.<br>"
+            "Enter die face results for Coral Elf units only."
         )
         instructions.setWordWrap(True)
         instructions.setStyleSheet("margin: 10px; padding: 10px; background-color: #f0f9ff;")
@@ -650,7 +650,7 @@ class MissileCombatDialog(QDialog):
         """Update results display before defensive volley step."""
         self._calculate_missile_damage()
 
-        results_text = f"MISSILE ATTACK RESULTS:\n"
+        results_text = "MISSILE ATTACK RESULTS:\n"
         results_text += f"Missile damage to defender: {self.final_damage}\n\n"
         results_text += "Coral Elves can now make a Defensive Volley counter-attack at air terrain."
 
@@ -715,7 +715,7 @@ FINAL DAMAGE:
         self.combat_completed.emit(combat_result)
         self.accept()
 
-    def _get_terrain_elements(self, location: str = None) -> List[str]:
+    def _get_terrain_elements(self, location: Optional[str] = None) -> List[str]:
         """Get terrain elements for the specified location."""
         if location is None:
             location = self.location

@@ -226,7 +226,7 @@ class GameStateManager(QObject):
 
         # Calculate total points allocated to armies
         total_army_points = 0
-        for army_type, army_data in player_data.get("armies", {}).items():
+        for _army_type, army_data in player_data.get("armies", {}).items():
             total_army_points += army_data.get("points_value", 0)
 
         # Get force size from player setup data
@@ -344,7 +344,7 @@ class GameStateManager(QObject):
 
         # Look for terrain prefixes (like HIGHLAND, COASTLAND, etc.)
         terrain_prefixes = set()
-        for terrain_name in TERRAIN_DATA.keys():
+        for terrain_name in TERRAIN_DATA:
             if "_" in terrain_name:
                 prefix = terrain_name.split("_")[0]
                 terrain_prefixes.add(prefix)
@@ -357,7 +357,7 @@ class GameStateManager(QObject):
                 return word  # Return in original case
 
         # Fallback: check for exact terrain matches
-        for terrain_name in TERRAIN_DATA.keys():
+        for terrain_name in TERRAIN_DATA:
             if terrain_name in location_upper:
                 # Return the terrain name in its original case from the location string
                 # Find the actual terrain name in the location (case-insensitive)
@@ -394,7 +394,7 @@ class GameStateManager(QObject):
         player_part = "_".join(parts[:-1])  # Everything before last part
 
         # Find matching player by reconstructing their safe name
-        for player_name in self.players.keys():
+        for player_name in self.players:
             safe_name = player_name.replace(" ", "_").replace("'", "").lower()
             if safe_name == player_part:
                 return player_name, army_type
@@ -848,7 +848,7 @@ class GameStateManager(QObject):
         if not player_data:
             return None
 
-        armies = player_data.get("armies", {})
+        player_data.get("armies", {})
 
         # Phase-specific logic
         if current_phase in ["FIRST_MARCH", "SECOND_MARCH"]:

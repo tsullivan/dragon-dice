@@ -115,7 +115,7 @@ class UnitSelectionDialog(QDialog):
             if species:
                 element_icons = "".join(species.get_element_icons())
                 return f"{element_icons} {species_name}"
-        except:
+        except Exception:
             pass
 
         # Fallback to original species name
@@ -169,7 +169,7 @@ class UnitSelectionDialog(QDialog):
                 table.setItem(row_idx, 2, health_item)
             table.cellClicked.connect(self._table_cell_clicked)
             table.selectionModel().selectionChanged.connect(
-                lambda selected, deselected, t=table: self._on_available_unit_selected(t)
+                lambda _selected, _deselected, t=table: self._on_available_unit_selected(t)
             )
             tab_layout.addWidget(table)
 
@@ -213,7 +213,6 @@ class UnitSelectionDialog(QDialog):
             return
 
         unit_type_id = unit_type_info["id"]
-        unit_display_name = unit_type_info["display_name"]
         instance_count = sum(1 for u in self.selected_units if u.unit_type == unit_type_id)
         instance_id = f"{self.army_name.lower().replace(' ', '_')}_{unit_type_id}_{instance_count + 1}"
         new_unit = self.unit_roster.create_unit_instance(unit_type_id, instance_id)

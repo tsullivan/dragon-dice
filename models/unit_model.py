@@ -9,26 +9,6 @@ if TYPE_CHECKING:
 class UnitFace:
     """Represents a single face on a unit die."""
 
-    # Face type constants for compatibility with legacy code
-    ICON_MELEE = "MELEE"
-    ICON_MISSILE = "MISSILE"
-    ICON_MAGIC = "MAGIC"
-    ICON_SAVE = "SAVE"
-    ICON_ID = "ID"
-    ICON_SAI = "SAI"
-    ICON_MANEUVER = "MANEUVER"
-    ICON_DRAGON_ATTACK_CLAW = "DRAGON_CLAW"
-    ICON_DRAGON_ATTACK_BITE = "DRAGON_BITE"
-    ICON_DRAGON_ATTACK_TAIL = "DRAGON_TAIL"
-    ICON_DRAGON_BREATH = "DRAGON_BREATH"
-
-    # SAI constants
-    SAI_BULLSEYE = "BULLSEYE"
-    SAI_DOUBLER = "DOUBLER"
-    SAI_TRIPLER = "TRIPLER"
-    SAI_RECRUIT = "RECRUIT"
-    SAI_MAGIC_BOLT = "MAGIC_BOLT"
-
     # Face emoji and color mappings for display
     _FACE_INFO_MAP = {
         # Basic combat faces

@@ -11,18 +11,18 @@ class TestErrorDialog(unittest.TestCase):
         """Test GameError exception creation."""
         error = GameError("Test error", "Test details", user_friendly=True)
 
-        self.assertEqual(error.message, "Test error")
-        self.assertEqual(error.details, "Test details")
-        self.assertTrue(error.user_friendly)
-        self.assertEqual(str(error), "Test error")
+        assert error.message == "Test error"
+        assert error.details == "Test details"
+        assert error.user_friendly
+        assert str(error) == "Test error"
 
     def test_game_error_defaults(self):
         """Test GameError default values."""
         error = GameError("Test error")
 
-        self.assertEqual(error.message, "Test error")
-        self.assertIsNone(error.details)
-        self.assertTrue(error.user_friendly)
+        assert error.message == "Test error"
+        assert error.details is None
+        assert error.user_friendly
 
     @patch("components.error_dialog.QMessageBox")
     def test_show_error_dialog(self, mock_msgbox):

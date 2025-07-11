@@ -57,12 +57,12 @@ class TestActionDialogFlow(unittest.TestCase):
             parent=self.parent_widget,
         )
 
-        self.assertEqual(dialog.action_type, "MELEE")
-        self.assertEqual(dialog.current_player_name, "Player 1")
-        self.assertEqual(dialog.acting_army, self.sample_acting_army)
-        self.assertEqual(dialog.current_step, "attacker_roll")
-        self.assertIsNone(dialog.attacker_results)
-        self.assertIsNone(dialog.defender_results)
+        assert dialog.action_type == "MELEE"
+        assert dialog.current_player_name == "Player 1"
+        assert dialog.acting_army == self.sample_acting_army
+        assert dialog.current_step == "attacker_roll"
+        assert dialog.attacker_results is None
+        assert dialog.defender_results is None
 
     def test_action_dialog_initialization_missile(self):
         """Test ActionDialog initialization for missile action."""
@@ -75,8 +75,8 @@ class TestActionDialogFlow(unittest.TestCase):
             parent=self.parent_widget,
         )
 
-        self.assertEqual(dialog.action_type, "MISSILE")
-        self.assertEqual(dialog.windowTitle(), "Missile Action")
+        assert dialog.action_type == "MISSILE"
+        assert dialog.windowTitle() == "Missile Action"
 
     def test_action_dialog_initialization_magic(self):
         """Test ActionDialog initialization for magic action."""
@@ -89,8 +89,8 @@ class TestActionDialogFlow(unittest.TestCase):
             parent=self.parent_widget,
         )
 
-        self.assertEqual(dialog.action_type, "MAGIC")
-        self.assertEqual(dialog.windowTitle(), "Magic Action")
+        assert dialog.action_type == "MAGIC"
+        assert dialog.windowTitle() == "Magic Action"
 
     def test_action_dialog_step_progression(self):
         """Test the step progression through the action dialog."""
@@ -104,21 +104,21 @@ class TestActionDialogFlow(unittest.TestCase):
         )
 
         # Initial state
-        self.assertEqual(dialog.current_step, "attacker_roll")
+        assert dialog.current_step == "attacker_roll"
 
         # Simulate attacker input
         dialog.attacker_dice_input.setText("MM,S,SAI")
         dialog._on_next()
 
-        self.assertEqual(dialog.current_step, "defender_saves")
-        self.assertEqual(dialog.attacker_results, "MM,S,SAI")
+        assert dialog.current_step == "defender_saves"
+        assert dialog.attacker_results == "MM,S,SAI"
 
         # Simulate defender input
         dialog.defender_dice_input.setText("S,S")
         dialog._on_next()
 
-        self.assertEqual(dialog.current_step, "results")
-        self.assertEqual(dialog.defender_results, "S,S")
+        assert dialog.current_step == "results"
+        assert dialog.defender_results == "S,S"
 
     @patch("components.error_dialog.ErrorDialog.show_warning")
     def test_action_dialog_validation_empty_attacker_input(self, mock_show_warning):
@@ -137,12 +137,12 @@ class TestActionDialogFlow(unittest.TestCase):
         dialog._on_next()
 
         # Should still be on attacker_roll step
-        self.assertEqual(dialog.current_step, "attacker_roll")
+        assert dialog.current_step == "attacker_roll"
 
         # Should show validation warning
         mock_show_warning.assert_called_once()
         call_args = mock_show_warning.call_args[0]
-        self.assertEqual(call_args[1], "Input Required")
+        assert call_args[1] == "Input Required"
 
     @patch("components.error_dialog.ErrorDialog.show_warning")
     def test_action_dialog_validation_empty_defender_input(self, mock_show_warning):
@@ -165,7 +165,7 @@ class TestActionDialogFlow(unittest.TestCase):
         dialog._on_next()
 
         # Should still be on defender_saves step
-        self.assertEqual(dialog.current_step, "defender_saves")
+        assert dialog.current_step == "defender_saves"
 
         # Should show validation warning
         mock_show_warning.assert_called_once()
@@ -195,7 +195,7 @@ class TestActionDialogFlow(unittest.TestCase):
         dialog._on_next()
 
         # Should emit completion signal
-        self.assertEqual(completion_spy.count(), 1)
+        assert completion_spy.count() == 1
 
         # Verify signal was emitted with data (accessing signal data in Qt6 is complex)
         # Just verify the signal was emitted correctly
@@ -220,7 +220,7 @@ class TestActionDialogFlow(unittest.TestCase):
         dialog._on_cancel()
 
         # Should emit cancellation signal
-        self.assertEqual(cancellation_spy.count(), 1)
+        assert cancellation_spy.count() == 1
 
     def test_action_dialog_button_state_management(self):
         """Test button state management throughout dialog flow."""
@@ -234,27 +234,27 @@ class TestActionDialogFlow(unittest.TestCase):
         )
 
         # Initial state - back button should be disabled
-        self.assertFalse(dialog.back_button.isEnabled())
-        self.assertTrue(dialog.next_button.isEnabled())
-        self.assertEqual(dialog.next_button.text(), "Submit Attack")
+        assert not dialog.back_button.isEnabled()
+        assert dialog.next_button.isEnabled()
+        assert dialog.next_button.text() == "Submit Attack"
 
         # Progress to defender step
         dialog.attacker_dice_input.setText("MM")
         dialog._on_next()
 
         # Back button should now be enabled
-        self.assertTrue(dialog.back_button.isEnabled())
-        self.assertTrue(dialog.next_button.isEnabled())
-        self.assertEqual(dialog.next_button.text(), "Submit Saves")
+        assert dialog.back_button.isEnabled()
+        assert dialog.next_button.isEnabled()
+        assert dialog.next_button.text() == "Submit Saves"
 
         # Progress to results step
         dialog.defender_dice_input.setText("S")
         dialog._on_next()
 
         # Both buttons should be enabled
-        self.assertTrue(dialog.back_button.isEnabled())
-        self.assertTrue(dialog.next_button.isEnabled())
-        self.assertEqual(dialog.next_button.text(), "Complete Action")
+        assert dialog.back_button.isEnabled()
+        assert dialog.next_button.isEnabled()
+        assert dialog.next_button.text() == "Complete Action"
 
     def test_action_dialog_army_display(self):
         """Test that army information is properly displayed."""
@@ -268,10 +268,10 @@ class TestActionDialogFlow(unittest.TestCase):
         )
 
         # Dialog should display army information
-        self.assertIsNotNone(dialog.acting_army)
-        self.assertEqual(dialog.acting_army["name"], "Campaign Army")
-        self.assertEqual(dialog.acting_army["location"], "Coastland (Blue, Green)")
-        self.assertEqual(len(dialog.acting_army["units"]), 2)
+        assert dialog.acting_army is not None
+        assert dialog.acting_army["name"] == "Campaign Army"
+        assert dialog.acting_army["location"] == "Coastland (Blue, Green)"
+        assert len(dialog.acting_army["units"]) == 2
 
     def test_action_dialog_different_action_types(self):
         """Test dialog behavior with different action types."""
@@ -288,8 +288,8 @@ class TestActionDialogFlow(unittest.TestCase):
                     parent=self.parent_widget,
                 )
 
-                self.assertEqual(dialog.action_type, action_type)
-                self.assertEqual(dialog.windowTitle(), f"{action_type.title()} Action")
+                assert dialog.action_type == action_type
+                assert dialog.windowTitle() == f"{action_type.title()} Action"
 
                 # Complete flow should work for all action types
                 dialog.attacker_dice_input.setText("MM")
@@ -299,7 +299,7 @@ class TestActionDialogFlow(unittest.TestCase):
                 dialog._on_next()
 
                 # Should reach results step
-                self.assertEqual(dialog.current_step, "results")
+                assert dialog.current_step == "results"
 
 
 if __name__ == "__main__":

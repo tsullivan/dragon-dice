@@ -4,11 +4,12 @@ E2E test for ManeuverDialog integration with GameEngine.
 Tests the full maneuver dialog flow including counter-maneuver requests.
 """
 
-import unittest
 import sys
+import unittest
+from unittest.mock import MagicMock, patch
+
+from PySide6.QtCore import QEventLoop, QTimer
 from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QTimer, QEventLoop
-from unittest.mock import patch, MagicMock
 
 from game_logic.engine import GameEngine
 from views.maneuver_dialog import ManeuverDialog
@@ -110,7 +111,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
         """Helper to choose an army by its unique ID."""
         all_players_data = self.engine.get_all_players_data()
 
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     army_choice_data = {
@@ -141,7 +142,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
 
         # Get the current acting army
         acting_army = self.engine.get_current_acting_army()
-        self.assertIsNotNone(acting_army)
+        assert acting_army is not None
 
         # Get all players data and terrain data
         all_players_data = self.engine.get_all_players_data()
@@ -166,7 +167,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
                 return original_init(self, *args, **kwargs)
 
             with patch.object(ManeuverDialog, "__init__", track_dialog_init):
-                maneuver_dialog = ManeuverDialog(
+                ManeuverDialog(
                     "Player 1",
                     acting_army,
                     all_players_data,
@@ -177,13 +178,8 @@ class TestManeuverDialogIntegration(unittest.TestCase):
 
         # Step 3: Verify signal flow
         print("Step 3: Verifying signal was emitted")
-        self.assertGreater(len(self.signals_received), 0)
-        self.assertTrue(
-            any(
-                "counter_maneuver_requested" in signal
-                for signal in self.signals_received
-            )
-        )
+        assert len(self.signals_received) > 0
+        assert any("counter_maneuver_requested" in signal for signal in self.signals_received)
 
         print(f"✅ Signals received: {self.signals_received}")
 
@@ -192,7 +188,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
         counter_signal = [
             s for s in self.signals_received if "counter_maneuver_requested" in s
         ][0]
-        self.assertIn("armies: 1", counter_signal)  # Should find Player 2's horde army
+        assert "armies: 1" in counter_signal  # Should find Player 2's horde army
 
         print("✅ Test completed - ManeuverDialog signal flow working")
 
@@ -251,7 +247,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
 
         # Choose army and test
         all_players_data = isolated_engine.get_all_players_data()
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == "player_1_home":
                     army_choice_data = {
@@ -274,7 +270,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
         ) as mock_terrain_exec:
             mock_terrain_exec.return_value = 1  # QDialog.Accepted
 
-            maneuver_dialog = ManeuverDialog(
+            ManeuverDialog(
                 "Player 1",
                 acting_army,
                 all_players_data,
@@ -287,13 +283,13 @@ class TestManeuverDialogIntegration(unittest.TestCase):
         counter_signals = [
             s for s in isolated_signals if "counter_maneuver_requested" in s
         ]
-        self.assertEqual(len(counter_signals), 0)
+        assert len(counter_signals) == 0
 
         # Should have terrain direction request (automatic success)
         terrain_signals = [
             s for s in isolated_signals if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_signals), 1)
+        assert len(terrain_signals) == 1
 
         print("✅ Test completed - no opposition scenario handled correctly")
 

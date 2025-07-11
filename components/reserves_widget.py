@@ -6,20 +6,19 @@ units for deployment with their health, species, and elements.
 Based on the design from assets/playmat.html.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
+    QFrame,
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QScrollArea,
     QVBoxLayout,
     QWidget,
-    QFrame,
-    QPushButton,
-    QGridLayout,
 )
-from PySide6.QtGui import QFont, QPalette
 
 
 class ReserveUnitItem(QFrame):
@@ -121,7 +120,7 @@ class ReserveUnitItem(QFrame):
         }
         return icons.get(element.lower(), "❓")
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event):  # noqa: N802
         """Handle mouse click to select unit."""
         if event.button() == Qt.MouseButton.LeftButton:
             self.unit_selected.emit(self.unit_data)
@@ -177,8 +176,8 @@ class ReservesWidget(QGroupBox):
         # Reserve statistics
         self.stats_label = QLabel("Units in Reserves: 0")
         self.stats_label.setStyleSheet("""
-            color: #90ee90; 
-            font-size: 12px; 
+            color: #90ee90;
+            font-size: 12px;
             font-weight: normal;
         """)
         header_layout.addWidget(self.stats_label)

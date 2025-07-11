@@ -5,7 +5,10 @@ This module provides interactive dialogs for species abilities that require
 player interaction and depend on units in the DUA (Dead Unit Area).
 """
 
-from typing import Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
+
+if TYPE_CHECKING:
+    from views.magic_action_dialog import MagicDieRollInputWidget
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -107,7 +110,7 @@ class MagicNegationDialog(QDialog):
         negation_layout.addWidget(instructions)
 
         # Frostwing units
-        self.frostwing_widgets = []
+        self.frostwing_widgets: List[MagicDieRollInputWidget] = []
         frostwing_units = [unit for unit in self.frostwing_army.get("units", []) if unit.get("species") == "Frostwings"]
 
         for unit in frostwing_units:
@@ -145,7 +148,7 @@ class MagicNegationDialog(QDialog):
 
         main_layout.addLayout(button_layout)
 
-    def _create_frostwing_unit_widget(self, unit: Dict[str, Any]) -> QWidget:
+    def _create_frostwing_unit_widget(self, unit: Dict[str, Any]) -> "MagicDieRollInputWidget":
         """Create widget for Frostwing unit die input."""
         from views.magic_action_dialog import MagicDieRollInputWidget
 
@@ -443,7 +446,7 @@ class CursedBulletsDialog(QDialog):
 
         # Calculate cursed bullets
         total_missiles = 0
-        for unit_name, face_results in self.missile_results.items():
+        for _unit_name, face_results in self.missile_results.items():
             missile_count = sum(1 for face in face_results if face.lower().strip() in ["mi", "missile"])
             total_missiles += missile_count
 

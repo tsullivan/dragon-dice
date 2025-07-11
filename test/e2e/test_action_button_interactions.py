@@ -5,16 +5,17 @@ End-to-end tests for action button interactions.
 Tests that action buttons work correctly and don't cause application hangs.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QTimer
-from unittest.mock import patch, MagicMock
+import unittest
+from unittest.mock import MagicMock, patch
 
-from game_logic.engine import GameEngine
-from views.main_gameplay_view import MainGameplayView
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QApplication
+
 from components.action_choice_widget import ActionChoiceWidget
 from controllers.gameplay_controller import GameplayController
+from game_logic.engine import GameEngine
+from views.main_gameplay_view import MainGameplayView
 
 
 class TestActionButtonInteractions(unittest.TestCase):
@@ -82,7 +83,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         self.engine.decide_maneuver(False)
 
         # Should now be in SELECT_ACTION step
-        self.assertEqual(self.engine.current_march_step, "SELECT_ACTION")
+        assert self.engine.current_march_step == "SELECT_ACTION"
 
     def test_melee_button_functionality(self):
         """Test that Melee button works correctly without hanging."""
@@ -105,7 +106,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         new_action_step = self.engine.current_action_step
         print(f"After melee selection: {new_action_step}")
 
-        self.assertEqual(new_action_step, "AWAITING_ATTACKER_MELEE_ROLL")
+        assert new_action_step == "AWAITING_ATTACKER_MELEE_ROLL"
 
         print("✅ Melee button works correctly - no hang detected")
 
@@ -130,7 +131,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         new_action_step = self.engine.current_action_step
         print(f"After missile selection: {new_action_step}")
 
-        self.assertEqual(new_action_step, "AWAITING_ATTACKER_MISSILE_ROLL")
+        assert new_action_step == "AWAITING_ATTACKER_MISSILE_ROLL"
 
         print("✅ Missile button works correctly - no hang detected")
 
@@ -155,7 +156,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         new_action_step = self.engine.current_action_step
         print(f"After magic selection: {new_action_step}")
 
-        self.assertEqual(new_action_step, "AWAITING_MAGIC_ROLL")
+        assert new_action_step == "AWAITING_MAGIC_ROLL"
 
         print("✅ Magic button works correctly - no hang detected")
 
@@ -181,10 +182,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         print(f"After skip: {new_phase}/{new_march_step}")
 
         # Should have advanced beyond SELECT_ACTION
-        self.assertTrue(
-            new_phase != initial_phase or new_march_step != initial_march_step,
-            "Skip should advance game state",
-        )
+        assert new_phase != initial_phase or new_march_step != initial_march_step, "Skip should advance game state"
 
         print("✅ Skip button works correctly - no hang detected")
 
@@ -234,7 +232,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         new_step = self.engine.current_action_step
         print(f"Signal flow: {initial_step} -> {new_step}")
 
-        self.assertEqual(new_step, "AWAITING_ATTACKER_MELEE_ROLL")
+        assert new_step == "AWAITING_ATTACKER_MELEE_ROLL"
 
         print("✅ Action widget signal flow works correctly")
 
@@ -271,7 +269,7 @@ class TestActionButtonInteractions(unittest.TestCase):
             time.sleep(0.01)  # Small delay to allow timer to fire
 
         # Check if we can process more events (indicates UI is not blocked)
-        initial_processed = timer_executed[0]
+        timer_executed[0]
         QApplication.processEvents()
 
         # Either timer fired, or if not, we should at least be able to process events
@@ -280,9 +278,7 @@ class TestActionButtonInteractions(unittest.TestCase):
         )  # If we got this far, UI is responsive
 
         print(f"Timer executed: {timer_executed[0]}, UI responsive: {ui_responsive}")
-        self.assertTrue(
-            ui_responsive, "UI should remain responsive after action selection"
-        )
+        assert ui_responsive, "UI should remain responsive after action selection"
 
         print("✅ UI remains responsive - no blocking detected")
 
@@ -322,9 +318,7 @@ class TestActionButtonInteractions(unittest.TestCase):
                 # Verify the state changed correctly
                 if action == "SKIP":
                     # Skip should advance phase/march step
-                    self.assertTrue(
-                        new_state != initial_state, f"{action} should change game state"
-                    )
+                    assert new_state != initial_state, f"{action} should change game state"
                 else:
                     # Other actions should set appropriate action step
                     expected_steps = {

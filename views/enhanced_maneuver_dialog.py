@@ -9,7 +9,7 @@ This dialog handles the complete maneuver flow:
 5. Determine success and terrain direction changes
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -107,8 +107,8 @@ class EnhancedManeuverDialog(QDialog):
         maneuvering_army: Dict[str, Any],
         location: str,
         current_terrain_face: int,
-        opposing_players: List[str] = None,
-        opposing_armies: List[Dict[str, Any]] = None,
+        opposing_players: Optional[List[str]] = None,
+        opposing_armies: Optional[List[Dict[str, Any]]] = None,
         parent=None,
     ):
         super().__init__(parent)
@@ -272,7 +272,7 @@ class EnhancedManeuverDialog(QDialog):
             opposing_group = QGroupBox("Opposing Players at This Location")
             opposing_layout = QVBoxLayout(opposing_group)
 
-            for i, player in enumerate(self.opposing_players):
+            for _i, player in enumerate(self.opposing_players):
                 player_label = QLabel(f"• {player}")
                 opposing_layout.addWidget(player_label)
 
@@ -293,9 +293,9 @@ class EnhancedManeuverDialog(QDialog):
 
         # Instructions
         instructions = QLabel(
-            f"<b>Opposing players</b> must decide whether to counter-maneuver.<br>"
-            f"If any player chooses to counter-maneuver, both armies will roll dice simultaneously.<br>"
-            f"If no one counter-maneuvers, the maneuver automatically succeeds."
+            "<b>Opposing players</b> must decide whether to counter-maneuver.<br>"
+            "If any player chooses to counter-maneuver, both armies will roll dice simultaneously.<br>"
+            "If no one counter-maneuvers, the maneuver automatically succeeds."
         )
         instructions.setWordWrap(True)
         instructions.setStyleSheet("margin: 10px; padding: 10px; background-color: #fdf8e8;")
@@ -393,7 +393,7 @@ class EnhancedManeuverDialog(QDialog):
         self.results_display.show()
 
         # Show maneuver results
-        results_text = f"MANEUVER RESULTS:\n"
+        results_text = "MANEUVER RESULTS:\n"
         results_text += f"Maneuvering Army: {self.final_maneuvering_total} maneuver\n"
         if self.will_be_opposed:
             results_text += f"Counter-Maneuver Army: {self.final_counter_total} maneuver\n"

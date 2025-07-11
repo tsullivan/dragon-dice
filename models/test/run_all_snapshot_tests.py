@@ -69,9 +69,8 @@ def main():
     if passed == total:
         print("\n🎉 All snapshot tests passed!")
         return 0
-    else:
-        print(f"\n⚠️  {total - passed} test file(s) failed")
-        return 1
+    print(f"\n⚠️  {total - passed} test file(s) failed")
+    return 1
 
 
 if __name__ == "__main__":

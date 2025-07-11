@@ -15,14 +15,14 @@ import pytest
 from models.die_face_model import (
     ALL_DIE_FACES,
     DRAGON_DIE_FACES,
-    get_die_face,
-    get_faces_by_type,
     ID_FACES,
+    MAGIC_FACES,
     MELEE_FACES,
     MISSILE_FACES,
     MOVE_FACES,
     SAVE_FACES,
-    MAGIC_FACES,
+    get_die_face,
+    get_faces_by_type,
 )
 
 
@@ -54,7 +54,7 @@ class TestDieFaceSnapshots:
         filepath = self.snapshots_dir / filename
         if not filepath.exists():
             return {}
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             return json.load(f)
 
     def test_die_face_snapshot(self):

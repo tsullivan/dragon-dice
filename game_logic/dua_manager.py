@@ -244,7 +244,7 @@ class DUAManager(QObject):
     def _check_burial_conditions(self, unit: DUAUnit):
         """Check if a unit should be immediately buried based on conditions."""
         # Check for Soiled Ground spell effect
-        if "soiled_ground" in self.global_burial_conditions:
+        if "soiled_ground" in self.global_burial_conditions:  # noqa: SIM102
             if unit.death_location and self._location_has_soiled_ground(unit.death_location):
                 # Unit must make save roll, if no save result -> buried
                 # This would be handled by the spell effect system
@@ -282,10 +282,10 @@ class DUAManager(QObject):
 
         elif spell_name == "Exhume":
             # Handle Exhume spell targeting DUA units
-            target_player = effect_data.get("target_player", "")
+            effect_data.get("target_player", "")
             target_units = effect_data.get("target_units", [])
 
-            for unit_name in target_units:
+            for _unit_name in target_units:
                 # Unit makes save roll, if no save -> buried
                 # Return equal health-worth to caster
                 pass

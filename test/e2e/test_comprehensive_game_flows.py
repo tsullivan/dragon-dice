@@ -4,20 +4,21 @@ Comprehensive E2E tests for Dragon Dice game flows.
 Migrates and consolidates all existing E2E tests into the new pytest framework.
 """
 
-import pytest
-import sys
 import os
-from unittest.mock import patch, MagicMock
-from PySide6.QtWidgets import QApplication, QPushButton, QLineEdit, QComboBox
+import sys
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtTest import QTest
-import time
+from PySide6.QtWidgets import QApplication, QComboBox, QLineEdit, QPushButton
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from main_window import MainWindow
 from game_logic.engine import GameEngine
+from main_window import MainWindow
 from models.app_data_model import AppDataModel
 
 
@@ -234,13 +235,12 @@ class TestGameEngineFlows:
                 {"type": "MELEE", "count": 2},
                 {"type": "SAI", "count": 1, "sai_type": "BULLSEYE"},
             ],
+        ), patch.object(
+            self.engine.action_resolver,
+            "resolve_attacker_melee",
+            return_value={"hits": 2, "damage": 3},
         ):
-            with patch.object(
-                self.engine.action_resolver,
-                "resolve_attacker_melee",
-                return_value={"hits": 2, "damage": 3},
-            ):
-                self.engine.submit_attacker_melee_results("MM,S,SAI")
+            self.engine.submit_attacker_melee_results("MM,S,SAI")
 
         # Should advance to defender saves
         assert self.engine.current_action_step == "AWAITING_DEFENDER_SAVES"

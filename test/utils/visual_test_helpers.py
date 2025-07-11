@@ -1,7 +1,8 @@
 # tests/utils/visual_test_helpers.py
 from pathlib import Path
 from typing import Optional
-from PySide6.QtWidgets import QWidget, QApplication
+
+from PySide6.QtWidgets import QApplication, QWidget
 
 from config.paths import ProjectPaths
 

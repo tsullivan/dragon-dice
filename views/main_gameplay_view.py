@@ -1,4 +1,5 @@
-from typing import Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -26,18 +27,16 @@ from components.unit_areas_widget import UnitAreasWidget
 # No change, good comment
 from game_logic.engine import GameEngine
 from models.help_text_model import HelpTextModel
+from views.action_dialog import ActionDialog
 from views.display_utils import (
     format_player_turn_label,
-    format_terrain_summary,
     format_terrain_summary_with_description,
 )
-from views.action_dialog import ActionDialog
-from views.damage_allocation_dialog import DamageAllocationDialog
+from views.dragon_attack_dialog import DragonAttackDialog
 from views.magic_action_dialog import MagicActionDialog
 from views.maneuver_dialog import ManeuverDialog
 from views.melee_combat_dialog import MeleeCombatDialog
 from views.missile_combat_dialog import MissileCombatDialog
-from views.dragon_attack_dialog import DragonAttackDialog
 from views.reserves_phase_dialog import ReservesPhaseDialog
 from views.species_abilities_phase_dialog import SpeciesAbilitiesPhaseDialog
 
@@ -787,19 +786,26 @@ class MainGameplayView(QWidget):
 
         current_player = self.game_engine.get_current_player_name()
 
-        # Get game state data needed for the dialog
-        game_state = {
-            "current_player": current_player,
-            "all_players_data": self.game_engine.get_all_player_summary_data(),
-            "terrain_data": self.game_engine.get_all_terrain_data(),
-            "current_turn": self.game_engine.turn_manager.current_turn,
-        }
+        # Get required data for the dialog
+        player_armies: List[Dict[str, Any]] = []  # TODO: Get actual player armies
+        opponent_reserves: Dict[str, List[Dict[str, Any]]] = {}  # TODO: Get actual opponent reserves
 
-        dialog = SpeciesAbilitiesPhaseDialog(current_player, game_state, parent=self)
+        # Create placeholder managers (these should be passed from game engine)
+        from game_logic.dua_manager import DUAManager
+        from game_logic.reserves_manager import ReservesManager
+
+        # TODO: Get actual turn manager from game engine
+        turn_manager = None  # This should come from self.game_engine.turn_manager
+        dua_manager = DUAManager(turn_manager)
+        reserves_manager = ReservesManager()
+
+        dialog = SpeciesAbilitiesPhaseDialog(
+            current_player, player_armies, opponent_reserves, dua_manager, reserves_manager, parent=self
+        )
 
         # Connect dialog signals
-        dialog.phase_completed.connect(self._on_species_abilities_completed)
-        dialog.phase_cancelled.connect(lambda: self.game_engine.advance_phase())
+        dialog.abilities_completed.connect(self._on_species_abilities_completed)
+        dialog.abilities_skipped.connect(lambda: self.game_engine.advance_phase())
 
         # Show dialog
         dialog.show()
@@ -812,7 +818,7 @@ class MainGameplayView(QWidget):
 
         # Get reserves units for current player (convert to dict format)
         # For now, use placeholder data - this would need real reserves data
-        reserves_units = []
+        reserves_units: List[Dict[str, Any]] = []
 
         # Get terrain armies for current player
         terrain_armies = {}
@@ -853,8 +859,8 @@ class MainGameplayView(QWidget):
         print(f"[MainGameplayView] Reserves Phase completed: {results}")
 
         # Process reserves phase results
-        reinforce_step = results.get("reinforce_step", {})
-        retreat_step = results.get("retreat_step", {})
+        results.get("reinforce_step", {})
+        results.get("retreat_step", {})
 
         # TODO: Apply reserves phase changes to game state
         # This would involve:
@@ -880,10 +886,13 @@ class MainGameplayView(QWidget):
             return
 
         current_player = self.game_engine.get_current_player_name()
-        all_players_data = self.game_engine.get_all_player_summary_data()
-        terrain_data = self.game_engine.get_all_terrain_data()
 
-        dialog = MeleeCombatDialog(current_player, acting_army, all_players_data, terrain_data, parent=self)
+        # TODO: Need to determine defender and location for melee combat
+        defender_name = "Unknown Defender"  # This should come from game state
+        defender_army: Dict[str, Any] = {}  # This should come from game state
+        location = "Unknown Location"  # This should come from current action
+
+        dialog = MeleeCombatDialog(current_player, acting_army, defender_name, defender_army, location, parent=self)
 
         # Connect dialog completion signal
         dialog.combat_completed.connect(self._on_combat_completed)
@@ -926,10 +935,11 @@ class MainGameplayView(QWidget):
             return
 
         current_player = self.game_engine.get_current_player_name()
-        all_players_data = self.game_engine.get_all_player_summary_data()
-        terrain_data = self.game_engine.get_all_terrain_data()
 
-        dialog = MagicActionDialog(current_player, acting_army, all_players_data, terrain_data, parent=self)
+        # TODO: Need to determine location for magic action
+        location = "Unknown Location"  # This should come from current action
+
+        dialog = MagicActionDialog(current_player, acting_army, location, parent=self)
 
         # Connect dialog completion signal
         dialog.magic_completed.connect(self._on_magic_completed)
@@ -991,7 +1001,7 @@ class MainGameplayView(QWidget):
 
         for terrain_name, terrain_info in all_terrain_data.items():
             armies = terrain_info.get("armies", {})
-            for army_id, army_data in armies.items():
+            for _army_id, army_data in armies.items():
                 if army_data.get("player") == current_player:
                     terrains_with_armies.append(terrain_name)
                     break
@@ -1017,7 +1027,7 @@ class MainGameplayView(QWidget):
         # Get marching army at this terrain
         terrain_info = all_terrain_data[target_terrain]
         marching_army = None
-        for army_id, army_data in terrain_info.get("armies", {}).items():
+        for _army_id, army_data in terrain_info.get("armies", {}).items():
             if army_data.get("player") == current_player:
                 marching_army = army_data
                 break
@@ -1124,7 +1134,7 @@ class MainGameplayView(QWidget):
             pool_data = {}
             all_players_data = self.game_engine.get_all_players_data()
 
-            for player_name in all_players_data.keys():
+            for player_name in all_players_data:
                 # Get dragons for this player
                 player_dragons = self.game_engine.summoning_pool_manager.get_player_pool(player_name)
                 if player_dragons:
@@ -1141,7 +1151,7 @@ class MainGameplayView(QWidget):
             reserves_data = {}
             all_players_data = self.game_engine.get_all_players_data()
 
-            for player_name in all_players_data.keys():
+            for player_name in all_players_data:
                 # Get reserve units for this player
                 player_reserves = self.game_engine.reserves_manager.get_player_reserves(player_name)
                 if player_reserves:
@@ -1159,7 +1169,7 @@ class MainGameplayView(QWidget):
             bua_data = {}
             all_players_data = self.game_engine.get_all_players_data()
 
-            for player_name in all_players_data.keys():
+            for player_name in all_players_data:
                 # Get DUA units for this player
                 player_dua = self.game_engine.dua_manager.get_player_dua(player_name)
                 if player_dua:

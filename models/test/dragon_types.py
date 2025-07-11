@@ -55,7 +55,7 @@ class TestDragonTypeSnapshots:
         filepath = self.snapshots_dir / filename
         if not filepath.exists():
             return {}
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             return json.load(f)
 
     def test_dragon_type_snapshot(self):

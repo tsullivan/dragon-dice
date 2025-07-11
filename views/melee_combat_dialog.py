@@ -7,12 +7,11 @@ This dialog handles the complete melee combat flow:
 3. Calculate and display final damage after SAI processing
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QDialog,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -27,7 +26,6 @@ from PySide6.QtWidgets import (
 
 from game_logic.die_face_analyzer import DieFaceAnalyzer
 from game_logic.sai_processor import SAIProcessor
-from models.unit_model import UnitFace
 
 
 class DieRollInputWidget(QWidget):
@@ -475,7 +473,7 @@ FINAL DAMAGE CALCULATION:
     def _count_result_type(self, roll_results: Dict[str, List[str]], target_types: List[str]) -> int:
         """Count specific result types from roll results."""
         count = 0
-        for unit_name, face_results in roll_results.items():
+        for _unit_name, face_results in roll_results.items():
             for face_result in face_results:
                 if face_result:
                     normalized = face_result.lower().strip()
@@ -540,7 +538,7 @@ FINAL DAMAGE CALCULATION:
 
         # Add counter-attack info to results display
         current_text = self.results_display.toPlainText()
-        counter_text = f"\n\nCOUNTER-ATTACK RESULTS:\n"
+        counter_text = "\n\nCOUNTER-ATTACK RESULTS:\n"
         counter_text += f"Counter-attacker: {counter_result.get('attacker', 'Unknown')}\n"
         counter_text += f"Counter-damage: {self.counter_attack_damage}\n"
 

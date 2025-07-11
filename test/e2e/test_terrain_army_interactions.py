@@ -4,11 +4,12 @@ End-to-end tests for terrain and army interaction scenarios.
 Tests complex interactions between armies, terrains, and game state.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
+import unittest
+from unittest.mock import MagicMock, patch
+
 from PySide6.QtCore import QTimer
-from unittest.mock import patch, MagicMock
+from PySide6.QtWidgets import QApplication
 
 from game_logic.engine import GameEngine
 from game_logic.game_state_manager import GameStateManager
@@ -146,7 +147,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
 
         # Find the army across all players
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     # Create the army data structure expected by choose_acting_army
@@ -194,7 +195,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                 highland_initial = terrain["face"]
                 break
 
-        self.assertIsNotNone(highland_initial)
+        assert highland_initial is not None
         print(f"Initial Highland face: {highland_initial}")
 
         # Step 2: Player 1 maneuvers at home (where Player 2 horde is present)
@@ -216,12 +217,12 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                 highland_final = terrain["face"]
                 break
 
-        self.assertIsNotNone(highland_final)
+        assert highland_final is not None
         print(f"Final Highland face: {highland_final}")
 
         # Face should have changed (UP typically means +1, wrapping at 8)
         expected_face = (highland_initial % 8) + 1 if highland_initial < 8 else 1
-        self.assertEqual(highland_final, expected_face)
+        assert highland_final == expected_face
 
         print("✅ Test completed - terrain face correctly updated")
 
@@ -246,7 +247,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                 frontier_initial = terrain["face"]
                 break
 
-        self.assertIsNotNone(frontier_initial)
+        assert frontier_initial is not None
         print(f"Initial Coastland face: {frontier_initial}")
 
         # Maneuver at frontier
@@ -270,12 +271,12 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                 frontier_final = terrain["face"]
                 break
 
-        self.assertIsNotNone(frontier_final)
+        assert frontier_final is not None
         print(f"Final Coastland face: {frontier_final}")
 
         # Face should have decreased (DOWN typically means -1, wrapping at 1)
         expected_face = (frontier_initial - 1) if frontier_initial > 1 else 8
-        self.assertEqual(frontier_final, expected_face)
+        assert frontier_final == expected_face
 
         print("✅ Test completed - terrain face correctly decreased")
 
@@ -304,7 +305,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
         p2_home_location = initial_state["Player 2"]["armies"]["home"]["location"]
         p2_horde_location = initial_state["Player 2"]["armies"]["horde"]["location"]
 
-        print(f"Initial locations:")
+        print("Initial locations:")
         print(f"  P1 Home: {p1_home_location}")
         print(f"  P1 Campaign: {p1_campaign_location}")
         print(f"  P2 Home: {p2_home_location}")
@@ -321,19 +322,10 @@ class TestTerrainArmyInteractions(unittest.TestCase):
         final_state = self.engine.get_all_players_data()
 
         # Locations should remain the same (maneuver affects terrain, not army positions)
-        self.assertEqual(
-            final_state["Player 1"]["armies"]["home"]["location"], p1_home_location
-        )
-        self.assertEqual(
-            final_state["Player 1"]["armies"]["campaign"]["location"],
-            p1_campaign_location,
-        )
-        self.assertEqual(
-            final_state["Player 2"]["armies"]["home"]["location"], p2_home_location
-        )
-        self.assertEqual(
-            final_state["Player 2"]["armies"]["horde"]["location"], p2_horde_location
-        )
+        assert final_state["Player 1"]["armies"]["home"]["location"] == p1_home_location
+        assert final_state["Player 1"]["armies"]["campaign"]["location"] == p1_campaign_location
+        assert final_state["Player 2"]["armies"]["home"]["location"] == p2_home_location
+        assert final_state["Player 2"]["armies"]["horde"]["location"] == p2_horde_location
 
         print("✅ Test completed - army locations correctly maintained")
 
@@ -358,7 +350,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
             print(f"Initial {terrain['name']}: Face {terrain['face']}")
 
         # Should have at least 3 terrains
-        self.assertGreaterEqual(len(initial_faces), 3)
+        assert len(initial_faces) >= 3
 
         # Step 2: Maneuver at Highland only
         self._choose_army_by_id("player_1_home")
@@ -384,11 +376,9 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                     highland_changed = True
             else:
                 # Other terrains should be unchanged
-                self.assertEqual(
-                    face, initial_faces[name], f"Terrain {name} should not have changed"
-                )
+                assert face == initial_faces[name], f"Terrain {name} should not have changed"
 
-        self.assertTrue(highland_changed, "Highland terrain face should have changed")
+        assert highland_changed, "Highland terrain face should have changed"
 
         print("✅ Test completed - selective terrain changes verified")
 
@@ -415,7 +405,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                 highland_face = terrain["face"]
                 break
 
-        self.assertIsNotNone(highland_face)
+        assert highland_face is not None
         print(f"Current Highland face: {highland_face}")
 
         # Trigger terrain direction choice
@@ -427,11 +417,11 @@ class TestTerrainArmyInteractions(unittest.TestCase):
         terrain_signals = [
             s for s in self.signals_received if "terrain_direction_requested" in s
         ]
-        self.assertEqual(len(terrain_signals), 1)
+        assert len(terrain_signals) == 1
 
         signal = terrain_signals[0]
-        self.assertIn(f"face: {highland_face}", signal)
-        self.assertIn("Player 1 Highland", signal)
+        assert f"face: {highland_face}" in signal
+        assert "Player 1 Highland" in signal
 
         print(f"Signal received: {signal}")
         print("✅ Test completed - terrain direction signal data verified")
@@ -469,15 +459,19 @@ class TestTerrainArmyInteractions(unittest.TestCase):
         self.engine.select_action("SKIP")  # Complete the march
 
         # Advance to second march
-        self.assertEqual(self.engine.current_phase, "SECOND_MARCH")
+        assert self.engine.current_phase == "SECOND_MARCH"
 
         # Second maneuver
         self._choose_army_by_id("player_1_campaign")
         self.engine.decide_maneuver(False)  # Skip maneuver
         self.engine.select_action("SKIP")  # Skip action
 
+        # Complete reserves phase to advance to Player 2
+        assert self.engine.current_phase == "RESERVES"
+        self.engine.advance_phase()
+
         # Should advance to Player 2's turn
-        self.assertEqual(self.engine.get_current_player_name(), "Player 2")
+        assert self.engine.get_current_player_name() == "Player 2"
 
         # Step 3: Verify unit counts unchanged
         final_state = self.engine.get_all_players_data()
@@ -487,11 +481,7 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                 final_unit_count = len(army_data.get("units", []))
                 initial_count = initial_unit_counts[player_name][army_type]
 
-                self.assertEqual(
-                    final_unit_count,
-                    initial_count,
-                    f"{player_name} {army_type} unit count changed from {initial_count} to {final_unit_count}",
-                )
+                assert final_unit_count == initial_count, f"{player_name} {army_type} unit count changed from {initial_count} to {final_unit_count}"
 
                 print(
                     f"{player_name} {army_type}: {final_unit_count} units (unchanged)"

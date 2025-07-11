@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
+
 from models.spell_model import get_reserve_spells
 
 
@@ -183,10 +184,7 @@ class ReservesManager(QObject):
         Returns:
             True if the spell can be cast from reserves, False otherwise
         """
-        for reserve_spell in self.reserve_spell_list:
-            if reserve_spell.name.lower() == spell_name.lower():
-                return True
-        return False
+        return any(reserve_spell.name.lower() == spell_name.lower() for reserve_spell in self.reserve_spell_list)
 
     def get_available_reserve_spells(self, player_name: str) -> List[Dict[str, Any]]:
         """

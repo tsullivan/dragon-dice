@@ -6,11 +6,10 @@ resolution, breath effects, and integration with the game state.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
-from models.dragon_model import DragonModel
 
 
 class DragonTargetType(Enum):
@@ -358,35 +357,30 @@ class DragonAttackManager(QObject):
 
         if not elements:
             return "Ivory"
-        elif len(elements) == 1:
+        if len(elements) == 1:
             if elements[0] == "white":
                 return "White"
-            elif elements[0] == "ivory":
+            if elements[0] == "ivory":
                 return "Ivory"
-            else:
-                return "Elemental"
-        elif len(elements) == 2:
+            return "Elemental"
+        if len(elements) == 2:
             if "ivory" in elements:
                 return "Ivory Hybrid"
-            else:
-                return "Hybrid"
-        else:
-            return "White"  # All elements
+            return "Hybrid"
+        return "White"  # All elements
 
     def _will_attack_dragon(self, attacker: Dict[str, Any], target: Dict[str, Any], targeting_rule: str) -> bool:
         """Determine if one dragon will attack another based on the targeting rule."""
 
         if "Will not attack" in targeting_rule:
             return False
-        elif "Will attack" in targeting_rule and "unless" not in targeting_rule:
+        if "Will attack" in targeting_rule and "unless" not in targeting_rule:
             return True
-        elif "unless same element" in targeting_rule:
+        if "unless same element" in targeting_rule:
             return not self._dragons_share_element(attacker, target)
-        elif "unless matching both elements" in targeting_rule:
+        if "unless matching both elements" in targeting_rule:
             return not self._dragons_match_all_elements(attacker, target)
-        elif "unless the element matches" in targeting_rule:
-            return not self._dragons_share_element(attacker, target)
-        elif "unless matching one element" in targeting_rule:
+        if "unless the element matches" in targeting_rule or "unless matching one element" in targeting_rule:
             return not self._dragons_share_element(attacker, target)
 
         return False
@@ -513,9 +507,8 @@ class DragonAttackManager(QObject):
 
         if not elements:
             return self.breath_effects["Ivory"]
-        elif "white" in elements or len(elements) >= 5:
+        if "white" in elements or len(elements) >= 5:
             return self.breath_effects["White"]
-        else:
-            # Use the first element for breath effect
-            primary_element = elements[0].title()
-            return self.breath_effects.get(primary_element, self.breath_effects["Ivory"])
+        # Use the first element for breath effect
+        primary_element = elements[0].title()
+        return self.breath_effects.get(primary_element, self.breath_effects["Ivory"])

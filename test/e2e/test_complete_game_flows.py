@@ -4,11 +4,12 @@ End-to-end tests for complete Dragon Dice game flows.
 Tests full scenarios from start to finish with realistic gameplay.
 """
 
-import unittest
 import sys
-from PySide6.QtWidgets import QApplication
+import unittest
+from unittest.mock import MagicMock, patch
+
 from PySide6.QtCore import QTimer
-from unittest.mock import patch, MagicMock
+from PySide6.QtWidgets import QApplication
 
 from game_logic.engine import GameEngine
 from game_logic.game_state_manager import GameStateManager
@@ -188,7 +189,7 @@ class TestCompleteGameFlows(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
 
         # Find the army across all players
-        for player_name, player_data in all_players_data.items():
+        for _player_name, player_data in all_players_data.items():
             for army_type, army_data in player_data.get("armies", {}).items():
                 if army_data.get("unique_id") == army_unique_id:
                     # Create the army data structure expected by choose_acting_army
@@ -247,8 +248,8 @@ class TestCompleteGameFlows(unittest.TestCase):
 
         # === PLAYER 1 FIRST MARCH ===
         print("\n--- Player 1 First March ---")
-        self.assertEqual(self.engine.get_current_player_name(), "Player 1")
-        self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+        assert self.engine.get_current_player_name() == "Player 1"
+        assert self.engine.current_phase == "FIRST_MARCH"
 
         # Player 1 defends home against Player 2's horde
         self._choose_army_by_id("player_1_home")
@@ -271,7 +272,7 @@ class TestCompleteGameFlows(unittest.TestCase):
         print("\n--- Player 1 Second March ---")
         # Complete first march by skipping action
         # Let's just skip the melee for this E2E test
-        self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+        assert self.engine.current_phase == "FIRST_MARCH"
 
         # Skip the action step to move to second march
         # We need to complete the action step that was started
@@ -286,8 +287,8 @@ class TestCompleteGameFlows(unittest.TestCase):
         self.engine.select_action("SKIP")  # Skip action
 
         # Should advance to Second March
-        self.assertEqual(self.engine.current_phase, "SECOND_MARCH")
-        self.assertEqual(self.engine.get_current_player_name(), "Player 1")
+        assert self.engine.current_phase == "SECOND_MARCH"
+        assert self.engine.get_current_player_name() == "Player 1"
 
         # Player 1 Second March at frontier
         self._choose_army_by_id("player_1_campaign")
@@ -296,9 +297,13 @@ class TestCompleteGameFlows(unittest.TestCase):
         self.engine.submit_terrain_direction_choice("DOWN")  # Turn terrain down
         self.engine.select_action("SKIP")  # Skip action
 
+        # Should now be in RESERVES phase - complete it to advance to next player
+        assert self.engine.current_phase == "RESERVES"
+        self.engine.advance_phase()  # Complete reserves phase and advance to next player
+
         # Should advance to Player 2's turn
-        self.assertEqual(self.engine.get_current_player_name(), "Player 2")
-        self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+        assert self.engine.get_current_player_name() == "Player 2"
+        assert self.engine.current_phase == "FIRST_MARCH"
 
         # === PLAYER 2 FIRST MARCH ===
         print("\n--- Player 2 First March ---")
@@ -310,7 +315,7 @@ class TestCompleteGameFlows(unittest.TestCase):
 
         # === PLAYER 2 SECOND MARCH ===
         print("\n--- Player 2 Second March ---")
-        self.assertEqual(self.engine.current_phase, "SECOND_MARCH")
+        assert self.engine.current_phase == "SECOND_MARCH"
 
         # Player 2 uses horde army for second march
         self._choose_army_by_id("player_2_horde")
@@ -318,13 +323,17 @@ class TestCompleteGameFlows(unittest.TestCase):
         self.engine.submit_counter_maneuver_decision(
             "Player 1", True
         )  # P1 counter-maneuvers
-        self.engine.submit_maneuver_roll_results(2, 5)  # P2 wins maneuver
-        self.engine.submit_terrain_direction_choice("UP")  # Turn terrain up
+        self.engine.submit_maneuver_roll_results(2, 5)  # P1 wins counter-maneuver
+        # No terrain direction choice since P2 failed the maneuver
         self.engine.select_action("SKIP")  # Skip action
 
+        # Should now be in RESERVES phase - complete it to cycle back to Player 1
+        assert self.engine.current_phase == "RESERVES"
+        self.engine.advance_phase()  # Complete reserves phase and advance to next player
+
         # Should cycle back to Player 1
-        self.assertEqual(self.engine.get_current_player_name(), "Player 1")
-        self.assertEqual(self.engine.current_phase, "FIRST_MARCH")
+        assert self.engine.get_current_player_name() == "Player 1"
+        assert self.engine.current_phase == "FIRST_MARCH"
 
         print("✅ Test completed - full two-player turn cycle successful")
 
@@ -373,15 +382,19 @@ class TestCompleteGameFlows(unittest.TestCase):
                 break
 
         print(f"After round 1 UP: {round1_frontier_face}")
-        self.assertNotEqual(round1_frontier_face, initial_frontier_face)
+        assert round1_frontier_face != initial_frontier_face
 
         # === ROUND 2: Player 1 second march ===
         self._choose_army_by_id("player_1_home")  # Different army
         self.engine.decide_maneuver(False)  # No maneuver this time
         self.engine.select_action("SKIP")
 
+        # Complete reserves phase to advance to Player 2
+        assert self.engine.current_phase == "RESERVES"
+        self.engine.advance_phase()
+
         # === ROUND 3: Player 2 responds ===
-        self.assertEqual(self.engine.get_current_player_name(), "Player 2")
+        assert self.engine.get_current_player_name() == "Player 2"
 
         self._choose_army_by_id("player_2_campaign")
         self.engine.decide_maneuver(True)
@@ -401,7 +414,7 @@ class TestCompleteGameFlows(unittest.TestCase):
         print(f"After round 3 DOWN: {round3_frontier_face}")
 
         # Should be different from round 1 (went down)
-        self.assertNotEqual(round3_frontier_face, round1_frontier_face)
+        assert round3_frontier_face != round1_frontier_face
 
         print("✅ Test completed - frontier battle with terrain changes")
 

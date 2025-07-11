@@ -6,12 +6,12 @@ Quick test to verify unit sorting in the selection dialog
 import sys
 from pathlib import Path
 
+from models.unit_roster_model import UnitRosterModel
+from views.unit_selection_dialog import UnitSelectionDialog
+
 # Add project root to Python path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
-
-from models.unit_roster_model import UnitRosterModel
-from views.unit_selection_dialog import UnitSelectionDialog
 
 
 def test_unit_sorting():
@@ -71,7 +71,7 @@ def test_unit_sorting():
 
         print("\n✓ Sorting verification passed!")
     else:
-        assert False, "Amazon species not found in unit roster"
+        raise AssertionError("Amazon species not found in unit roster")
 
 
 if __name__ == "__main__":
