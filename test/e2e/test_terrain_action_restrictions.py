@@ -664,13 +664,11 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # Verify terrain face reset to seventh
         terrains_info = self.engine.get_relevant_terrains_info()
         flatland = next(t for t in terrains_info if t["name"] == "Flatland")
-        # TODO: Implement automatic terrain face reset when control is lost
-        # self.assertEqual(flatland["face"], 7, "Terrain should reset to seventh face when control lost")
+        self.assertEqual(flatland["face"], 7, "Terrain should reset to seventh face when control lost")
         
         # Verify controller is cleared
         controller = self.engine.game_state_manager.get_terrain_controller("Flatland")
-        # TODO: Implement automatic controller clearing when armies are destroyed
-        # self.assertIsNone(controller, "Terrain should have no controller after control lost")
+        self.assertIsNone(controller, "Terrain should have no controller after control lost")
         
         print("✅ Test completed - Terrain face resets when control is lost")
 
@@ -776,13 +774,35 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         self._setup_terrain_action_scenario("Temple", 8)
         self.engine.game_state_manager.set_terrain_controller("Temple", "Action Player")
         
+        # Ensure Temple terrain has proper subtype for death magic immunity
+        terrain_data = self.engine.game_state_manager.get_terrain_data("Temple")
+        terrain_data["subtype"] = "temple"
+        print(f"Set Temple subtype to: {terrain_data.get('subtype')}")
+        
         # Navigate to controlling army
         self._choose_army_by_id("action_player_campaign")
         
-        # Test death magic immunity
+        # Test death magic immunity with debug info
+        # First check if the army exists
+        player_data = self.engine.game_state_manager.get_player_data("Action Player")
+        print(f"Player armies: {list(player_data.get('armies', {}).keys())}")
+        campaign_army = player_data.get('armies', {}).get('campaign', {})
+        print(f"Campaign army location: {campaign_army.get('location')}")
+        print(f"Campaign army unique_id: {campaign_army.get('unique_id')}")
+        
+        army_location = self.engine.game_state_manager.get_army_location("Action Player", "action_player_campaign")
+        print(f"Army location lookup result: {army_location}")
+        
+        # Try with just the army type instead of unique_id
+        army_location_alt = self.engine.game_state_manager.get_army_location("Action Player", "campaign")
+        print(f"Army location (using 'campaign'): {army_location_alt}")
+        
+        terrain_data = self.engine.game_state_manager.get_terrain_data_safe("Temple")
+        print(f"Temple terrain data: {terrain_data}")
+        
         immunity_status = self.engine.check_death_magic_immunity("Action Player", "action_player_campaign")
-        # TODO: Implement proper temple subtype setup for death magic immunity
-        # self.assertTrue(immunity_status, "Army controlling Temple should be immune to death magic")
+        print(f"Death magic immunity status: {immunity_status}")
+        self.assertTrue(immunity_status, "Army controlling Temple should be immune to death magic")
         
         # Test forced burial option in Eighth Face Phase
         self.engine.enter_eighth_face_phase()
@@ -893,13 +913,11 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         ]
         self.assertTrue(recruitment_available, "City recruitment should be available")
         
-        # Simulate control loss
+        # Simulate control loss - this triggers automatic terrain control loss
         print("\n--- Testing Control Loss ---")
         self.engine.game_state_manager.apply_damage_to_units("Action Player", "action_player_campaign", 99)
         
-        # Explicitly check for terrain control loss
-        terrains_lost = self.engine.game_state_manager.check_terrain_control_loss("Action Player", "action_player_campaign")
-        self.assertTrue(len(terrains_lost) > 0, "Should lose control of terrains when army is destroyed")
+        # Verify automatic terrain control loss occurred by checking terrain state
         
         # Verify terrain reset
         terrains_info = self.engine.get_relevant_terrains_info()

@@ -32,6 +32,32 @@ class DieFaceModel:
         """Check if this is a special ability face."""
         return self.face_type == FACE_TYPE_SPECIAL
 
+    def calculate_x_value(self, die_type: str) -> int:
+        """
+        Calculate X-value for SAI effects based on die type and face icons.
+
+        From Special Action Icons rules:
+        - On a six-sided die, X = number of icons on the face (stored in base_value)
+        - On large equipment/large Dragonkin, X = 3 (fixed)
+        - On monster/artifact/medallion/relic/champion, X = 4 (fixed)
+
+        Args:
+            die_type: Type of die ("six_sided", "large_equipment", "large_dragonkin",
+                     "monster", "artifact", "medallion", "relic", "champion")
+
+        Returns:
+            X-value for SAI calculations
+        """
+        if die_type == "six_sided":
+            return self.base_value  # Number of icons on this face
+        elif die_type in ["large_equipment", "large_dragonkin"]:
+            return 3  # Fixed value per rules
+        elif die_type in ["monster", "artifact", "medallion", "relic", "champion"]:
+            return 4  # Fixed value per rules
+        else:
+            # Default to base_value for unknown die types
+            return self.base_value
+
     def get_face_icon(self) -> str:
         """Get display icon for this face type."""
         # Check for specific face name first (for special abilities)

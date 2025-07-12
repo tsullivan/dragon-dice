@@ -2308,7 +2308,14 @@ class GameEngine(QObject):
     def check_death_magic_immunity(self, player_name: str, army_id: str) -> bool:
         """Check if an army has death magic immunity (e.g., from controlling Temple)."""
         # Check if army is at a terrain controlled by the player
+        # Try both unique_id format and army type format
         army_location = self.game_state_manager.get_army_location(player_name, army_id)
+        if not army_location:
+            # Try extracting army type from unique_id format (e.g., "action_player_campaign" -> "campaign")
+            if "_" in army_id:
+                army_type = army_id.split("_")[-1]  # Get the last part after underscores
+                army_location = self.game_state_manager.get_army_location(player_name, army_type)
+
         if not army_location:
             return False
 
@@ -2320,7 +2327,7 @@ class GameEngine(QObject):
         terrain_name = terrain_data.get("name", "").lower()
         terrain_subtype = terrain_data.get("subtype", "").lower()
         terrain_face = terrain_data.get("current_face", terrain_data.get("face", 1))
-        controller = terrain_data.get("controller", terrain_data.get("controlling_player"))
+        controller = terrain_data.get("controller") or terrain_data.get("controlling_player")
 
         # Check if this is a Temple terrain at eighth face controlled by the player
         is_temple = "temple" in terrain_name or "temple" in terrain_subtype

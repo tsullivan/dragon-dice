@@ -860,6 +860,17 @@ class GameStateManager(QObject):
                 player_data.setdefault("dead_unit_area", []).append(unit)
 
         if units_affected:
+            # Check if army is now destroyed and automatically lose terrain control
+            army_units = army.get("units", [])
+            if not army_units or all(unit.get("health", 0) <= 0 for unit in army_units):
+                # Army is destroyed, check for terrain control loss
+                terrains_lost = self.check_terrain_control_loss(player_name, target_army_key)
+                if terrains_lost:
+                    print(f"GameStateManager: Automatic terrain control lost for {player_name}: {terrains_lost}")
+                    # Apply automatic terrain control loss
+                    for terrain_name in terrains_lost:
+                        self.reset_terrain_control_when_lost(terrain_name)
+
             self.game_state_changed.emit()
 
     def get_player_data(self, player_name: str) -> Dict[str, Any]:
