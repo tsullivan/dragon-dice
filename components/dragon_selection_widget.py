@@ -148,5 +148,5 @@ class DragonSelectionWidget(QWidget):
 
     def get_display_text(self) -> str:
         """Get a human-readable display text for the current selection."""
-        display_name = self.type_to_display.get(self._current_dragon_type, self._current_dragon_type)
+        display_name = self.type_to_display.get(self._current_dragon_type)
         return f"{display_name} ({self._current_dragon_form})"

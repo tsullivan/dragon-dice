@@ -11,6 +11,7 @@ from views.unit_selection_dialog import UnitSelectionDialog
 def unit_roster():
     """Provides a UnitRosterModel instance."""
     from models.app_data_model import AppDataModel
+
     app_data_model = AppDataModel()
     return UnitRosterModel(app_data_model)
 
