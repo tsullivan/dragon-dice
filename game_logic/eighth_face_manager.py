@@ -74,11 +74,11 @@ class EighthFaceManager(QObject):
         for terrain_id, terrain_data in controlled_terrains.items():
             effect_result = self._process_eighth_face_effect(player_name, terrain_id, terrain_data)
             if effect_result:
-                phase_result["eighth_face_effects"].append(effect_result)
+                phase_result["eighth_face_effects"].append(effect_result)  # type: ignore[attr-defined]
 
                 # Check if player choice is required
                 if effect_result.get("choice_required"):
-                    phase_result["choices_required"].append(effect_result)
+                    phase_result["choices_required"].append(effect_result)  # type: ignore[attr-defined]
 
         # Step 4: Final victory check after eighth face effects
         final_victory_check = self._check_victory_conditions(self._evaluate_terrain_control())
@@ -111,11 +111,12 @@ class EighthFaceManager(QObject):
             control_result = self._determine_terrain_controller(terrain_id, terrain_info, all_players_data)
             terrain_control[terrain_id] = {
                 "terrain_name": terrain_info.get("name", "Unknown"),
-                "terrain_subtype": terrain_info.get("subtype", "Unknown"),
+                "terrain_eighth_face": terrain_info.get("subtype", "Unknown"),  # Use subtype as eighth face
                 "controller": control_result["controller"],
                 "control_strength": control_result["control_strength"],
                 "armies_present": control_result["armies_present"],
                 "at_eighth_face": control_result["at_eighth_face"],
+                "terrain_subtype": control_result["terrain_subtype"],
             }
 
         return terrain_control
@@ -190,6 +191,7 @@ class EighthFaceManager(QObject):
             "control_strength": max_strength,
             "armies_present": armies_at_terrain,
             "at_eighth_face": at_eighth_face,
+            "terrain_subtype": terrain_info.get("subtype", ""),
         }
 
     def _get_player_controlled_terrains(
@@ -227,39 +229,39 @@ class EighthFaceManager(QObject):
         Returns:
             Effect result dictionary if an effect was processed, None otherwise
         """
-        terrain_subtype = terrain_data.get("terrain_subtype", "Unknown")
+        terrain_eighth_face = terrain_data.get("terrain_eighth_face", "Unknown")
         terrain_name = terrain_data.get("terrain_name", "Unknown")
 
         effect_result = {
             "terrain_id": terrain_id,
             "terrain_name": terrain_name,
-            "terrain_subtype": terrain_subtype,
+            "terrain_eighth_face": terrain_eighth_face,
             "player": player_name,
-            "effect_type": terrain_subtype.lower(),
+            "effect_type": terrain_eighth_face.lower(),
             "choice_required": False,
             "choices": [],
             "automatic_effect": False,
         }
 
-        # Process effect based on terrain subtype
-        if terrain_subtype == "City":
+        # Process effect based on terrain eighth_face
+        if terrain_eighth_face == "City":
             effect_result.update(self._process_city_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Dragon Lair":
+        elif terrain_eighth_face == "Dragon Lair":
             effect_result.update(self._process_dragon_lair_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Grove":
+        elif terrain_eighth_face == "Grove":
             effect_result.update(self._process_grove_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Standing Stones":
+        elif terrain_eighth_face == "Standing Stones":
             effect_result.update(self._process_standing_stones_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Temple":
+        elif terrain_eighth_face == "Temple":
             effect_result.update(self._process_temple_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Tower":
+        elif terrain_eighth_face == "Tower":
             effect_result.update(self._process_tower_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Vortex":
+        elif terrain_eighth_face == "Vortex":
             effect_result.update(self._process_vortex_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Castle":
+        elif terrain_eighth_face == "Castle":
             effect_result.update(self._process_castle_eighth_face(player_name, terrain_id))
         else:
-            # Unknown terrain subtype
+            # Unknown terrain eighth_face
             return None
 
         # Emit signal for UI handling
@@ -491,7 +493,7 @@ class EighthFaceManager(QObject):
         game_state = self.game_state_manager.get_current_state()
         terrain_data = game_state.get("terrain_data", {})
         terrain_info = terrain_data.get(terrain_id, {})
-        return terrain_info.get("elements", [])
+        return terrain_info.get("elements", [])  # type: ignore[no-any-return]
 
     def _get_available_recruitment_units(self, player_name: str) -> List[Dict[str, Any]]:
         """Get units available for recruitment (1-health units)."""

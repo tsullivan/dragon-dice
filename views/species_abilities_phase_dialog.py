@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
 )
 
 from game_logic.dua_manager import DUAManager
+from game_logic.bua_manager import BUAManager
 from game_logic.reserves_manager import ReservesManager
 
 
@@ -664,6 +665,7 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
         player_armies: List[Dict[str, Any]],
         opponent_reserves: Dict[str, List[Dict[str, Any]]],
         dua_manager: DUAManager,
+        bua_manager: BUAManager,
         reserves_manager: ReservesManager,
         game_points: int = 24,
         parent=None,
@@ -673,6 +675,7 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
         self.player_armies = player_armies
         self.opponent_reserves = opponent_reserves
         self.dua_manager = dua_manager
+        self.bua_manager = bua_manager
         self.reserves_manager = reserves_manager
         self.game_points = game_points
 
@@ -757,7 +760,7 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
             return False
 
         # Must have at least one Frostwing unit in BUA
-        player_bua = self.dua_manager.get_player_bua(self.player_name)  # Assuming BUA access via DUA manager
+        player_bua = self.bua_manager.get_player_bua(self.player_name)
         bua_frostwings = [unit for unit in player_bua if getattr(unit, "species", None) == "Frostwing"]
         return len(bua_frostwings) > 0
 
@@ -891,7 +894,7 @@ class SpeciesAbilitiesPhaseDialog(QDialog):
         ]
 
         # Get Frostwing units in BUA
-        player_bua = self.dua_manager.get_player_bua(self.player_name)
+        player_bua = self.bua_manager.get_player_bua(self.player_name)
         bua_frostwings = []
         for unit in player_bua:
             if getattr(unit, "species", None) == "Frostwing":

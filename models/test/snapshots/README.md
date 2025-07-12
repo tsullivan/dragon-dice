@@ -55,7 +55,7 @@ Current model data counts:
 - **Spells**: 47 (across all elements and types)
 - **Dragon Forms**: 2 (Drake, Wyrm)
 - **Dragon Types**: 28 (Elemental, Hybrid, Ivory, White variants)
-- **Terrains**: 48 (major terrain dice with different subtypes)
+- **Terrains**: 48 (major terrain dice with different Eighth Faces)
 - **Units**: 240 (all unit variations across species)
 
 Total entries: ~400+ game elements defined

@@ -792,15 +792,17 @@ class MainGameplayView(QWidget):
 
         # Create placeholder managers (these should be passed from game engine)
         from game_logic.dua_manager import DUAManager
+        from game_logic.bua_manager import BUAManager
         from game_logic.reserves_manager import ReservesManager
 
         # TODO: Get actual turn manager from game engine
         turn_manager = None  # This should come from self.game_engine.turn_manager
         dua_manager = DUAManager(turn_manager)
+        bua_manager = BUAManager()
         reserves_manager = ReservesManager()
 
         dialog = SpeciesAbilitiesPhaseDialog(
-            current_player, player_armies, opponent_reserves, dua_manager, reserves_manager, parent=self
+            current_player, player_armies, opponent_reserves, dua_manager, bua_manager, reserves_manager, parent=self
         )
 
         # Connect dialog signals

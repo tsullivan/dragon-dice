@@ -87,7 +87,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
         standard_face_type = face_type_map.get(base_face_type, "SPECIAL")
 
         # Create a temporary DieFaceModel to get the correct icon
-        temp_face = DieFaceModel("temp", face_type=standard_face_type)
+        temp_face = DieFaceModel("temp", "Temp Face", face_type=standard_face_type)
         return temp_face.get_face_icon()
 
     def _extract_face_type_and_value(self, face_name: str) -> Tuple[str, int]:

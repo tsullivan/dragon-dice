@@ -1,23 +1,9 @@
 from typing import Dict, List, Optional
 
-from models.element_model import ELEMENT_DATA
+from models.terrain_model import Terrain
 
 
-class MinorTerrainFace:
-    """Represents a single face on a minor terrain die."""
-
-    def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
-
-    def __str__(self) -> str:
-        return self.name
-
-    def __repr__(self) -> str:
-        return f"MinorTerrainFace(name='{self.name}')"
-
-
-class MinorTerrain:
+class MinorTerrain(Terrain):
     """
     Represents a minor terrain die in the Dragon Dice game.
     Minor terrains are smaller terrain dice that can be placed on major terrains
@@ -27,130 +13,76 @@ class MinorTerrain:
     def __init__(
         self,
         name: str,
-        color: str,
-        subtype: str,
+        eighth_face: str,
         faces: List[Dict[str, str]],
-        elements: Optional[List[str]] = None,
-        element_colors: Optional[List[str]] = None,
+        elements: List[str],
     ):
-        self.name = name
-        self.terrain_type = "minor"  # Always minor for this model
-        self.color = color  # Base terrain type (Coastland, Deadland, etc.)
-        self.subtype = subtype  # Variant (Bridge, Forest, Knoll, Village)
-        self.faces = [MinorTerrainFace(face["name"], face["description"]) for face in faces]
+        # Call parent constructor with is_advanced=False (minor terrains are never advanced)
+        super().__init__(name, eighth_face, faces, elements, is_advanced=False)
+        # Override terrain_type to be minor
+        self.terrain_type = "minor"
 
-        # Derive elements from color if not provided
-        self.elements = elements or self._derive_elements_from_color(color)
-        self.element_colors = element_colors or [ELEMENT_DATA[elem].icon for elem in self.elements]
-
-        # Display name
-        self.display_name = name
-
-        self._validate()
-
-    def _derive_elements_from_color(self, color: str) -> List[str]:
-        """Derive element list from terrain color."""
-        color_to_elements = {
-            "COASTLAND": ["AIR", "WATER"],
-            "DEADLAND": ["DEATH"],
-            "FEYLAND": ["WATER", "FIRE"],
-            "FLATLAND": ["AIR", "EARTH"],
-            "HIGHLAND": ["FIRE", "EARTH"],
-            "SWAMPLAND": ["WATER", "EARTH"],
-            "WASTELAND": ["AIR", "FIRE"],
+    def get_terrain_base_name(self) -> str:
+        """Get the base terrain type name from elements."""
+        # Derive base name from elements for compatibility
+        element_to_base_name = {
+            ("AIR", "WATER"): "Coastland",
+            ("DEATH",): "Deadland",
+            ("FIRE", "WATER"): "Feyland",
+            ("AIR", "EARTH"): "Flatland",
+            ("EARTH", "FIRE"): "Highland",
+            ("EARTH", "WATER"): "Swampland",
+            ("AIR", "FIRE"): "Wasteland",
         }
-        return color_to_elements.get(color.upper(), [])
-
-    def _validate(self):
-        """Validate minor terrain data."""
-        if not self.faces:
-            raise ValueError("Minor terrain must have at least one face")
-
-        # Validate elements if provided
-        if self.elements:
-            if not 1 <= len(self.elements) <= 2:
-                raise ValueError("Minor terrain must have one or two elements.")
-
-            valid_elements = list(ELEMENT_DATA.keys())
-            for element in self.elements:
-                if element not in valid_elements:
-                    raise ValueError(f"Invalid element '{element}'. Must be one of {valid_elements}")
+        elements_tuple = tuple(sorted(self.elements))
+        return element_to_base_name.get(elements_tuple, "Unknown")
 
     def __str__(self) -> str:
         return f"{self.name} (minor)"
 
     def __repr__(self) -> str:
-        return f"MinorTerrain(name='{self.name}', color='{self.color}', subtype='{self.subtype}')"
-
-    def get_element_names(self) -> List[str]:
-        """Returns the element color names."""
-        return [ELEMENT_DATA[elem].color_name for elem in self.elements] if self.elements else []
-
-    def get_element_icons(self) -> List[str]:
-        """Returns the element icons."""
-        return self.element_colors
-
-    def get_color_string(self) -> str:
-        """Returns combined element colors as a single string."""
-        return "".join(self.element_colors)
-
-    def has_element(self, element: str) -> bool:
-        """Check if this minor terrain has a specific element."""
-        return element.upper() in (self.elements or [])
-
-    def is_minor_terrain(self) -> bool:
-        """Check if this is a minor terrain (always True for this model)."""
-        return True
-
-    def get_face_names(self) -> List[str]:
-        """Get all face names for this minor terrain."""
-        return [face.name for face in self.faces]
-
-    def get_face_by_name(self, face_name: str) -> Optional[MinorTerrainFace]:
-        """Get a specific face by name."""
-        for face in self.faces:
-            if face.name == face_name:
-                return face
-        return None
+        elements_str = (
+            ", ".join(self.elements) if len(self.elements) > 1 else self.elements[0] if self.elements else "No elements"
+        )
+        return f"MinorTerrain(name='{self.name}', elements='{elements_str}', eighth_face='{self.eighth_face}')"
 
 
 # Static minor terrain data - define all minor terrain instances
 MINOR_TERRAIN_DATA = {
     "COASTLAND_BRIDGE": MinorTerrain(
         name="Coastland Bridge",
-        color="Coastland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -158,39 +90,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "COASTLAND_FOREST": MinorTerrain(
         name="Coastland Forest",
-        color="Coastland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -198,39 +129,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "COASTLAND_KNOLL": MinorTerrain(
         name="Coastland Knoll",
-        color="Coastland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -238,39 +168,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "COASTLAND_VILLAGE": MinorTerrain(
         name="Coastland Village",
-        color="Coastland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -278,39 +207,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "DEADLAND_BRIDGE": MinorTerrain(
         name="Deadland Bridge",
-        color="Deadland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -318,39 +246,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "DEADLAND_FOREST": MinorTerrain(
         name="Deadland Forest",
-        color="Deadland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -358,39 +285,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "DEADLAND_KNOLL": MinorTerrain(
         name="Deadland Knoll",
-        color="Deadland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -398,39 +324,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "DEADLAND_VILLAGE": MinorTerrain(
         name="Deadland Village",
-        color="Deadland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -438,39 +363,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FEYLAND_BRIDGE": MinorTerrain(
         name="Feyland Bridge",
-        color="Feyland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -478,39 +402,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FEYLAND_FOREST": MinorTerrain(
         name="Feyland Forest",
-        color="Feyland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -518,39 +441,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FEYLAND_KNOLL": MinorTerrain(
         name="Feyland Knoll",
-        color="Feyland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -558,39 +480,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FEYLAND_VILLAGE": MinorTerrain(
         name="Feyland Village",
-        color="Feyland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -598,39 +519,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FLATLAND_BRIDGE": MinorTerrain(
         name="Flatland Bridge",
-        color="Flatland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -638,39 +558,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FLATLAND_FOREST": MinorTerrain(
         name="Flatland Forest",
-        color="Flatland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -678,39 +597,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FLATLAND_KNOLL": MinorTerrain(
         name="Flatland Knoll",
-        color="Flatland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -718,39 +636,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "FLATLAND_VILLAGE": MinorTerrain(
         name="Flatland Village",
-        color="Flatland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -758,39 +675,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "HIGHLAND_BRIDGE": MinorTerrain(
         name="Highland Bridge",
-        color="Highland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -798,39 +714,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "HIGHLAND_FOREST": MinorTerrain(
         name="Highland Forest",
-        color="Highland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -838,39 +753,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "HIGHLAND_KNOLL": MinorTerrain(
         name="Highland Knoll",
-        color="Highland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -878,39 +792,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "HIGHLAND_VILLAGE": MinorTerrain(
         name="Highland Village",
-        color="Highland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -918,39 +831,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "SWAMPLAND_BRIDGE": MinorTerrain(
         name="Swampland Bridge",
-        color="Swampland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -958,39 +870,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "SWAMPLAND_FOREST": MinorTerrain(
         name="Swampland Forest",
-        color="Swampland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -998,39 +909,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "SWAMPLAND_KNOLL": MinorTerrain(
         name="Swampland Knoll",
-        color="Swampland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -1038,39 +948,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "SWAMPLAND_VILLAGE": MinorTerrain(
         name="Swampland Village",
-        color="Swampland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -1078,39 +987,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "WASTELAND_BRIDGE": MinorTerrain(
         name="Wasteland Bridge",
-        color="Wasteland",
-        subtype="Bridge",
+        eighth_face="Bridge",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Flood Minor",
+                "name": "Flood",
                 "description": "The controlling army's maneuver results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -1118,39 +1026,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "WASTELAND_FOREST": MinorTerrain(
         name="Wasteland Forest",
-        color="Wasteland",
-        subtype="Forest",
+        eighth_face="Forest",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Lost Minor",
+                "name": "Flanked",
                 "description": "The controlling army's save results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -1158,39 +1065,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "WASTELAND_KNOLL": MinorTerrain(
         name="Wasteland Knoll",
-        color="Wasteland",
-        subtype="Knoll",
+        eighth_face="Knoll",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Landslide Minor",
+                "name": "Landslide",
                 "description": "The controlling army's missile results are halved. The minor terrain is buried at the beginning of the army's next march.",
             },
         ],
@@ -1198,39 +1104,38 @@ MINOR_TERRAIN_DATA = {
     ),
     "WASTELAND_VILLAGE": MinorTerrain(
         name="Wasteland Village",
-        color="Wasteland",
-        subtype="Village",
+        eighth_face="Village",
         faces=[
             {
-                "name": "ID Minor",
+                "name": "ID",
                 "description": "Pick any action face on the minor terrain (magic, melee, or missile). Turn the die to the selected face.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Missile Minor",
+                "name": "Missile",
                 "description": "The controlling army may conduct a Missile action or the action shown on the terrain.",
             },
             {
-                "name": "Melee Minor",
+                "name": "Melee",
                 "description": "The controlling army may conduct a Melee action or the action shown on the terrain.",
             },
             {
-                "name": "Magic Minor",
+                "name": "Magic",
                 "description": "The controlling army may conduct a Magic action or the action shown on the terrain.",
             },
             {
-                "name": "Double Maneuvers Minor",
+                "name": "Double Maneuvers",
                 "description": "The controlling army doubles its ID results when rolling for maneuvers.",
             },
             {
-                "name": "Double Saves Minor",
+                "name": "Double Saves",
                 "description": "The controlling army doubles its ID results when rolling for saves.",
             },
             {
-                "name": "Revolt Minor",
+                "name": "Revolt",
                 "description": "The controlling army's melee results are halved. The minor terrain is buried it at the beginning of the army's next march.",
             },
         ],
@@ -1262,15 +1167,24 @@ def get_minor_terrains_by_element(element: str) -> List[MinorTerrain]:
     return [terrain for terrain in MINOR_TERRAIN_DATA.values() if terrain.has_element(element)]
 
 
-def get_minor_terrains_by_color(color: str) -> List[MinorTerrain]:
-    """Get all minor terrains of a specific color (base terrain type)."""
-    color = color.upper()
-    return [terrain for terrain in MINOR_TERRAIN_DATA.values() if terrain.color.upper() == color]
+def get_minor_terrains_by_base_name(base_name: str) -> List[MinorTerrain]:
+    """Get all minor terrains of a specific base terrain type."""
+    return [
+        terrain
+        for terrain in MINOR_TERRAIN_DATA.values()
+        if terrain.get_terrain_base_name().lower() == base_name.lower()
+    ]
 
 
-def get_minor_terrains_by_subtype(subtype: str) -> List[MinorTerrain]:
-    """Get all minor terrains of a specific subtype."""
-    return [terrain for terrain in MINOR_TERRAIN_DATA.values() if terrain.subtype.lower() == subtype.lower()]
+def get_minor_terrains_by_elements(elements: List[str]) -> List[MinorTerrain]:
+    """Get all minor terrains that have the specified elements."""
+    elements_set = set(elem.upper() for elem in elements)
+    return [terrain for terrain in MINOR_TERRAIN_DATA.values() if set(terrain.elements) == elements_set]
+
+
+def get_minor_terrains_by_eighth_face(eighth_face: str) -> List[MinorTerrain]:
+    """Get all minor terrains of a specific eighth_face."""
+    return [terrain for terrain in MINOR_TERRAIN_DATA.values() if terrain.eighth_face.lower() == eighth_face.lower()]
 
 
 def validate_minor_terrain_data() -> bool:

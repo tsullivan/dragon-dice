@@ -96,7 +96,7 @@ class DieFaceDisplayWidget(QWidget):
         """Set the die face data to display.
 
         Args:
-            unit_faces: List of UnitFace objects with name and description
+            unit_faces: List of face objects with get_display_info() method
             is_monster: Whether this unit is a monster (affects display layout)
         """
         self.die_face_data = unit_faces

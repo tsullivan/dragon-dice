@@ -19,9 +19,8 @@ class DragonModel:
         elements: List[str],  # Element keys like ["FIRE"] or ["WATER", "AIR"]
         owner: str,
         health: Optional[int] = None,
-        unique_id: Optional[str] = None,
     ):
-        self.unique_id = unique_id or str(uuid.uuid4())
+        self.unique_id = str(uuid.uuid4())
         self.name = name
         self.dragon_form = dragon_form.upper()  # DRAKE or WYRM
         self.dragon_type = dragon_type.upper()
@@ -175,7 +174,6 @@ class DragonModel:
             elements=data["elements"],
             owner=data["owner"],
             health=data["health"],
-            unique_id=data.get("unique_id"),
         )
         dragon.max_health = data.get("max_health", dragon.health)
         return dragon

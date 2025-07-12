@@ -15,7 +15,7 @@ class SpellModel:
         reserves: bool,
         cantrip: bool,
         effect: str,
-        element: Optional[str] = None,
+        element: Optional[str] = None,  # If None is given, spell is Elemental type
     ):
         self.name = name
         self.species = species

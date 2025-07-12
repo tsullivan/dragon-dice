@@ -11,17 +11,21 @@ from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal
 
 from models.unit_model import UnitModel
+from models.minor_terrain_model import MinorTerrain
 
 
 class BUAManager(QObject):
     """Manages the Buried Units Area (BUA) for all players."""
 
     bua_updated = Signal(str)  # Emitted when a player's BUA changes
+    minor_terrain_bua_updated = Signal(str)  # Emitted when minor terrain BUA changes
 
     def __init__(self, parent=None):
         super().__init__(parent)
         # Player name -> List of UnitModel
         self._player_buas: Dict[str, List[UnitModel]] = {}
+        # Player name -> List of MinorTerrain (for Amazon abilities and Esfah's Gift)
+        self._player_minor_terrain_buas: Dict[str, List[MinorTerrain]] = {}
 
     def initialize_player_bua(self, player_name: str):
         """Initialize a player's BUA (starts empty)."""
@@ -29,6 +33,11 @@ class BUAManager(QObject):
             self._player_buas[player_name] = []
             print(f"BUAManager: Initialized empty BUA for {player_name}")
             self.bua_updated.emit(player_name)
+
+        if player_name not in self._player_minor_terrain_buas:
+            self._player_minor_terrain_buas[player_name] = []
+            print(f"BUAManager: Initialized empty minor terrain BUA for {player_name}")
+            self.minor_terrain_bua_updated.emit(player_name)
 
     def bury_unit(self, player_name: str, unit: UnitModel):
         """Bury a unit in a player's BUA (moved from DUA during Retreat step)."""
@@ -204,3 +213,122 @@ class BUAManager(QObject):
             "units_buried": len(selected_units),
             "buried_units": [unit.to_dict() for unit in selected_units],
         }
+
+    # Minor Terrain BUA Management Methods
+    def place_minor_terrain_in_bua(self, player_name: str, minor_terrain: MinorTerrain):
+        """Place a minor terrain in a player's BUA (e.g., from Amazon abilities)."""
+        if player_name not in self._player_minor_terrain_buas:
+            self._player_minor_terrain_buas[player_name] = []
+
+        self._player_minor_terrain_buas[player_name].append(minor_terrain)
+        print(f"BUAManager: Placed {minor_terrain.name} in {player_name}'s minor terrain BUA")
+        self.minor_terrain_bua_updated.emit(player_name)
+
+    def remove_minor_terrain_from_bua(self, player_name: str, terrain_key: str) -> Optional[MinorTerrain]:
+        """Remove a minor terrain from a player's BUA (e.g., for Esfah's Gift spell)."""
+        if player_name not in self._player_minor_terrain_buas:
+            return None
+
+        bua = self._player_minor_terrain_buas[player_name]
+        for i, terrain in enumerate(bua):
+            # Match by terrain key or name
+            if terrain_key.upper() in [terrain.name.upper().replace(" ", "_"), terrain.name.upper()]:
+                removed_terrain = bua.pop(i)
+                print(f"BUAManager: Removed {removed_terrain.name} from {player_name}'s minor terrain BUA")
+                self.minor_terrain_bua_updated.emit(player_name)
+                return removed_terrain
+
+        print(f"BUAManager: Minor terrain {terrain_key} not found in {player_name}'s BUA")
+        return None
+
+    def get_player_minor_terrain_bua(self, player_name: str) -> List[MinorTerrain]:
+        """Get all minor terrains in a player's BUA."""
+        return self._player_minor_terrain_buas.get(player_name, []).copy()
+
+    def get_minor_terrains_in_bua_by_element(self, player_name: str, element: str) -> List[MinorTerrain]:
+        """Get minor terrains in a player's BUA that match a specific element."""
+        bua = self.get_player_minor_terrain_bua(player_name)
+        return [terrain for terrain in bua if terrain.has_element(element)]
+
+    def get_minor_terrains_in_bua_by_color(self, player_name: str, color: str) -> List[MinorTerrain]:
+        """Get minor terrains in a player's BUA that match a specific color."""
+        bua = self.get_player_minor_terrain_bua(player_name)
+        return [terrain for terrain in bua if terrain.get_terrain_base_name().upper() == color.upper()]
+
+    def get_minor_terrains_in_bua_by_eighth_face(self, player_name: str, eighth_face: str) -> List[MinorTerrain]:
+        """Get minor terrains in a player's BUA that match a specific eighth_face."""
+        bua = self.get_player_minor_terrain_bua(player_name)
+        return [terrain for terrain in bua if terrain.eighth_face.lower() == eighth_face.lower()]
+
+    def has_minor_terrains_in_bua(self, player_name: str) -> bool:
+        """Check if a player has any minor terrains in their BUA."""
+        return len(self.get_player_minor_terrain_bua(player_name)) > 0
+
+    def get_minor_terrain_bua_count(self, player_name: str) -> int:
+        """Get the number of minor terrains in a player's BUA."""
+        return len(self.get_player_minor_terrain_bua(player_name))
+
+    def find_minor_terrain_in_bua(self, player_name: str, terrain_key: str) -> Optional[MinorTerrain]:
+        """Find a specific minor terrain in a player's BUA."""
+        bua = self.get_player_minor_terrain_bua(player_name)
+        for terrain in bua:
+            if terrain_key.upper() in [terrain.name.upper().replace(" ", "_"), terrain.name.upper()]:
+                return terrain
+        return None
+
+    def clear_minor_terrain_bua(self, player_name: str):
+        """Clear all minor terrains from a player's BUA."""
+        if player_name in self._player_minor_terrain_buas:
+            terrain_count = len(self._player_minor_terrain_buas[player_name])
+            self._player_minor_terrain_buas[player_name] = []
+            print(f"BUAManager: Cleared {terrain_count} minor terrains from {player_name}'s BUA")
+            self.minor_terrain_bua_updated.emit(player_name)
+
+    def can_target_minor_terrain_bua(self, player_name: str) -> bool:
+        """Check if a player's minor terrain BUA can be targeted by spells (must have terrains)."""
+        return self.has_minor_terrains_in_bua(player_name)
+
+    def get_minor_terrain_bua_statistics(self, player_name: str) -> Dict[str, Any]:
+        """Get statistics about a player's minor terrain BUA."""
+        bua = self.get_player_minor_terrain_bua(player_name)
+
+        stats = {
+            "total_minor_terrains": len(bua),
+            "colors": {},
+            "eighth_faces": {},
+            "elements": {},
+        }
+
+        for terrain in bua:
+            # Count by base terrain name
+            base_name = terrain.get_terrain_base_name()
+            if base_name not in stats["colors"]:
+                stats["colors"][base_name] = 0
+            stats["colors"][base_name] += 1
+
+            # Count by eighth face
+            eighth_face = terrain.eighth_face
+            if eighth_face not in stats["eighth_faces"]:
+                stats["eighth_faces"][eighth_face] = 0
+            stats["eighth_faces"][eighth_face] += 1
+
+            # Count by elements
+            for element in terrain.elements:
+                if element not in stats["elements"]:
+                    stats["elements"][element] = 0
+                stats["elements"][element] += 1
+
+        return stats
+
+    def get_minor_terrain_bua_export_data(self, player_name: str) -> List[Dict[str, Any]]:
+        """Export a player's minor terrain BUA data for saving/loading."""
+        bua = self.get_player_minor_terrain_bua(player_name)
+        return [
+            {
+                "name": terrain.name,
+                "terrain_base_name": terrain.get_terrain_base_name(),
+                "eighth_face": terrain.eighth_face,
+                "elements": terrain.elements,
+            }
+            for terrain in bua
+        ]

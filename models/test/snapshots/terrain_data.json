@@ -1,11 +1,7 @@
 {
   "COASTLAND_CASTLE": {
-    "color": "Coastland",
     "display_name": "Coastland Castle",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Castle",
     "elements": [
       "AIR",
       "WATER"
@@ -24,16 +20,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Castle",
-    "subtype": "Castle",
     "terrain_type": "major"
   },
   "COASTLAND_CITY": {
-    "color": "Coastland",
     "display_name": "Coastland City",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "City",
     "elements": [
       "AIR",
       "WATER"
@@ -52,16 +43,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland City",
-    "subtype": "City",
     "terrain_type": "major"
   },
   "COASTLAND_DRAGON_LAIR": {
-    "color": "Coastland",
     "display_name": "Coastland Dragon Lair",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Dragon Lair",
     "elements": [
       "AIR",
       "WATER"
@@ -80,16 +66,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Dragon Lair",
-    "subtype": "Dragon Lair",
     "terrain_type": "major"
   },
   "COASTLAND_GROVE": {
-    "color": "Coastland",
     "display_name": "Coastland Grove",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Grove",
     "elements": [
       "AIR",
       "WATER"
@@ -108,16 +89,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Grove",
-    "subtype": "Grove",
     "terrain_type": "major"
   },
   "COASTLAND_STANDING_STONES": {
-    "color": "Coastland",
     "display_name": "Coastland Standing Stones",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Standing Stones",
     "elements": [
       "AIR",
       "WATER"
@@ -136,16 +112,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Standing Stones",
-    "subtype": "Standing Stones",
     "terrain_type": "major"
   },
   "COASTLAND_TEMPLE": {
-    "color": "Coastland",
     "display_name": "Coastland Temple",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Temple",
     "elements": [
       "AIR",
       "WATER"
@@ -164,16 +135,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Temple",
-    "subtype": "Temple",
     "terrain_type": "major"
   },
   "COASTLAND_TOWER": {
-    "color": "Coastland",
     "display_name": "Coastland Tower",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Tower",
     "elements": [
       "AIR",
       "WATER"
@@ -192,16 +158,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Tower",
-    "subtype": "Tower",
     "terrain_type": "major"
   },
   "COASTLAND_VORTEX": {
-    "color": "Coastland",
     "display_name": "Coastland Vortex",
-    "element_colors": [
-      "🟦",
-      "🟩"
-    ],
+    "eighth_face": "Vortex",
     "elements": [
       "AIR",
       "WATER"
@@ -220,16 +181,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Coastland Vortex",
-    "subtype": "Vortex",
     "terrain_type": "major"
   },
   "FEYLAND_CASTLE": {
-    "color": "Feyland",
     "display_name": "Feyland Castle",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Castle",
     "elements": [
       "WATER",
       "FIRE"
@@ -248,16 +204,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Castle",
-    "subtype": "Castle",
     "terrain_type": "major"
   },
   "FEYLAND_CITY": {
-    "color": "Feyland",
     "display_name": "Feyland City",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "City",
     "elements": [
       "WATER",
       "FIRE"
@@ -276,16 +227,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland City",
-    "subtype": "City",
     "terrain_type": "major"
   },
   "FEYLAND_DRAGON_LAIR": {
-    "color": "Feyland",
     "display_name": "Feyland Dragon Lair",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Dragon Lair",
     "elements": [
       "WATER",
       "FIRE"
@@ -304,16 +250,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Dragon Lair",
-    "subtype": "Dragon Lair",
     "terrain_type": "major"
   },
   "FEYLAND_GROVE": {
-    "color": "Feyland",
     "display_name": "Feyland Grove",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Grove",
     "elements": [
       "WATER",
       "FIRE"
@@ -332,16 +273,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Grove",
-    "subtype": "Grove",
     "terrain_type": "major"
   },
   "FEYLAND_STANDING_STONES": {
-    "color": "Feyland",
     "display_name": "Feyland Standing Stones",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Standing Stones",
     "elements": [
       "WATER",
       "FIRE"
@@ -360,16 +296,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Standing Stones",
-    "subtype": "Standing Stones",
     "terrain_type": "major"
   },
   "FEYLAND_TEMPLE": {
-    "color": "Feyland",
     "display_name": "Feyland Temple",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Temple",
     "elements": [
       "WATER",
       "FIRE"
@@ -388,16 +319,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Temple",
-    "subtype": "Temple",
     "terrain_type": "major"
   },
   "FEYLAND_TOWER": {
-    "color": "Feyland",
     "display_name": "Feyland Tower",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Tower",
     "elements": [
       "WATER",
       "FIRE"
@@ -416,16 +342,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Tower",
-    "subtype": "Tower",
     "terrain_type": "major"
   },
   "FEYLAND_VORTEX": {
-    "color": "Feyland",
     "display_name": "Feyland Vortex",
-    "element_colors": [
-      "🟩",
-      "🟥"
-    ],
+    "eighth_face": "Vortex",
     "elements": [
       "WATER",
       "FIRE"
@@ -444,16 +365,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Feyland Vortex",
-    "subtype": "Vortex",
     "terrain_type": "major"
   },
   "FLATLAND_CASTLE": {
-    "color": "Flatland",
     "display_name": "Flatland Castle",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Castle",
     "elements": [
       "AIR",
       "EARTH"
@@ -472,16 +388,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Castle",
-    "subtype": "Castle",
     "terrain_type": "major"
   },
   "FLATLAND_CITY": {
-    "color": "Flatland",
     "display_name": "Flatland City",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "City",
     "elements": [
       "AIR",
       "EARTH"
@@ -500,16 +411,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland City",
-    "subtype": "City",
     "terrain_type": "major"
   },
   "FLATLAND_DRAGON_LAIR": {
-    "color": "Flatland",
     "display_name": "Flatland Dragon Lair",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Dragon Lair",
     "elements": [
       "AIR",
       "EARTH"
@@ -528,16 +434,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Dragon Lair",
-    "subtype": "Dragon Lair",
     "terrain_type": "major"
   },
   "FLATLAND_GROVE": {
-    "color": "Flatland",
     "display_name": "Flatland Grove",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Grove",
     "elements": [
       "AIR",
       "EARTH"
@@ -556,16 +457,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Grove",
-    "subtype": "Grove",
     "terrain_type": "major"
   },
   "FLATLAND_STANDING_STONES": {
-    "color": "Flatland",
     "display_name": "Flatland Standing Stones",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Standing Stones",
     "elements": [
       "AIR",
       "EARTH"
@@ -584,16 +480,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Standing Stones",
-    "subtype": "Standing Stones",
     "terrain_type": "major"
   },
   "FLATLAND_TEMPLE": {
-    "color": "Flatland",
     "display_name": "Flatland Temple",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Temple",
     "elements": [
       "AIR",
       "EARTH"
@@ -612,16 +503,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Temple",
-    "subtype": "Temple",
     "terrain_type": "major"
   },
   "FLATLAND_TOWER": {
-    "color": "Flatland",
     "display_name": "Flatland Tower",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Tower",
     "elements": [
       "AIR",
       "EARTH"
@@ -640,16 +526,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Tower",
-    "subtype": "Tower",
     "terrain_type": "major"
   },
   "FLATLAND_VORTEX": {
-    "color": "Flatland",
     "display_name": "Flatland Vortex",
-    "element_colors": [
-      "🟦",
-      "🟨"
-    ],
+    "eighth_face": "Vortex",
     "elements": [
       "AIR",
       "EARTH"
@@ -668,16 +549,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Flatland Vortex",
-    "subtype": "Vortex",
     "terrain_type": "major"
   },
   "HIGHLAND_CASTLE": {
-    "color": "Highland",
     "display_name": "Highland Castle",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Castle",
     "elements": [
       "FIRE",
       "EARTH"
@@ -696,16 +572,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Castle",
-    "subtype": "Castle",
     "terrain_type": "major"
   },
   "HIGHLAND_CITY": {
-    "color": "Highland",
     "display_name": "Highland City",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "City",
     "elements": [
       "FIRE",
       "EARTH"
@@ -724,16 +595,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland City",
-    "subtype": "City",
     "terrain_type": "major"
   },
   "HIGHLAND_DRAGON_LAIR": {
-    "color": "Highland",
     "display_name": "Highland Dragon Lair",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Dragon Lair",
     "elements": [
       "FIRE",
       "EARTH"
@@ -752,16 +618,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Dragon Lair",
-    "subtype": "Dragon Lair",
     "terrain_type": "major"
   },
   "HIGHLAND_GROVE": {
-    "color": "Highland",
     "display_name": "Highland Grove",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Grove",
     "elements": [
       "FIRE",
       "EARTH"
@@ -780,16 +641,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Grove",
-    "subtype": "Grove",
     "terrain_type": "major"
   },
   "HIGHLAND_STANDING_STONES": {
-    "color": "Highland",
     "display_name": "Highland Standing Stones",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Standing Stones",
     "elements": [
       "FIRE",
       "EARTH"
@@ -808,16 +664,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Standing Stones",
-    "subtype": "Standing Stones",
     "terrain_type": "major"
   },
   "HIGHLAND_TEMPLE": {
-    "color": "Highland",
     "display_name": "Highland Temple",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Temple",
     "elements": [
       "FIRE",
       "EARTH"
@@ -836,16 +687,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Temple",
-    "subtype": "Temple",
     "terrain_type": "major"
   },
   "HIGHLAND_TOWER": {
-    "color": "Highland",
     "display_name": "Highland Tower",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Tower",
     "elements": [
       "FIRE",
       "EARTH"
@@ -864,16 +710,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Tower",
-    "subtype": "Tower",
     "terrain_type": "major"
   },
   "HIGHLAND_VORTEX": {
-    "color": "Highland",
     "display_name": "Highland Vortex",
-    "element_colors": [
-      "🟥",
-      "🟨"
-    ],
+    "eighth_face": "Vortex",
     "elements": [
       "FIRE",
       "EARTH"
@@ -892,16 +733,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Highland Vortex",
-    "subtype": "Vortex",
     "terrain_type": "major"
   },
   "SWAMPLAND_CASTLE": {
-    "color": "Swampland",
     "display_name": "Swampland Castle",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Castle",
     "elements": [
       "WATER",
       "EARTH"
@@ -920,16 +756,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Castle",
-    "subtype": "Castle",
     "terrain_type": "major"
   },
   "SWAMPLAND_CITY": {
-    "color": "Swampland",
     "display_name": "Swampland City",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "City",
     "elements": [
       "WATER",
       "EARTH"
@@ -948,16 +779,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland City",
-    "subtype": "City",
     "terrain_type": "major"
   },
   "SWAMPLAND_DRAGON_LAIR": {
-    "color": "Swampland",
     "display_name": "Swampland Dragon Lair",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Dragon Lair",
     "elements": [
       "WATER",
       "EARTH"
@@ -976,16 +802,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Dragon Lair",
-    "subtype": "Dragon Lair",
     "terrain_type": "major"
   },
   "SWAMPLAND_GROVE": {
-    "color": "Swampland",
     "display_name": "Swampland Grove",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Grove",
     "elements": [
       "WATER",
       "EARTH"
@@ -1004,16 +825,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Grove",
-    "subtype": "Grove",
     "terrain_type": "major"
   },
   "SWAMPLAND_STANDING_STONES": {
-    "color": "Swampland",
     "display_name": "Swampland Standing Stones",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Standing Stones",
     "elements": [
       "WATER",
       "EARTH"
@@ -1032,16 +848,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Standing Stones",
-    "subtype": "Standing Stones",
     "terrain_type": "major"
   },
   "SWAMPLAND_TEMPLE": {
-    "color": "Swampland",
     "display_name": "Swampland Temple",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Temple",
     "elements": [
       "WATER",
       "EARTH"
@@ -1060,16 +871,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Temple",
-    "subtype": "Temple",
     "terrain_type": "major"
   },
   "SWAMPLAND_TOWER": {
-    "color": "Swampland",
     "display_name": "Swampland Tower",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Tower",
     "elements": [
       "WATER",
       "EARTH"
@@ -1088,16 +894,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Tower",
-    "subtype": "Tower",
     "terrain_type": "major"
   },
   "SWAMPLAND_VORTEX": {
-    "color": "Swampland",
     "display_name": "Swampland Vortex",
-    "element_colors": [
-      "🟩",
-      "🟨"
-    ],
+    "eighth_face": "Vortex",
     "elements": [
       "WATER",
       "EARTH"
@@ -1116,16 +917,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Swampland Vortex",
-    "subtype": "Vortex",
     "terrain_type": "major"
   },
   "WASTELAND_CASTLE": {
-    "color": "Wasteland",
     "display_name": "Wasteland Castle",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Castle",
     "elements": [
       "AIR",
       "FIRE"
@@ -1144,16 +940,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Castle",
-    "subtype": "Castle",
     "terrain_type": "major"
   },
   "WASTELAND_CITY": {
-    "color": "Wasteland",
     "display_name": "Wasteland City",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "City",
     "elements": [
       "AIR",
       "FIRE"
@@ -1172,16 +963,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland City",
-    "subtype": "City",
     "terrain_type": "major"
   },
   "WASTELAND_DRAGON_LAIR": {
-    "color": "Wasteland",
     "display_name": "Wasteland Dragon Lair",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Dragon Lair",
     "elements": [
       "AIR",
       "FIRE"
@@ -1200,16 +986,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Dragon Lair",
-    "subtype": "Dragon Lair",
     "terrain_type": "major"
   },
   "WASTELAND_GROVE": {
-    "color": "Wasteland",
     "display_name": "Wasteland Grove",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Grove",
     "elements": [
       "AIR",
       "FIRE"
@@ -1228,16 +1009,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Grove",
-    "subtype": "Grove",
     "terrain_type": "major"
   },
   "WASTELAND_STANDING_STONES": {
-    "color": "Wasteland",
     "display_name": "Wasteland Standing Stones",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Standing Stones",
     "elements": [
       "AIR",
       "FIRE"
@@ -1256,16 +1032,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Standing Stones",
-    "subtype": "Standing Stones",
     "terrain_type": "major"
   },
   "WASTELAND_TEMPLE": {
-    "color": "Wasteland",
     "display_name": "Wasteland Temple",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Temple",
     "elements": [
       "AIR",
       "FIRE"
@@ -1284,16 +1055,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Temple",
-    "subtype": "Temple",
     "terrain_type": "major"
   },
   "WASTELAND_TOWER": {
-    "color": "Wasteland",
     "display_name": "Wasteland Tower",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Tower",
     "elements": [
       "AIR",
       "FIRE"
@@ -1312,16 +1078,11 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Tower",
-    "subtype": "Tower",
     "terrain_type": "major"
   },
   "WASTELAND_VORTEX": {
-    "color": "Wasteland",
     "display_name": "Wasteland Vortex",
-    "element_colors": [
-      "🟦",
-      "🟥"
-    ],
+    "eighth_face": "Vortex",
     "elements": [
       "AIR",
       "FIRE"
@@ -1340,7 +1101,6 @@
     "is_major_terrain": true,
     "is_minor_terrain": false,
     "name": "Wasteland Vortex",
-    "subtype": "Vortex",
     "terrain_type": "major"
   }
 }

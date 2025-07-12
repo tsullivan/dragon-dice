@@ -420,11 +420,11 @@ FINAL DAMAGE CALCULATION:
         if not roll_results:
             return "No results"
 
-        total_counts = {}
+        total_counts: Dict[str, int] = {}
         unit_summaries = []
 
         for unit_name, face_results in roll_results.items():
-            unit_counts = {}
+            unit_counts: Dict[str, int] = {}
             for face_result in face_results:
                 if face_result:
                     normalized = face_result.lower().strip()

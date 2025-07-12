@@ -21,28 +21,20 @@ class Terrain:
     """
     Represents a terrain die in the Dragon Dice game.
     Each terrain has a name, type (major/minor), color (base terrain type),
-    subtype (variant), and faces with their effects.
+    eighth_face (variant), and faces with their effects.
+
+    If is_advanced=True, the terrain can ONLY be used in the Frontier location.
     """
 
     def __init__(
-        self,
-        name: str,
-        terrain_type: str,
-        color: str,
-        subtype: str,
-        faces: List[Dict[str, str]],
-        elements: Optional[List[str]] = None,
-        element_colors: Optional[List[str]] = None,
+        self, name: str, eighth_face: str, faces: List[Dict[str, str]], elements: List[str], is_advanced=False
     ):
         self.name = name
-        self.terrain_type = terrain_type  # "major" or "minor"
-        self.color = color  # Base terrain type (Coastland, Deadland, etc.)
-        self.subtype = subtype  # Variant (Bridge, Castle, etc.)
+        self.terrain_type = "major"
+        self.eighth_face = eighth_face  # Variant (Bridge, Castle, etc.)
         self.faces = [TerrainFace(face["name"], face["description"]) for face in faces]
-
-        # Derive elements from color if not provided
-        self.elements = elements or self._derive_elements_from_color(color)
-        self.element_colors = element_colors or [ELEMENT_DATA[elem].icon for elem in self.elements]
+        self.elements = elements
+        self.is_advanced = is_advanced
 
         # Display name
         self.display_name = name
@@ -84,9 +76,7 @@ class Terrain:
         return f"{self.name} ({self.terrain_type})"
 
     def __repr__(self) -> str:
-        return (
-            f"Terrain(name='{self.name}', type='{self.terrain_type}', color='{self.color}', subtype='{self.subtype}')"
-        )
+        return f"Terrain(name='{self.name}', type='{self.terrain_type}', elements='{self.elements[0], self.elements[1]}', eighth_face='{self.eighth_face}')"
 
     def get_element_names(self) -> List[str]:
         """Returns the element color names."""
@@ -94,11 +84,11 @@ class Terrain:
 
     def get_element_icons(self) -> List[str]:
         """Returns the element icons."""
-        return self.element_colors
+        return self.elements
 
     def get_color_string(self) -> str:
         """Returns combined element colors as a single string."""
-        return "".join(self.element_colors)
+        return "".join(self.elements)
 
     def has_element(self, element: str) -> bool:
         """Check if this terrain has a specific element."""
@@ -129,9 +119,9 @@ TERRAIN_DATA = {
     # Detailed Terrain Dice
     "COASTLAND_CASTLE": Terrain(
         name="Coastland Castle",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Castle",
+        elements=["AIR", "WATER"],
+        is_advanced=True,
+        eighth_face="Castle",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -145,13 +135,11 @@ TERRAIN_DATA = {
                 "description": "When you capture this terrain, choose one of the following four terrain types: City, Standing Stones, Temple, or Tower. The castle becomes that terrain until its face is moved.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_CITY": Terrain(
         name="Coastland City",
-        terrain_type="major",
-        color="Coastland",
-        subtype="City",
+        elements=["AIR", "WATER"],
+        eighth_face="City",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -165,13 +153,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase you may recruit a 1-health (small) unit or promote one unit in the controlling army.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_DRAGON_LAIR": Terrain(
         name="Coastland Dragon Lair",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Dragon Lair",
+        elements=["AIR", "WATER"],
+        is_advanced=True,
+        eighth_face="Dragon Lair",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -185,13 +172,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase, you may summon a dragon that matches at least one color of this terrain, an Ivory Dragon or any Ivory Hybrid Dragon, and place it at any terrain. The Dragon's Lair may not summon a White Dragon.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_GROVE": Terrain(
         name="Coastland Grove",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Grove",
+        elements=["AIR", "WATER"],
+        is_advanced=True,
+        eighth_face="Grove",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -205,13 +191,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase move one non-Dragonkin unit from any player's BUA to their DUA, a Dragonkin unit or minor terrain from your BUA to your Summoning Pool, or an Item from your BUA to your army controlling this eighth face. This is not optional and must be performed if possible.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_STANDING_STONES": Terrain(
         name="Coastland Standing Stones",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Standing Stones",
+        elements=["AIR", "WATER"],
+        eighth_face="Standing Stones",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -225,13 +209,11 @@ TERRAIN_DATA = {
                 "description": "All units in your controlling army may convert any or all of their magic results to a color that matches a color of this terrain.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_TEMPLE": Terrain(
         name="Coastland Temple",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Temple",
+        elements=["AIR", "WATER"],
+        eighth_face="Temple",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -245,13 +227,11 @@ TERRAIN_DATA = {
                 "description": "Your controlling army and all units in it cannot be affected by any opponent's death (black) magic. During the Eighth Face Phase you may force another player to bury one unit of their choice in their DUA.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_TOWER": Terrain(
         name="Coastland Tower",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Tower",
+        elements=["AIR", "WATER"],
+        eighth_face="Tower",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -265,13 +245,12 @@ TERRAIN_DATA = {
                 "description": "Your controlling army may use a missile action to attack any opponent's army. If attacking a Reserve Army, only count non-ID missile results.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "COASTLAND_VORTEX": Terrain(
         name="Coastland Vortex",
-        terrain_type="major",
-        color="Coastland",
-        subtype="Vortex",
+        elements=["AIR", "WATER"],
+        is_advanced=True,
+        eighth_face="Vortex",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -285,13 +264,12 @@ TERRAIN_DATA = {
                 "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
-        elements=["AIR", "WATER"],
     ),
     "FEYLAND_CASTLE": Terrain(
         name="Feyland Castle",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Castle",
+        elements=["WATER", "FIRE"],
+        is_advanced=True,
+        eighth_face="Castle",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -305,13 +283,11 @@ TERRAIN_DATA = {
                 "description": "When you capture this terrain, choose one of the following four terrain types: City, Standing Stones, Temple, or Tower. The castle becomes that terrain until its face is moved.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_CITY": Terrain(
         name="Feyland City",
-        terrain_type="major",
-        color="Feyland",
-        subtype="City",
+        elements=["WATER", "FIRE"],
+        eighth_face="City",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -325,13 +301,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase you may recruit a 1-health (small) unit or promote one unit in the controlling army.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_DRAGON_LAIR": Terrain(
         name="Feyland Dragon Lair",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Dragon Lair",
+        elements=["WATER", "FIRE"],
+        is_advanced=True,
+        eighth_face="Dragon Lair",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -345,13 +320,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase, you may summon a dragon that matches at least one color of this terrain, an Ivory Dragon or any Ivory Hybrid Dragon, and place it at any terrain. The Dragon's Lair may not summon a White Dragon.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_GROVE": Terrain(
         name="Feyland Grove",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Grove",
+        elements=["WATER", "FIRE"],
+        is_advanced=True,
+        eighth_face="Grove",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -365,13 +339,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase move one non-Dragonkin unit from any player's BUA to their DUA, a Dragonkin unit or minor terrain from your BUA to your Summoning Pool, or an Item from your BUA to your army controlling this eighth face. This is not optional and must be performed if possible.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_STANDING_STONES": Terrain(
         name="Feyland Standing Stones",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Standing Stones",
+        elements=["WATER", "FIRE"],
+        eighth_face="Standing Stones",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -385,13 +357,11 @@ TERRAIN_DATA = {
                 "description": "All units in your controlling army may convert any or all of their magic results to a color that matches a color of this terrain.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_TEMPLE": Terrain(
         name="Feyland Temple",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Temple",
+        elements=["WATER", "FIRE"],
+        eighth_face="Temple",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -405,13 +375,11 @@ TERRAIN_DATA = {
                 "description": "Your controlling army and all units in it cannot be affected by any opponent's death (black) magic. During the Eighth Face Phase you may force another player to bury one unit of their choice in their DUA.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_TOWER": Terrain(
         name="Feyland Tower",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Tower",
+        elements=["WATER", "FIRE"],
+        eighth_face="Tower",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -425,13 +393,12 @@ TERRAIN_DATA = {
                 "description": "Your controlling army may use a missile action to attack any opponent's army. If attacking a Reserve Army, only count non-ID missile results.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FEYLAND_VORTEX": Terrain(
         name="Feyland Vortex",
-        terrain_type="major",
-        color="Feyland",
-        subtype="Vortex",
+        elements=["WATER", "FIRE"],
+        is_advanced=True,
+        eighth_face="Vortex",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -445,13 +412,12 @@ TERRAIN_DATA = {
                 "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
-        elements=["WATER", "FIRE"],
     ),
     "FLATLAND_CASTLE": Terrain(
         name="Flatland Castle",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Castle",
+        elements=["AIR", "EARTH"],
+        is_advanced=True,
+        eighth_face="Castle",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -465,13 +431,11 @@ TERRAIN_DATA = {
                 "description": "When you capture this terrain, choose one of the following four terrain types: City, Standing Stones, Temple, or Tower. The castle becomes that terrain until its face is moved.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_CITY": Terrain(
         name="Flatland City",
-        terrain_type="major",
-        color="Flatland",
-        subtype="City",
+        elements=["AIR", "EARTH"],
+        eighth_face="City",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -485,13 +449,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase you may recruit a 1-health (small) unit or promote one unit in the controlling army.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_DRAGON_LAIR": Terrain(
         name="Flatland Dragon Lair",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Dragon Lair",
+        elements=["AIR", "EARTH"],
+        is_advanced=True,
+        eighth_face="Dragon Lair",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -505,13 +468,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase, you may summon a dragon that matches at least one color of this terrain, an Ivory Dragon or any Ivory Hybrid Dragon, and place it at any terrain. The Dragon's Lair may not summon a White Dragon.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_GROVE": Terrain(
         name="Flatland Grove",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Grove",
+        elements=["AIR", "EARTH"],
+        is_advanced=True,
+        eighth_face="Grove",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -525,13 +487,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase move one non-Dragonkin unit from any player's BUA to their DUA, a Dragonkin unit or minor terrain from your BUA to your Summoning Pool, or an Item from your BUA to your army controlling this eighth face. This is not optional and must be performed if possible.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_STANDING_STONES": Terrain(
         name="Flatland Standing Stones",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Standing Stones",
+        elements=["AIR", "EARTH"],
+        eighth_face="Standing Stones",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -545,13 +505,11 @@ TERRAIN_DATA = {
                 "description": "All units in your controlling army may convert any or all of their magic results to a color that matches a color of this terrain.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_TEMPLE": Terrain(
         name="Flatland Temple",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Temple",
+        elements=["AIR", "EARTH"],
+        eighth_face="Temple",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -565,13 +523,11 @@ TERRAIN_DATA = {
                 "description": "Your controlling army and all units in it cannot be affected by any opponent's death (black) magic. During the Eighth Face Phase you may force another player to bury one unit of their choice in their DUA.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_TOWER": Terrain(
         name="Flatland Tower",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Tower",
+        elements=["AIR", "EARTH"],
+        eighth_face="Tower",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -585,13 +541,12 @@ TERRAIN_DATA = {
                 "description": "Your controlling army may use a missile action to attack any opponent's army. If attacking a Reserve Army, only count non-ID missile results.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "FLATLAND_VORTEX": Terrain(
         name="Flatland Vortex",
-        terrain_type="major",
-        color="Flatland",
-        subtype="Vortex",
+        elements=["AIR", "EARTH"],
+        is_advanced=True,
+        eighth_face="Vortex",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -605,13 +560,12 @@ TERRAIN_DATA = {
                 "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
-        elements=["AIR", "EARTH"],
     ),
     "HIGHLAND_CASTLE": Terrain(
         name="Highland Castle",
-        terrain_type="major",
-        color="Highland",
-        subtype="Castle",
+        elements=["FIRE", "EARTH"],
+        is_advanced=True,
+        eighth_face="Castle",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -625,13 +579,11 @@ TERRAIN_DATA = {
                 "description": "When you capture this terrain, choose one of the following four terrain types: City, Standing Stones, Temple, or Tower. The castle becomes that terrain until its face is moved.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_CITY": Terrain(
         name="Highland City",
-        terrain_type="major",
-        color="Highland",
-        subtype="City",
+        elements=["FIRE", "EARTH"],
+        eighth_face="City",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -645,13 +597,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase you may recruit a 1-health (small) unit or promote one unit in the controlling army.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_DRAGON_LAIR": Terrain(
         name="Highland Dragon Lair",
-        terrain_type="major",
-        color="Highland",
-        subtype="Dragon Lair",
+        elements=["FIRE", "EARTH"],
+        is_advanced=True,
+        eighth_face="Dragon Lair",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -665,13 +616,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase, you may summon a dragon that matches at least one color of this terrain, an Ivory Dragon or any Ivory Hybrid Dragon, and place it at any terrain. The Dragon's Lair may not summon a White Dragon.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_GROVE": Terrain(
         name="Highland Grove",
-        terrain_type="major",
-        color="Highland",
-        subtype="Grove",
+        elements=["FIRE", "EARTH"],
+        is_advanced=True,
+        eighth_face="Grove",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -685,13 +635,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase move one non-Dragonkin unit from any player's BUA to their DUA, a Dragonkin unit or minor terrain from your BUA to your Summoning Pool, or an Item from your BUA to your army controlling this eighth face. This is not optional and must be performed if possible.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_STANDING_STONES": Terrain(
         name="Highland Standing Stones",
-        terrain_type="major",
-        color="Highland",
-        subtype="Standing Stones",
+        elements=["FIRE", "EARTH"],
+        eighth_face="Standing Stones",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -705,13 +653,11 @@ TERRAIN_DATA = {
                 "description": "All units in your controlling army may convert any or all of their magic results to a color that matches a color of this terrain.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_TEMPLE": Terrain(
         name="Highland Temple",
-        terrain_type="major",
-        color="Highland",
-        subtype="Temple",
+        elements=["FIRE", "EARTH"],
+        eighth_face="Temple",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -725,13 +671,11 @@ TERRAIN_DATA = {
                 "description": "Your controlling army and all units in it cannot be affected by any opponent's death (black) magic. During the Eighth Face Phase you may force another player to bury one unit of their choice in their DUA.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_TOWER": Terrain(
         name="Highland Tower",
-        terrain_type="major",
-        color="Highland",
-        subtype="Tower",
+        elements=["FIRE", "EARTH"],
+        eighth_face="Tower",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -745,13 +689,12 @@ TERRAIN_DATA = {
                 "description": "Your controlling army may use a missile action to attack any opponent's army. If attacking a Reserve Army, only count non-ID missile results.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "HIGHLAND_VORTEX": Terrain(
         name="Highland Vortex",
-        terrain_type="major",
-        color="Highland",
-        subtype="Vortex",
+        elements=["FIRE", "EARTH"],
+        is_advanced=True,
+        eighth_face="Vortex",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -765,13 +708,12 @@ TERRAIN_DATA = {
                 "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
-        elements=["FIRE", "EARTH"],
     ),
     "SWAMPLAND_CASTLE": Terrain(
         name="Swampland Castle",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Castle",
+        elements=["WATER", "EARTH"],
+        is_advanced=True,
+        eighth_face="Castle",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -785,13 +727,11 @@ TERRAIN_DATA = {
                 "description": "When you capture this terrain, choose one of the following four terrain types: City, Standing Stones, Temple, or Tower. The castle becomes that terrain until its face is moved.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_CITY": Terrain(
         name="Swampland City",
-        terrain_type="major",
-        color="Swampland",
-        subtype="City",
+        elements=["WATER", "EARTH"],
+        eighth_face="City",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -805,13 +745,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase you may recruit a 1-health (small) unit or promote one unit in the controlling army.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_DRAGON_LAIR": Terrain(
         name="Swampland Dragon Lair",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Dragon Lair",
+        elements=["WATER", "EARTH"],
+        is_advanced=True,
+        eighth_face="Dragon Lair",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -825,13 +764,12 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase, you may summon a dragon that matches at least one color of this terrain, an Ivory Dragon or any Ivory Hybrid Dragon, and place it at any terrain. The Dragon's Lair may not summon a White Dragon.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_GROVE": Terrain(
         name="Swampland Grove",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Grove",
+        elements=["WATER", "EARTH"],
+        is_advanced=True,
+        eighth_face="Grove",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -845,13 +783,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase move one non-Dragonkin unit from any player's BUA to their DUA, a Dragonkin unit or minor terrain from your BUA to your Summoning Pool, or an Item from your BUA to your army controlling this eighth face. This is not optional and must be performed if possible.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_STANDING_STONES": Terrain(
         name="Swampland Standing Stones",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Standing Stones",
+        elements=["WATER", "EARTH"],
+        eighth_face="Standing Stones",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -865,13 +801,11 @@ TERRAIN_DATA = {
                 "description": "All units in your controlling army may convert any or all of their magic results to a color that matches a color of this terrain.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_TEMPLE": Terrain(
         name="Swampland Temple",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Temple",
+        elements=["WATER", "EARTH"],
+        eighth_face="Temple",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -885,13 +819,11 @@ TERRAIN_DATA = {
                 "description": "Your controlling army and all units in it cannot be affected by any opponent's death (black) magic. During the Eighth Face Phase you may force another player to bury one unit of their choice in their DUA.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_TOWER": Terrain(
         name="Swampland Tower",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Tower",
+        elements=["WATER", "EARTH"],
+        eighth_face="Tower",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -905,13 +837,12 @@ TERRAIN_DATA = {
                 "description": "Your controlling army may use a missile action to attack any opponent's army. If attacking a Reserve Army, only count non-ID missile results.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "SWAMPLAND_VORTEX": Terrain(
         name="Swampland Vortex",
-        terrain_type="major",
-        color="Swampland",
-        subtype="Vortex",
+        elements=["WATER", "EARTH"],
+        is_advanced=True,
+        eighth_face="Vortex",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -925,13 +856,11 @@ TERRAIN_DATA = {
                 "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
-        elements=["WATER", "EARTH"],
     ),
     "WASTELAND_CASTLE": Terrain(
         name="Wasteland Castle",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Castle",
+        elements=["AIR", "FIRE"],
+        eighth_face="Castle",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -945,13 +874,11 @@ TERRAIN_DATA = {
                 "description": "When you capture this terrain, choose one of the following four terrain types: City, Standing Stones, Temple, or Tower. The castle becomes that terrain until its face is moved.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_CITY": Terrain(
         name="Wasteland City",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="City",
+        elements=["AIR", "FIRE"],
+        eighth_face="City",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -965,13 +892,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase you may recruit a 1-health (small) unit or promote one unit in the controlling army.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_DRAGON_LAIR": Terrain(
         name="Wasteland Dragon Lair",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Dragon Lair",
+        elements=["AIR", "FIRE"],
+        eighth_face="Dragon Lair",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -985,13 +910,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase, you may summon a dragon that matches at least one color of this terrain, an Ivory Dragon or any Ivory Hybrid Dragon, and place it at any terrain. The Dragon's Lair may not summon a White Dragon.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_GROVE": Terrain(
         name="Wasteland Grove",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Grove",
+        elements=["AIR", "FIRE"],
+        eighth_face="Grove",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -1005,13 +928,11 @@ TERRAIN_DATA = {
                 "description": "During the Eighth Face Phase move one non-Dragonkin unit from any player's BUA to their DUA, a Dragonkin unit or minor terrain from your BUA to your Summoning Pool, or an Item from your BUA to your army controlling this eighth face. This is not optional and must be performed if possible.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_STANDING_STONES": Terrain(
         name="Wasteland Standing Stones",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Standing Stones",
+        elements=["AIR", "FIRE"],
+        eighth_face="Standing Stones",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -1025,13 +946,11 @@ TERRAIN_DATA = {
                 "description": "All units in your controlling army may convert any or all of their magic results to a color that matches a color of this terrain.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_TEMPLE": Terrain(
         name="Wasteland Temple",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Temple",
+        elements=["AIR", "FIRE"],
+        eighth_face="Temple",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -1045,13 +964,11 @@ TERRAIN_DATA = {
                 "description": "Your controlling army and all units in it cannot be affected by any opponent's death (black) magic. During the Eighth Face Phase you may force another player to bury one unit of their choice in their DUA.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_TOWER": Terrain(
         name="Wasteland Tower",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Tower",
+        elements=["AIR", "FIRE"],
+        eighth_face="Tower",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Missile Terrain", "description": "This icon on the terrain sets the current action to missile."},
@@ -1065,13 +982,12 @@ TERRAIN_DATA = {
                 "description": "Your controlling army may use a missile action to attack any opponent's army. If attacking a Reserve Army, only count non-ID missile results.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
     "WASTELAND_VORTEX": Terrain(
         name="Wasteland Vortex",
-        terrain_type="major",
-        color="Wasteland",
-        subtype="Vortex",
+        elements=["AIR", "FIRE"],
+        is_advanced=True,
+        eighth_face="Vortex",
         faces=[
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
             {"name": "Magic Terrain", "description": "This icon on the terrain sets the current action to magic."},
@@ -1085,7 +1001,6 @@ TERRAIN_DATA = {
                 "description": "During any non-maneuver army roll at this terrain, before resolving SAI's (see  step 2 of 'Die Roll Resolution'), you may reroll one unit, ignoring the previous result.",
             },
         ],
-        elements=["AIR", "FIRE"],
     ),
 }
 
@@ -1190,15 +1105,30 @@ def get_terrains_by_type(terrain_type: str) -> List[Terrain]:
     return [terrain for terrain in TERRAIN_DATA.values() if terrain.terrain_type == terrain_type.lower()]
 
 
-def get_terrains_by_color(color: str) -> List[Terrain]:
-    """Get all terrains of a specific color (base terrain type)."""
-    color = color.upper()
-    return [terrain for terrain in TERRAIN_DATA.values() if terrain.color.upper() == color]
+def get_terrains_by_eighth_face(eighth_face: str) -> List[Terrain]:
+    """Get all terrains of a specific eighth_face."""
+    return [terrain for terrain in TERRAIN_DATA.values() if terrain.eighth_face.lower() == eighth_face.lower()]
 
 
-def get_terrains_by_subtype(subtype: str) -> List[Terrain]:
-    """Get all terrains of a specific subtype."""
-    return [terrain for terrain in TERRAIN_DATA.values() if terrain.subtype.lower() == subtype.lower()]
+def get_terrain_icon(terrain_name: str) -> str:
+    """Get terrain icon based on its elements.
+
+    Args:
+        terrain_name: The terrain name or key
+
+    Returns:
+        String of element icons representing the terrain
+
+    Raises:
+        KeyError: If terrain not found
+    """
+    terrain = resolve_terrain_name(terrain_name)
+    if not terrain:
+        raise KeyError(f"Unknown terrain: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}")
+
+    from models.element_model import get_element_icon
+
+    return "".join(get_element_icon(element) for element in terrain.elements)
 
 
 def validate_terrain_data() -> bool:
@@ -1220,14 +1150,6 @@ def validate_terrain_data() -> bool:
 
 
 # Terrain utility functions
-def get_terrain_icon(terrain_name: str) -> str:
-    """Get terrain icon. Raises KeyError if terrain not found."""
-    terrain = get_terrain(terrain_name)
-    if not terrain:
-        raise KeyError(f"Unknown terrain type: '{terrain_name}'. Valid terrains: {get_all_terrain_names()}")
-    return terrain.get_color_string()
-
-
 def format_terrain_display(terrain_name: str) -> str:
     """Return 'icon display_name' format for display."""
     terrain = get_terrain(terrain_name)

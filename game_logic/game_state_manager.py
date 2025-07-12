@@ -259,10 +259,13 @@ class GameStateManager(QObject):
         Uses a simplified cost system based on unit health (1 health = 1 point).
         """
         from models.unit_roster_model import UnitRosterModel
+        from models.app_data_model import AppDataModel
 
         reserve_units = []
         remaining_points = points_available
-        unit_roster = UnitRosterModel()
+        # Create a minimal app data model for unit roster
+        app_data = AppDataModel()
+        unit_roster = UnitRosterModel(app_data)
 
         # Get all available unit types
         available_units = []
@@ -645,6 +648,79 @@ class GameStateManager(QObject):
         except (ValueError, TypeError) as e:
             print(f"GameStateManager: Invalid face value '{face}': {e}")
             return False
+
+    def set_terrain_controller(self, terrain_name: str, controlling_player: Optional[str]) -> bool:
+        """Set the controlling player for a terrain. Returns True on success."""
+        try:
+            terrain = self.get_terrain_data(terrain_name)
+            terrain["controlling_player"] = controlling_player
+            print(f"GameStateManager: Set {terrain_name} controller to {controlling_player}")
+            self.game_state_changed.emit()
+            return True
+        except TerrainNotFoundError as e:
+            print(f"GameStateManager: {e}")
+            return False
+
+    def get_terrain_controller(self, terrain_name: str) -> Optional[str]:
+        """Get the controlling player for a terrain."""
+        try:
+            terrain = self.get_terrain_data(terrain_name)
+            return terrain.get("controlling_player")
+        except TerrainNotFoundError:
+            return None
+
+    def reset_terrain_control_when_lost(self, terrain_name: str) -> bool:
+        """Reset terrain from eighth face to seventh when control is lost."""
+        try:
+            terrain = self.get_terrain_data(terrain_name)
+            if terrain.get("face") == 8:
+                terrain["face"] = 7
+                terrain["controlling_player"] = None
+                print(f"GameStateManager: Reset {terrain_name} from eighth to seventh face due to control loss")
+                self.game_state_changed.emit()
+                return True
+            return False
+        except TerrainNotFoundError as e:
+            print(f"GameStateManager: {e}")
+            return False
+
+    def check_terrain_control_loss(self, player_name: str, army_id: str) -> List[str]:
+        """Check if terrain control should be lost due to army destruction/abandonment."""
+        terrains_lost = []
+
+        # Find terrains controlled by this player
+        for terrain_name, terrain_data in self.terrains.items():
+            if terrain_data.get("controlling_player") == player_name:
+                # Check if the controlling army still exists and has units
+                try:
+                    army_units = self.get_army_units(player_name, army_id)
+                    if not army_units or all(unit.get("health", 0) <= 0 for unit in army_units):
+                        # Army destroyed or has no healthy units, lose control
+                        self.reset_terrain_control_when_lost(terrain_name)
+                        terrains_lost.append(terrain_name)
+                except (PlayerNotFoundError, ArmyNotFoundError):
+                    # Army no longer exists, lose control
+                    self.reset_terrain_control_when_lost(terrain_name)
+                    terrains_lost.append(terrain_name)
+
+        return terrains_lost
+
+    def get_army_location(self, player_name: str, army_id: Optional[str] = None) -> Optional[str]:
+        """Get the location of a player's army."""
+        try:
+            player_data = self.get_player_data(player_name)
+
+            # If no specific army specified, use active army
+            if army_id is None:
+                army_id = player_data.get("active_army_type", "home")
+
+            army_data = player_data.get("armies", {}).get(army_id)
+            if army_data:
+                return army_data.get("location")
+
+            return None
+        except PlayerNotFoundError:
+            return None
 
     def get_armies_at_location(self, location: str) -> List[Dict[str, Any]]:
         """Get all armies at a specific location."""

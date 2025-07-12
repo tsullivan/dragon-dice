@@ -6,7 +6,7 @@ class ElementModel:
     Model for element data with icon and color name.
     """
 
-    def __init__(self, name: str, icon: str, color_name: str, display_name: Optional[str] = None):
+    def __init__(self, name: str, icon: str, color_name: str, display_name: str):
         self.name = name
         self.icon = icon
         self.color_name = color_name

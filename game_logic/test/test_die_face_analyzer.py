@@ -14,7 +14,7 @@ from game_logic.die_face_analyzer import (
     DieFaceCount,
     UnitDieFaceExtractor,
 )
-from models.unit_model import UnitFace
+from models.die_face_model import DieFaceModel
 
 
 class TestDieFaceCount(unittest.TestCase):
@@ -258,7 +258,7 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         assert DieFaceAnalyzer.get_icon_for_face_type("Melee") == "⚔️"
         assert DieFaceAnalyzer.get_icon_for_face_type("Missile") == "🏹"
         assert DieFaceAnalyzer.get_icon_for_face_type("Save") == "🛡️"
-        assert DieFaceAnalyzer.get_icon_for_face_type("unknown") == "❓"
+        assert DieFaceAnalyzer.get_icon_for_face_type("unknown") == "⭐"  # Falls back to FACE_TYPE_SPECIAL
 
     def test_format_face_summary_compact(self):
         """Test compact face summary formatting."""

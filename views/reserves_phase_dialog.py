@@ -674,8 +674,8 @@ class ReservesPhaseDialog(QDialog):
 
         # Phase state
         self.current_step = "reinforce"  # "reinforce" or "retreat"
-        self.reinforcement_results = {}
-        self.retreat_results = {}
+        self.reinforcement_results: Dict[str, Any] = {}
+        self.retreat_results: Dict[str, Any] = {}
 
         self.setWindowTitle(f"🏰 Reserves Phase - {player_name}")
         self.setModal(True)

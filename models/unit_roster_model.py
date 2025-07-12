@@ -12,9 +12,9 @@ class UnitRosterModel:
     Holds definitions for all available unit types in the game.
     """
 
-    def __init__(self, app_data_model: Optional[AppDataModel] = None):
+    def __init__(self, app_data_model: AppDataModel):
         self._unit_definitions: Dict[str, Dict[str, Any]] = {}
-        self.app_data_model = app_data_model or AppDataModel()
+        self.app_data_model = app_data_model
         self._load_default_units()
 
     def _load_default_units(self):
@@ -40,7 +40,7 @@ class UnitRosterModel:
         max_health: int,
         abilities: Dict[str, Any],
         unit_class_type: str,
-        die_faces: List[str] = None,
+        die_faces: List[str],
     ):
         if unit_type_id in self._unit_definitions:
             print(f"Warning: Unit type '{unit_type_id}' already defined. Overwriting.")

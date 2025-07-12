@@ -31,14 +31,14 @@ class AppDataModel(QObject):
 
         self._num_players = None
         self._force_size = 24  # DEFAULT_FORCE_SIZE
-        self._player_setup_data_list: list[dict] = []  # Will be initialized based on num_players
+        self._player_setup_data_list: List[Dict] = []  # Will be initialized based on num_players
         self._first_player_name = None
         self._frontier_terrain = None
         self._distance_rolls = []  # List of tuples: (player_name, distance)
         self._game_engine: Optional[GameEngine] = None
-        self._all_terrains: list[Terrain] = []
+        self._all_terrains: List[Terrain] = []
         self.current_setup_player_index: int = 0  # Track current player being set up
-        self._terrain_display_options: list[str] = []
+        self._terrain_display_options: List[str] = []
         self._initialize_terrains()
 
     def _initialize_terrains(self):
@@ -94,10 +94,10 @@ class AppDataModel(QObject):
     def get_player_setup_data(self):
         return self._player_setup_data_list
 
-    def get_all_terrains_list(self) -> list[Terrain]:
+    def get_all_terrains_list(self) -> List[Terrain]:
         return self._all_terrains
 
-    def get_terrain_display_options(self) -> list[str]:
+    def get_terrain_display_options(self) -> List[str]:
         """Returns terrain display options formatted with element color icons for PlayerSetupView."""
         return [self._format_terrain_for_display(terrain) for terrain in self._all_terrains]
 
@@ -253,7 +253,7 @@ class AppDataModel(QObject):
             from models.unit_data import UNIT_DATA
 
             # Convert flat UNIT_DATA list to grouped dictionary format
-            units_by_species = {}
+            units_by_species: Dict[str, List] = {}
             for unit_instance in UNIT_DATA:
                 species_name = unit_instance.species.name
                 if species_name not in units_by_species:

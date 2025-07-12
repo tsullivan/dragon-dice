@@ -33,6 +33,8 @@ class DUAUnit:
     health: int
     elements: List[str]
     original_owner: str
+    unit_id: str = ""  # Unit identifier for tracking
+    unit_data: Dict[str, Any] = field(default_factory=dict)  # Full unit data dictionary
     state: DUAState = DUAState.DEAD
     death_cause: str = "combat"  # combat, spell, dragon_attack, etc.
     death_location: str = ""
@@ -55,6 +57,8 @@ class DUAUnit:
             "health": self.health,
             "elements": self.elements,
             "original_owner": self.original_owner,
+            "unit_id": self.unit_id,
+            "unit_data": self.unit_data,
             "state": self.state.value,
             "death_cause": self.death_cause,
             "death_location": self.death_location,
@@ -71,6 +75,8 @@ class DUAUnit:
             health=data["health"],
             elements=data["elements"],
             original_owner=data["original_owner"],
+            unit_id=data.get("unit_id", ""),
+            unit_data=data.get("unit_data", {}),
             state=DUAState(data.get("state", "dead")),
             death_cause=data.get("death_cause", "combat"),
             death_location=data.get("death_location", ""),
@@ -126,6 +132,8 @@ class DUAManager(QObject):
             health=unit_data.get("health", 1),
             elements=unit_data.get("elements", []),
             original_owner=owner,
+            unit_id=unit_data.get("unit_id", ""),
+            unit_data=unit_data.copy(),  # Store the full unit data
             death_cause=death_cause,
             death_location=death_location,
             death_turn=self.turn_manager.get_current_turn(),

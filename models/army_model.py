@@ -29,7 +29,6 @@ class ArmyModel:
                 return location_model
             # For terrain names or custom locations, we'll store as string in a custom LocationModel
             return LocationModel(name=location.upper().replace(" ", "_"), display_name=location)
-        raise ValueError(f"Invalid location type: {type(location)}")
 
     def _get_display_name(self) -> str:
         """Get the display name for this army type."""

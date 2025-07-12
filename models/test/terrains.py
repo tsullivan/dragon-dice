@@ -6,7 +6,6 @@ This module tests that terrain data hasn't changed unexpectedly by comparing aga
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -32,10 +31,8 @@ class TestTerrainSnapshots:
                 "name": terrain.name,
                 "display_name": terrain.display_name,
                 "terrain_type": terrain.terrain_type,
-                "color": terrain.color,
-                "subtype": terrain.subtype,
+                "eighth_face": terrain.eighth_face,
                 "elements": terrain.elements,
-                "element_colors": terrain.element_colors,
                 "face_names": terrain.get_face_names(),
                 "face_count": len(terrain.faces),
                 "is_major_terrain": terrain.is_major_terrain(),

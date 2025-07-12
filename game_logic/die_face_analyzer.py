@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 from typing import Counter as TypingCounter
 
+from models.die_face_model import get_face_icon_by_name
+
 
 @dataclass
 class DieFaceCount:
@@ -23,7 +25,7 @@ class DieFaceCount:
     def __post_init__(self):
         """Set icon after initialization."""
         if not self.icon:
-            self.icon = DieFaceAnalyzer.get_icon_for_face_type(self.face_type)
+            self.icon = get_face_icon_by_name(self.face_type)
 
 
 class DieFaceAnalyzer:
@@ -44,20 +46,8 @@ class DieFaceAnalyzer:
         "SAI",
     ]
 
-    # Icon mappings for different face types
-    FACE_ICONS = {
-        "Melee": "⚔️",
-        "Missile": "🏹",
-        "Magic": "✨",
-        "Save": "🛡️",
-        "ID": "—",
-        "SAI": "💎",
-        "Maneuver": "🏃",
-        "Claw": "🐉",
-        "Jaws": "🦷",
-        "Tail": "🐉",
-        "Firebreath": "🔥",
-    }
+    # Legacy icon mappings - now delegated to DieFaceModel
+    # Kept for backwards compatibility but deprecated
 
     def __init__(self, unit_roster=None):
         """
@@ -295,7 +285,7 @@ class DieFaceAnalyzer:
         Returns:
             Emoji icon string
         """
-        return DieFaceAnalyzer.FACE_ICONS.get(face_type, "❓")
+        return get_face_icon_by_name(face_type)
 
     def format_face_summary(self, face_counts: Dict[str, int], compact: bool = True) -> str:
         """

@@ -17,7 +17,7 @@ def test_player_setup_view_direct_render(qtbot):  # Use qtbot fixture
 
     # Mock data for PlayerSetupView - convert new structure to expected format
     mock_num_players = 2
-    mock_terrain_options = [(terrain.name, terrain.element_colors) for terrain in TERRAIN_DATA.values()]
+    mock_terrain_options = [(terrain.name, terrain.elements) for terrain in TERRAIN_DATA.values()]
     mock_required_dragons = 2  # As per AppDataModel.get_required_dragon_count()
     mock_force_size = 24  # Add required force_size parameter
 

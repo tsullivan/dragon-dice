@@ -60,7 +60,7 @@ class PromotionManager(QObject):
 
     def _find_unit_promotion_options(self, unit_dict: Dict[str, Any], player_name: str) -> List[PromotionOption]:
         """Find promotion options for a specific unit."""
-        options = []
+        options: List[PromotionOption] = []
         current_health = unit_dict.get("max_health", unit_dict.get("health", 1))
         species_name = unit_dict.get("species", {}).get("name", "")
 
@@ -170,7 +170,7 @@ class PromotionManager(QObject):
 
         for dua_unit in dua_units:
             if dua_unit.unit_data.get("unit_id") == unit_id:
-                return dua_unit.state == "DEAD"  # Only dead units can be used for promotion
+                return dua_unit.state == "DEAD"  # type: ignore[no-any-return]  # Only dead units can be used for promotion
 
         return False
 

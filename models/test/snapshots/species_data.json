@@ -443,7 +443,16 @@
     "name": "Dwarf"
   },
   "ELDARIM_AIR": {
-    "abilities": [],
+    "abilities": [
+      {
+        "description": "Dragonkin units up to the total health of Eldarim in their army ignore any restrictions that prevent them from rolling during a dragon attack.",
+        "name": "Resist Fear"
+      },
+      {
+        "description": "During the Species Abilities Phase, select an army that contains at least one Eldarim unit at a terrain. Move a small (1 health) Dragonkin unit from the Summoning Pool to the army, or promote one Dragonkin unit in the army. Moved or promoted units must match an element of the terrain. This ability may only be used if the total health-worth of Dragonkin after the exchange is not greater than the total healthworth of Eldarim in that army. ",
+        "name": "Dragonkin Handlers"
+      }
+    ],
     "description": "Single element - Air (blue)",
     "display_name": "Eldarim (Air)",
     "element_colors": [
@@ -458,7 +467,16 @@
     "name": "Eldarim Air"
   },
   "ELDARIM_DEATH": {
-    "abilities": [],
+    "abilities": [
+      {
+        "description": "Dragonkin units up to the total health of Eldarim in their army ignore any restrictions that prevent them from rolling during a dragon attack.",
+        "name": "Resist Fear"
+      },
+      {
+        "description": "During the Species Abilities Phase, select an army that contains at least one Eldarim unit at a terrain. Move a small (1 health) Dragonkin unit from the Summoning Pool to the army, or promote one Dragonkin unit in the army. Moved or promoted units must match an element of the terrain. This ability may only be used if the total health-worth of Dragonkin after the exchange is not greater than the total healthworth of Eldarim in that army. ",
+        "name": "Dragonkin Handlers"
+      }
+    ],
     "description": "Single element - Death (black)",
     "display_name": "Eldarim (Death)",
     "element_colors": [
@@ -473,7 +491,16 @@
     "name": "Eldarim Death"
   },
   "ELDARIM_EARTH": {
-    "abilities": [],
+    "abilities": [
+      {
+        "description": "Dragonkin units up to the total health of Eldarim in their army ignore any restrictions that prevent them from rolling during a dragon attack.",
+        "name": "Resist Fear"
+      },
+      {
+        "description": "During the Species Abilities Phase, select an army that contains at least one Eldarim unit at a terrain. Move a small (1 health) Dragonkin unit from the Summoning Pool to the army, or promote one Dragonkin unit in the army. Moved or promoted units must match an element of the terrain. This ability may only be used if the total health-worth of Dragonkin after the exchange is not greater than the total healthworth of Eldarim in that army. ",
+        "name": "Dragonkin Handlers"
+      }
+    ],
     "description": "Single element - Earth (yellow)",
     "display_name": "Eldarim (Earth)",
     "element_colors": [
@@ -488,7 +515,16 @@
     "name": "Eldarim Earth"
   },
   "ELDARIM_FIRE": {
-    "abilities": [],
+    "abilities": [
+      {
+        "description": "Dragonkin units up to the total health of Eldarim in their army ignore any restrictions that prevent them from rolling during a dragon attack.",
+        "name": "Resist Fear"
+      },
+      {
+        "description": "During the Species Abilities Phase, select an army that contains at least one Eldarim unit at a terrain. Move a small (1 health) Dragonkin unit from the Summoning Pool to the army, or promote one Dragonkin unit in the army. Moved or promoted units must match an element of the terrain. This ability may only be used if the total health-worth of Dragonkin after the exchange is not greater than the total healthworth of Eldarim in that army. ",
+        "name": "Dragonkin Handlers"
+      }
+    ],
     "description": "Single element - Fire (red)",
     "display_name": "Eldarim (Fire)",
     "element_colors": [
@@ -503,7 +539,16 @@
     "name": "Eldarim Fire"
   },
   "ELDARIM_WATER": {
-    "abilities": [],
+    "abilities": [
+      {
+        "description": "Dragonkin units up to the total health of Eldarim in their army ignore any restrictions that prevent them from rolling during a dragon attack.",
+        "name": "Resist Fear"
+      },
+      {
+        "description": "During the Species Abilities Phase, select an army that contains at least one Eldarim unit at a terrain. Move a small (1 health) Dragonkin unit from the Summoning Pool to the army, or promote one Dragonkin unit in the army. Moved or promoted units must match an element of the terrain. This ability may only be used if the total health-worth of Dragonkin after the exchange is not greater than the total healthworth of Eldarim in that army. ",
+        "name": "Dragonkin Handlers"
+      }
+    ],
     "description": "Single element - Water (green)",
     "display_name": "Eldarim (Water)",
     "element_colors": [

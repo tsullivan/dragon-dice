@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 from PySide6.QtCore import QObject, Signal
 
@@ -20,11 +20,13 @@ class ActionResolver(QObject):
         self,
         game_state_manager: GameStateManager,
         effect_manager: EffectManager,
+        minor_terrain_manager=None,
         parent: Optional[QObject] = None,
     ):
         super().__init__(parent)
         self.game_state_manager = game_state_manager
         self.effect_manager = effect_manager
+        self.minor_terrain_manager = minor_terrain_manager
 
         # Store context for determining target armies
         self._current_combat_location = None
@@ -38,16 +40,10 @@ class ActionResolver(QObject):
         defending_army_id: str,
     ):
         """Set the context for combat to determine specific armies being involved."""
-        if location is None:
-            raise ValueError("Combat location cannot be None")
         if not location:
             raise ValueError("Combat location is required (empty string provided)")
-        if attacking_army_id is None:
-            raise ValueError("Attacking army ID cannot be None")
         if not attacking_army_id:
             raise ValueError("Attacking army ID is required (empty string provided)")
-        if defending_army_id is None:
-            raise ValueError("Defending army ID cannot be None")
         if not defending_army_id:
             raise ValueError("Defending army ID is required (empty string provided)")
 
@@ -67,19 +63,21 @@ class ActionResolver(QObject):
         # If we have a combat location, find armies at that location
         if combat_location or self._current_combat_location:
             location = combat_location or self._current_combat_location
-            armies_at_location = self.game_state_manager.get_all_armies_at_location(defending_player_name, location)
+            armies_at_location = self.game_state_manager.get_all_armies_at_location(
+                defending_player_name, location or ""
+            )
 
             if len(armies_at_location) == 1:
                 # Only one army at location, that's the target
                 army_data = armies_at_location[0]
-                return army_data.get("unique_id", f"{defending_player_name}_{army_data['army_type']}")
+                return army_data.get("unique_id", f"{defending_player_name}_{army_data['army_type']}")  # type: ignore[no-any-return]
             if len(armies_at_location) > 1:
                 # Multiple armies - prioritize by type (home > campaign > horde)
                 priority_order = ["home", "campaign", "horde"]
                 for army_type in priority_order:
                     for army_data in armies_at_location:
                         if army_data["army_type"] == army_type:
-                            return army_data.get("unique_id", f"{defending_player_name}_{army_type}")
+                            return army_data.get("unique_id", f"{defending_player_name}_{army_type}")  # type: ignore[no-any-return]
 
         # Fallback to active army
         active_army_type = self.game_state_manager.get_active_army_type(defending_player_name)
@@ -197,12 +195,7 @@ class ActionResolver(QObject):
                 unit_id = unit.get("id", unit.get("name", "unknown"))  # Fallback to name if no id
                 if unit_id not in units_that_used_id:
                     # For now, use a default ID ability since we don't have die_faces data
-                    # This would normally come from unit definitions
-                    (
-                        self.game_state_manager.unit_roster.get_unit_definition(unit.get("unit_type", ""))
-                        if hasattr(self.game_state_manager, "unit_roster")
-                        else None
-                    )
+                    # This would normally come from unit definitions from the unit roster
 
                     # Default ID conversion (placeholder logic until die_faces are implemented)
                     default_id_melee = 1  # Most units convert 1 ID to 1 melee
@@ -335,6 +328,20 @@ class ActionResolver(QObject):
             if item.get("type") == "Save":
                 successful_saves += item.get("count", 0)
 
+        # Apply minor terrain effects to save results
+        if self.minor_terrain_manager:
+            defending_army_location = self.game_state_manager.get_army_location(defending_player_name)
+            if defending_army_location:
+                save_results = {"save_results": successful_saves, "id_results": converted_id_saves}
+                modified_results = self.apply_minor_terrain_effects(
+                    defending_player_name, defending_army_location, save_results, "SAVE"
+                )
+                successful_saves = modified_results.get("save_results", successful_saves)
+                # Also apply ID doubling effect if present
+                if "id_results" in modified_results and modified_results["id_results"] != converted_id_saves:
+                    id_bonus = modified_results["id_results"] - converted_id_saves
+                    successful_saves += id_bonus
+
         # --- Calculate final damage ---
         final_damage = max(0, attacker_hits - successful_saves)
         print(
@@ -344,7 +351,11 @@ class ActionResolver(QObject):
         # --- Apply Damage ---
         # Apply damage to the defending army using specific army identifier
         if final_damage > 0:
-            defending_army_id = self.determine_defending_army_identifier(defending_player_name)
+            if self._current_combat_location is None:
+                raise ValueError("Current combat location cannot be None")
+            defending_army_id = self.determine_defending_army_identifier(
+                defending_player_name, self._current_combat_location
+            )  # type: ignore[arg-type]
             self.game_state_manager.apply_damage_to_units(defending_player_name, defending_army_id, final_damage)
             print(f"ActionResolver: Applied {final_damage} damage to {defending_player_name}'s army")
 
@@ -389,7 +400,7 @@ class ActionResolver(QObject):
 
         print(f"ActionResolver: Parsing '{dice_string}' for roll type '{roll_type}'")
 
-        parsed_list = []
+        parsed_list: List[Dict[str, Any]] = []
         if not dice_string or not isinstance(dice_string, str):
             return parsed_list
 
@@ -529,12 +540,13 @@ class ActionResolver(QObject):
         delattr(self, "_pending_attacker_outcome")
         delattr(self, "_pending_defending_player")
 
-    def resolve_attacker_melee(self, dice_results_str: str) -> dict:
+    def resolve_attacker_melee(self, dice_results_str: str, attacking_player_name: str | None = None) -> dict:
         """
         Resolve attacker melee dice results and return outcome.
 
         Args:
             dice_results_str: String representation of dice results
+            attacking_player_name: Name of attacking player (for minor terrain effects)
 
         Returns:
             Dict with 'hits', 'damage', and other result information
@@ -544,11 +556,14 @@ class ActionResolver(QObject):
         hits = 0
         damage = 0
         effects = []
+        id_results = 0
 
         for die_result in parsed_dice:
             if die_result.get("type") == "Melee":
                 hits += die_result.get("count", 0)
                 damage += die_result.get("count", 0)  # Each melee hit does 1 damage
+            elif die_result.get("type") == "ID":
+                id_results += die_result.get("count", 0)
             elif die_result.get("type") == "SAI":
                 effects.append(
                     {
@@ -558,9 +573,47 @@ class ActionResolver(QObject):
                     }
                 )
 
+        # Apply terrain control and minor terrain effects to melee results
+        if attacking_player_name:
+            attacking_army_location = self.game_state_manager.get_army_location(attacking_player_name)
+            if attacking_army_location:
+                # Check for terrain control ID doubling
+                terrain_controller = self.game_state_manager.get_terrain_controller(attacking_army_location)
+                if terrain_controller == attacking_player_name and id_results > 0:
+                    original_id = id_results
+                    id_results = id_results * 2
+                    hits += id_results - original_id  # Add doubled ID results to melee hits
+                    effects.append(
+                        {
+                            "type": "terrain_control",
+                            "description": f"Terrain control: Doubled ID results ({original_id} -> {id_results})",
+                        }
+                    )
+
+                # Apply minor terrain effects
+                if self.minor_terrain_manager:
+                    melee_results = {"melee_results": hits, "id_results": id_results}
+                    modified_results = self.apply_minor_terrain_effects(
+                        attacking_player_name, attacking_army_location, melee_results, "MELEE"
+                    )
+                    hits = modified_results.get("melee_results", hits)
+                    # Also apply ID doubling effect if present
+                    if "id_results" in modified_results and modified_results["id_results"] != id_results:
+                        id_bonus = modified_results["id_results"] - id_results
+                        hits += id_bonus  # Add doubled ID results to melee hits
+
+                    # Add applied effects to return data
+                    if "minor_terrain_effects" in modified_results:
+                        effects.extend(
+                            [
+                                {"type": "minor_terrain", "description": effect}
+                                for effect in modified_results["minor_terrain_effects"]
+                            ]
+                        )
+
         return {
             "hits": hits,
-            "damage": damage,
+            "damage": hits,  # Update damage to reflect modified hits
             "effects": effects,
             "raw_results": parsed_dice,
         }
@@ -599,12 +652,13 @@ class ActionResolver(QObject):
             "raw_results": parsed_dice,
         }
 
-    def resolve_attacker_missile(self, dice_results_str: str) -> dict:
+    def resolve_attacker_missile(self, dice_results_str: str, attacking_player_name: str | None = None) -> dict:
         """
         Resolve attacker missile dice results and return outcome.
 
         Args:
             dice_results_str: String representation of dice results
+            attacking_player_name: Name of attacking player (for minor terrain effects)
 
         Returns:
             Dict with 'hits', 'damage', and other result information
@@ -614,11 +668,14 @@ class ActionResolver(QObject):
         hits = 0
         damage = 0
         effects = []
+        id_results = 0
 
         for die_result in parsed_dice:
             if die_result.get("type") == "Missile":
                 hits += die_result.get("count", 0)
                 damage += die_result.get("count", 0)  # Each missile hit does 1 damage
+            elif die_result.get("type") == "ID":
+                id_results += die_result.get("count", 0)
             elif die_result.get("type") == "SAI":
                 effects.append(
                     {
@@ -628,9 +685,47 @@ class ActionResolver(QObject):
                     }
                 )
 
+        # Apply terrain control and minor terrain effects to missile results
+        if attacking_player_name:
+            attacking_army_location = self.game_state_manager.get_army_location(attacking_player_name)
+            if attacking_army_location:
+                # Check for terrain control ID doubling
+                terrain_controller = self.game_state_manager.get_terrain_controller(attacking_army_location)
+                if terrain_controller == attacking_player_name and id_results > 0:
+                    original_id = id_results
+                    id_results = id_results * 2
+                    hits += id_results - original_id  # Add doubled ID results to missile hits
+                    effects.append(
+                        {
+                            "type": "terrain_control",
+                            "description": f"Terrain control: Doubled ID results ({original_id} -> {id_results})",
+                        }
+                    )
+
+                # Apply minor terrain effects
+                if self.minor_terrain_manager:
+                    missile_results = {"missile_results": hits, "id_results": id_results}
+                    modified_results = self.apply_minor_terrain_effects(
+                        attacking_player_name, attacking_army_location, missile_results, "MISSILE"
+                    )
+                    hits = modified_results.get("missile_results", hits)
+                    # Also apply ID doubling effect if present
+                    if "id_results" in modified_results and modified_results["id_results"] != id_results:
+                        id_bonus = modified_results["id_results"] - id_results
+                        hits += id_bonus  # Add doubled ID results to missile hits
+
+                    # Add applied effects to return data
+                    if "minor_terrain_effects" in modified_results:
+                        effects.extend(
+                            [
+                                {"type": "minor_terrain", "description": effect}
+                                for effect in modified_results["minor_terrain_effects"]
+                            ]
+                        )
+
         return {
             "hits": hits,
-            "damage": damage,
+            "damage": hits,  # Update damage to reflect modified hits
             "effects": effects,
             "raw_results": parsed_dice,
         }
@@ -655,7 +750,11 @@ class ActionResolver(QObject):
 
         # Apply missile damage directly (no saves)
         if missile_hits > 0:
-            defending_army_id = self.determine_defending_army_identifier(defending_player_name)
+            if self._current_combat_location is None:
+                raise ValueError("Current combat location cannot be None")
+            defending_army_id = self.determine_defending_army_identifier(
+                defending_player_name, self._current_combat_location
+            )  # type: ignore[arg-type]
             self.game_state_manager.apply_damage_to_units(defending_player_name, defending_army_id, missile_hits)
 
         self.action_resolved.emit(
@@ -706,10 +805,13 @@ class ActionResolver(QObject):
 
         maneuver_successes = 0
         maneuver_effects = []
+        id_results = 0
 
         for icon_data in parsed_maneuver_dice:
             if icon_data.get("type") == "Maneuver":
                 maneuver_successes += icon_data.get("count", 0)
+            elif icon_data.get("type") == "ID":
+                id_results += icon_data.get("count", 0)
             elif icon_data.get("type") == "SAI":
                 # SAIs from maneuver might have special movement effects
                 sai_type = icon_data.get("sai_type", "unknown")
@@ -717,6 +819,33 @@ class ActionResolver(QObject):
                 # Handle specific maneuver SAIs
                 if sai_type == "TELEPORT":  # Placeholder SAI
                     maneuver_effects.append("Teleport effect activated")
+
+        # Apply terrain control and minor terrain effects to maneuver results
+        maneuvering_army_location = self.game_state_manager.get_army_location(maneuvering_player_name)
+        if maneuvering_army_location:
+            # Check for terrain control ID doubling
+            terrain_controller = self.game_state_manager.get_terrain_controller(maneuvering_army_location)
+            if terrain_controller == maneuvering_player_name and id_results > 0:
+                original_id = id_results
+                id_results = id_results * 2
+                maneuver_successes += id_results - original_id  # Add doubled ID results to maneuver successes
+                maneuver_effects.append(f"Terrain control: Doubled ID results ({original_id} -> {id_results})")
+
+            # Apply minor terrain effects
+            if self.minor_terrain_manager:
+                maneuver_results = {"maneuver_results": maneuver_successes, "id_results": id_results}
+                modified_results = self.apply_minor_terrain_effects(
+                    maneuvering_player_name, maneuvering_army_location, maneuver_results, "MANEUVER"
+                )
+                maneuver_successes = modified_results.get("maneuver_results", maneuver_successes)
+                # Also apply ID doubling effect if present
+                if "id_results" in modified_results and modified_results["id_results"] != id_results:
+                    id_bonus = modified_results["id_results"] - id_results
+                    maneuver_successes += id_bonus  # Add doubled ID results to maneuver successes
+
+                # Add applied effects to return data
+                if "minor_terrain_effects" in modified_results:
+                    maneuver_effects.extend(modified_results["minor_terrain_effects"])
 
         # Apply maneuver results
         print(f"ActionResolver: Maneuver successes: {maneuver_successes}")
@@ -757,8 +886,12 @@ class ActionResolver(QObject):
 
         # Apply counter-attack damage directly
         if counter_hits > 0:
+            if self._current_combat_location is None:
+                raise ValueError("Current combat location cannot be None")
             # Counter-attack targets the original attacker's army
-            original_attacker_army_id = self.determine_attacking_army_identifier(original_attacker_name)
+            original_attacker_army_id = self.determine_attacking_army_identifier(
+                original_attacker_name, self._current_combat_location
+            )  # type: ignore[arg-type]
             self.game_state_manager.apply_damage_to_units(
                 original_attacker_name, original_attacker_army_id, counter_hits
             )
@@ -775,3 +908,121 @@ class ActionResolver(QObject):
         )
 
         self.next_action_step_determined.emit("")  # End action sequence
+
+    def apply_minor_terrain_effects(
+        self, player_name: str, army_location: str, roll_results: dict, roll_type: str
+    ) -> dict:
+        """Apply minor terrain effects to army roll results."""
+        if not self.minor_terrain_manager or not army_location:
+            return roll_results
+
+        # Get minor terrain effects for this player at this location
+        effects = self.minor_terrain_manager.get_minor_terrain_effects(army_location, player_name)
+
+        modified_results = roll_results.copy()
+        applied_effects = []
+
+        for effect in effects:
+            face_name = effect.get("face_name", "")
+            effect_type = effect.get("effect_type", "")
+            minor_terrain_name = effect.get("minor_terrain_name", "")
+
+            # Apply enhancement effects
+            if effect_type == "enhancement":
+                if face_name == "Double Saves" and roll_type in ["SAVE", "DEFENSIVE"]:
+                    # Double ID results for saves
+                    if "id_results" in modified_results:
+                        original_id = modified_results["id_results"]
+                        modified_results["id_results"] = original_id * 2
+                        applied_effects.append(
+                            f"{minor_terrain_name}: Doubled save ID results ({original_id} -> {modified_results['id_results']})"
+                        )
+
+                elif face_name == "Double Maneuvers" and roll_type in ["MANEUVER", "MOVEMENT"]:
+                    # Double ID results for maneuvers
+                    if "id_results" in modified_results:
+                        original_id = modified_results["id_results"]
+                        modified_results["id_results"] = original_id * 2
+                        applied_effects.append(
+                            f"{minor_terrain_name}: Doubled maneuver ID results ({original_id} -> {modified_results['id_results']})"
+                        )
+
+            # Apply negative effects (halving)
+            elif effect_type == "negative":
+                if face_name == "Flood" and roll_type in ["MANEUVER", "MOVEMENT"]:
+                    # Halve maneuver results
+                    if "maneuver_results" in modified_results:
+                        original_maneuver = modified_results["maneuver_results"]
+                        modified_results["maneuver_results"] = max(0, original_maneuver // 2)
+                        applied_effects.append(
+                            f"{minor_terrain_name}: Halved maneuver results ({original_maneuver} -> {modified_results['maneuver_results']})"
+                        )
+
+                elif face_name == "Flanked" and roll_type in ["SAVE", "DEFENSIVE"]:
+                    # Halve save results
+                    if "save_results" in modified_results:
+                        original_save = modified_results["save_results"]
+                        modified_results["save_results"] = max(0, original_save // 2)
+                        applied_effects.append(
+                            f"{minor_terrain_name}: Halved save results ({original_save} -> {modified_results['save_results']})"
+                        )
+
+                elif face_name == "Landslide" and roll_type in ["MISSILE", "RANGED"]:
+                    # Halve missile results
+                    if "missile_results" in modified_results:
+                        original_missile = modified_results["missile_results"]
+                        modified_results["missile_results"] = max(0, original_missile // 2)
+                        applied_effects.append(
+                            f"{minor_terrain_name}: Halved missile results ({original_missile} -> {modified_results['missile_results']})"
+                        )
+
+                elif face_name == "Revolt" and roll_type in ["MELEE", "COMBAT"]:
+                    # Halve melee results
+                    if "melee_results" in modified_results:
+                        original_melee = modified_results["melee_results"]
+                        modified_results["melee_results"] = max(0, original_melee // 2)
+                        applied_effects.append(
+                            f"{minor_terrain_name}: Halved melee results ({original_melee} -> {modified_results['melee_results']})"
+                        )
+
+        if applied_effects:
+            modified_results["minor_terrain_effects"] = applied_effects
+            print(f"ActionResolver: Applied minor terrain effects to {player_name}: {applied_effects}")
+
+        return modified_results
+
+    def get_available_minor_terrain_actions(self, player_name: str, army_location: str) -> list:
+        """Get available actions from minor terrains controlled by player at location."""
+        if not self.minor_terrain_manager or not army_location:
+            return []
+
+        effects = self.minor_terrain_manager.get_minor_terrain_effects(army_location, player_name)
+        available_actions = []
+
+        for effect in effects:
+            face_name = effect.get("face_name", "")
+            effect_type = effect.get("effect_type", "")
+            minor_terrain_name = effect.get("minor_terrain_name", "")
+
+            if effect_type == "action":
+                action_data = {
+                    "action_type": face_name.lower(),  # "magic", "melee", "missile"
+                    "source": f"Minor Terrain: {minor_terrain_name}",
+                    "description": effect.get("face_description", ""),
+                    "allows_terrain_action": True,
+                }
+                available_actions.append(action_data)
+
+            elif effect_type == "choice" and face_name == "ID":
+                # ID face allows choosing any action
+                for action_type in ["magic", "melee", "missile"]:
+                    action_data = {
+                        "action_type": action_type,
+                        "source": f"Minor Terrain ID: {minor_terrain_name}",
+                        "description": f"Choose {action_type} action from minor terrain ID face",
+                        "allows_terrain_action": True,
+                        "requires_choice": True,
+                    }
+                    available_actions.append(action_data)
+
+        return available_actions

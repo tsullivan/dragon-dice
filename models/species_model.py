@@ -41,8 +41,8 @@ class SpeciesModel:
         display_name: str,
         elements: List[str],
         element_colors: List[Tuple[str, str]],
-        description: str = "",
-        abilities: Optional[List[SpeciesAbility]] = None,
+        description: str,
+        abilities: Optional[List[SpeciesAbility]] = None,  # Dragonkin do not have their own Species Abilities
     ):
         self.name = name
         self.display_name = display_name
@@ -314,6 +314,17 @@ SPECIES_DATA = {
     ),
 }
 
+ELDARIIM_ABILITIES = [
+    SpeciesAbility(
+        name="Resist Fear",
+        description="Dragonkin units up to the total health of Eldarim in their army ignore any restrictions that prevent them from rolling during a dragon attack.",
+    ),
+    SpeciesAbility(
+        name="Dragonkin Handlers",
+        description="During the Species Abilities Phase, select an army that contains at least one Eldarim unit at a terrain. Move a small (1 health) Dragonkin unit from the Summoning Pool to the army, or promote one Dragonkin unit in the army. Moved or promoted units must match an element of the terrain. This ability may only be used if the total health-worth of Dragonkin after the exchange is not greater than the total healthworth of Eldarim in that army. ",
+    ),
+]
+
 # Single-element Eldarim subspecies
 ELDARIM_SUBSPECIES = {
     "ELDARIM_AIR": SpeciesModel(
@@ -322,6 +333,7 @@ ELDARIM_SUBSPECIES = {
         elements=["AIR"],
         element_colors=[_get_element_tuple("AIR")],
         description="Single element - Air (blue)",
+        abilities=ELDARIIM_ABILITIES,
     ),
     "ELDARIM_DEATH": SpeciesModel(
         name="Eldarim Death",
@@ -329,6 +341,7 @@ ELDARIM_SUBSPECIES = {
         elements=["DEATH"],
         element_colors=[_get_element_tuple("DEATH")],
         description="Single element - Death (black)",
+        abilities=ELDARIIM_ABILITIES,
     ),
     "ELDARIM_EARTH": SpeciesModel(
         name="Eldarim Earth",
@@ -336,6 +349,7 @@ ELDARIM_SUBSPECIES = {
         elements=["EARTH"],
         element_colors=[_get_element_tuple("EARTH")],
         description="Single element - Earth (yellow)",
+        abilities=ELDARIIM_ABILITIES,
     ),
     "ELDARIM_FIRE": SpeciesModel(
         name="Eldarim Fire",
@@ -343,6 +357,7 @@ ELDARIM_SUBSPECIES = {
         elements=["FIRE"],
         element_colors=[_get_element_tuple("FIRE")],
         description="Single element - Fire (red)",
+        abilities=ELDARIIM_ABILITIES,
     ),
     "ELDARIM_WATER": SpeciesModel(
         name="Eldarim Water",
@@ -350,6 +365,7 @@ ELDARIM_SUBSPECIES = {
         elements=["WATER"],
         element_colors=[_get_element_tuple("WATER")],
         description="Single element - Water (green)",
+        abilities=ELDARIIM_ABILITIES,
     ),
 }
 

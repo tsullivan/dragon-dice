@@ -138,7 +138,7 @@ class UnitDamageWidget(QWidget):
 
     def get_remaining_health(self) -> int:
         """Get the unit's remaining health after damage."""
-        return self.current_health
+        return self.current_health  # type: ignore[no-any-return]
 
     def set_damage(self, damage: int):
         """Set damage amount programmatically."""
@@ -462,7 +462,7 @@ class MultiArmyDamageDialog(QDialog):
         self.allow_saves = allow_saves
 
         # Track individual damage dialogs
-        self.damage_results = []
+        self.damage_results: List[Dict[str, Any]] = []
         self.current_army_index = 0
 
         self.setWindowTitle("💥 Multi-Army Damage Allocation")

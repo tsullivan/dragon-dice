@@ -15,7 +15,9 @@ sys.path.insert(0, str(project_root))
 
 
 def test_unit_sorting():
-    unit_roster = UnitRosterModel()
+    from models.app_data_model import AppDataModel
+    app_data_model = AppDataModel()
+    unit_roster = UnitRosterModel(app_data_model)
     units_by_species = unit_roster.get_available_unit_types_by_species()
 
     # Create a dialog instance to test the sorting method

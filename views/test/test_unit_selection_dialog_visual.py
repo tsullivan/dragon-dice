@@ -10,7 +10,9 @@ from views.unit_selection_dialog import UnitSelectionDialog
 @pytest.fixture
 def unit_roster():
     """Provides a UnitRosterModel instance."""
-    return UnitRosterModel()
+    from models.app_data_model import AppDataModel
+    app_data_model = AppDataModel()
+    return UnitRosterModel(app_data_model)
 
 
 def test_unit_selection_dialog_empty(qtbot, unit_roster):

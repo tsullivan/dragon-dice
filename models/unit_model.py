@@ -6,122 +6,6 @@ if TYPE_CHECKING:
     from models.species_model import SpeciesModel
 
 
-class UnitFace:
-    """Represents a single face on a unit die."""
-
-    # Face emoji and color mappings for display
-    _FACE_INFO_MAP = {
-        # Basic combat faces
-        "Melee": {"emoji": "⚔️", "color": "#ffeeee"},  # Sword
-        "Missile": {"emoji": "🏹", "color": "#eeeeff"},  # Bow and arrow
-        "Magic": {"emoji": "✨", "color": "#ffffee"},  # Sparkles
-        "Save": {"emoji": "🛡️", "color": "#eeffee"},  # Shield
-        "ID": {"emoji": "🆔", "color": "#f0f0f0"},  # ID symbol
-        "ID(kin)": {"emoji": "🆔", "color": "#f0f0f0"},  # ID symbol for dragonkin
-        "Move": {"emoji": "👟", "color": "#fff0ee"},  # Running shoe
-        # Dragon faces
-        "Jaws": {"emoji": "🐉", "color": "#ffe0e0"},  # Dragon
-        "Claw": {"emoji": "🦅", "color": "#e0e0ff"},  # Eagle (claws)
-        "Belly": {"emoji": "🎯", "color": "#e0ffe0"},  # Target (vulnerable)
-        "Tail": {"emoji": "🌪️", "color": "#ffffe0"},  # Tornado (tail whip)
-        "Treasure": {"emoji": "💎", "color": "#ffe0ff"},  # Gem
-        # Special combat abilities
-        "Kick": {"emoji": "🦵", "color": "#ffeedd"},  # Leg (kick)
-        "Trample": {"emoji": "🐘", "color": "#ddffdd"},  # Elephant (trample)
-        "Trample2": {"emoji": "🐘", "color": "#ddffdd"},  # Elephant (trample)
-        "Charge": {"emoji": "🏇", "color": "#fff0f0"},  # Horse racing (charge)
-        "Gore": {"emoji": "🐂", "color": "#ffdddd"},  # Bull (gore)
-        "Stomp": {"emoji": "🦶", "color": "#ffeecc"},  # Foot (stomp)
-        "Bash": {"emoji": "🔨", "color": "#eeddff"},  # Hammer (bash)
-        "Rend": {"emoji": "💥", "color": "#ffdddd"},  # Explosion (rend)
-        "Smite": {"emoji": "⚡", "color": "#ffffdd"},  # Lightning (smite)
-        # Ranged abilities
-        "Bullseye": {"emoji": "🎯", "color": "#ddddff"},  # Target
-        "Volley": {"emoji": "🏹", "color": "#ddffdd"},  # Multiple arrows
-        "Net": {"emoji": "🕸️", "color": "#eeeeee"},  # Web/net
-        # Magic abilities
-        "Flame": {"emoji": "🔥", "color": "#ffdddd"},  # Fire
-        "Firebreath": {"emoji": "🔥", "color": "#ffdddd"},  # Fire
-        "Teleport": {"emoji": "🌀", "color": "#ddffff"},  # Swirl (teleport)
-        "Fly": {"emoji": "🪶", "color": "#f0f0ff"},  # Feather (fly)
-        "Fly2": {"emoji": "🪶", "color": "#f0f0ff"},  # Feather (fly)
-        "Poison": {"emoji": "☠️", "color": "#ddffdd"},  # Skull (poison)
-        "Sleep": {"emoji": "😴", "color": "#f0f0ff"},  # Sleeping face
-        "Charm": {"emoji": "💫", "color": "#fff0ff"},  # Dizzy (charm)
-        "Confuse": {"emoji": "😵", "color": "#fff0f0"},  # Confused face
-        "Stun": {"emoji": "💫", "color": "#ffffdd"},  # Dizzy (stun)
-        "Stone": {"emoji": "🗿", "color": "#dddddd"},  # Stone statue
-        "Vanish": {"emoji": "👻", "color": "#f5f5f5"},  # Ghost (vanish)
-        "Illusion": {"emoji": "🎭", "color": "#fff0ff"},  # Theater masks
-        # Healing/support
-        "Regenerate": {"emoji": "💚", "color": "#f0fff0"},  # Green heart (heal)
-        "Convert": {"emoji": "🔄", "color": "#fff0f0"},  # Arrows (convert)
-        "Rise From Ashes": {"emoji": "🔥", "color": "#ffddcc"},  # Phoenix rising
-        "Flaming Shield": {"emoji": "🔥", "color": "#ffeecc"},  # Fire shield
-        # Animal abilities
-        "Paw": {"emoji": "🐾", "color": "#fff0ee"},  # Paw prints
-        "Hoof": {"emoji": "🐴", "color": "#fff0ee"},  # Horse (hoof)
-        "Roar": {"emoji": "🦁", "color": "#ffee00"},  # Lion (roar)
-        "Roar2": {"emoji": "🦁", "color": "#ffee00"},  # Lion (roar)
-        "Screech": {"emoji": "🦅", "color": "#eeeeff"},  # Eagle (screech)
-        "Hug": {"emoji": "🤗", "color": "#fff0f0"},  # Hugging face
-        "Scare": {"emoji": "😱", "color": "#ffeeee"},  # Scared face
-        "Swallow": {"emoji": "🐍", "color": "#eeffee"},  # Snake (swallow)
-        # Special dragon abilities
-        "SFR (Dragonhunter)": {"emoji": "🗡️", "color": "#ffeeee"},  # Sword
-        "SFR (Dragonzealot)": {"emoji": "⚔️", "color": "#ffeeee"},  # Crossed swords
-        "TSR (Dragonmaster)": {"emoji": "🔮", "color": "#eeeeff"},  # Crystal ball
-        # Dragonkin-specific abilities
-        "SFR (Dragonkin Champion)": {"emoji": "🗡️", "color": "#ffeeee"},  # Sword (similar to Dragonhunter)
-        "Dragonkin Breath (Champion)": {"emoji": "🐉", "color": "#ffe0e0"},  # Dragon breath
-        "Dragonkin Breath (rare)": {"emoji": "🐉", "color": "#ffe0e0"},  # Dragon breath
-        "Counter": {"emoji": "🔄", "color": "#fff0f0"},  # Counter-attack
-        # Capture abilities
-        "Seize": {"emoji": "🤗", "color": "#fff0f0"},  # Hugging face (capturing)
-    }
-
-    def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
-
-    def __str__(self) -> str:
-        return self.name
-
-    def __repr__(self) -> str:
-        return f"UnitFace(name='{self.name}')"
-
-    def get_emoji(self) -> str:
-        """Get the emoji icon for this face type."""
-        face_info = self._FACE_INFO_MAP.get(self.name, {"emoji": "❓"})
-        return face_info["emoji"]
-
-    def get_background_color(self) -> str:
-        """Get the background color for this face type."""
-        face_info = self._FACE_INFO_MAP.get(self.name, {"color": "#f0f0f0"})
-        return face_info["color"]
-
-    def get_display_text(self) -> str:
-        """Get the display text with emoji and face name."""
-        emoji = self.get_emoji()
-        return f"{emoji}\n{self.name}"
-
-    def get_tooltip(self) -> str:
-        """Get the tooltip text with face name and description."""
-        return f"{self.name}: {self.description}"
-
-    def get_display_info(self) -> Tuple[str, str, str]:
-        """Get display information for this face.
-
-        Returns:
-            tuple: (display_text, background_color, tooltip)
-        """
-        return (
-            self.get_display_text(),
-            self.get_background_color(),
-            self.get_tooltip(),
-        )
-
-
 class UnitModel:
     def __init__(
         self,
@@ -198,6 +82,15 @@ class UnitModel:
         """Get the die face names for this unit (compatibility property)."""
         return self.get_face_names()
 
+    def get_id(self) -> str:
+        """Get the unit ID."""
+        return self.unit_id
+
+    @property
+    def elements(self) -> List[str]:
+        """Get the elements from the unit's species."""
+        return self.species.elements if self.species else []
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "UnitModel":
         from models.die_face_model import DieFaceModel
@@ -216,6 +109,7 @@ class UnitModel:
                 display_name="Unknown Species",
                 elements=[],
                 element_colors=[],
+                description="Unknown species with no defined abilities or characteristics.",
             )
 
         # Handle faces data
