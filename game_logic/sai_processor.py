@@ -8,6 +8,8 @@ including cantrips, combat modifications, and other special effects.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
+from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+
 
 @dataclass
 class SAIResult:
@@ -324,8 +326,8 @@ class SAIProcessor:
         # This is a simplified implementation
         # In reality, each unit would have specific SAI effects defined
 
-        unit_name = unit_data.get("name", "Unknown")
-        species = unit_data.get("species", "Unknown")
+        unit_name = strict_get(unit_data, "name", "Unit")
+        species = strict_get(unit_data, "species", "Unit")
 
         # Generic SAI effects (simplified)
         if combat_type == "melee" and is_attacker:
@@ -438,7 +440,7 @@ class SAIProcessor:
             if not unit_data:
                 continue
 
-            species = unit_data.get("species", "")
+            species = strict_get_optional(unit_data, "species", "")
 
             # Dwarven Might: Count save results as melee results when counter-attacking at fire terrain
             if (
@@ -936,8 +938,8 @@ class SAIProcessor:
     def _determine_die_type(self, unit_data: Dict[str, Any]) -> str:
         """Determine the die type from unit data."""
         # Check unit type to determine die type
-        unit_type = unit_data.get("unit_type", "").lower()
-        size = unit_data.get("size", "").lower()
+        unit_type = strict_get_optional(unit_data, "unit_type", "").lower()
+        size = strict_get_optional(unit_data, "size", "").lower()
 
         # Check for specific die types based on unit classification
         if "monster" in unit_type:
@@ -982,7 +984,7 @@ class SAIProcessor:
         is_attacker: bool,
     ):
         """Generate modifiers from SAI effects using the comprehensive SAI registry."""
-        unit_name = unit_data.get("name", "Unknown")
+        unit_name = strict_get(unit_data, "name", "Unit")
 
         # Process each SAI face rolled
         for sai_face in sai_faces_rolled:
@@ -1011,10 +1013,10 @@ class SAIProcessor:
         is_attacker: bool,
     ):
         """Apply a specific SAI effect based on the rules registry."""
-        unit_name = unit_data.get("name", "Unknown")
+        unit_name = strict_get(unit_data, "name", "Unit")
 
         # Check if this SAI applies to the current roll type
-        applies_to = sai_info.get("applies", [])
+        applies_to = strict_get_optional(sai_info, "applies", [])
         current_roll_type = self._normalize_roll_type(combat_type, is_attacker)
 
         if not ("any" in applies_to or current_roll_type in applies_to):
@@ -1723,7 +1725,7 @@ class SAIProcessor:
             if not unit_data:
                 continue
 
-            species = unit_data.get("species", "")
+            species = strict_get_optional(unit_data, "species", "")
 
             # Dwarven Might: saves count as melee at fire terrain during counter-attack
             if species == "Dwarves" and combat_type == "melee" and not is_attacker and "fire" in terrain_elements:
@@ -1771,7 +1773,7 @@ class SAIProcessor:
         terrain_elements: List[str],
     ):
         """Add remaining species abilities as counts-as modifiers."""
-        unit_name = unit_data.get("name", "Unknown")
+        unit_name = strict_get(unit_data, "name", "Unit")
         species = unit_data.get("species", "")
 
         # Mountain Master: melee counts as maneuver at earth terrain

@@ -2,6 +2,7 @@
 from typing import Any, Dict, List, Optional, Tuple
 
 from models.element_model import ELEMENT_DATA
+from utils.field_access import strict_get, strict_get_optional
 
 
 class SpeciesAbility:
@@ -23,8 +24,8 @@ class SpeciesAbility:
     @classmethod
     def from_dict(cls, data: Dict[str, str]) -> "SpeciesAbility":
         return cls(
-            name=data.get("name", ""),
-            description=data.get("description", ""),
+            name=strict_get(data, "name", "SpeciesAbility"),
+            description=strict_get(data, "description", "SpeciesAbility"),
         )
 
 
@@ -90,14 +91,14 @@ class SpeciesModel:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SpeciesModel":
-        abilities_data = data.get("abilities", [])
+        abilities_data = strict_get_optional(data, "abilities", [])
         abilities = [SpeciesAbility.from_dict(ability_dict) for ability_dict in abilities_data]
         return cls(
-            name=data.get("name", ""),
-            display_name=data.get("display_name", ""),
-            elements=data.get("elements", []),
-            element_colors=data.get("element_colors", []),
-            description=data.get("description", ""),
+            name=strict_get(data, "name", "SpeciesModel"),
+            display_name=strict_get_optional(data, "display_name", ""),
+            elements=strict_get(data, "elements", "SpeciesModel"),
+            element_colors=strict_get_optional(data, "element_colors", []),
+            description=strict_get(data, "description", "SpeciesModel"),
             abilities=abilities,
         )
 

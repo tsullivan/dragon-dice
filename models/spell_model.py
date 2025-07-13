@@ -2,6 +2,7 @@
 from typing import Any, Dict, List, Optional
 
 from models.element_model import ELEMENT_DATA
+from utils.field_access import strict_get, strict_get_optional
 
 
 class SpellModel:
@@ -58,13 +59,13 @@ class SpellModel:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SpellModel":
         return cls(
-            name=data.get("name", ""),
-            species=data.get("species", "Any"),
-            cost=data.get("cost", 1),
-            reserves=data.get("reserves", False),
-            cantrip=data.get("cantrip", False),
-            effect=data.get("effect", ""),
-            element=data.get("element"),
+            name=strict_get(data, "name", "SpellModel"),
+            species=strict_get_optional(data, "species", "Any"),
+            cost=strict_get(data, "cost", "SpellModel"),
+            reserves=strict_get_optional(data, "reserves", False),
+            cantrip=strict_get_optional(data, "cantrip", False),
+            effect=strict_get(data, "effect", "SpellModel"),
+            element=strict_get(data, "element", "SpellModel"),
         )
 
 

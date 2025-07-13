@@ -1,6 +1,8 @@
 # models/die_face_model.py
 from typing import Any, Dict, List, Optional, Tuple
 
+from utils.field_access import strict_get, strict_get_optional
+
 FACE_TYPE_SPECIAL = "SAI"
 
 
@@ -264,11 +266,11 @@ class DieFaceModel:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "DieFaceModel":
         return cls(
-            name=data.get("name", ""),
-            display_name=data.get("display_name"),
-            description=data.get("description", ""),
-            face_type=data.get("face_type", FACE_TYPE_SPECIAL),
-            base_value=data.get("base_value", 0),
+            name=strict_get(data, "name", "DieFaceModel"),
+            display_name=strict_get_optional(data, "display_name"),
+            description=strict_get(data, "description", "DieFaceModel"),
+            face_type=strict_get(data, "face_type", "DieFaceModel"),
+            base_value=strict_get(data, "base_value", "DieFaceModel"),
         )
 
 

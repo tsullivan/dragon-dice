@@ -5,6 +5,7 @@ from PySide6.QtCore import QObject, Signal
 # For type hinting and potential reconstruction
 # For type hinting and potential reconstruction
 from models.unit_model import UnitModel
+from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
 
 
 # Custom exceptions for game state management
@@ -712,7 +713,7 @@ class GameStateManager(QObject):
 
             # If no specific army specified, use active army
             if army_id is None:
-                army_id = player_data.get("active_army_type", "home")
+                army_id = strict_get_optional(player_data, "active_army_type", "home")
 
             army_data = player_data.get("armies", {}).get(army_id)
             if army_data:
@@ -837,7 +838,7 @@ class GameStateManager(QObject):
 
         print(
             f"GameStateManager: Applying {damage_amount} damage to {player_name}'s {
-                army.get('name', target_army_key)
+                strict_get_optional(army, 'name', target_army_key)
             } army."
         )
 
@@ -967,25 +968,25 @@ class GameStateManager(QObject):
             if current_location:
                 return self.determine_active_army_by_location(player_name, current_location)
             # Otherwise, use current active army
-            return str(player_data.get("active_army_type", "home"))
+            return str(strict_get_optional(player_data, "active_army_type", "home"))
 
         if current_phase == "DRAGON_ATTACK":
             # Dragons can attack any army, but usually home terrain
-            home_terrain = player_data.get("home_terrain_name")
+            home_terrain = strict_get_optional(player_data, "home_terrain_name")
             if home_terrain:
                 return self.determine_active_army_by_location(player_name, home_terrain)
 
         elif current_phase == "RESERVES":
             # Reserve phase can involve any army
-            return str(player_data.get("active_army_type", "home"))
+            return str(strict_get_optional(player_data, "active_army_type", "home"))
 
         # Default to current active army or home
-        return str(player_data.get("active_army_type", "home"))
+        return str(strict_get_optional(player_data, "active_army_type", "home"))
 
     def get_active_army_type(self, player_name: str) -> str:
         """Get the currently active army type for a player."""
         player_data = self.get_player_data(player_name)
-        return str(player_data.get("active_army_type", "home"))
+        return str(strict_get_optional(player_data, "active_army_type", "home"))
 
     def get_active_army_data(self, player_name: str) -> Dict[str, Any]:
         """Get the data for the currently active army."""

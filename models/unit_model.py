@@ -1,6 +1,8 @@
 # models/unit_model.py
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
 
+from utils.field_access import strict_get, strict_get_optional
+
 if TYPE_CHECKING:
     from models.die_face_model import DieFaceModel
     from models.species_model import SpeciesModel
@@ -113,7 +115,7 @@ class UnitModel:
             )
 
         # Handle faces data
-        faces_data = data.get("faces", [])
+        faces_data = strict_get_optional(data, "faces", [])
         faces = []
         for face_data in faces_data:
             if isinstance(face_data, dict):
@@ -122,11 +124,11 @@ class UnitModel:
                 faces.append(face_data)  # Assume it's already a DieFaceModel instance
 
         return cls(
-            unit_id=data.get("unit_id", "unknown_id"),
-            name=data.get("name", "Unknown Unit"),
-            unit_type=data.get("unit_type", "unknown_type"),
-            health=data.get("health", 0),
-            max_health=data.get("max_health", 0),
+            unit_id=strict_get(data, "unit_id", "UnitModel"),
+            name=strict_get(data, "name", "UnitModel"),
+            unit_type=strict_get(data, "unit_type", "UnitModel"),
+            health=strict_get(data, "health", "UnitModel"),
+            max_health=strict_get(data, "max_health", "UnitModel"),
             species=species,
             faces=faces,
         )

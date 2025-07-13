@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
+from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+
 
 class DragonTargetType(Enum):
     """Types of targets a dragon can attack."""
@@ -328,7 +330,7 @@ class DragonAttackManager(QObject):
                 continue  # Don't attack self
 
             target_type = self._get_dragon_type(potential_target)
-            targeting_rule = self.targeting_matrix[dragon_type].get(target_type, "Will not attack")
+            targeting_rule = strict_get_optional(self.targeting_matrix[dragon_type], target_type, "Will not attack")
 
             if self._will_attack_dragon(attacking_dragon, potential_target, targeting_rule):
                 return DragonAttackTarget(
@@ -402,8 +404,8 @@ class DragonAttackManager(QObject):
     ) -> DragonAttackResult:
         """Execute a single dragon's attack following the 7-step process."""
 
-        dragon_id = dragon_data.get("dragon_id", "unknown")
-        dragon_owner = dragon_data.get("owner", "unknown")
+        dragon_id = strict_get_optional(dragon_data, "dragon_id", "unknown")
+        dragon_owner = strict_get_optional(dragon_data, "owner", "unknown")
 
         print(f"DragonAttackManager: Executing attack by dragon {dragon_id} on {target.target_type.value}")
 
@@ -511,4 +513,4 @@ class DragonAttackManager(QObject):
             return self.breath_effects["White"]
         # Use the first element for breath effect
         primary_element = elements[0].title()
-        return self.breath_effects.get(primary_element, self.breath_effects["Ivory"])
+        return strict_get_optional(self.breath_effects, primary_element, self.breath_effects["Ivory"])

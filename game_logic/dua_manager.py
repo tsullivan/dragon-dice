@@ -15,6 +15,8 @@ from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
+from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+
 
 class DUAState(Enum):
     """Possible states for units in the DUA."""
@@ -75,13 +77,13 @@ class DUAUnit:
             health=data["health"],
             elements=data["elements"],
             original_owner=data["original_owner"],
-            unit_id=data.get("unit_id", ""),
-            unit_data=data.get("unit_data", {}),
-            state=DUAState(data.get("state", "dead")),
-            death_cause=data.get("death_cause", "combat"),
-            death_location=data.get("death_location", ""),
-            death_turn=data.get("death_turn", 0),
-            burial_conditions=data.get("burial_conditions", []),
+            unit_id=strict_get_optional(data, "unit_id", ""),
+            unit_data=strict_get_optional(data, "unit_data", {}),
+            state=DUAState(strict_get_optional(data, "state", "dead")),
+            death_cause=strict_get_optional(data, "death_cause", "combat"),
+            death_location=strict_get_optional(data, "death_location", ""),
+            death_turn=strict_get_optional(data, "death_turn", 0),
+            burial_conditions=strict_get_optional(data, "burial_conditions", []),
         )
 
 
@@ -127,12 +129,12 @@ class DUAManager(QObject):
 
         # Create DUA unit
         dua_unit = DUAUnit(
-            name=unit_data.get("name", "Unknown Unit"),
-            species=unit_data.get("species", "Unknown"),
-            health=unit_data.get("health", 1),
-            elements=unit_data.get("elements", []),
+            name=strict_get(unit_data, "name", "Unit"),
+            species=strict_get(unit_data, "species", "Unit"),
+            health=strict_get(unit_data, "health", "Unit"),
+            elements=strict_get(unit_data, "elements", "Unit"),
             original_owner=owner,
-            unit_id=unit_data.get("unit_id", ""),
+            unit_id=strict_get_optional(unit_data, "unit_id", ""),
             unit_data=unit_data.copy(),  # Store the full unit data
             death_cause=death_cause,
             death_location=death_location,

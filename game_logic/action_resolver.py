@@ -3,6 +3,7 @@ from typing import Optional, List, Dict, Any
 from PySide6.QtCore import QObject, Signal
 
 from .effect_manager import EffectManager
+from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
 
 # Forward declaration for type hinting if GameStateManager and EffectManager are in different files
 # and create circular dependencies. Or import them directly if no circular dependency.
@@ -70,14 +71,15 @@ class ActionResolver(QObject):
             if len(armies_at_location) == 1:
                 # Only one army at location, that's the target
                 army_data = armies_at_location[0]
-                return army_data.get("unique_id", f"{defending_player_name}_{army_data['army_type']}")  # type: ignore[no-any-return]
+                army_type = strict_get(army_data, "army_type", "Army")
+                return strict_get_optional(army_data, "unique_id", f"{defending_player_name}_{army_type}")  # type: ignore[no-any-return]
             if len(armies_at_location) > 1:
                 # Multiple armies - prioritize by type (home > campaign > horde)
                 priority_order = ["home", "campaign", "horde"]
                 for army_type in priority_order:
                     for army_data in armies_at_location:
                         if army_data["army_type"] == army_type:
-                            return army_data.get("unique_id", f"{defending_player_name}_{army_type}")  # type: ignore[no-any-return]
+                            return strict_get_optional(army_data, "unique_id", f"{defending_player_name}_{army_type}")  # type: ignore[no-any-return]
 
         # Fallback to active army
         active_army_type = self.game_state_manager.get_active_army_type(defending_player_name)
@@ -167,7 +169,7 @@ class ActionResolver(QObject):
             # self.next_action_step_determined.emit("SELECT_ACTION") # Or some error state
             return {"hits": 0, "sais_for_defender": []}  # Early exit
 
-        print(f"ActionResolver: Attacking units: {[unit.get('name') for unit in attacking_units]}")
+        print(f"ActionResolver: Attacking units: {[strict_get(unit, 'name', 'Unit') for unit in attacking_units]}")
 
         calculated_results = {
             "hits": 0,
@@ -181,10 +183,10 @@ class ActionResolver(QObject):
 
         id_icons_to_convert = 0
         for icon_data in remaining_icons:  # Iterate over the copy
-            if icon_data.get("type") == "ID":
-                id_icons_to_convert += icon_data.get("count", 0)
-            elif icon_data.get("type") == "Melee":
-                calculated_results["hits"] += icon_data.get("count", 0)
+            if strict_get(icon_data, "type", "IconData") == "ID":
+                id_icons_to_convert += strict_get(icon_data, "count", "IconData")
+            elif strict_get(icon_data, "type", "IconData") == "Melee":
+                calculated_results["hits"] += strict_get(icon_data, "count", "IconData")
             # TODO: Handle SAIs that modify attacker's roll (e.g., Doubler) here or in a dedicated step
 
         # Convert ID icons based on unit abilities
@@ -192,7 +194,7 @@ class ActionResolver(QObject):
         units_that_used_id = set()  # To ensure a unit's ID is used only once per roll
         for _ in range(id_icons_to_convert):
             for unit in attacking_units:
-                unit_id = unit.get("id", unit.get("name", "unknown"))  # Fallback to name if no id
+                unit_id = strict_get_with_fallback(unit, "id", "name", "Unit")
                 if unit_id not in units_that_used_id:
                     # For now, use a default ID ability since we don't have die_faces data
                     # This would normally come from unit definitions from the unit roster
@@ -201,7 +203,7 @@ class ActionResolver(QObject):
                     default_id_melee = 1  # Most units convert 1 ID to 1 melee
                     converted_id_hits += default_id_melee
                     units_that_used_id.add(unit_id)
-                    print(f"ActionResolver: Unit {unit.get('name', 'Unknown')} used ID for {default_id_melee} melee.")
+                    print(f"ActionResolver: Unit {strict_get(unit, 'name', 'Unit')} used ID for {default_id_melee} melee.")
                     break  # Move to the next ID icon to be converted
         calculated_results["hits"] += converted_id_hits
 
@@ -209,7 +211,7 @@ class ActionResolver(QObject):
         # TODO: 4. Apply SAIs from parsed_dice_results that modify the attacker's roll (e.g., Doubler). (This was TODO #3 before ID conversion)
         # Example:
         for icon_data in remaining_icons:
-            if icon_data.get("type") == "SAI" and icon_data.get("name") == "Doubler":
+            if strict_get(icon_data, "type", "IconData") == "SAI" and strict_get(icon_data, "name", "IconData") == "Doubler":
                 print(f"ActionResolver: Applying Doubler. Current hits: {calculated_results['hits']}")
                 calculated_results["hits"] *= 2  # Assuming one Doubler for now
                 # TODO: Handle multiple doublers/triplers (usually best one applies)
@@ -265,7 +267,7 @@ class ActionResolver(QObject):
                 "counter_attack_possible": False,
             }
 
-        print(f"ActionResolver: Defending units: {[unit.get('name') for unit in defending_units]}")
+        print(f"ActionResolver: Defending units: {[strict_get(unit, 'name', 'Unit') for unit in defending_units]}")
 
         successful_saves = 0
         sais_from_attacker = attacker_outcome.get("sais_for_defender", [])
@@ -284,7 +286,7 @@ class ActionResolver(QObject):
         # Convert ID icons to save results based on defending unit abilities
         converted_id_saves = 0
         units_that_used_id = set()  # To ensure a unit's ID is used only once per roll
-        id_icons_to_convert = sum(item.get("count", 0) for item in parsed_save_dice if item.get("type") == "ID")
+        id_icons_to_convert = sum(strict_get(item, "count", "SaveDice") for item in parsed_save_dice if strict_get(item, "type", "SaveDice") == "ID")
 
         for _ in range(id_icons_to_convert):
             # If Bullseye is active, ID icons might not convert to saves (rule dependent)
@@ -293,21 +295,21 @@ class ActionResolver(QObject):
                 break  # Skip ID conversion if Bullseye active (simplified rule)
 
             for unit in defending_units:
-                unit_id = unit.get("id", unit.get("name", "unknown"))  # Fallback to name if no id
+                unit_id = strict_get_with_fallback(unit, "id", "name", "Unit")
                 if unit_id not in units_that_used_id:
                     # Default ID conversion (placeholder logic until die_faces are implemented)
                     default_id_saves = 1  # Most units convert 1 ID to 1 save
                     converted_id_saves += default_id_saves
                     units_that_used_id.add(unit_id)
-                    print(f"ActionResolver: Unit {unit.get('name', 'Unknown')} used ID for {default_id_saves} save.")
+                    print(f"ActionResolver: Unit {strict_get(unit, 'name', 'Unit')} used ID for {default_id_saves} save.")
                     break  # Move to the next ID icon to be converted
         successful_saves += converted_id_saves
 
         # Apply SAIs from save dice that generate additional saves
         for icon_data in parsed_save_dice:
-            if icon_data.get("type") == "SAI":
-                sai_type = icon_data.get("sai_type")
-                count = icon_data.get("count", 1)
+            if strict_get(icon_data, "type", "IconData") == "SAI":
+                sai_type = strict_get(icon_data, "sai_type", "IconData")
+                count = strict_get_optional(icon_data, "count", 1)
                 # Handle save-generating SAIs
                 if sai_type == "SHIELD":  # Placeholder SAI name
                     successful_saves += count
@@ -325,8 +327,8 @@ class ActionResolver(QObject):
 
         # Placeholder for direct save icons
         for item in parsed_save_dice:
-            if item.get("type") == "Save":
-                successful_saves += item.get("count", 0)
+            if strict_get(item, "type", "SaveDice") == "Save":
+                successful_saves += strict_get(item, "count", "SaveDice")
 
         # Apply minor terrain effects to save results
         if self.minor_terrain_manager:
@@ -568,7 +570,7 @@ class ActionResolver(QObject):
                 effects.append(
                     {
                         "type": "sai",
-                        "sai_type": die_result.get("sai_type", "unknown"),
+                        "sai_type": strict_get_optional(die_result, "sai_type", "unknown"),
                         "count": die_result.get("count", 1),
                     }
                 )
@@ -640,7 +642,7 @@ class ActionResolver(QObject):
                 effects.append(
                     {
                         "type": "sai",
-                        "sai_type": die_result.get("sai_type", "unknown"),
+                        "sai_type": strict_get_optional(die_result, "sai_type", "unknown"),
                         "count": die_result.get("count", 1),
                     }
                 )
@@ -680,7 +682,7 @@ class ActionResolver(QObject):
                 effects.append(
                     {
                         "type": "sai",
-                        "sai_type": die_result.get("sai_type", "unknown"),
+                        "sai_type": strict_get_optional(die_result, "sai_type", "unknown"),
                         "count": die_result.get("count", 1),
                     }
                 )
@@ -783,7 +785,7 @@ class ActionResolver(QObject):
                 magic_effects.append(f"Magic effect x{icon_data.get('count', 1)}")
             elif icon_data.get("type") == "SAI":
                 # SAIs from magic might have special effects
-                sai_type = icon_data.get("sai_type", "unknown")
+                sai_type = strict_get_optional(icon_data, "sai_type", "unknown")
                 magic_effects.append(f"SAI: {sai_type}")
 
         self.action_resolved.emit(
@@ -814,7 +816,7 @@ class ActionResolver(QObject):
                 id_results += icon_data.get("count", 0)
             elif icon_data.get("type") == "SAI":
                 # SAIs from maneuver might have special movement effects
-                sai_type = icon_data.get("sai_type", "unknown")
+                sai_type = strict_get_optional(icon_data, "sai_type", "unknown")
                 maneuver_effects.append(f"Maneuver SAI: {sai_type}")
                 # Handle specific maneuver SAIs
                 if sai_type == "TELEPORT":  # Placeholder SAI
@@ -923,9 +925,9 @@ class ActionResolver(QObject):
         applied_effects = []
 
         for effect in effects:
-            face_name = effect.get("face_name", "")
-            effect_type = effect.get("effect_type", "")
-            minor_terrain_name = effect.get("minor_terrain_name", "")
+            face_name = strict_get_optional(effect, "face_name", "")
+            effect_type = strict_get_optional(effect, "effect_type", "")
+            minor_terrain_name = strict_get_optional(effect, "minor_terrain_name", "")
 
             # Apply enhancement effects
             if effect_type == "enhancement":
@@ -1000,15 +1002,15 @@ class ActionResolver(QObject):
         available_actions = []
 
         for effect in effects:
-            face_name = effect.get("face_name", "")
-            effect_type = effect.get("effect_type", "")
-            minor_terrain_name = effect.get("minor_terrain_name", "")
+            face_name = strict_get_optional(effect, "face_name", "")
+            effect_type = strict_get_optional(effect, "effect_type", "")
+            minor_terrain_name = strict_get_optional(effect, "minor_terrain_name", "")
 
             if effect_type == "action":
                 action_data = {
                     "action_type": face_name.lower(),  # "magic", "melee", "missile"
                     "source": f"Minor Terrain: {minor_terrain_name}",
-                    "description": effect.get("face_description", ""),
+                    "description": strict_get_optional(effect, "face_description", ""),
                     "allows_terrain_action": True,
                 }
                 available_actions.append(action_data)

@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal, Slot
 
 import constants
+from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
 from game_logic.action_resolver import ActionResolver
 from game_logic.bua_manager import BUAManager
 from game_logic.dragon_attack_manager import DragonAttackManager
@@ -277,14 +278,15 @@ class GameEngine(QObject):
 
         available_armies = []
         for army_type, army_data in player_data["armies"].items():
-            if army_data.get("units") and len(army_data["units"]) > 0:
+            units = strict_get_optional(army_data, "units", [])
+            if units and len(units) > 0:
                 available_armies.append(
                     {
-                        "name": army_data.get("name", f"{army_type.title()} Army"),
+                        "name": strict_get_optional(army_data, "name", f"{army_type.title()} Army"),
                         "army_type": army_type,
-                        "location": army_data.get("location", "Unknown"),
-                        "unique_id": army_data.get("unique_id"),
-                        "units": army_data.get("units", []),
+                        "location": strict_get_optional(army_data, "location", "Unknown"),
+                        "unique_id": strict_get_optional(army_data, "unique_id"),
+                        "units": units,
                     }
                 )
         return available_armies
@@ -311,7 +313,7 @@ class GameEngine(QObject):
             print("GameEngine: No acting army selected for maneuver")
             return
 
-        location = acting_army.get("location")
+        location = strict_get(acting_army, "location", "Army")
         if not location:
             print("GameEngine: Acting army has no location")
             return
@@ -344,16 +346,16 @@ class GameEngine(QObject):
         """Apply the results of a completed maneuver, including terrain face changes."""
         print(f"GameEngine: Applying maneuver results: {maneuver_result}")
 
-        if not maneuver_result.get("success", False):
+        if not strict_get_optional(maneuver_result, "success", False):
             print("GameEngine: Maneuver failed, no terrain changes to apply")
             return None
 
         # Extract terrain change information
-        location = maneuver_result.get("location")
-        old_face = maneuver_result.get("old_face")
-        new_face = maneuver_result.get("new_face")
-        direction = maneuver_result.get("direction", "UP")
-        maneuver_icons = maneuver_result.get("maneuver_icons", 0)
+        location = strict_get(maneuver_result, "location", "ManeuverResult")
+        old_face = strict_get(maneuver_result, "old_face", "ManeuverResult")
+        new_face = strict_get(maneuver_result, "new_face", "ManeuverResult")
+        direction = strict_get_optional(maneuver_result, "direction", "UP")
+        maneuver_icons = strict_get_optional(maneuver_result, "maneuver_icons", 0)
 
         if not location or new_face is None:
             print("GameEngine: Missing terrain change information in maneuver result")
@@ -1068,7 +1070,7 @@ class GameEngine(QObject):
         available_units = []
         for unit in units:
             if "health" not in unit:
-                raise ValueError(f"Unit '{unit.get('name', 'UNKNOWN')}' missing health data")
+                raise ValueError(f"Unit '{strict_get_optional(unit, 'name', 'UNKNOWN')}' missing health data")
             if unit["health"] > 0:
                 available_units.append(unit)
 
@@ -1165,8 +1167,8 @@ class GameEngine(QObject):
             if remaining_damage <= 0:
                 break
 
-            unit_name = unit.get("name", "Unknown")
-            unit_health = unit.get("health", 0)
+            unit_name = strict_get(unit, "name", "Unit")
+            unit_health = strict_get(unit, "health", "Unit")
 
             # Allocate damage up to unit's current health
             damage_to_allocate = min(remaining_damage, unit_health)
@@ -1185,12 +1187,12 @@ class GameEngine(QObject):
         armies_summary = {}
         for army_key, army_data in player_data.get("armies", {}).items():
             units = army_data.get("units", [])
-            total_health = sum(unit.get("health", 0) for unit in units)
+            total_health = sum(strict_get(unit, "health", "Unit") for unit in units)
             unit_count = len(units)
 
             armies_summary[army_key] = {
-                "name": army_data.get("name", army_key.title()),
-                "location": army_data.get("location", "Unknown"),
+                "name": strict_get_optional(army_data, "name", army_key.title()),
+                "location": strict_get_optional(army_data, "location", "Unknown"),
                 "unit_count": unit_count,
                 "total_health": total_health,
                 "points_value": army_data.get("points_value", 0),
@@ -1259,14 +1261,14 @@ class GameEngine(QObject):
         """Convert dictionary unit data to DUAUnit object."""
         death_info = death_info or {}
         return DUAUnit(
-            name=unit_dict.get("name", "Unknown Unit"),
-            species=unit_dict.get("species", "Unknown"),
-            health=unit_dict.get("health", 1),
-            elements=unit_dict.get("elements", []),
-            original_owner=unit_dict.get("owner", "Unknown"),
-            death_cause=death_info.get("cause", "combat"),
-            death_location=death_info.get("location", ""),
-            death_turn=death_info.get("turn", self.turn_manager.current_turn),
+            name=strict_get(unit_dict, "name", "Unit"),
+            species=strict_get(unit_dict, "species", "Unit"),
+            health=strict_get(unit_dict, "health", "Unit"),
+            elements=strict_get(unit_dict, "elements", "Unit"),
+            original_owner=strict_get(unit_dict, "owner", "Unit"),
+            death_cause=strict_get_optional(death_info, "cause", "combat"),
+            death_location=strict_get_optional(death_info, "location", ""),
+            death_turn=strict_get_optional(death_info, "turn", self.turn_manager.current_turn),
         )
 
     def dict_to_reserve_unit(
@@ -1275,14 +1277,14 @@ class GameEngine(QObject):
         """Convert dictionary unit data to ReserveUnit object."""
         entry_info = entry_info or {}
         return ReserveUnit(
-            name=unit_dict.get("name", "Unknown Unit"),
-            species=unit_dict.get("species", "Unknown"),
-            health=unit_dict.get("health", 1),
-            elements=unit_dict.get("elements", []),
-            owner=unit_dict.get("owner", "Unknown"),
-            original_terrain=entry_info.get("terrain", ""),
-            turn_entered=entry_info.get("turn", self.turn_manager.current_turn),
-            entry_reason=entry_info.get("reason", "retreat"),
+            name=strict_get(unit_dict, "name", "Unit"),
+            species=strict_get(unit_dict, "species", "Unit"),
+            health=strict_get(unit_dict, "health", "Unit"),
+            elements=strict_get(unit_dict, "elements", "Unit"),
+            owner=strict_get(unit_dict, "owner", "Unit"),
+            original_terrain=strict_get_optional(entry_info, "terrain", ""),
+            turn_entered=strict_get_optional(entry_info, "turn", self.turn_manager.current_turn),
+            entry_reason=strict_get_optional(entry_info, "reason", "retreat"),
         )
 
     def dua_unit_to_dict(self, dua_unit: DUAUnit) -> Dict[str, Any]:
