@@ -29,6 +29,8 @@ from PySide6.QtWidgets import (
 
 from game_logic.sai_processor import SAIProcessor
 
+from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
+
 
 class MissileDieRollInputWidget(QWidget):
     """Widget for inputting individual die face results for missile combat."""

@@ -384,7 +384,7 @@ class GameEngine(QObject):
                 print(f"GameEngine: Could not find terrain data for '{location}'")
                 return
 
-            current_face = terrain_data.get("face", 1)
+            current_face = strict_get(terrain_data, "face")
             print(
                 f"GameEngine: Automatic maneuver success - requesting direction choice for '{location}' (current face: {current_face})"
             )
@@ -797,7 +797,7 @@ class GameEngine(QObject):
     @Slot(dict)
     def _handle_action_resolution(self, action_result: dict):
         """Handle the resolution of actions from ActionResolver."""
-        action_type = action_result.get("type", "unknown")
+        action_type = strict_get(action_result, "type")
         print(f"GameEngine: Handling action resolution of type: {action_type}")
 
         if action_type == "melee_complete":
@@ -886,17 +886,17 @@ class GameEngine(QObject):
         all_players_state = self.game_state_manager.get_all_players_data()
         for player_name, player_state in all_players_state.items():
             army_list = []
-            for army_key, army_data in player_state.get("armies", {}).items():
+            for army_key, army_data in strict_get(player_state, "armies").items():
                 # Calculate actual unit points instead of allocated points
-                units = army_data.get("units", [])
-                total_unit_points = sum(unit.get("max_health", 0) for unit in units)
+                units = strict_get(army_data, "units")
+                total_unit_points = sum(strict_get(unit, "max_health") for unit in units)
 
                 army_list.append(
                     {
                         "name": army_data.get("name", army_key.title()),
                         "army_type": army_key,  # Include army type (home, campaign, horde)
                         "points": total_unit_points,  # Show actual unit points, not allocated points
-                        "location": army_data.get("location", constants.DEFAULT_UNKNOWN_VALUE),
+                        "location": strict_get(army_data, "location"),
                     }
                 )
 
@@ -933,7 +933,7 @@ class GameEngine(QObject):
         # Later, this could be filtered based on current player's army locations or game rules.
         for terrain_name, terrain_data in all_terrains_state.items():
             controller = terrain_data.get("controller", "None")
-            face_number = terrain_data.get("face", 1)
+            face_number = strict_get(terrain_data, "face")
 
             # Get face description from terrain model
             face_description = self._get_terrain_face_description(terrain_name, face_number)
@@ -950,7 +950,7 @@ class GameEngine(QObject):
                 {
                     "icon": icon,
                     "name": terrain_name,
-                    "type": terrain_data.get("type", constants.DEFAULT_UNKNOWN_VALUE),
+                    "type": strict_get(terrain_data, "type"),
                     "face": face_number,  # Add face field for UI access
                     "controller": (controller if controller != "None" else None),  # Add controller field for UI access
                     "details": details,
@@ -1185,17 +1185,17 @@ class GameEngine(QObject):
             return {}
 
         armies_summary = {}
-        for army_key, army_data in player_data.get("armies", {}).items():
-            units = army_data.get("units", [])
+        for army_key, army_data in strict_get(player_data, "armies").items():
+            units = strict_get(army_data, "units")
             total_health = sum(strict_get(unit, "health", "Unit") for unit in units)
             unit_count = len(units)
 
             armies_summary[army_key] = {
                 "name": strict_get_optional(army_data, "name", army_key.title()),
-                "location": strict_get_optional(army_data, "location", "Unknown"),
+                "location": strict_get(army_data, "location"),
                 "unit_count": unit_count,
                 "total_health": total_health,
-                "points_value": army_data.get("points_value", 0),
+                "points_value": strict_get(army_data, "points_value"),
             }
 
         return armies_summary
@@ -1328,9 +1328,9 @@ class GameEngine(QObject):
         entry_info = entry_info or {}
         self.reserves_manager.add_unit_to_reserves(
             unit_dict,
-            unit_dict.get("owner", "Unknown"),
-            entry_info.get("terrain", ""),
-            entry_info.get("reason", "retreat"),
+            strict_get(unit_dict, "owner"),
+            strict_get(entry_info, "terrain"),
+            strict_get(entry_info, "reason"),
         )
 
     def bury_unit_in_bua(self, player_name: str, unit_dict: Dict[str, Any]):
@@ -1338,11 +1338,11 @@ class GameEngine(QObject):
         # Convert dict to UnitModel for BUA manager
 
         unit_model = UnitModel(
-            unit_id=unit_dict.get("id", unit_dict.get("name", "unknown")),
-            name=unit_dict.get("name", "Unknown Unit"),
-            unit_type=unit_dict.get("type", "standard"),
-            health=unit_dict.get("health", 1),
-            max_health=unit_dict.get("max_health", unit_dict.get("health", 1)),
+            unit_id=unit_dict.get("id", strict_get(unit_dict, "name")),
+            name=strict_get(unit_dict, "name"),
+            unit_type=strict_get(unit_dict, "type"),
+            health=strict_get(unit_dict, "health"),
+            max_health=unit_dict.get("max_health", strict_get(unit_dict, "health")),
             species=self._get_default_species(),  # Create a default species
             faces=[],  # Would need to resolve from unit type
         )
@@ -1373,7 +1373,7 @@ class GameEngine(QObject):
         """Process the effects of cast spells."""
         results: Dict[str, List] = {"spells_processed": [], "effects_applied": [], "errors": []}
 
-        cast_spells = spell_results.get("cast_spells", [])
+        cast_spells = strict_get(spell_results, "cast_spells")
         for spell_data in cast_spells:
             try:
                 spell_result = self._process_single_spell(spell_data)
@@ -1381,7 +1381,7 @@ class GameEngine(QObject):
                 if spell_result.get("effects"):
                     results["effects_applied"].extend(spell_result["effects"])
             except Exception as e:
-                error_msg = f"Error processing spell {spell_data.get('name', 'Unknown')}: {str(e)}"
+                error_msg = f"Error processing spell {strict_get(spell_data, 'name')}: {str(e)}"
                 results["errors"].append(error_msg)
                 print(f"Spell processing error: {error_msg}")
 
@@ -1391,7 +1391,7 @@ class GameEngine(QObject):
         """Process a single spell's effects."""
         from models.spell_model import get_spell
 
-        spell_name = spell_data.get("name", "")
+        spell_name = strict_get(spell_data, "name")
         spell_model = get_spell(spell_name)
 
         if not spell_model:
@@ -1415,9 +1415,9 @@ class GameEngine(QObject):
 
     def _process_dragon_summon_spell(self, spell_data: Dict[str, Any], spell_model) -> Dict[str, Any]:
         """Process Summon Dragon or Summon White Dragon spells."""
-        caster_player = spell_data.get("caster", "")
-        target_terrain = spell_data.get("target_terrain", "")
-        element_used = spell_data.get("element_used", "")
+        caster_player = strict_get(spell_data, "caster")
+        target_terrain = strict_get(spell_data, "target_terrain")
+        element_used = strict_get(spell_data, "element_used")
 
         if not all([caster_player, target_terrain, element_used]):
             raise ValueError("Missing required data for dragon summoning")
@@ -1472,8 +1472,8 @@ class GameEngine(QObject):
 
     def _process_dragonkin_summon_spell(self, spell_data: Dict[str, Any], spell_model) -> Dict[str, Any]:
         """Process Summon Dragonkin spell."""
-        caster_player = spell_data.get("caster", "")
-        element_used = spell_data.get("element_used", "")
+        caster_player = strict_get(spell_data, "caster")
+        element_used = strict_get(spell_data, "element_used")
 
         # Find dragonkin in summoning pool
         dragonkin = self.summoning_pool_manager.get_dragonkin_by_element(caster_player, element_used)
@@ -1563,7 +1563,7 @@ class GameEngine(QObject):
                 return {"success": False, "message": f"Army {army_type} not found for {player_name}"}
 
             # Find the source unit in the army
-            army_units = army_data.get("units", [])
+            army_units = strict_get(army_data, "units")
             source_unit = None
             for unit in army_units:
                 if unit.get("unit_id") == unit_id:
@@ -1627,7 +1627,7 @@ class GameEngine(QObject):
             if not army_data:
                 return {"success": False, "message": f"Army {army_type} not found for {player_name}"}
 
-            army_units = army_data.get("units", [])
+            army_units = strict_get(army_data, "units")
             if not army_units:
                 return {"success": False, "message": f"No units in {army_type} army to promote"}
 
@@ -1652,7 +1652,7 @@ class GameEngine(QObject):
         self, victorious_army_data: Dict[str, Any], player_name: str
     ) -> Dict[str, Any]:
         """Check and potentially execute promotions after killing a dragon."""
-        army_units = victorious_army_data.get("units", [])
+        army_units = strict_get(victorious_army_data, "units")
         if not army_units:
             return {"success": False, "message": "No units in army to promote"}
 
@@ -1700,7 +1700,7 @@ class GameEngine(QObject):
                 print(f"GameEngine: No attacking army data for promotion check after {combat_type}")
                 return
 
-            army_units = attacking_army_data.get("units", [])
+            army_units = strict_get(attacking_army_data, "units")
             if not army_units:
                 print(f"GameEngine: No units in attacking army for promotion check after {combat_type}")
                 return
@@ -1743,10 +1743,10 @@ class GameEngine(QObject):
                 return
 
             # Calculate total health-worth of killed units for promotion eligibility
-            total_health_worth = sum(unit.get("pre_damage_health", 1) for unit in units_killed)
+            total_health_worth = sum(strict_get(unit, "pre_damage_health") for unit in units_killed)
 
             if total_health_worth >= 2:  # Minimum threshold for promotion rewards
-                army_units = attacking_army_data.get("units", [])
+                army_units = strict_get(attacking_army_data, "units")
                 opportunities = self.promotion_manager.find_promotion_options(army_units, attacking_player)
 
                 if opportunities:
@@ -1856,7 +1856,7 @@ class GameEngine(QObject):
                             "trigger": "dragon_kill_victory",
                             "player_name": player_name,
                             "army_data": army_data,
-                            "opportunities": result.get("opportunities", []),
+                            "opportunities": strict_get(result, "opportunities"),
                             "dragons_killed": dragons_killed,
                             "auto_promote": True,  # Dragon kills allow automatic mass promotion
                             "priority": "high",
@@ -1898,8 +1898,8 @@ class GameEngine(QObject):
 
             # Process phase results
             if phase_result.get("victory_achieved", False):
-                winning_player = phase_result.get("winning_player", "Unknown")
-                victory_type = phase_result.get("victory_type", "terrain_control")
+                winning_player = strict_get(phase_result, "winning_player")
+                victory_type = strict_get(phase_result, "victory_type")
                 print(f"GameEngine: Victory achieved by {winning_player} via {victory_type}")
 
                 # Handle victory - this would typically end the game
@@ -1930,9 +1930,9 @@ class GameEngine(QObject):
 
     def _apply_eighth_face_automatic_effect(self, effect: Dict[str, Any]):
         """Apply automatic eighth face effects that don't require player choice."""
-        effect_type = effect.get("effect_type", "unknown")
-        terrain_name = effect.get("terrain_name", "Unknown")
-        player_name = effect.get("player", "Unknown")
+        effect_type = strict_get(effect, "effect_type")
+        terrain_name = strict_get(effect, "terrain_name")
+        player_name = strict_get(effect, "player")
 
         print(f"GameEngine: Applying automatic {effect_type} eighth face effect for {player_name} at {terrain_name}")
 
@@ -2013,7 +2013,7 @@ class GameEngine(QObject):
                 print(f"GameEngine: Applied eighth face choice for {player_name}: {choice_type}")
                 self.game_state_updated.emit()
             else:
-                print(f"GameEngine: Failed to apply eighth face choice: {result.get('error', 'Unknown error')}")
+                print(f"GameEngine: Failed to apply eighth face choice: {strict_get(result, 'error')}")
 
             return result
 
@@ -2025,9 +2025,8 @@ class GameEngine(QObject):
     def _apply_temporary_breath_effect(self, army_id: str, breath_effect: Dict[str, Any]):
         """Apply a temporary breath effect to an army."""
         try:
-            effect_name = breath_effect.get("name", "Dragon Breath")
-            effect_description = breath_effect.get("effect", "")
-            modifier_type = breath_effect.get("modifier_type", "")
+            effect_name = strict_get(breath_effect, "name")
+            effect_description = strict_get(breath_effect, "effect")
 
             # Use the effect manager to apply the breath effect
             self.effect_manager.add_effect(
@@ -2038,7 +2037,6 @@ class GameEngine(QObject):
                 duration_type=constants.EFFECT_DURATION_NEXT_TURN_TARGET,
                 duration_value=1,
                 caster_player_name=self.get_current_player_name(),
-                effect_data={"modifier_type": modifier_type},
             )
 
             print(f"GameEngine: Applied breath effect '{effect_name}' to army {army_id}")
@@ -2191,7 +2189,7 @@ class GameEngine(QObject):
         if not terrain_data:
             return options
 
-        terrain_type = terrain_data.get("type", "").lower()
+        terrain_type = strict_get(terrain_data, "type").lower()
         terrain_name_lower = terrain_name.lower()
 
         # Check by terrain name if type doesn't contain specific terrain
@@ -2233,7 +2231,7 @@ class GameEngine(QObject):
 
     def _process_city_recruitment(self, player_name: str, action_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process City eighth face recruitment (move 1-health unit from DUA to army)."""
-        unit_name = action_data.get("unit_id", action_data.get("unit_name", ""))
+        unit_name = strict_get_optional(action_data, "unit_id") or strict_get_optional(action_data, "unit_name")
 
         # Get units from DUA
         dua_units = self.dua_manager.get_player_dua(player_name)
@@ -2326,9 +2324,9 @@ class GameEngine(QObject):
         if not terrain_data:
             return False
 
-        terrain_name = terrain_data.get("name", "").lower()
-        terrain_subtype = terrain_data.get("subtype", "").lower()
-        terrain_face = terrain_data.get("current_face", terrain_data.get("face", 1))
+        terrain_name = strict_get(terrain_data, "name").lower()
+        terrain_subtype = strict_get(terrain_data, "subtype").lower()
+        terrain_face = terrain_data.get("current_face", strict_get(terrain_data, "face"))
         controller = terrain_data.get("controller") or terrain_data.get("controlling_player")
 
         # Check if this is a Temple terrain at eighth face controlled by the player

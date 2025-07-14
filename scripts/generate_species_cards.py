@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from models.spell_model import SPELLS_BY_ELEMENT
+from utils import strict_get
 
 
 def load_species_data():
@@ -46,7 +47,7 @@ def get_css_class_name(species_name):
         "Treefolk": "treefolk",
         "Undead": "undead",
     }
-    return name_mapping.get(species_name, species_name.lower().replace(" ", "-"))
+    return strict_get(name_mapping, species_name)
 
 
 def get_element_icon(element):
@@ -60,7 +61,7 @@ def get_element_icon(element):
         "IVORY": "🟫",
         "WHITE": "⬜",
     }
-    return element_icons.get(element, "❓")
+    return strict_get(element_icons, element)
 
 
 def get_spells_for_species(species_display_name, species_elements):
@@ -156,9 +157,9 @@ def organize_units_by_type(units, species_name):
 
     for _unit_id, unit_data in units.items():
         if unit_data.get("species_name") == species_name:
-            unit_type = unit_data.get("unit_type", "Unknown")
-            health = unit_data.get("health", 1)
-            name = unit_data.get("name", "Unknown")
+            unit_type = strict_get(unit_data, "unit_type")
+            health = strict_get(unit_data, "health")
+            name = strict_get(unit_data, "name")
 
             if unit_type not in species_units:
                 species_units[unit_type] = []
@@ -226,7 +227,7 @@ def generate_species_card(species_name, species_data, units_data):
             units_html += "                        </div>\n"
 
     # Generate monsters
-    monsters = [unit for unit in species_units.get("Monster", []) if unit["health"] == 4]
+    monsters = [unit for unit in strict_get(species_units, "Monster") if unit["health"] == 4]
     monsters_html = ""
     for monster in monsters:
         monsters_html += f'                        <div class="monster-item"><span class="monster-name">{monster["name"]}</span><span class="health-badge">{monster["health"]}</span></div>\n'

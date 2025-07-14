@@ -8,6 +8,8 @@ elements, targeting, and effects. Excludes Reserve spells for now.
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
+from utils import strict_get
+
 
 @dataclass
 class Spell:
@@ -390,7 +392,7 @@ class SpellDatabase:
                         continue
                 else:
                     # Element-specific spell
-                    available_for_element = magic_points_by_element.get(spell.element, 0)
+                    available_for_element = strict_get(magic_points_by_element, spell.element)
                     if spell.cost > available_for_element:
                         continue
 
@@ -420,7 +422,7 @@ class SpellDatabase:
         """Format a spell for display."""
         element_icons = {"air": "💨", "death": "💀", "earth": "🌍", "fire": "🔥", "water": "🌊", "elemental": "✨"}
 
-        icon = element_icons.get(spell.element, "⭐")
+        icon = strict_get(element_icons, spell.element)
         species_text = f" ({spell.species})" if spell.species else ""
         cantrip_text = " [Cantrip]" if spell.cantrip else ""
 
@@ -436,4 +438,4 @@ class SpellDatabase:
             "water": "#4682b4",  # Steel blue
             "elemental": "#9370db",  # Medium purple
         }
-        return element_colors.get(element, "#808080")
+        return strict_get(element_colors, element)

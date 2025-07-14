@@ -32,10 +32,14 @@ class TestManeuverDialogIntegration(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -52,10 +56,14 @@ class TestManeuverDialogIntegration(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "horde": {
                         "name": "Horde Army",
                         "location": "Coastland",  # Same frontier terrain
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Seer",
@@ -206,10 +214,13 @@ class TestManeuverDialogIntegration(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",

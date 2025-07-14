@@ -2,52 +2,58 @@ import unittest
 from unittest.mock import Mock, patch
 
 from game_logic.game_state_manager import GameStateManager
+from models.test.mock import create_player_setup_dict, create_army_dict
 
 
 class TestArmyTargeting(unittest.TestCase):
     """Test the army targeting system for Dragon Dice combat."""
 
     def setUp(self):
-        """Set up test data for army targeting tests."""
-        self.player_setup_data = [
-            {
-                "name": "Player 1",
-                "home_terrain": "Highland",
-                "armies": {
-                    "home": {
-                        "name": "Home Army",
-                        "location": "Player 1 Highland",
-                        "units": [{"name": "Test Unit", "health": 2}],
-                        "unique_id": "player_1_home",
-                    },
-                    "campaign": {
-                        "name": "Campaign Army",
-                        "location": "Swampland (Green, Yellow)",
-                        "units": [{"name": "Test Unit", "health": 2}],
-                        "unique_id": "player_1_campaign",
-                    },
-                },
-            },
-            {
-                "name": "Player 2",
-                "home_terrain": "Coastland",
-                "armies": {
-                    "home": {
-                        "name": "Home Army",
-                        "location": "Player 2 Coastland",
-                        "units": [{"name": "Test Unit", "health": 2}],
-                        "unique_id": "player_2_home",
-                    },
-                    "horde": {
-                        "name": "Horde Army",
-                        "location": "Player 1 Highland",  # At Player 1's home
-                        "units": [{"name": "Test Unit", "health": 2}],
-                        "unique_id": "player_2_horde",
-                    },
-                },
-            },
-        ]
+        """Set up test data for army targeting tests using type-safe mocks."""
 
+        # Create Player 1 with complete mock data
+        player1_data = create_player_setup_dict(name="Player 1", home_terrain="Highland", force_size=24)
+
+        # Override armies with specific test configuration
+        player1_data["armies"] = {
+            "home": create_army_dict(
+                name="Home Army",
+                location="Player 1 Highland",
+                allocated_points=10,
+                unique_id="player_1_home",
+                unit_count=1,
+            ),
+            "campaign": create_army_dict(
+                name="Campaign Army",
+                location="Swampland (Green, Yellow)",
+                allocated_points=10,
+                unique_id="player_1_campaign",
+                unit_count=1,
+            ),
+        }
+
+        # Create Player 2 with complete mock data
+        player2_data = create_player_setup_dict(name="Player 2", home_terrain="Coastland", force_size=24)
+
+        # Override armies with specific test configuration
+        player2_data["armies"] = {
+            "home": create_army_dict(
+                name="Home Army",
+                location="Player 2 Coastland",
+                allocated_points=10,
+                unique_id="player_2_home",
+                unit_count=1,
+            ),
+            "horde": create_army_dict(
+                name="Horde Army",
+                location="Player 1 Highland",  # At Player 1's home
+                allocated_points=10,
+                unique_id="player_2_horde",
+                unit_count=1,
+            ),
+        }
+
+        self.player_setup_data = [player1_data, player2_data]
         self.frontier_terrain = "Swampland (Green, Yellow)"
         self.distance_rolls = [("Player 1", 5), ("Player 2", 3)]
 
@@ -79,19 +85,45 @@ class TestArmyTargeting(unittest.TestCase):
 
     def test_determine_primary_defending_player_home_priority(self):
         """Test that home armies have priority in defending."""
-        # Add multiple army types at same location for priority testing
-        # Find Player 2 in the list and add campaign army
-        for player in self.player_setup_data:
-            if player["name"] == "Player 2":
-                player["armies"]["campaign"] = {
-                    "name": "Campaign Army",
-                    "location": "Player 1 Highland",  # Same location as horde
-                    "units": [{"name": "Test Unit", "health": 2}],
-                    "unique_id": "player_2_campaign",
-                }
-                break
+        # Create a new setup with multiple army types at same location for priority testing
+        player1_data = create_player_setup_dict(name="Player 1", home_terrain="Highland", force_size=24)
+        player1_data["armies"] = {
+            "home": create_army_dict(
+                name="Home Army",
+                location="Player 1 Highland",
+                allocated_points=10,
+                unique_id="player_1_home",
+                unit_count=1,
+            ),
+        }
 
-        manager = GameStateManager(self.player_setup_data, self.frontier_terrain, self.distance_rolls)
+        player2_data = create_player_setup_dict(name="Player 2", home_terrain="Coastland", force_size=24)
+        player2_data["armies"] = {
+            "home": create_army_dict(
+                name="Home Army",
+                location="Player 2 Coastland",
+                allocated_points=8,
+                unique_id="player_2_home",
+                unit_count=1,
+            ),
+            "campaign": create_army_dict(
+                name="Campaign Army",
+                location="Player 1 Highland",  # Same location as horde
+                allocated_points=6,
+                unique_id="player_2_campaign",
+                unit_count=1,
+            ),
+            "horde": create_army_dict(
+                name="Horde Army",
+                location="Player 1 Highland",  # Same location as campaign
+                allocated_points=6,
+                unique_id="player_2_horde",
+                unit_count=1,
+            ),
+        }
+
+        player_setup_data = [player1_data, player2_data]
+        manager = GameStateManager(player_setup_data, self.frontier_terrain, self.distance_rolls)
 
         # Should prefer horde over campaign (home > campaign > horde)
         # In this case, horde is the highest priority present

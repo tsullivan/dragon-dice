@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
-from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+from utils.field_access import strict_get, strict_get_optional
 
 
 class DUAState(Enum):
@@ -132,7 +132,7 @@ class DUAManager(QObject):
             name=strict_get(unit_data, "name", "Unit"),
             species=strict_get(unit_data, "species", "Unit"),
             health=strict_get(unit_data, "health", "Unit"),
-            elements=strict_get(unit_data, "elements", "Unit"),
+            elements=self._extract_unit_elements(unit_data),
             original_owner=owner,
             unit_id=strict_get_optional(unit_data, "unit_id", ""),
             unit_data=unit_data.copy(),  # Store the full unit data
@@ -286,7 +286,7 @@ class DUAManager(QObject):
         """Apply spell effects that affect the DUA."""
         if spell_name == "Soiled Ground":
             # Add burial condition for terrain
-            target_terrain = effect_data.get("target_terrain", "")
+            target_terrain = strict_get(effect_data, "target_terrain")
             self.global_burial_conditions.append(f"soiled_ground_{target_terrain}")
 
         elif spell_name == "Open Grave":
@@ -296,8 +296,8 @@ class DUAManager(QObject):
 
         elif spell_name == "Exhume":
             # Handle Exhume spell targeting DUA units
-            effect_data.get("target_player", "")
-            target_units = effect_data.get("target_units", [])
+            strict_get(effect_data, "target_player")
+            target_units = strict_get(effect_data, "target_units")
 
             for _unit_name in target_units:
                 # Unit makes save roll, if no save -> buried
@@ -364,6 +364,21 @@ class DUAManager(QObject):
         # Check for immediate burial conditions
         self._check_burial_conditions(dua_unit)
 
+    def _extract_unit_elements(self, unit_data: Dict[str, Any]) -> List[str]:
+        """Extract elements from unit data, handling different data structures."""
+        # Try direct elements field first
+        if "elements" in unit_data:
+            return unit_data["elements"]
+
+        # Try species.elements structure
+        if "species" in unit_data and isinstance(unit_data["species"], dict):
+            species_data = unit_data["species"]
+            if "elements" in species_data:
+                return species_data["elements"]
+
+        # Fallback to empty list if no elements found
+        return []
+
     def export_dua_state(self) -> Dict[str, Any]:
         """Export DUA state for save/load."""
         return {
@@ -378,7 +393,7 @@ class DUAManager(QObject):
         """Import DUA state from save/load."""
         self.dua_by_player = {
             player: [DUAUnit.from_dict(unit_data) for unit_data in units]
-            for player, units in state.get("dua_by_player", {}).items()
+            for player, units in strict_get(state, "dua_by_player").items()
         }
-        self.global_burial_conditions = state.get("global_burial_conditions", [])
-        self.turn_manager.set_current_turn(state.get("current_turn", 1))
+        self.global_burial_conditions = strict_get(state, "global_burial_conditions")
+        self.turn_manager.set_current_turn(strict_get(state, "current_turn"))

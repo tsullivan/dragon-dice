@@ -14,6 +14,7 @@ from enum import Enum
 from typing import Any, Dict, List, Tuple
 
 from models.spell_model import SpellModel
+from utils import strict_get
 
 
 class TargetType(Enum):
@@ -384,35 +385,35 @@ class SpellTargetingManager:
     def get_target_description(self, target_type: str, target_data: Dict[str, Any]) -> str:
         """Get a human-readable description of a target."""
         if target_type == "army":
-            player = target_data.get("player", "Unknown")
-            location = target_data.get("location", "Unknown")
+            player = strict_get(target_data, "player")
+            location = strict_get(target_data, "location")
             return f"{player}'s army at {location}"
 
         if target_type == "unit":
-            unit_data = target_data.get("unit_data", {})
-            player = target_data.get("player", "Unknown")
-            location = target_data.get("location", "Unknown")
-            unit_name = unit_data.get("name", "Unknown Unit")
-            species = unit_data.get("species", "Unknown")
+            unit_data = strict_get(target_data, "unit_data")
+            player = strict_get(target_data, "player")
+            location = strict_get(target_data, "location")
+            unit_name = strict_get(unit_data, "name")
+            species = strict_get(unit_data, "species")
             return f"{unit_name} ({species}) - {player}'s unit at {location}"
 
         if target_type == "terrain":
-            name = target_data.get("name", "Unknown Terrain")
-            controller = target_data.get("controller", "Neutral")
+            name = strict_get(target_data, "name")
+            controller = strict_get(target_data, "controller")
             return f"{name} (controlled by {controller})"
 
         if target_type == "dua":
-            unit_data = target_data.get("unit_data", {})
-            player = target_data.get("player", "Unknown")
-            unit_name = unit_data.get("name", "Unknown Unit")
-            species = unit_data.get("species", "Unknown")
+            unit_data = strict_get(target_data, "unit_data")
+            player = strict_get(target_data, "player")
+            unit_name = strict_get(unit_data, "name")
+            species = strict_get(unit_data, "species")
             return f"{unit_name} ({species}) - {player}'s DUA"
 
         if target_type == "bua":
-            unit_data = target_data.get("unit_data", {})
-            player = target_data.get("player", "Unknown")
-            unit_name = unit_data.get("name", "Unknown Unit")
-            species = unit_data.get("species", "Unknown")
+            unit_data = strict_get(target_data, "unit_data")
+            player = strict_get(target_data, "player")
+            unit_name = strict_get(unit_data, "name")
+            species = strict_get(unit_data, "species")
             return f"{unit_name} ({species}) - {player}'s BUA"
 
         return "Unknown target"
@@ -448,7 +449,6 @@ class SpellTargetingManager:
     def _is_valid_summoning_source(self, spell: SpellModel, dragon_info: Dict[str, Any], caster_player: str) -> bool:
         """Check if a dragon is a valid source for a summoning spell."""
         effect_lower = spell.effect.lower()
-        dragon_info.get("dragon_data", {})
 
         if spell.name == "Summon White Dragon":
             # Only White Dragons can be summoned with this spell
@@ -460,7 +460,7 @@ class SpellTargetingManager:
 
         if spell.name == "Summon Dragonkin":
             # Only dragonkin units
-            return "dragonkin" in dragon_info.get("name", "").lower()
+            return "dragonkin" in strict_get(dragon_info, "name").lower()
 
         # Default: allow all dragons for summoning spells
         return "summon" in effect_lower

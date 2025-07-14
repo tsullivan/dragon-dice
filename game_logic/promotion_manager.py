@@ -10,6 +10,8 @@ from typing import Any, Dict, List, Tuple
 
 from PySide6.QtCore import QObject, Signal
 
+from utils import strict_get
+
 
 @dataclass
 class PromotionOption:
@@ -61,8 +63,8 @@ class PromotionManager(QObject):
     def _find_unit_promotion_options(self, unit_dict: Dict[str, Any], player_name: str) -> List[PromotionOption]:
         """Find promotion options for a specific unit."""
         options: List[PromotionOption] = []
-        current_health = unit_dict.get("max_health", unit_dict.get("health", 1))
-        species_name = unit_dict.get("species", {}).get("name", "")
+        current_health = strict_get(unit_dict, "max_health")
+        species_name = strict_get(strict_get(unit_dict, "species"), "name")
 
         if not species_name:
             return options
@@ -103,8 +105,8 @@ class PromotionManager(QObject):
 
         for dua_unit in dua_units:
             unit_data = dua_unit.unit_data
-            unit_species = unit_data.get("species", {}).get("name", "")
-            unit_health = unit_data.get("max_health", unit_data.get("health", 1))
+            unit_species = strict_get(strict_get(unit_data, "species"), "name")
+            unit_health = strict_get(unit_data, "max_health")
 
             if unit_species == species_name and unit_health == target_health:
                 candidates.append(unit_data)
@@ -124,7 +126,7 @@ class PromotionManager(QObject):
 
     def _is_dragonkin(self, unit_dict: Dict[str, Any]) -> bool:
         """Check if a unit is a Dragonkin."""
-        species_name = unit_dict.get("species", {}).get("name", "")
+        species_name = strict_get(strict_get(unit_dict, "species"), "name")
         return "dragonkin" in species_name.lower()
 
     def validate_promotion(self, promotion_option: PromotionOption, player_name: str) -> Tuple[bool, str]:
@@ -134,15 +136,15 @@ class PromotionManager(QObject):
             target_unit = promotion_option.target_unit
 
             # Check species match
-            source_species = source_unit.get("species", {}).get("name", "")
-            target_species = target_unit.get("species", {}).get("name", "")
+            source_species = strict_get(strict_get(source_unit, "species"), "name")
+            target_species = strict_get(strict_get(target_unit, "species"), "name")
 
             if source_species != target_species:
                 return False, f"Species mismatch: {source_species} != {target_species}"
 
             # Check health progression
-            source_health = source_unit.get("max_health", source_unit.get("health", 1))
-            target_health = target_unit.get("max_health", target_unit.get("health", 1))
+            source_health = strict_get(source_unit, "max_health")
+            target_health = strict_get(target_unit, "max_health")
 
             if target_health != source_health + promotion_option.health_increase:
                 return False, f"Invalid health progression: {source_health} -> {target_health}"
@@ -166,7 +168,7 @@ class PromotionManager(QObject):
             return False
 
         dua_units = self.dua_manager.get_player_dua(player_name)
-        unit_id = unit_dict.get("unit_id", "")
+        unit_id = strict_get(unit_dict, "unit_id")
 
         for dua_unit in dua_units:
             if dua_unit.unit_data.get("unit_id") == unit_id:
@@ -233,8 +235,8 @@ class PromotionManager(QObject):
 
         # For now, return a success result with the promoted unit info
         promoted_unit = source_unit.copy()
-        promoted_unit["health"] = target_unit.get("max_health", target_unit.get("health", 1))
-        promoted_unit["max_health"] = target_unit.get("max_health", target_unit.get("health", 1))
+        promoted_unit["health"] = strict_get(target_unit, "max_health")
+        promoted_unit["max_health"] = strict_get(target_unit, "max_health")
         promoted_unit["promotion_source"] = "DUA"
 
         return PromotionResult(
@@ -242,7 +244,7 @@ class PromotionManager(QObject):
             promoted_units=[promoted_unit],
             exchanged_from_dua=[target_unit],
             exchanged_from_pool=[],
-            message=f"Successfully promoted {source_unit.get('name', 'unit')} using DUA unit",
+            message=f"Successfully promoted {strict_get(source_unit, 'name')} using DUA unit",
             errors=[],
         )
 
@@ -313,7 +315,7 @@ class PromotionManager(QObject):
         summary_parts = []
 
         if promotion_result.promoted_units:
-            unit_names = [unit.get("name", "Unit") for unit in promotion_result.promoted_units]
+            unit_names = [strict_get(unit, "name") for unit in promotion_result.promoted_units]
             summary_parts.append(f"Promoted: {', '.join(unit_names)}")
 
         if promotion_result.exchanged_from_dua:

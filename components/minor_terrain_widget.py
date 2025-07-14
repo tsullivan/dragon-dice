@@ -5,7 +5,7 @@ This widget provides a comprehensive interface for managing minor terrain
 placements, face settings, and effects visualization during gameplay.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 from .carousel import CarouselInputWidget
 from models.minor_terrain_model import MinorTerrain, get_all_minor_terrain_objects, get_minor_terrain
 from models.element_model import get_element_icon
+from utils import strict_get
 
 
 class MinorTerrainDisplayItem(QFrame):
@@ -35,9 +36,9 @@ class MinorTerrainDisplayItem(QFrame):
         super().__init__(parent)
         self.placement_data = placement_data
         self.minor_terrain = minor_terrain
-        self.major_terrain_name = placement_data.get("major_terrain_name", "Unknown")
-        self.current_face_index = placement_data.get("current_face_index", 0)
-        self.controlling_player = placement_data.get("controlling_player", "Unknown")
+        self.major_terrain_name = strict_get(placement_data, "major_terrain_name")
+        self.current_face_index = strict_get(placement_data, "current_face_index")
+        self.controlling_player = strict_get(placement_data, "controlling_player")
         self.needs_burial = placement_data.get("needs_burial", False)
 
         self.setFrameStyle(QFrame.Shape.StyledPanel)
@@ -321,7 +322,7 @@ class MinorTerrainPlacementDialog(QFrame):
 
         if terrain_display and location and player:
             # Get terrain key from mapping
-            terrain_key = self.terrain_mapping.get(terrain_display, terrain_display)
+            terrain_key = strict_get(self.terrain_mapping, terrain_display)
             if terrain_key:
                 self.placement_requested.emit(terrain_key, location, player)
 
@@ -538,8 +539,8 @@ class MinorTerrainWidget(QGroupBox):
             # Add placement items
             for placement_data in placements:
                 # Get minor terrain object using base name and eighth face
-                terrain_base_name = placement_data.get("terrain_base_name", "").upper()
-                eighth_face = placement_data.get("eighth_face", "").upper()
+                terrain_base_name = strict_get(placement_data, "terrain_base_name").upper()
+                eighth_face = strict_get(placement_data, "eighth_face").upper()
                 terrain_name_key = f"{terrain_base_name}_{eighth_face}"
 
                 minor_terrain = get_minor_terrain(terrain_name_key)

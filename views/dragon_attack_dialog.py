@@ -27,6 +27,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
+
 
 class DragonDisplayWidget(QWidget):
     """Widget for displaying a single dragon's information."""
@@ -48,16 +50,16 @@ class DragonDisplayWidget(QWidget):
         frame_layout = QVBoxLayout(frame)
 
         # Dragon name and owner
-        name_label = QLabel(f"🐲 {self.dragon_data.get('name', 'Unknown Dragon')}")
+        name_label = QLabel(f"🐲 {strict_get(self.dragon_data, 'name')}")
         name_label.setStyleSheet("font-weight: bold; font-size: 14px; color: #d32f2f;")
         frame_layout.addWidget(name_label)
 
-        owner_label = QLabel(f"Owner: {self.dragon_data.get('owner', 'Unknown')}")
+        owner_label = QLabel(f"Owner: {strict_get(self.dragon_data, 'owner')}")
         owner_label.setStyleSheet("font-size: 12px; color: #666;")
         frame_layout.addWidget(owner_label)
 
         # Dragon elements
-        elements = self.dragon_data.get("elements", [])
+        elements = strict_get_optional(self.dragon_data, "elements", [])
         if elements:
             elements_text = " + ".join(elem.title() for elem in elements)
             elements_label = QLabel(f"Elements: {elements_text}")
@@ -65,8 +67,8 @@ class DragonDisplayWidget(QWidget):
             frame_layout.addWidget(elements_label)
 
         # Dragon health
-        health = self.dragon_data.get("health", 5)
-        max_health = self.dragon_data.get("max_health", 5)
+        health = strict_get(self.dragon_data, "health", "dragon")
+        max_health = strict_get(self.dragon_data, "max_health", "dragon")
         health_label = QLabel(f"Health: {health}/{max_health}")
         health_label.setStyleSheet("font-size: 11px; color: #2e7d32;")
         frame_layout.addWidget(health_label)
@@ -102,19 +104,19 @@ class DragonTargetingWidget(QWidget):
             target_layout = QVBoxLayout(target_frame)
 
             # Dragon name
-            dragon_name = target_info.get("dragon_name", "Unknown Dragon")
+            dragon_name = strict_get(target_info, "dragon_name")
             dragon_label = QLabel(f"🐲 {dragon_name}")
             dragon_label.setStyleSheet("font-weight: bold; color: #d32f2f;")
             target_layout.addWidget(dragon_label)
 
             # Target description
-            target_desc = target_info.get("target_description", "No target")
+            target_desc = strict_get(target_info, "target_description")
             target_label = QLabel(f"→ {target_desc}")
             target_label.setStyleSheet("color: #333; margin-left: 10px;")
             target_layout.addWidget(target_label)
 
             # Reason
-            reason = target_info.get("reason", "")
+            reason = strict_get(target_info, "reason")
             if reason:
                 reason_label = QLabel(f"Reason: {reason}")
                 reason_label.setStyleSheet("font-size: 10px; color: #666; margin-left: 10px;")
@@ -136,26 +138,26 @@ class DragonRollResultWidget(QWidget):
         layout = QVBoxLayout(self)
 
         # Dragon identifier
-        dragon_name = self.dragon_data.get("dragon_name", "Unknown Dragon")
+        dragon_name = strict_get(self.dragon_data, "dragon_name")
         header = QLabel(f"🎲 {dragon_name}")
         header.setStyleSheet("font-weight: bold; font-size: 14px; color: #d32f2f;")
         layout.addWidget(header)
 
         # Die result
-        die_result = self.dragon_data.get("die_result", "Unknown")
+        die_result = strict_get(self.dragon_data, "die_result", "dragon roll result")
         die_label = QLabel(f"Rolled: {die_result}")
         die_label.setStyleSheet("font-size: 12px; font-weight: bold; color: #2e7d32;")
         layout.addWidget(die_label)
 
         # Damage dealt
-        damage = self.dragon_data.get("damage_dealt", 0)
+        damage = strict_get_optional(self.dragon_data, "damage_dealt", 0)
         if damage > 0:
             damage_label = QLabel(f"Damage: {damage} points")
             damage_label.setStyleSheet("font-size: 11px; color: #f57c00;")
             layout.addWidget(damage_label)
 
         # Special effects
-        effects = self.dragon_data.get("special_effects", [])
+        effects = strict_get_optional(self.dragon_data, "special_effects", [])
         if effects:
             effects_label = QLabel("Effects:")
             effects_label.setStyleSheet("font-size: 11px; font-weight: bold; color: #333;")
@@ -282,7 +284,7 @@ class DragonAttackDialog(QDialog):
         }
 
         step_num = list(step_names.keys()).index(self.current_step) + 1
-        self.step_label.setText(step_names.get(self.current_step, "Unknown Step"))
+        self.step_label.setText(strict_get(step_names, self.current_step))
         self.progress_bar.setValue(step_num)
 
         # Update button states
@@ -344,11 +346,11 @@ class DragonAttackDialog(QDialog):
         )
         self.content_layout.addWidget(army_header)
 
-        army_info = QLabel(f"Army: {self.marching_army.get('name', 'Unknown Army')}")
+        army_info = QLabel(f"Army: {strict_get(self.marching_army, 'name')}")
         army_info.setStyleSheet("color: #333; margin-left: 10px;")
         self.content_layout.addWidget(army_info)
 
-        units_count = len(self.marching_army.get("units", []))
+        units_count = len(strict_get_optional(self.marching_army, "units", []))
         units_info = QLabel(f"Units: {units_count} units present")
         units_info.setStyleSheet("color: #333; margin-left: 10px;")
         self.content_layout.addWidget(units_info)
@@ -401,8 +403,8 @@ class DragonAttackDialog(QDialog):
         # Extract breath effects from roll results
         breath_effects = []
         for roll in self.dragon_roll_results:
-            if roll.get("die_result") == "Dragon_Breath":
-                breath_effects.extend(roll.get("breath_effects", []))
+            if strict_get(roll, "die_result", "dragon roll") == "Dragon_Breath":
+                breath_effects.extend(strict_get_optional(roll, "breath_effects", []))
 
         if not breath_effects:
             self._add_message("No breath effects to resolve.")
@@ -424,11 +426,11 @@ class DragonAttackDialog(QDialog):
 
             effect_layout = QVBoxLayout(effect_frame)
 
-            effect_name = QLabel(f"🔥 {effect.get('name', 'Unknown Effect')}")
+            effect_name = QLabel(f"🔥 {strict_get(effect, 'name')}")
             effect_name.setStyleSheet("font-weight: bold; color: #e65100;")
             effect_layout.addWidget(effect_name)
 
-            effect_desc = QLabel(effect.get("effect", "No description"))
+            effect_desc = QLabel(strict_get(effect, "effect"))
             effect_desc.setWordWrap(True)
             effect_desc.setStyleSheet("color: #333; margin-top: 5px;")
             effect_layout.addWidget(effect_desc)
@@ -441,7 +443,9 @@ class DragonAttackDialog(QDialog):
     def _show_army_response_step(self):
         """Show Step 5: Army Response (if army is being attacked)."""
         # Check if army is being attacked
-        army_under_attack = any(roll.get("target_type") == "army" for roll in self.dragon_roll_results)
+        army_under_attack = any(
+            strict_get(roll, "target_type", "dragon roll") == "army" for roll in self.dragon_roll_results
+        )
 
         if not army_under_attack:
             self._add_message("Army is not under direct attack. Skipping army response.")
@@ -486,11 +490,12 @@ class DragonAttackDialog(QDialog):
         self.content_layout.addWidget(header)
 
         # Calculate totals
-        total_damage = sum(roll.get("damage_dealt", 0) for roll in self.dragon_roll_results)
+        total_damage = sum(strict_get_optional(roll, "damage_dealt", 0) for roll in self.dragon_roll_results)
         dragons_killed = [
             roll
             for roll in self.dragon_roll_results
-            if roll.get("target_type") == "dragon" and roll.get("damage_dealt", 0) >= 5
+            if strict_get(roll, "target_type", "dragon roll") == "dragon"
+            and strict_get_optional(roll, "damage_dealt", 0) >= 5
         ]
 
         # Damage summary
@@ -534,7 +539,7 @@ class DragonAttackDialog(QDialog):
 
     def _show_promotions_step(self):
         """Show Step 7: Promotions and Cleanup."""
-        dragons_killed = self.final_results.get("dragons_killed", 0)
+        dragons_killed = strict_get_optional(self.final_results, "dragons_killed", 0)
 
         if dragons_killed > 0:
             self._add_message(f"🎉 Army killed {dragons_killed} dragon(s)! Checking for promotion opportunities...")
@@ -562,7 +567,7 @@ class DragonAttackDialog(QDialog):
             self.content_layout.addWidget(no_promotion_label)
 
         # Wings cleanup
-        wings_rolled = any(roll.get("wings_rolled", False) for roll in self.dragon_roll_results)
+        wings_rolled = any(strict_get_optional(roll, "wings_rolled", False) for roll in self.dragon_roll_results)
         if wings_rolled:
             wings_info = QLabel("🪽 Dragons that rolled wings have flown away and returned to their summoning pools.")
             wings_info.setStyleSheet(
@@ -576,9 +581,9 @@ class DragonAttackDialog(QDialog):
         """Simulate dragon targeting for demonstration."""
         targeting = {}
         for i, dragon in enumerate(self.dragons_present):
-            dragon_id = dragon.get("dragon_id", f"dragon_{i}")
+            dragon_id = strict_get_with_fallback(dragon, "dragon_id", "id", "dragon")
             targeting[dragon_id] = {
-                "dragon_name": dragon.get("name", "Unknown Dragon"),
+                "dragon_name": strict_get(dragon, "name"),
                 "target_description": f"{self.marching_player}'s army",
                 "reason": "No other dragons to attack",
             }
@@ -600,7 +605,7 @@ class DragonAttackDialog(QDialog):
                 "Wing_Left": 5,
                 "Belly_Front": 0,
                 "Treasure": 0,
-            }.get(face, 0)
+            }.get(face, 0)  # Keep as dict.get for damage lookup table
 
             effects = []
             if face == "Jaws":
@@ -618,7 +623,7 @@ class DragonAttackDialog(QDialog):
 
             results.append(
                 {
-                    "dragon_name": dragon.get("name", "Unknown Dragon"),
+                    "dragon_name": strict_get(dragon, "name"),
                     "die_result": face,
                     "damage_dealt": damage,
                     "special_effects": effects,

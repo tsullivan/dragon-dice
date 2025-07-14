@@ -9,6 +9,8 @@ better testability and reusability.
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
+from utils import strict_get
+
 
 @dataclass
 class ValidationResult:
@@ -30,7 +32,15 @@ class ArmyComposition:
 
     def get_total_points(self) -> int:
         """Calculate total points for this army."""
-        return sum(getattr(unit, "max_health", unit.get("max_health", 0)) for unit in self.units)
+        total = 0
+        for unit in self.units:
+            if hasattr(unit, "max_health"):
+                # UnitModel object with max_health attribute
+                total += unit.max_health
+            else:
+                # Dict-style unit data
+                total += strict_get(unit, "max_health")
+        return total
 
     def get_unit_count(self) -> int:
         """Get the number of units in this army."""
@@ -132,7 +142,11 @@ class DragonDiceArmyValidator:
 
         for unit in units:
             # Try to get unit definition to check class type
-            unit_type = getattr(unit, "unit_type", unit.get("unit_type", ""))
+            if hasattr(unit, "unit_type"):
+                unit_type = unit.unit_type
+            else:
+                unit_type = strict_get(unit, "unit_type")
+
             unit_def = None
 
             if self.unit_roster and unit_type:
@@ -140,7 +154,10 @@ class DragonDiceArmyValidator:
 
             # Check if unit is magic class
             if unit_def and unit_def.get("unit_class_type") == "Magic":
-                unit_points = getattr(unit, "max_health", unit.get("max_health", 0))
+                if hasattr(unit, "max_health"):
+                    unit_points = unit.max_health
+                else:
+                    unit_points = strict_get(unit, "max_health")
                 magic_points += unit_points
 
         return magic_points
@@ -242,9 +259,9 @@ class ArmyCompositionBuilder:
         """
         armies = []
 
-        armies_data = player_data.get("armies", {})
+        armies_data = strict_get(player_data, "armies")
         for army_key, army_details in armies_data.items():
-            units = army_details.get("units", [])
+            units = strict_get(army_details, "units")
             armies.append(ArmyComposition(army_type=army_key.title(), units=units))
 
         return armies

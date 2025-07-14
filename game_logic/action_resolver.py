@@ -203,7 +203,9 @@ class ActionResolver(QObject):
                     default_id_melee = 1  # Most units convert 1 ID to 1 melee
                     converted_id_hits += default_id_melee
                     units_that_used_id.add(unit_id)
-                    print(f"ActionResolver: Unit {strict_get(unit, 'name', 'Unit')} used ID for {default_id_melee} melee.")
+                    print(
+                        f"ActionResolver: Unit {strict_get(unit, 'name', 'Unit')} used ID for {default_id_melee} melee."
+                    )
                     break  # Move to the next ID icon to be converted
         calculated_results["hits"] += converted_id_hits
 
@@ -211,7 +213,10 @@ class ActionResolver(QObject):
         # TODO: 4. Apply SAIs from parsed_dice_results that modify the attacker's roll (e.g., Doubler). (This was TODO #3 before ID conversion)
         # Example:
         for icon_data in remaining_icons:
-            if strict_get(icon_data, "type", "IconData") == "SAI" and strict_get(icon_data, "name", "IconData") == "Doubler":
+            if (
+                strict_get(icon_data, "type", "IconData") == "SAI"
+                and strict_get(icon_data, "name", "IconData") == "Doubler"
+            ):
                 print(f"ActionResolver: Applying Doubler. Current hits: {calculated_results['hits']}")
                 calculated_results["hits"] *= 2  # Assuming one Doubler for now
                 # TODO: Handle multiple doublers/triplers (usually best one applies)
@@ -286,7 +291,11 @@ class ActionResolver(QObject):
         # Convert ID icons to save results based on defending unit abilities
         converted_id_saves = 0
         units_that_used_id = set()  # To ensure a unit's ID is used only once per roll
-        id_icons_to_convert = sum(strict_get(item, "count", "SaveDice") for item in parsed_save_dice if strict_get(item, "type", "SaveDice") == "ID")
+        id_icons_to_convert = sum(
+            strict_get(item, "count", "SaveDice")
+            for item in parsed_save_dice
+            if strict_get(item, "type", "SaveDice") == "ID"
+        )
 
         for _ in range(id_icons_to_convert):
             # If Bullseye is active, ID icons might not convert to saves (rule dependent)
@@ -301,7 +310,9 @@ class ActionResolver(QObject):
                     default_id_saves = 1  # Most units convert 1 ID to 1 save
                     converted_id_saves += default_id_saves
                     units_that_used_id.add(unit_id)
-                    print(f"ActionResolver: Unit {strict_get(unit, 'name', 'Unit')} used ID for {default_id_saves} save.")
+                    print(
+                        f"ActionResolver: Unit {strict_get(unit, 'name', 'Unit')} used ID for {default_id_saves} save."
+                    )
                     break  # Move to the next ID icon to be converted
         successful_saves += converted_id_saves
 

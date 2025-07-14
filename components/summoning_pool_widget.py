@@ -20,6 +20,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils import strict_get
+
 
 class DragonDisplayItem(QFrame):
     """Individual dragon display item with element icons and health."""
@@ -57,14 +59,14 @@ class DragonDisplayItem(QFrame):
         dragon_info = QVBoxLayout()
 
         # Dragon name/type
-        dragon_type = dragon_data.get("dragon_type", "Unknown")
-        dragon_form = dragon_data.get("dragon_form", "Dragon")
+        dragon_type = strict_get(dragon_data, "dragon_type")
+        dragon_form = strict_get(dragon_data, "dragon_form")
         name_label = QLabel(f"🐲 {dragon_type} {dragon_form}")
         name_label.setStyleSheet("color: white; font-weight: bold; font-size: 12px;")
         dragon_info.addWidget(name_label)
 
         # Elements display
-        elements = dragon_data.get("elements", [])
+        elements = strict_get(dragon_data, "elements")
         if elements:
             elements_text = " ".join([self._get_element_icon(elem) for elem in elements])
             elements_label = QLabel(elements_text)
@@ -77,13 +79,13 @@ class DragonDisplayItem(QFrame):
         info_layout = QVBoxLayout()
 
         # Health
-        health = dragon_data.get("health", 0)
+        health = strict_get(dragon_data, "health")
         health_label = QLabel(f"❤️ {health}")
         health_label.setStyleSheet("color: #ff6b6b; font-weight: bold;")
         info_layout.addWidget(health_label)
 
         # Owner
-        owner = dragon_data.get("owner", "Unknown")
+        owner = strict_get(dragon_data, "owner")
         owner_label = QLabel(f"👤 {owner}")
         owner_label.setStyleSheet("color: #90ee90; font-size: 10px;")
         info_layout.addWidget(owner_label)
@@ -108,7 +110,7 @@ class DragonDisplayItem(QFrame):
             "ivory": "🤍",
             "white": "⚪",
         }
-        return icons.get(element.lower(), "❓")
+        return strict_get(icons, element.lower())
 
     def mousePressEvent(self, event):  # noqa: N802
         """Handle mouse click to select dragon."""

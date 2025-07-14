@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 from models.dragon_model import calculate_required_dragons
 
 from .terrain_model import TERRAIN_DATA, Terrain
+from utils import strict_get
 
 
 class AppDataModel(QObject):
@@ -89,7 +90,7 @@ class AppDataModel(QObject):
         return None
 
     def get_player_names(self):
-        return [p_data.get("name", f"Player {i + 1}") for i, p_data in enumerate(self._player_setup_data_list)]
+        return [strict_get(p_data, "name") for i, p_data in enumerate(self._player_setup_data_list)]
 
     def get_player_setup_data(self):
         return self._player_setup_data_list
@@ -116,7 +117,7 @@ class AppDataModel(QObject):
     def get_proposed_frontier_terrains(self):
         """Returns a list of tuples (player_name, proposed_terrain_type)"""
         return [
-            (p_data.get("name"), p_data.get("frontier_terrain_proposal"))
+            (strict_get(p_data, "name"), strict_get(p_data, "frontier_terrain_proposal"))
             for p_data in self._player_setup_data_list
             if p_data.get("frontier_terrain_proposal")
         ]

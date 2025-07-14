@@ -37,10 +37,13 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "Swamp Player",
                 "home_terrain": "Swampland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Swamp Guard",
                         "location": "Swamp Player Swampland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Swamp Stalker Scout",
@@ -65,10 +68,13 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "Opponent Player",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Highland Defense",
                         "location": "Opponent Player Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Charioteer",
@@ -117,6 +123,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
         # Set up opponent reserves to enable targeting
         opponent_unit = {
             "name": "Reserve Amazon",
+                                "unit_id": "unit_1",
             "species": "Amazons",
             "health": 1,
             "elements": ["IVORY"],
@@ -132,10 +139,13 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "Feral Player",
                 "home_terrain": "Wasteland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Feral Pack",
                         "location": "Feral Player Wasteland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Feral Scout",
@@ -158,6 +168,8 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                     "campaign": {
                         "name": "Feral Hunters",
                         "location": "Highland",  # Terrain with earth element
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Feral Hunter",
@@ -175,10 +187,13 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "Opponent Player",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Coastal Defense",
                         "location": "Opponent Player Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Scout",
@@ -214,10 +229,13 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "Frostwing Player",
                 "home_terrain": "Frozen Wastes",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Frost Legion",
                         "location": "Frostwing Player Frozen Wastes",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Frostwing Scout",
@@ -242,10 +260,13 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "Opponent Player",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Highland Guard",
                         "location": "Opponent Player Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Soldier",
@@ -287,11 +308,14 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                 {
                     "name": "Dragon Player 1",
                     "home_terrain": "Highland",
-                    "armies": {
+                "force_size": 24,
+                "selected_dragons": [],
+                "armies": {
                         "home": {
                             "name": "Dragon Force",
                             "location": "Dragon Player 1 Highland",
-                            "units": [
+                        "allocated_points": 10,
+                        "units": [
                                 {
                                     "name": "Fire Dragon",
                                     "health": 8,
@@ -309,11 +333,14 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                 {
                     "name": "Dragon Player 2",
                     "home_terrain": "Swampland",
-                    "armies": {
+                "force_size": 24,
+                "selected_dragons": [],
+                "armies": {
                         "home": {
                             "name": "Swamp Dragons",
                             "location": "Dragon Player 2 Swampland",
-                            "units": [
+                        "allocated_points": 10,
+                        "units": [
                                 {
                                     "name": "Death Dragon",
                                     "health": 6,
@@ -335,11 +362,14 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                 {
                     "name": "Dragon Player",
                     "home_terrain": "Highland",
-                    "armies": {
+                "force_size": 24,
+                "selected_dragons": [],
+                "armies": {
                         "home": {
                             "name": "Dragon Army",
                             "location": "Dragon Player Highland",
-                            "units": [
+                        "allocated_points": 10,
+                        "units": [
                                 {
                                     "name": "Fire Dragon",
                                     "health": 6,
@@ -364,11 +394,14 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                 {
                     "name": "Target Player",
                     "home_terrain": "Coastland",
-                    "armies": {
+                "force_size": 24,
+                "selected_dragons": [],
+                "armies": {
                         "home": {
                             "name": "Coastal Defense",
                             "location": "Target Player Coastland",
-                            "units": [
+                        "allocated_points": 10,
+                        "units": [
                                 {
                                     "name": "Amazon Scout",
                                     "health": 1,
@@ -696,6 +729,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
         simulated_bua_frostwings = [
             {
                 "name": "BUA Frostwing Scout",
+                                "unit_id": "unit_2",
                 "species": "Frostwing", 
                 "health": 1,
                 "unit_type": "frostwing_apprentice",

@@ -127,7 +127,7 @@ class GameStateManager(QObject):
                 "active_army_type": "home",
                 "armies": {},  # Will be populated below
                 # Store selected dragons
-                "selected_dragons": p_data.get("selected_dragons", []),
+                "selected_dragons": strict_get(p_data, "selected_dragons"),
                 "captured_terrains_count": 0,
                 "dead_unit_area": [],
                 "buried_unit_area": [],
@@ -136,7 +136,7 @@ class GameStateManager(QObject):
             }
             # Initialize armies for the player
             # 'home', 'campaign', 'horde'
-            for army_type_key, army_details in p_data.get("armies", {}).items():
+            for army_type_key, army_details in strict_get(p_data, "armies").items():
                 # Use provided location if specified, otherwise use default logic
                 location = army_details.get("location")
 
@@ -162,12 +162,10 @@ class GameStateManager(QObject):
                             if opponent_player_name and opponent_home_terrain_type
                             else "Unknown Opponent Home"
                         )
-                # dragon_dice_description = army_details.get("dragon_dice_description", "") # Removed
-                # parsed_dice = self._parse_dragon_dice_description(dragon_dice_description) # Removed
                 self.players[player_name]["armies"][army_type_key] = {
                     "name": army_details["name"],
-                    "points_value": army_details.get("allocated_points", army_details.get("points", 0)),
-                    "units": [UnitModel.from_dict(u_data).to_dict() for u_data in army_details.get("units", [])],
+                    "points_value": strict_get(army_details, "allocated_points"),
+                    "units": [UnitModel.from_dict(u_data).to_dict() for u_data in strict_get(army_details, "units")],
                     "location": location,
                 }
 
@@ -227,11 +225,11 @@ class GameStateManager(QObject):
 
         # Calculate total points allocated to armies
         total_army_points = 0
-        for _army_type, army_data in player_data.get("armies", {}).items():
-            total_army_points += army_data.get("points_value", 0)
+        for _army_type, army_data in strict_get(player_data, "armies").items():
+            total_army_points += strict_get(army_data, "points_value")
 
         # Get force size from player setup data
-        force_size = player_setup_data.get("force_size", 0)
+        force_size = strict_get(player_setup_data, "force_size")
 
         # Calculate reserve pool allocation (remaining points)
         reserve_points = max(0, force_size - total_army_points)
@@ -416,7 +414,7 @@ class GameStateManager(QObject):
         if not player_data:
             raise PlayerNotFoundError(player_name)
 
-        army_data = player_data.get("armies", {}).get(army_type)
+        army_data = strict_get(player_data, "armies").get(army_type)
         if not army_data:
             raise ArmyNotFoundError(player_name, army_type)
 
@@ -428,7 +426,7 @@ class GameStateManager(QObject):
         This is for migrating from old "home" identifiers to "player_1_home" format.
         """
         for player_name, player_data in self.players.items():
-            armies = player_data.get("armies", {})
+            armies = strict_get(player_data, "armies")
             # Army keys are already specific (home, campaign, horde)
             # but we can add unique army IDs for tracking
             for army_type, army_data in armies.items():
@@ -447,7 +445,7 @@ class GameStateManager(QObject):
             player_data = self.get_player_data(player_name)
             if not player_data:
                 raise PlayerNotFoundError(player_name)
-            army = player_data.get("armies", {}).get(army_identifier)
+            army = strict_get(player_data, "armies").get(army_identifier)
             if not army:
                 raise ArmyNotFoundError(player_name, army_identifier)
         else:
@@ -475,7 +473,7 @@ class GameStateManager(QObject):
             player_data = self.get_player_data(player_name)
             if not player_data:
                 raise PlayerNotFoundError(player_name)
-            army = player_data.get("armies", {}).get(army_identifier)
+            army = strict_get(player_data, "armies").get(army_identifier)
             if not army:
                 raise ArmyNotFoundError(player_name, army_identifier)
             target_player = player_name
@@ -550,11 +548,11 @@ class GameStateManager(QObject):
         if not player_data:
             return False
 
-        army = player_data.get("armies", {}).get(army_identifier)
+        army = strict_get(player_data, "armies").get(army_identifier)
         if not army:
             return False
 
-        for unit in army.get("units", []):
+        for unit in strict_get(army, "units"):
             if unit.get("name") == unit_name:
                 army["units"].remove(unit)
                 player_data.setdefault("buried_unit_area", []).append(unit)
@@ -568,11 +566,11 @@ class GameStateManager(QObject):
         if not player_data:
             return False
 
-        army = player_data.get("armies", {}).get(army_identifier)
+        army = strict_get(player_data, "armies").get(army_identifier)
         if not army:
             return False
 
-        for unit in army.get("units", []):
+        for unit in strict_get(army, "units"):
             if unit.get("name") == unit_name:
                 army["units"].remove(unit)
                 player_data.setdefault("reserve_area", []).append(unit)
@@ -586,8 +584,8 @@ class GameStateManager(QObject):
         if not player_data:
             return False
 
-        reserve_area = player_data.get("reserve_area", [])
-        target_army_data = player_data.get("armies", {}).get(target_army)
+        reserve_area = strict_get(player_data, "reserve_area")
+        target_army_data = strict_get(player_data, "armies").get(target_army)
 
         if not target_army_data:
             return False
@@ -606,8 +604,8 @@ class GameStateManager(QObject):
         if not player_data:
             return False
 
-        reserve_pool = player_data.get("reserve_pool", [])
-        target_army_data = player_data.get("armies", {}).get(target_army)
+        reserve_pool = strict_get(player_data, "reserve_pool")
+        target_army_data = strict_get(player_data, "armies").get(target_army)
 
         if not target_army_data:
             return False
@@ -623,7 +621,7 @@ class GameStateManager(QObject):
     def update_army_location(self, player_name: str, army_identifier: str, location: str) -> None:
         """Update the location of an army."""
         player_data = self.get_player_data(player_name)
-        army = player_data.get("armies", {}).get(army_identifier)
+        army = strict_get(player_data, "armies").get(army_identifier)
         if not army:
             raise ArmyNotFoundError(player_name, army_identifier)
 
@@ -695,7 +693,7 @@ class GameStateManager(QObject):
                 # Check if the controlling army still exists and has units
                 try:
                     army_units = self.get_army_units(player_name, army_id)
-                    if not army_units or all(unit.get("health", 0) <= 0 for unit in army_units):
+                    if not army_units or all(strict_get(unit, "health") <= 0 for unit in army_units):
                         # Army destroyed or has no healthy units, lose control
                         self.reset_terrain_control_when_lost(terrain_name)
                         terrains_lost.append(terrain_name)
@@ -715,7 +713,7 @@ class GameStateManager(QObject):
             if army_id is None:
                 army_id = strict_get_optional(player_data, "active_army_type", "home")
 
-            army_data = player_data.get("armies", {}).get(army_id)
+            army_data = strict_get(player_data, "armies").get(army_id)
             if army_data:
                 return army_data.get("location")
 
@@ -727,7 +725,7 @@ class GameStateManager(QObject):
         """Get all armies at a specific location."""
         armies_at_location = []
         for player_name, player_data in self.players.items():
-            for army_id, army in player_data.get("armies", {}).items():
+            for army_id, army in strict_get(player_data, "armies").items():
                 if army.get("location") == location:
                     armies_at_location.append({"player": player_name, "army_id": army_id, "army": army})
         return armies_at_location
@@ -780,17 +778,17 @@ class GameStateManager(QObject):
     def get_reserve_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve pool (available for deployment) for a player."""
         player_data = self.get_player_data(player_name)
-        return list(player_data.get("reserve_pool", []))
+        return list(strict_get(player_data, "reserve_pool"))
 
     def get_reserve_area(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the reserve area (tactical repositioning) for a player."""
         player_data = self.get_player_data(player_name)
-        return list(player_data.get("reserve_area", []))
+        return list(strict_get(player_data, "reserve_area"))
 
     def get_summoning_pool(self, player_name: str) -> List[Dict[str, Any]]:
         """Get the summoning pool for a player."""
         player_data = self.get_player_data(player_name)
-        return list(player_data.get("summoning_pool", []))
+        return list(strict_get(player_data, "summoning_pool"))
 
     def add_to_summoning_pool(self, player_name: str, unit: Dict[str, Any]) -> None:
         """Add a unit to the summoning pool."""
@@ -807,7 +805,7 @@ class GameStateManager(QObject):
         for terrain_data in self.terrains.values():
             controlling_player = terrain_data.get("controlling_player")
             if controlling_player:
-                player_terrain_counts[controlling_player] = player_terrain_counts.get(controlling_player, 0) + 1
+                player_terrain_counts[controlling_player] = strict_get(player_terrain_counts, controlling_player) + 1
 
         # Check if any player controls more than half the terrains
         for player, count in player_terrain_counts.items():
@@ -825,7 +823,7 @@ class GameStateManager(QObject):
         if army_identifier in ["home", "campaign", "horde"]:
             # Direct army type - use provided player_name
             player_data = self.get_player_data(player_name)
-            army = player_data.get("armies", {}).get(army_identifier)
+            army = strict_get(player_data, "armies").get(army_identifier)
             if not army:
                 raise ArmyNotFoundError(player_name, army_identifier)
             target_army_key = army_identifier
@@ -862,8 +860,8 @@ class GameStateManager(QObject):
 
         if units_affected:
             # Check if army is now destroyed and automatically lose terrain control
-            army_units = army.get("units", [])
-            if not army_units or all(unit.get("health", 0) <= 0 for unit in army_units):
+            army_units = strict_get(army, "units")
+            if not army_units or all(strict_get(unit, "health") <= 0 for unit in army_units):
                 # Army is destroyed, check for terrain control loss
                 terrains_lost = self.check_terrain_control_loss(player_name, target_army_key)
                 if terrains_lost:
@@ -915,7 +913,7 @@ class GameStateManager(QObject):
         player_data = self.get_player_data(player_name)
 
         # Validate that the army type exists
-        if army_type not in player_data.get("armies", {}):
+        if army_type not in strict_get(player_data, "armies"):
             raise ArmyNotFoundError(player_name, army_type)
 
         player_data["active_army_type"] = army_type
@@ -930,7 +928,7 @@ class GameStateManager(QObject):
         if not player_data:
             return None
 
-        armies = player_data.get("armies", {})
+        armies = strict_get(player_data, "armies")
 
         # Find armies at the current location
         armies_at_location = []
@@ -960,7 +958,7 @@ class GameStateManager(QObject):
         if not player_data:
             return None
 
-        player_data.get("armies", {})
+        strict_get(player_data, "armies")
 
         # Phase-specific logic
         if current_phase in ["FIRST_MARCH", "SECOND_MARCH"]:
@@ -993,7 +991,7 @@ class GameStateManager(QObject):
         player_data = self.get_player_data(player_name)
         active_army_type = self.get_active_army_type(player_name)
 
-        army_data = player_data.get("armies", {}).get(active_army_type)
+        army_data = strict_get(player_data, "armies").get(active_army_type)
         if not army_data:
             raise ArmyNotFoundError(player_name, active_army_type)
 
@@ -1005,7 +1003,7 @@ class GameStateManager(QObject):
         The "active" army is determined by game flow context.
         """
         active_army = self.get_active_army_data(player_name)
-        return active_army.get("units", []) if active_army else []
+        return strict_get(active_army, "units") if active_army else []
 
     def get_army_units(self, player_name: str, army_id: str) -> List[Dict[str, Any]]:
         """Get units for a specific army."""
@@ -1013,7 +1011,7 @@ class GameStateManager(QObject):
         if not player_data:
             return []
 
-        armies = player_data.get("armies", {})
+        armies = strict_get(player_data, "armies")
         if army_id in armies:
             return armies[army_id].get("units", [])
         return []
@@ -1025,13 +1023,13 @@ class GameStateManager(QObject):
             return []
 
         armies_at_location = []
-        for army_type, army_data in player_data.get("armies", {}).items():
+        for army_type, army_data in strict_get(player_data, "armies").items():
             if army_data.get("location") == location:
                 armies_at_location.append(
                     {
                         "army_type": army_type,
                         "army_data": army_data,
-                        "unique_id": army_data.get("unique_id", f"{player_name}_{army_type}"),
+                        "unique_id": strict_get(army_data, "unique_id"),
                     }
                 )
 
@@ -1046,7 +1044,7 @@ class GameStateManager(QObject):
         armies_at_terrain = []
 
         for player_name, player_data in self.players.items():
-            armies = player_data.get("armies", {})
+            armies = strict_get(player_data, "armies")
 
             for army_type, army_data in armies.items():
                 if army_data.get("location") == terrain_name:
@@ -1060,8 +1058,8 @@ class GameStateManager(QObject):
                             "army_id": army_identifier,
                             "army_data": army_data,
                             "location": terrain_name,
-                            "units": army_data.get("units", []),
-                            "points": army_data.get("points_value", 0),
+                            "units": strict_get(army_data, "units"),
+                            "points": strict_get(army_data, "points_value"),
                         }
                     )
 

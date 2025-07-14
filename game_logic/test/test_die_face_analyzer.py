@@ -15,6 +15,7 @@ from game_logic.die_face_analyzer import (
     UnitDieFaceExtractor,
 )
 from models.die_face_model import DieFaceModel
+from models.test.mock.typed_models import create_test_unit
 
 
 class TestDieFaceCount(unittest.TestCase):
@@ -83,14 +84,16 @@ class TestDieFaceAnalyzer(unittest.TestCase):
 
         self.analyzer = DieFaceAnalyzer(self.mock_unit_roster)
 
-        # Create test units
-        self.melee_unit = Mock()
-        self.melee_unit.unit_type = "melee_unit"
+        # Create typed test units
+        self.melee_unit = create_test_unit(
+            unit_id="melee_unit_1", name="Melee Test Unit", unit_type="melee_unit", health=2, max_health=2
+        )
 
-        self.missile_unit = Mock()
-        self.missile_unit.unit_type = "missile_unit"
+        self.missile_unit = create_test_unit(
+            unit_id="missile_unit_1", name="Missile Test Unit", unit_type="missile_unit", health=1, max_health=1
+        )
 
-        # Dict-style units
+        # Dict-style units for mixed testing
         self.dict_melee_unit = {"unit_type": "melee_unit"}
         self.dict_missile_unit = {"unit_type": "missile_unit"}
 
@@ -258,7 +261,6 @@ class TestDieFaceAnalyzer(unittest.TestCase):
         assert DieFaceAnalyzer.get_icon_for_face_type("Melee") == "⚔️"
         assert DieFaceAnalyzer.get_icon_for_face_type("Missile") == "🏹"
         assert DieFaceAnalyzer.get_icon_for_face_type("Save") == "🛡️"
-        assert DieFaceAnalyzer.get_icon_for_face_type("unknown") == "⭐"  # Falls back to FACE_TYPE_SPECIAL
 
     def test_format_face_summary_compact(self):
         """Test compact face summary formatting."""

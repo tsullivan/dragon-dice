@@ -20,6 +20,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils import strict_get
+
 
 class ReserveUnitItem(QFrame):
     """Individual reserve unit display item."""
@@ -57,8 +59,8 @@ class ReserveUnitItem(QFrame):
         unit_info = QVBoxLayout()
 
         # Unit name and species
-        name = unit_data.get("name", "Unknown Unit")
-        species = unit_data.get("species", "Unknown")
+        name = strict_get(unit_data, "name")
+        species = strict_get(unit_data, "species")
         name_label = QLabel(f"⚔️ {name}")
         name_label.setStyleSheet("color: white; font-weight: bold; font-size: 11px;")
         unit_info.addWidget(name_label)
@@ -73,14 +75,14 @@ class ReserveUnitItem(QFrame):
         stats_layout = QVBoxLayout()
 
         # Health
-        health = unit_data.get("health", 0)
-        max_health = unit_data.get("max_health", health)
+        health = strict_get(unit_data, "health")
+        max_health = strict_get(unit_data, "max_health")
         health_label = QLabel(f"❤️ {health}/{max_health}")
         health_label.setStyleSheet("color: #ff6b6b; font-weight: bold; font-size: 10px;")
         stats_layout.addWidget(health_label)
 
         # Elements
-        elements = unit_data.get("elements", [])
+        elements = strict_get(unit_data, "elements")
         if elements:
             elements_text = " ".join([self._get_element_icon(elem) for elem in elements])
             elements_label = QLabel(elements_text)
@@ -100,7 +102,7 @@ class ReserveUnitItem(QFrame):
             reserve_info.addWidget(turns_label)
 
         # Owner
-        owner = unit_data.get("owner", "Unknown")
+        owner = strict_get(unit_data, "owner")
         owner_label = QLabel(f"👤 {owner}")
         owner_label.setStyleSheet("color: #b0ffb0; font-size: 9px;")
         reserve_info.addWidget(owner_label)
@@ -118,7 +120,7 @@ class ReserveUnitItem(QFrame):
             "ivory": "🤍",
             "white": "⚪",
         }
-        return icons.get(element.lower(), "❓")
+        return strict_get(icons, element.lower())
 
     def mousePressEvent(self, event):  # noqa: N802
         """Handle mouse click to select unit."""

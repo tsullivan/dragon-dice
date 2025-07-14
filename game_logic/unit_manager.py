@@ -10,6 +10,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from utils import strict_get
+
 
 @dataclass
 class SortCriteria:
@@ -183,7 +185,7 @@ class UnitOrganizer:
         species_groups = defaultdict(list)
 
         for unit in units:
-            unit_type_id = unit.get("unit_type_id", unit.get("id", ""))
+            unit_type_id = strict_get(unit, "unit_type_id")
             if unit_type_id:
                 # Try to determine species from unit type ID
                 species = UnitOrganizer._extract_species_from_id(unit_type_id)
@@ -209,7 +211,7 @@ class UnitOrganizer:
         class_groups = defaultdict(list)
 
         for unit in units:
-            class_type = unit.get("unit_class_type", "Unknown")
+            class_type = strict_get(unit, "unit_class_type")
             class_groups[class_type].append(unit)
 
         return dict(class_groups)
@@ -234,7 +236,7 @@ class UnitOrganizer:
         cost_groups = defaultdict(list)
 
         for unit in units:
-            cost = unit.get("max_health", 0)
+            cost = strict_get(unit, "max_health")
             range_name = UnitOrganizer._get_cost_range_name(cost, ranges)
             cost_groups[range_name].append(unit)
 
@@ -260,7 +262,9 @@ class UnitOrganizer:
 
             if isinstance(value, str):
                 # String matching (case-insensitive partial match)
-                filtered_units = [unit for unit in filtered_units if value.lower() in str(unit.get(field, "")).lower()]
+                filtered_units = [
+                    unit for unit in filtered_units if value.lower() in str(strict_get(unit, field)).lower()
+                ]
             elif isinstance(value, (int, float)):
                 # Exact numeric match
                 filtered_units = [unit for unit in filtered_units if unit.get(field) == value]
@@ -334,7 +338,8 @@ class UnitInstanceManager:
             current_count = sum(
                 1
                 for unit in existing_units
-                if getattr(unit, "unit_type", unit.get("unit_type", "")) == config.unit_type_id
+                if (hasattr(unit, "unit_type") and unit.unit_type == config.unit_type_id)
+                or (not hasattr(unit, "unit_type") and strict_get(unit, "unit_type") == config.unit_type_id)
             )
             config.instance_count = current_count
 
@@ -474,7 +479,7 @@ class UnitCollectionManager:
 
         for unit in units:
             for field in search_fields:
-                field_value = str(unit.get(field, "")).lower()
+                field_value = str(strict_get(unit, field)).lower()
                 if search_term in field_value:
                     matching_units.append(unit)
                     break  # Avoid duplicates
@@ -494,11 +499,11 @@ class UnitCollectionManager:
         if not units:
             return {"total_units": 0}
 
-        costs = [unit.get("max_health", 0) for unit in units]
+        costs = [strict_get(unit, "max_health") for unit in units]
         class_counts: Dict[str, int] = defaultdict(int)
 
         for unit in units:
-            class_type = unit.get("unit_class_type", "Unknown")
+            class_type = strict_get(unit, "unit_class_type")
             class_counts[class_type] += 1
 
         return {

@@ -32,10 +32,13 @@ class TestCompleteGameFlows(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Highland Guard",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Charioteer",
@@ -64,6 +67,8 @@ class TestCompleteGameFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Highland Expeditionary Force",
                         "location": "Coastland",  # Frontier terrain
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -94,10 +99,13 @@ class TestCompleteGameFlows(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Coastal Defense",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Runner",
@@ -126,6 +134,8 @@ class TestCompleteGameFlows(unittest.TestCase):
                     "horde": {
                         "name": "Coastal Raiders",
                         "location": "Player 1 Highland",  # Invading Player 1's home
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Seer",
@@ -147,6 +157,8 @@ class TestCompleteGameFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Coastal Strike Force",
                         "location": "Coastland",  # Also at frontier
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Archer",

@@ -36,10 +36,13 @@ class TestActionButtonInteractions(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",
+                        "allocated_points": 10,
                         "units": [],
                     }
                 },
@@ -47,10 +50,13 @@ class TestActionButtonInteractions(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",
+                        "allocated_points": 10,
                         "units": [],
                     }
                 },

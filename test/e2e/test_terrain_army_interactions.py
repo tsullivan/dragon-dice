@@ -32,10 +32,13 @@ class TestTerrainArmyInteractions(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Charioteer",
@@ -57,6 +60,8 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -80,10 +85,13 @@ class TestTerrainArmyInteractions(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Runner",
@@ -105,6 +113,8 @@ class TestTerrainArmyInteractions(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Player 1 Highland",  # Invading Player 1's home
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Seer",

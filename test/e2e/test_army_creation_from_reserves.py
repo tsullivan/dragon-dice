@@ -37,10 +37,13 @@ class TestArmyCreationFromReserves(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Highland Guard",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Home Charioteer",
@@ -56,6 +59,7 @@ class TestArmyCreationFromReserves(unittest.TestCase):
                     "campaign": {
                         "name": "Highland Expedition",
                         "location": "Coastland",  # Frontier terrain
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Campaign Soldier 1",
@@ -85,6 +89,7 @@ class TestArmyCreationFromReserves(unittest.TestCase):
                     "horde": {
                         "name": "Highland Raiders",
                         "location": "Player 2 Coastland",  # Attacking Player 2's home
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Horde Archer 1",
@@ -109,10 +114,13 @@ class TestArmyCreationFromReserves(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Coastal Defense",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Coastal Runner",

@@ -4,6 +4,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from models.action_model import format_action_display
+from utils import strict_get
 
 
 class ActionChoiceWidget(QWidget):
@@ -64,15 +65,15 @@ class ActionChoiceWidget(QWidget):
 
     def set_available_actions(self, acting_army: Dict[str, Any], terrain_data: Optional[Dict[str, Any]] = None):
         """Set which actions are available based on the acting army's terrain die face."""
-        location = acting_army.get("location", "Unknown")
+        location = strict_get(acting_army, "location")
         terrain_die_face = 1  # Default
 
         # Get terrain die face
         if terrain_data and location in terrain_data:
             terrain_info = terrain_data[location]
-            terrain_die_face = terrain_info.get("face", 1)
-            terrain_type = terrain_info.get("type", "")
-            terrain_controller = terrain_info.get("controller", "")
+            terrain_die_face = strict_get(terrain_info, "face")
+            terrain_type = strict_get(terrain_info, "type")
+            terrain_controller = strict_get(terrain_info, "controller")
 
             # Update terrain info display
             if terrain_type == "Frontier":

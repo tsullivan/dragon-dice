@@ -18,6 +18,7 @@ from components.tabbed_view_widget import TabbedViewWidget
 # No change, good comment
 from models.help_text_model import HelpTextModel
 from views.display_utils import format_terrain_type
+from utils import strict_get
 
 
 class DistanceRollsView(QWidget):
@@ -65,9 +66,9 @@ class DistanceRollsView(QWidget):
         distance_allowed_values = list(range(1, 7))
 
         for i, p_data in enumerate(self.player_setup_data):
-            player_name = p_data.get("name", f"Player {i + 1}")
-            home_terrain = p_data.get("home_terrain", "N/A")
-            p_data.get("frontier_terrain_proposal", "")
+            player_name = strict_get(p_data, "name")
+            home_terrain = strict_get(p_data, "home_terrain")
+            strict_get(p_data, "frontier_terrain_proposal")
 
             # Create section for this player
             formatted_home_terrain = format_terrain_type(home_terrain)

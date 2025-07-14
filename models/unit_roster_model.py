@@ -5,6 +5,7 @@ import constants
 
 from .app_data_model import AppDataModel
 from .unit_model import UnitModel
+from utils import strict_get
 
 
 class UnitRosterModel:
@@ -28,7 +29,7 @@ class UnitRosterModel:
                     species=species_name,  # Species is now the key from the JSON object
                     max_health=unit_data["max_health"],
                     abilities=self._map_abilities_to_constants(unit_data.get("abilities", {})),
-                    unit_class_type=unit_data.get("unit_class_type", "Unknown"),
+                    unit_class_type=strict_get(unit_data, "unit_class_type"),
                     die_faces=unit_data.get("die_faces", []),
                 )
 
@@ -66,7 +67,7 @@ class UnitRosterModel:
         units_by_species: Dict[str, List[Dict[str, Any]]] = {}
         # First, group units by species
         for _unit_id, data in self._unit_definitions.items():
-            species = data.get("species", "Unknown")
+            species = strict_get(data, "species")
             if species not in units_by_species:
                 units_by_species[species] = []
             units_by_species[species].append(data)
@@ -75,8 +76,8 @@ class UnitRosterModel:
         for species in units_by_species:
             units_by_species[species].sort(
                 key=lambda x: (
-                    x.get("unit_class_type", ""),  # Primary sort key: unit_class_type
-                    x.get("max_health", 0),  # Secondary sort key: max_health
+                    strict_get(x, "unit_class_type"),  # Primary sort key: unit_class_type
+                    strict_get(x, "max_health"),  # Secondary sort key: max_health
                 )
             )
         return units_by_species

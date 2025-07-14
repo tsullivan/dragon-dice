@@ -11,6 +11,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils import strict_get
+
 
 class ManeuverInputWidget(QWidget):
     """
@@ -69,8 +71,8 @@ class ManeuverInputWidget(QWidget):
             self._army_info_label.setText("No acting army selected")
             return
 
-        army_name = acting_army.get("name", "Unknown Army")
-        location = acting_army.get("location", "Unknown Location")
+        army_name = strict_get(acting_army, "name")
+        location = strict_get(acting_army, "location")
         units = acting_army.get("units", [])
         unit_count = len(units)
 
@@ -78,8 +80,8 @@ class ManeuverInputWidget(QWidget):
         terrain_info = ""
         if terrain_data and location in terrain_data:
             terrain = terrain_data[location]
-            face = terrain.get("face", 1)
-            terrain_type = terrain.get("type", "Unknown")
+            face = strict_get(terrain, "face")
+            terrain_type = strict_get(terrain, "type")
             terrain_info = f"\nTerrain: {terrain_type}, Face {face}"
 
         army_text = f"Army: {army_name}\nLocation: {location}\nUnits: {unit_count}{terrain_info}"

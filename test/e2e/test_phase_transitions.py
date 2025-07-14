@@ -30,10 +30,13 @@ class TestPhaseTransitions(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Charioteer",
@@ -48,6 +51,7 @@ class TestPhaseTransitions(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -64,10 +68,13 @@ class TestPhaseTransitions(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Runner",

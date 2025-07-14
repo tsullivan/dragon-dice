@@ -34,6 +34,8 @@ from game_logic.dua_manager import DUAManager
 from game_logic.bua_manager import BUAManager
 from game_logic.reserves_manager import ReservesManager
 
+from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
+
 
 class MutateAbilityWidget(QWidget):
     """Widget for managing Swamp Stalkers' Mutate ability."""

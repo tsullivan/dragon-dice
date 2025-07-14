@@ -32,10 +32,13 @@ class TestCounterManeuverFlows(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Charioteer",
@@ -57,6 +60,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -80,10 +85,13 @@ class TestCounterManeuverFlows(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Runner",
@@ -105,6 +113,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Coastland",  # Same frontier terrain as Player 1 campaign
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Seer",
@@ -126,6 +136,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Also at frontier
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Archer",
@@ -305,10 +317,14 @@ class TestCounterManeuverFlows(unittest.TestCase):
             {
                 "name": "Player 3",
                 "home_terrain": "Flatland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Also at contested location
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Scout",
@@ -402,10 +418,14 @@ class TestCounterManeuverFlows(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Player 2 Coastland",  # Attacking Player 2's home
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -422,10 +442,13 @@ class TestCounterManeuverFlows(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Runner",
@@ -440,6 +463,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Player 2 Coastland",  # Same location as home
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Archer",
@@ -454,6 +479,8 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Player 2 Coastland",  # Same location as home and campaign
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Seer",
@@ -528,10 +555,13 @@ class TestCounterManeuverFlows(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Charioteer",

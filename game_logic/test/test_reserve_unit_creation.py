@@ -2,28 +2,27 @@ import unittest
 from unittest.mock import MagicMock, Mock, patch
 
 from game_logic.game_state_manager import GameStateManager
+from models.test.mock import create_player_setup_dict, create_army_dict
 
 
 class TestReserveUnitCreation(unittest.TestCase):
     """Test the reserve unit creation system using actual unit roster."""
 
     def setUp(self):
-        """Set up test data for reserve unit creation tests."""
-        self.player_setup_data = [
-            {
-                "name": "Player 1",
-                "home_terrain": "Highland",
-                "armies": {
-                    "home": {
-                        "name": "Home Army",
-                        "location": "Player 1 Highland",
-                        "units": [],
-                        "unique_id": "player_1_home",
-                    }
-                },
-            }
-        ]
+        """Set up test data for reserve unit creation tests using type-safe mocks."""
+        # Create Player 1 with complete mock data
+        player1_data = create_player_setup_dict(name="Player 1", home_terrain="Highland", force_size=24)
+        player1_data["armies"] = {
+            "home": create_army_dict(
+                name="Home Army",
+                location="Player 1 Highland",
+                allocated_points=10,
+                unique_id="player_1_home",
+                unit_count=0,  # Empty army for reserve unit creation tests
+            )
+        }
 
+        self.player_setup_data = [player1_data]
         self.frontier_terrain = "Swampland (Green, Yellow)"
         self.distance_rolls = [("Player 1", 5)]
 

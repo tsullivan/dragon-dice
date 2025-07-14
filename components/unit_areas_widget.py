@@ -20,6 +20,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils import strict_get
+
 
 class UnitAreaItem(QFrame):
     """Individual unit display item for DUA/BUA."""
@@ -76,8 +78,8 @@ class UnitAreaItem(QFrame):
         unit_info = QVBoxLayout()
 
         # Unit name and species
-        name = unit_data.get("name", "Unknown Unit")
-        species = unit_data.get("species", "Unknown")
+        name = strict_get(unit_data, "name")
+        species = strict_get(unit_data, "species")
         name_label = QLabel(f"💀 {name}" if area_type == "DUA" else f"⚱️ {name}")
         name_label.setStyleSheet("color: white; font-weight: bold; font-size: 10px;")
         unit_info.addWidget(name_label)
@@ -93,14 +95,14 @@ class UnitAreaItem(QFrame):
         death_info = QVBoxLayout()
 
         # Death cause/time
-        unit_data.get("death_cause", "Combat")
-        turn_died = unit_data.get("turn_died", "?")
+        strict_get(unit_data, "death_cause")
+        turn_died = strict_get(unit_data, "turn_died")
         death_label = QLabel(f"⚔️ T{turn_died}")
         death_label.setStyleSheet("color: #ddd; font-size: 9px;")
         death_info.addWidget(death_label)
 
         # Owner
-        owner = unit_data.get("owner", "Unknown")
+        owner = strict_get(unit_data, "owner")
         owner_label = QLabel(f"👤 {owner}")
         owner_color = "#ff8b8b" if area_type == "DUA" else "#898989"
         owner_label.setStyleSheet(f"color: {owner_color}; font-size: 8px;")

@@ -9,6 +9,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils import strict_get
+
 
 class ActionDecisionWidget(QWidget):
     """
@@ -63,9 +65,9 @@ class ActionDecisionWidget(QWidget):
     def set_acting_army(self, army_data: Dict[str, Any], terrain_data: Optional[Dict[str, Any]] = None):
         """Set the acting army and show available actions based on terrain die face."""
         try:
-            army_name = army_data.get("name", "Unknown Army")
-            army_type = army_data.get("army_type", "unknown")
-            location = army_data.get("location", "Unknown")
+            army_name = strict_get(army_data, "name")
+            army_type = strict_get(army_data, "army_type")
+            location = strict_get(army_data, "location")
             unit_count = len(army_data.get("units", []))
 
             # Add terrain icon
@@ -94,9 +96,9 @@ class ActionDecisionWidget(QWidget):
 
             if terrain_data and location in terrain_data:
                 terrain_info = terrain_data[location]
-                terrain_die_face = terrain_info.get("face", 1)
-                terrain_type = terrain_info.get("type", "")
-                terrain_controller = terrain_info.get("controller", "")
+                terrain_die_face = strict_get(terrain_info, "face")
+                terrain_type = strict_get(terrain_info, "type")
+                terrain_controller = strict_get(terrain_info, "controller")
 
                 if terrain_type == "Frontier":
                     terrain_description = " (Frontier Terrain)"

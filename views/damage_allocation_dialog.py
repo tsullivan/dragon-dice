@@ -26,6 +26,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from utils import strict_get
+
 
 class UnitDamageWidget(QWidget):
     """Widget for managing damage allocation to a single unit."""
@@ -36,7 +38,7 @@ class UnitDamageWidget(QWidget):
         super().__init__(parent)
         self.unit_name = unit_name
         self.unit_data = unit_data
-        self.max_health = unit_data.get("health", 1)
+        self.max_health = strict_get(unit_data, "health")
         self.current_health = self.max_health
         self.damage_taken = 0
         self.is_killed = False
@@ -49,8 +51,8 @@ class UnitDamageWidget(QWidget):
         layout.setContentsMargins(5, 5, 5, 5)
 
         # Unit info
-        species = self.unit_data.get("species", "Unknown")
-        elements = self.unit_data.get("elements", [])
+        species = strict_get(self.unit_data, "species")
+        elements = strict_get(self.unit_data, "elements")
         element_text = f" ({'/'.join(elements)})" if elements else ""
 
         self.unit_label = QLabel(f"{self.unit_name} - {species}{element_text}")
@@ -240,9 +242,9 @@ class DamageAllocationDialog(QDialog):
         self.units_layout = QVBoxLayout(units_widget)
 
         # Create unit widgets
-        army_units = self.army_data.get("units", [])
+        army_units = strict_get(self.army_data, "units")
         for unit in army_units:
-            unit_name = unit.get("name", "Unknown Unit")
+            unit_name = strict_get(unit, "name")
             unit_widget = UnitDamageWidget(unit_name, unit)
             unit_widget.damage_changed.connect(self._on_unit_damage_changed)
             self.unit_widgets.append(unit_widget)

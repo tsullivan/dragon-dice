@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Tuple
 from typing import Counter as TypingCounter
 
 from models.die_face_model import get_face_icon_by_name
+from utils import strict_get
 
 
 @dataclass
@@ -74,7 +75,11 @@ class DieFaceAnalyzer:
         face_counts: TypingCounter[str] = Counter()
 
         for unit in units:
-            unit_type = getattr(unit, "unit_type", unit.get("unit_type", ""))
+            if hasattr(unit, "unit_type"):
+                unit_type = unit.unit_type
+            else:
+                unit_type = strict_get(unit, "unit_type")
+
             if not unit_type:
                 continue
 
@@ -82,7 +87,10 @@ class DieFaceAnalyzer:
             if not unit_def:
                 continue
 
-            die_faces = unit_def.get("die_faces", {})
+            if "die_faces" not in unit_def:
+                continue
+
+            die_faces = unit_def["die_faces"]
 
             # Count standard faces (face_1 through face_6)
             for face_key in [
@@ -331,7 +339,10 @@ class UnitDieFaceExtractor:
         Returns:
             Dictionary mapping face positions to face types
         """
-        die_faces = unit_def.get("die_faces", {})
+        if "die_faces" not in unit_def:
+            return {}
+
+        die_faces = unit_def["die_faces"]
 
         # Ensure we have all standard face positions
         face_positions = ["face_1", "face_2", "face_3", "face_4", "face_5", "face_6"]

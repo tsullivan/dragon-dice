@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 
 from models.unit_model import UnitModel
 from models.unit_roster_model import UnitRosterModel
+from utils import strict_get
 
 
 class ArmyDieFaceSummaryWidget(QWidget):
@@ -84,7 +85,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
         base_face_type = face_type.split("_")[0] if "_" in face_type else face_type
 
         # Get the standardized face type
-        standard_face_type = face_type_map.get(base_face_type, "SPECIAL")
+        standard_face_type = strict_get(face_type_map, base_face_type)
 
         # Create a temporary DieFaceModel to get the correct icon
         temp_face = DieFaceModel("temp", "Temp Face", face_type=standard_face_type)
@@ -115,7 +116,7 @@ class ArmyDieFaceSummaryWidget(QWidget):
             if not unit_def:
                 continue
 
-            die_faces = unit_def.get("die_faces", [])
+            die_faces = strict_get(unit_def, "die_faces")
 
             # Handle both old dict format and new list of face objects
             if isinstance(die_faces, dict):

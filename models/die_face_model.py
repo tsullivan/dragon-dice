@@ -220,7 +220,7 @@ class DieFaceModel:
             "DRAGON_SPECIAL": "💎",
             FACE_TYPE_SPECIAL: "⭐",
         }
-        return type_icon_map.get(self.face_type, "❓")
+        return strict_get(type_icon_map, self.face_type)
 
     def get_display_info(self) -> Tuple[str, str, str]:
         """Get display information for this die face.
@@ -247,7 +247,7 @@ class DieFaceModel:
             "MAGIC": "#DDA0DD",  # Plum
             FACE_TYPE_SPECIAL: "#F7DC6F",  # Light yellow
         }
-        background_color = color_map.get(self.face_type, "#F0F0F0")
+        background_color = strict_get(color_map, self.face_type)
 
         # Tooltip shows description
         tooltip = self.description if self.description else self.display_name
@@ -285,9 +285,10 @@ def get_face_icon_by_name(face_name: str) -> str:
         "ID": "ID",
         "Move": "MOVE",
         "Maneuver": "MOVE",  # Alias for Move
+        "SAI": "MAGIC",  # SAI is a special magic type
     }
 
-    face_type = face_type_map.get(face_name, FACE_TYPE_SPECIAL)
+    face_type = strict_get(face_type_map, face_name)
 
     # Create a temporary face to use the icon lookup
     temp_face = DieFaceModel(name=face_name, display_name=face_name, description="", face_type=face_type)
@@ -1196,12 +1197,12 @@ def get_die_face_statistics() -> Dict[str, Any]:
     # Count by type
     for face in ALL_DIE_FACES.values():
         face_type = face.face_type
-        faces_by_type[face_type] = faces_by_type.get(face_type, 0) + 1
+        faces_by_type[face_type] = strict_get(faces_by_type, face_type) + 1
 
     # Count by value
     for face in ALL_DIE_FACES.values():
         value = face.base_value
-        value_distribution[value] = value_distribution.get(value, 0) + 1
+        value_distribution[value] = strict_get(value_distribution, value) + 1
 
     stats = {
         "total_faces": len(ALL_DIE_FACES),

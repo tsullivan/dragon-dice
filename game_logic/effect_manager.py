@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal
 
 import constants
+from utils import strict_get
 
 
 class EffectManager(QObject):
@@ -22,7 +23,7 @@ class EffectManager(QObject):
                 raise ValueError("Effect missing required 'id' field")
             if effect["id"] == effect_id:
                 self.active_effects.remove(effect)
-                description = effect.get("description", "Unknown")  # Description is optional for logging
+                description = strict_get(effect, "description")  # Description is optional for logging
                 print(f"EffectManager: Removed effect: {description}")
                 self.effects_changed.emit()
                 return True
@@ -149,10 +150,10 @@ class EffectManager(QObject):
 
         display_effects = []
         for effect in self.active_effects:
-            description = effect.get("description", "Unknown Effect")
-            target = effect.get("target_identifier", "Unknown Target")
-            caster = effect.get("caster_player_name", "Unknown")
-            duration_type = effect.get("duration_type", "")
+            description = strict_get(effect, "description")
+            target = strict_get(effect, "target_identifier")
+            caster = strict_get(effect, "caster_player_name")
+            duration_type = strict_get(effect, "duration_type")
             duration_value = effect.get("duration_value", 0)
 
             # Format duration display
@@ -160,7 +161,7 @@ class EffectManager(QObject):
             if duration_type == constants.EFFECT_DURATION_NEXT_TURN_CASTER:
                 duration_display = f"(until {caster}'s turn)"
             elif duration_type == constants.EFFECT_DURATION_NEXT_TURN_TARGET:
-                affected = effect.get("affected_player_name", "target")
+                affected = strict_get(effect, "affected_player_name")
                 duration_display = f"(until {affected}'s turn)"
             elif duration_type == "COUNTER_BASED":
                 duration_display = f"({duration_value} turns left)"
@@ -205,9 +206,9 @@ class EffectManager(QObject):
 
         for effect in self.active_effects:
             effect_applies = False
-            target_type = effect.get("target_type", "")
-            target_id = effect.get("target_identifier", "")
-            affected_player = effect.get("affected_player_name", "")
+            target_type = strict_get(effect, "target_type")
+            target_id = strict_get(effect, "target_identifier")
+            affected_player = strict_get(effect, "affected_player_name")
 
             # Check if effect applies to the target
             if target_type == constants.EFFECT_TARGET_ARMY:
@@ -228,7 +229,7 @@ class EffectManager(QObject):
                 self._apply_effect_modifiers(effect, action_type, modifiers)
 
         if applicable_effects:
-            effect_names = [e.get("description", "Unknown") for e in applicable_effects]
+            effect_names = [strict_get(e, "description") for e in applicable_effects]
             print(f"EffectManager: Applied effects {effect_names} to {target_player_name} ({action_type})")
             print(f"EffectManager: Final modifiers: {modifiers}")
 
@@ -236,7 +237,7 @@ class EffectManager(QObject):
 
     def _apply_effect_modifiers(self, effect: Dict[str, Any], action_type: str, modifiers: Dict[str, Any]):
         """Apply a single effect's modifiers to the modifiers dictionary."""
-        description = effect.get("description", "").lower()
+        description = strict_get(effect, "description").lower()
 
         # Parse effect description for modifiers
         if "melee" in description and action_type == "MELEE":

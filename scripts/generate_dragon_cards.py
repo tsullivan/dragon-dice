@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from models.die_face_model import DRAGON_DIE_FACES
+from utils import strict_get
 
 
 def load_dragon_type_data():
@@ -39,7 +40,7 @@ def get_element_icon(element):
         "IVORY": "🟫",
         "WHITE": "⬜",
     }
-    return element_icons.get(element, "❓")
+    return strict_get(element_icons, element)
 
 
 def get_face_description(face_name):

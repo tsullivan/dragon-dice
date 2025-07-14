@@ -394,7 +394,7 @@ class SAIProcessor:
                 # Find unit health for ID bonus calculation
                 unit_data = self._find_unit_data(unit_name, army_units)
                 if unit_data:
-                    health = unit_data.get("health", 1)
+                    health = strict_get(unit_data, "health")
                     id_bonus = id_count * health
 
                     # Apply terrain eighth face doubling to ID results
@@ -1529,7 +1529,7 @@ class SAIProcessor:
         """Step 6: Apply modifiers that subtract (minimum 0)."""
         for modifier in result.modifiers:
             if modifier.modifier_type == "subtract":
-                current_value = subtotal.get(modifier.target_result_type, 0)
+                current_value = strict_get(subtotal, modifier.target_result_type)
                 new_value = max(0, current_value - modifier.value)
                 subtotal[modifier.target_result_type] = new_value
                 result.resolution_log.append(f"  Subtract: {modifier.description} ({current_value} -> {new_value})")
@@ -1539,7 +1539,7 @@ class SAIProcessor:
         """Step 7: Apply modifiers that divide (round down)."""
         for modifier in result.modifiers:
             if modifier.modifier_type == "divide":
-                current_value = subtotal.get(modifier.target_result_type, 0)
+                current_value = strict_get(subtotal, modifier.target_result_type)
                 new_value = current_value // modifier.value
                 subtotal[modifier.target_result_type] = new_value
                 result.resolution_log.append(f"  Divide: {modifier.description} ({current_value} -> {new_value})")
@@ -1549,7 +1549,7 @@ class SAIProcessor:
         """Step 8: Add SAI generated action results."""
         for modifier in result.modifiers:
             if modifier.modifier_type == "add" and "SAI" in modifier.source:
-                current_value = subtotal.get(modifier.target_result_type, 0)
+                current_value = strict_get(subtotal, modifier.target_result_type)
                 new_value = current_value + modifier.value
                 subtotal[modifier.target_result_type] = new_value
                 result.resolution_log.append(f"  SAI Add: {modifier.description} ({current_value} -> {new_value})")
@@ -1559,7 +1559,7 @@ class SAIProcessor:
         """Step 9: Apply modifiers that multiply."""
         for modifier in result.modifiers:
             if modifier.modifier_type == "multiply":
-                current_value = subtotal.get(modifier.target_result_type, 0)
+                current_value = strict_get(subtotal, modifier.target_result_type)
                 new_value = current_value * modifier.value
                 subtotal[modifier.target_result_type] = new_value
                 result.resolution_log.append(f"  Multiply: {modifier.description} ({current_value} -> {new_value})")
@@ -1577,7 +1577,7 @@ class SAIProcessor:
         # Apply non-SAI add modifiers
         for modifier in result.modifiers:
             if modifier.modifier_type == "add" and "SAI" not in modifier.source:
-                current_value = subtotal.get(modifier.target_result_type, 0)
+                current_value = strict_get(subtotal, modifier.target_result_type)
                 new_value = current_value + modifier.value
                 subtotal[modifier.target_result_type] = new_value
                 result.resolution_log.append(f"  Add: {modifier.description} ({current_value} -> {new_value})")
@@ -1585,17 +1585,17 @@ class SAIProcessor:
         # Apply counts-as modifiers
         for modifier in result.modifiers:
             if modifier.modifier_type == "counts_as":
-                current_value = subtotal.get(modifier.target_result_type, 0)
+                current_value = strict_get(subtotal, modifier.target_result_type)
                 new_value = current_value + modifier.value
                 subtotal[modifier.target_result_type] = new_value
                 result.resolution_log.append(f"  Counts-as: {modifier.description} ({current_value} -> {new_value})")
 
         # Update final results
-        result.final_melee = subtotal.get("melee", 0)
-        result.final_missile = subtotal.get("missile", 0)
-        result.final_magic = subtotal.get("magic", 0)
-        result.final_save = subtotal.get("save", 0)
-        result.final_maneuver = subtotal.get("maneuver", 0)
+        result.final_melee = strict_get(subtotal, "melee")
+        result.final_missile = strict_get(subtotal, "missile")
+        result.final_magic = strict_get(subtotal, "magic")
+        result.final_save = strict_get(subtotal, "save")
+        result.final_maneuver = strict_get(subtotal, "maneuver")
 
     def _process_roll_with_10_step_resolution(
         self,
@@ -1687,7 +1687,7 @@ class SAIProcessor:
             if id_count > 0:
                 unit_data = self._find_unit_data(unit_name, army_units)
                 if unit_data:
-                    health = unit_data.get("health", 1)
+                    health = strict_get(unit_data, "health")
                     id_bonus = id_count * health
 
                     # Apply terrain eighth face doubling
@@ -1774,7 +1774,7 @@ class SAIProcessor:
     ):
         """Add remaining species abilities as counts-as modifiers."""
         unit_name = strict_get(unit_data, "name", "Unit")
-        species = unit_data.get("species", "")
+        species = strict_get(unit_data, "species")
 
         # Mountain Master: melee counts as maneuver at earth terrain
         if species == "Dwarves" and combat_type == "maneuver" and "earth" in terrain_elements:
@@ -1870,7 +1870,7 @@ class SAIProcessor:
             target_count=x_value,
             target_army=target_army,
             targeting_criteria=targeting_criteria,
-            effect_description=str(sai_info.get("description", "")),
+            effect_description=str(strict_get(sai_info, "description")),
             must_target_fullest_extent=must_target_fullest_extent,
         )
 
@@ -1885,7 +1885,7 @@ class SAIProcessor:
         # Check if this army/unit has already been targeted by multiply/divide SAIs
         restricted_units = []
         for unit in available_units:
-            unit_id = unit.get("unique_id", unit.get("name", ""))
+            unit_id = strict_get(unit, "unique_id")
 
             # Check multiply/divide restrictions
             if self._is_restricted_by_multiply_divide(unit_id, targeting_request):
@@ -1952,7 +1952,7 @@ class SAIProcessor:
 
             # Filter units at current terrain
             for unit in army_units:
-                unit_location = unit.get("location", "")
+                unit_location = strict_get(unit, "location")
                 if unit_location == current_terrain:
                     targetable_units.append(unit)
 
@@ -1980,7 +1980,7 @@ class SAIProcessor:
             # Target a specific number of individual units
             selected_units = available_units[:target_count]
             result.targeted_units = selected_units
-            result.total_health_targeted = sum(unit.get("health", 1) for unit in selected_units)
+            result.total_health_targeted = sum(strict_get(unit, "health") for unit in selected_units)
             result.success = len(selected_units) > 0
 
         elif target_type == "health_worth":
@@ -1989,10 +1989,10 @@ class SAIProcessor:
             health_targeted = 0
 
             # Sort by health to optimize targeting (smallest first for fullest extent)
-            sorted_units = sorted(available_units, key=lambda u: u.get("health", 1))
+            sorted_units = sorted(available_units, key=lambda u: strict_get(u, "health"))
 
             for unit in sorted_units:
-                unit_health = unit.get("health", 1)
+                unit_health = strict_get(unit, "health")
                 if health_targeted + unit_health <= target_count:
                     selected_units.append(unit)
                     health_targeted += unit_health
@@ -2006,14 +2006,16 @@ class SAIProcessor:
                 # Try to target larger units if they would fit
                 remaining_capacity = target_count - health_targeted
                 larger_units = [
-                    u for u in available_units if u not in selected_units and u.get("health", 1) <= remaining_capacity
+                    u
+                    for u in available_units
+                    if u not in selected_units and strict_get(u, "health") <= remaining_capacity
                 ]
 
                 if larger_units:
                     # Add the largest unit that fits
-                    largest_unit = max(larger_units, key=lambda u: u.get("health", 1))
+                    largest_unit = max(larger_units, key=lambda u: strict_get(u, "health"))
                     selected_units.append(largest_unit)
-                    health_targeted += largest_unit.get("health", 1)
+                    health_targeted += strict_get(largest_unit, "health")
 
             result.targeted_units = selected_units
             result.total_health_targeted = health_targeted
@@ -2067,7 +2069,7 @@ class SAIProcessor:
 
             # Record all targeted units
             for unit in targeting_result.targeted_units:
-                unit_id = unit.get("unique_id", unit.get("name", ""))
+                unit_id = strict_get(unit, "unique_id")
                 self._targeting_restrictions["multiply_divide_targeted"].add(unit_id)
 
     def clear_targeting_restrictions(self):

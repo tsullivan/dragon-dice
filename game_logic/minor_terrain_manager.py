@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from PySide6.QtCore import QObject, Signal
 
 from models.minor_terrain_model import MinorTerrain, get_minor_terrain
+from utils import strict_get
 
 
 class MinorTerrainPlacement:
@@ -252,8 +253,8 @@ class MinorTerrainManager(QObject):
 
             for placement_dict in placement_list:
                 # Reconstruct MinorTerrain from data using base name and eighth face
-                terrain_base_name = placement_dict.get("terrain_base_name", "").upper()
-                eighth_face = placement_dict.get("eighth_face", "").upper()
+                terrain_base_name = strict_get(placement_dict, "terrain_base_name").upper()
+                eighth_face = strict_get(placement_dict, "eighth_face").upper()
                 terrain_key = f"{terrain_base_name}_{eighth_face}"
 
                 # Fallback for old save format

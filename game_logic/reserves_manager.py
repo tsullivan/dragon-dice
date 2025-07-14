@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal
 
 from models.spell_model import get_reserve_spells
+from utils import strict_get
 
 
 @dataclass
@@ -56,9 +57,9 @@ class ReserveUnit:
             health=data["health"],
             elements=data["elements"],
             owner=data["owner"],
-            original_terrain=data.get("original_terrain", ""),
-            turn_entered=data.get("turn_entered", 0),
-            entry_reason=data.get("entry_reason", "retreat"),
+            original_terrain=strict_get(data, "original_terrain"),
+            turn_entered=strict_get(data, "turn_entered"),
+            entry_reason=strict_get(data, "entry_reason"),
         )
 
 
@@ -104,10 +105,10 @@ class ReservesManager(QObject):
         """
         # Create reserve unit
         reserve_unit = ReserveUnit(
-            name=unit_data.get("name", "Unknown Unit"),
-            species=unit_data.get("species", "Unknown"),
-            health=unit_data.get("health", 1),
-            elements=unit_data.get("elements", []),
+            name=strict_get(unit_data, "name"),
+            species=strict_get(unit_data, "species"),
+            health=strict_get(unit_data, "health"),
+            elements=strict_get(unit_data, "elements"),
             owner=owner,
             original_terrain=original_terrain,
             turn_entered=self.current_turn,
@@ -278,7 +279,7 @@ class ReservesManager(QObject):
                 continue
 
             army_data = terrain_armies[terrain]
-            army_units = army_data.get("units", [])
+            army_units = strict_get(army_data, "units")
             terrain_retreats = []
 
             for unit_name in unit_names:
@@ -389,9 +390,9 @@ class ReservesManager(QObject):
         """Import reserves state from save/load."""
         self.reserves_by_player = {
             player: [ReserveUnit.from_dict(unit_data) for unit_data in units]
-            for player, units in state.get("reserves_by_player", {}).items()
+            for player, units in strict_get(state, "reserves_by_player").items()
         }
-        self.current_turn = state.get("current_turn", 1)
+        self.current_turn = strict_get(state, "current_turn")
 
     def get_all_reserves(self) -> Dict[str, List[ReserveUnit]]:
         """Get all reserves for all players."""
@@ -422,8 +423,8 @@ class ReservesManager(QObject):
 
         if spell_name == "Scent of Fear":
             # Move units to Reserve Area
-            target_player = effect_data.get("target_player", "")
-            target_units = effect_data.get("target_units", [])
+            target_player = strict_get(effect_data, "target_player")
+            target_units = strict_get(effect_data, "target_units")
 
             for unit_data in target_units:
                 self.add_unit_to_reserves(unit_data, target_player, "", "spell_effect")
@@ -434,8 +435,8 @@ class ReservesManager(QObject):
 
         elif spell_name == "Mirage":
             # Similar to Scent of Fear
-            target_player = effect_data.get("target_player", "")
-            target_units = effect_data.get("target_units", [])
+            target_player = strict_get(effect_data, "target_player")
+            target_units = strict_get(effect_data, "target_units")
 
             for unit_data in target_units:
                 self.add_unit_to_reserves(unit_data, target_player, "", "spell_effect")

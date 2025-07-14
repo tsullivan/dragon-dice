@@ -14,32 +14,37 @@ from game_logic.army_validation import (
     DragonDiceArmyValidator,
     ValidationResult,
 )
+from models.test.mock import create_player_setup_dict
+from models.test.mock.typed_models import create_test_unit
 
 
 class TestArmyComposition(unittest.TestCase):
     """Test the ArmyComposition dataclass."""
 
     def setUp(self):
-        """Set up test fixtures."""
-        # Mock units with different health values
-        self.mock_unit_1pt = Mock()
-        self.mock_unit_1pt.max_health = 1
+        """Set up test fixtures using type-safe mock infrastructure."""
+        # Create typed units with different health values
+        self.unit_1pt = create_test_unit(
+            unit_id="unit_1pt", name="1 Point Unit", unit_type="test_unit_1pt", health=1, max_health=1
+        )
 
-        self.mock_unit_2pt = Mock()
-        self.mock_unit_2pt.max_health = 2
+        self.unit_2pt = create_test_unit(
+            unit_id="unit_2pt", name="2 Point Unit", unit_type="test_unit_2pt", health=2, max_health=2
+        )
 
-        self.mock_unit_3pt = Mock()
-        self.mock_unit_3pt.max_health = 3
+        self.unit_3pt = create_test_unit(
+            unit_id="unit_3pt", name="3 Point Unit", unit_type="test_unit_3pt", health=3, max_health=3
+        )
 
         # Dict-style units for testing
         self.dict_unit_1pt = {"max_health": 1, "unit_type": "test_unit"}
         self.dict_unit_2pt = {"max_health": 2, "unit_type": "test_unit"}
 
     def test_get_total_points_with_mock_units(self):
-        """Test point calculation with mock unit objects."""
+        """Test point calculation with typed unit objects."""
         army = ArmyComposition(
             army_type="Home",
-            units=[self.mock_unit_1pt, self.mock_unit_2pt, self.mock_unit_3pt],
+            units=[self.unit_1pt, self.unit_2pt, self.unit_3pt],
         )
 
         assert army.get_total_points() == 6
@@ -57,7 +62,7 @@ class TestArmyComposition(unittest.TestCase):
 
     def test_get_unit_count(self):
         """Test unit count calculation."""
-        army = ArmyComposition(army_type="Home", units=[self.mock_unit_1pt, self.mock_unit_2pt])
+        army = ArmyComposition(army_type="Home", units=[self.unit_1pt, self.unit_2pt])
 
         assert army.get_unit_count() == 2
 
@@ -71,30 +76,30 @@ class TestDragonDiceArmyValidator(unittest.TestCase):
     """Test the main army validator class."""
 
     def setUp(self):
-        """Set up test fixtures."""
+        """Set up test fixtures using type-safe mock infrastructure."""
         # Mock unit roster
         self.mock_unit_roster = Mock()
         self.mock_unit_roster.get_unit_definition.return_value = {"unit_class_type": "Heavy Melee"}
 
         self.validator = DragonDiceArmyValidator(self.mock_unit_roster)
 
-        # Create test units
-        self.unit_1pt = Mock()
-        self.unit_1pt.max_health = 1
-        self.unit_1pt.unit_type = "test_unit_1"
+        # Create typed test units
+        self.unit_1pt = create_test_unit(
+            unit_id="test_unit_1", name="1 Point Unit", unit_type="test_unit_1", health=1, max_health=1
+        )
 
-        self.unit_2pt = Mock()
-        self.unit_2pt.max_health = 2
-        self.unit_2pt.unit_type = "test_unit_2"
+        self.unit_2pt = create_test_unit(
+            unit_id="test_unit_2", name="2 Point Unit", unit_type="test_unit_2", health=2, max_health=2
+        )
 
-        self.unit_4pt = Mock()
-        self.unit_4pt.max_health = 4
-        self.unit_4pt.unit_type = "magic_unit"
+        self.unit_4pt = create_test_unit(
+            unit_id="magic_unit_4", name="4 Point Magic Unit", unit_type="magic_unit", health=4, max_health=4
+        )
 
         # Magic unit for testing Rule 3
-        self.magic_unit_2pt = Mock()
-        self.magic_unit_2pt.max_health = 2
-        self.magic_unit_2pt.unit_type = "magic_unit"
+        self.magic_unit_2pt = create_test_unit(
+            unit_id="magic_unit_2", name="2 Point Magic Unit", unit_type="magic_unit", health=2, max_health=2
+        )
 
     def test_valid_army_composition(self):
         """Test a valid army composition that should pass all rules."""
@@ -275,12 +280,25 @@ class TestArmyCompositionBuilder(unittest.TestCase):
 
     def test_from_army_widgets(self):
         """Test building army compositions from UI widgets."""
-        # Mock army widgets
+        # Create typed units for widgets
+        unit_2pt = create_test_unit(
+            unit_id="widget_unit_2", name="Widget 2pt Unit", unit_type="widget_unit", health=2, max_health=2
+        )
+
+        unit_3pt = create_test_unit(
+            unit_id="widget_unit_3", name="Widget 3pt Unit", unit_type="widget_unit", health=3, max_health=3
+        )
+
+        unit_1pt = create_test_unit(
+            unit_id="widget_unit_1", name="Widget 1pt Unit", unit_type="widget_unit", health=1, max_health=1
+        )
+
+        # Mock army widgets with typed units
         mock_widget_1 = Mock()
-        mock_widget_1.current_units = [Mock(max_health=2), Mock(max_health=3)]
+        mock_widget_1.current_units = [unit_2pt, unit_3pt]
 
         mock_widget_2 = Mock()
-        mock_widget_2.current_units = [Mock(max_health=1)]
+        mock_widget_2.current_units = [unit_1pt]
 
         army_widgets = {"Home": mock_widget_1, "Campaign": mock_widget_2}
 
@@ -327,7 +345,10 @@ class TestArmyCompositionBuilder(unittest.TestCase):
 
     def test_from_player_data_no_armies(self):
         """Test building army compositions from player data without armies."""
-        player_data = {}
+        # Use type-safe player data with empty armies
+        player_data = create_player_setup_dict(name="Test Player", home_terrain="Highland", force_size=24)
+        # Clear armies to test the no-armies case
+        player_data["armies"] = {}
 
         armies = ArmyCompositionBuilder.from_player_data(player_data)
 

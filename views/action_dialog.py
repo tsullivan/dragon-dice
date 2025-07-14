@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from models.action_model import get_action_icon
+from utils import strict_get
 
 
 class ActionDialog(QDialog):
@@ -124,8 +125,8 @@ class ActionDialog(QDialog):
             return
 
         # Show action summary
-        location = self.acting_army.get("location", "Unknown")
-        army_name = self.acting_army.get("name", "Unknown Army")
+        location = strict_get(self.acting_army, "location")
+        army_name = strict_get(self.acting_army, "name")
 
         summary_text = (
             f"{self.current_player_name}'s {army_name} performs a {self.action_type.lower()} attack at {location}."
@@ -136,7 +137,7 @@ class ActionDialog(QDialog):
         self.content_layout.addWidget(summary_label)
 
         # Show units in the army
-        units = self.acting_army.get("units", [])
+        units = strict_get(self.acting_army, "units")
         if units:
             units_label = QLabel("Units participating in the attack:")
             self.content_layout.addWidget(units_label)
@@ -144,8 +145,8 @@ class ActionDialog(QDialog):
             unit_list = QListWidget()
             unit_list.setMaximumHeight(100)
             for unit in units:
-                unit_name = unit.get("name", "Unknown Unit")
-                unit_health = unit.get("health", 0)
+                unit_name = strict_get(unit, "name")
+                unit_health = strict_get(unit, "health")
                 unit_list.addItem(f"• {unit_name} (Health: {unit_health})")
             self.content_layout.addWidget(unit_list)
 
@@ -214,7 +215,7 @@ class ActionDialog(QDialog):
             "attacker_results": self.attacker_results,
             "defender_results": self.defender_results,
             "army": self.acting_army,
-            "location": self.acting_army.get("location", ""),
+            "location": strict_get(self.acting_army, "location"),
         }
 
         result_label = QLabel(result_text)

@@ -36,6 +36,7 @@ class TestGameEngineFlows:
                 "name": "Player 1",
                 "home_terrain": "Highland",
                 "frontier_terrain_proposal": "Coastland",
+                "force_size": 24,
                 "selected_dragons": [
                     {"dragon_type": "Red Dragon", "die_type": "Drake"}
                 ],
@@ -43,9 +44,11 @@ class TestGameEngineFlows:
                     "home": {
                         "name": "Highland Guard",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Warrior",
+                                "unit_id": "unit_1",
                                 "health": 2,
                                 "max_health": 2,
                                 "unit_type": "warrior",
@@ -53,6 +56,7 @@ class TestGameEngineFlows:
                             },
                             {
                                 "name": "Archer",
+                                "unit_id": "unit_2",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "archer",
@@ -64,9 +68,11 @@ class TestGameEngineFlows:
                     "campaign": {
                         "name": "Highland Expeditionary Force",
                         "location": "Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
+                                "unit_id": "unit_3",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "soldier",
@@ -74,6 +80,7 @@ class TestGameEngineFlows:
                             },
                             {
                                 "name": "Scout",
+                                "unit_id": "unit_4",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "scout",
@@ -85,9 +92,11 @@ class TestGameEngineFlows:
                     "horde": {
                         "name": "Highland Raiders",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Raider",
+                                "unit_id": "unit_5",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "raider",
@@ -102,6 +111,7 @@ class TestGameEngineFlows:
                 "name": "Player 2",
                 "home_terrain": "Coastland",
                 "frontier_terrain_proposal": "Deadland",
+                "force_size": 24,
                 "selected_dragons": [
                     {"dragon_type": "Blue Dragon", "die_type": "Drake"}
                 ],
@@ -109,9 +119,11 @@ class TestGameEngineFlows:
                     "home": {
                         "name": "Coastal Guard",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Guard",
+                                "unit_id": "unit_6",
                                 "health": 2,
                                 "max_health": 2,
                                 "unit_type": "guard",
@@ -119,6 +131,7 @@ class TestGameEngineFlows:
                             },
                             {
                                 "name": "Defender",
+                                "unit_id": "unit_7",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "defender",
@@ -130,9 +143,11 @@ class TestGameEngineFlows:
                     "campaign": {
                         "name": "Coastal Strike Force",
                         "location": "Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Marine",
+                                "unit_id": "unit_8",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "marine",
@@ -140,6 +155,7 @@ class TestGameEngineFlows:
                             },
                             {
                                 "name": "Captain",
+                                "unit_id": "unit_9",
                                 "health": 2,
                                 "max_health": 2,
                                 "unit_type": "captain",
@@ -151,9 +167,11 @@ class TestGameEngineFlows:
                     "horde": {
                         "name": "Coastal Raiders",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Berserker",
+                                "unit_id": "unit_10",
                                 "health": 1,
                                 "max_health": 1,
                                 "unit_type": "berserker",
@@ -201,6 +219,7 @@ class TestGameEngineFlows:
             "units": [
                 {
                     "name": "Soldier",
+                    "unit_id": "unit_11",
                     "health": 1,
                     "max_health": 1,
                     "unit_type": "soldier",
@@ -208,6 +227,7 @@ class TestGameEngineFlows:
                 },
                 {
                     "name": "Scout",
+                    "unit_id": "unit_12",
                     "health": 1,
                     "max_health": 1,
                     "unit_type": "scout",
@@ -233,7 +253,7 @@ class TestGameEngineFlows:
             "parse_dice_string",
             return_value=[
                 {"type": "MELEE", "count": 2},
-                {"type": "SAI", "count": 1, "sai_type": "BULLSEYE"},
+                {"type": "SAI", "count": 1, "sai_type": "BULLSEYE", "name": "BULLSEYE"},
             ],
         ), patch.object(
             self.engine.action_resolver,
@@ -289,6 +309,7 @@ class TestGameEngineFlows:
             "units": [
                 {
                     "name": "Soldier",
+                    "unit_id": "unit_13",
                     "health": 1,
                     "max_health": 1,
                     "unit_type": "soldier",
@@ -296,6 +317,7 @@ class TestGameEngineFlows:
                 },
                 {
                     "name": "Scout",
+                    "unit_id": "unit_14",
                     "health": 1,
                     "max_health": 1,
                     "unit_type": "scout",
@@ -369,7 +391,7 @@ class TestGameEngineFlows:
             "name": "Campaign Army",
             "army_type": "campaign",
             "location": "Coastland",
-            "units": [{"name": "Warrior", "max_health": 2}],
+            "units": [{"name": "Warrior", "unit_id": "unit_15", "health": 2, "max_health": 2, "unit_type": "warrior"}],
         }
 
         try:

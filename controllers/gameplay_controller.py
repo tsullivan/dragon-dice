@@ -1,6 +1,7 @@
 from PySide6.QtCore import QObject, Slot
 
 from game_logic.engine import GameEngine
+from utils import strict_get
 
 
 class GameplayController(QObject):
@@ -57,7 +58,7 @@ class GameplayController(QObject):
     @Slot(str, int, list)
     def handle_unit_selection_required(self, player_name: str, damage_amount: int, available_units: list):
         print(f"[GameplayController] Unit selection required for {player_name}: {damage_amount} damage")
-        print(f"[GameplayController] Available units: {[unit.get('name', 'Unknown') for unit in available_units]}")
+        print(f"[GameplayController] Available units: {[strict_get(unit, 'name') for unit in available_units]}")
         # TODO: Show unit selection dialog for damage allocation
         # For now, just log the requirement
 
@@ -71,7 +72,7 @@ class GameplayController(QObject):
     @Slot(str, list)
     def handle_counter_maneuver_request(self, location: str, opposing_armies: list):
         print(f"[GameplayController] Counter-maneuver requested at {location}")
-        print(f"[GameplayController] Opposing armies: {[army.get('name', 'Unknown') for army in opposing_armies]}")
+        print(f"[GameplayController] Opposing armies: {[strict_get(army, 'name') for army in opposing_armies]}")
         # TODO: Show counter-maneuver decision dialog
 
     @Slot(str, dict, list, dict)
@@ -84,7 +85,7 @@ class GameplayController(QObject):
     ):
         print("[GameplayController] Simultaneous maneuver rolls requested")
         print(f"[GameplayController] Maneuvering player: {maneuvering_player}")
-        print(f"[GameplayController] Maneuvering army: {maneuvering_army.get('name', 'Unknown')}")
+        print(f"[GameplayController] Maneuvering army: {strict_get(maneuvering_army, 'name')}")
         print(f"[GameplayController] Counter responses: {counter_responses}")
         # TODO: Show simultaneous maneuver roll dialog
 

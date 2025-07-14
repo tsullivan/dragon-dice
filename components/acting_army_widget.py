@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from views.display_utils import format_terrain_summary
+from utils import strict_get, strict_get_optional, strict_get_with_fallback
 
 
 class ActingArmyWidget(QWidget):
@@ -70,18 +71,18 @@ class ActingArmyWidget(QWidget):
 
         # Add radio buttons for each army
         for i, army_info in enumerate(armies):
-            army_points = army_info.get("points", 0)
-            army_location = army_info.get("location", "Unknown")
+            army_points = strict_get_with_fallback(army_info, "points", "points_value")
+            army_location = strict_get(army_info, "location")
 
             # Use the army's display_name if available, otherwise use army_type
-            formatted_army_type = army_info.get("display_name", army_info.get("army_type", "Unknown").title())
+            formatted_army_type = strict_get_with_fallback(army_info, "display_name", "name")
 
             # Format location using utility function for consistency with Player Summaries
             if terrain_data and army_location in terrain_data:
                 terrain_info = terrain_data[army_location]
-                terrain_type = terrain_info.get("type", "")
-                face_number = terrain_info.get("face", 1)
-                terrain_controller = terrain_info.get("controller", "")
+                terrain_type = strict_get(terrain_info, "type")
+                face_number = strict_get(terrain_info, "face")
+                terrain_controller = strict_get_optional(terrain_info, "controller")
 
                 # Use standard formatting for consistency
                 formatted_location = format_terrain_summary(

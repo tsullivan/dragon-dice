@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
 
 from game_logic.sai_processor import SAIProcessor
 from models.spell_model import ALL_SPELLS, SpellModel
+from utils import strict_get
 
 
 class MagicDieRollInputWidget(QWidget):
@@ -312,7 +313,7 @@ class SpellSelectionWidget(QWidget):
     def _get_element_icon(self, element: str) -> str:
         """Get icon for element."""
         icons = {"AIR": "💨", "DEATH": "💀", "EARTH": "🌍", "FIRE": "🔥", "WATER": "🌊", "ELEMENTAL": "✨"}
-        return icons.get(element, "⭐")
+        return strict_get(icons, element)
 
     def get_selected_spells(self) -> List[Tuple[SpellModel, int, str]]:
         """Get the list of selected spells."""
@@ -760,7 +761,8 @@ class MagicActionDialog(QDialog):
         # Show magic points by element
         for element, points in self.magic_points_by_element.items():
             if points > 0:
-                icon = {"AIR": "💨", "DEATH": "💀", "EARTH": "🌍", "FIRE": "🔥", "WATER": "🌊"}.get(element, "✨")
+                icon_set = {"AIR": "💨", "DEATH": "💀", "EARTH": "🌍", "FIRE": "🔥", "WATER": "🌊"}
+                icon = strict_get(icon_set, element)
                 results_text += f"{icon} {element}: {points} points\n"
 
         # Show Amazon flexible magic

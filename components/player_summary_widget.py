@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
 from views.display_utils import format_terrain_summary
+from utils import strict_get, strict_get_optional
 
 
 class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled border
@@ -34,17 +35,17 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
         terrain_data: Optional terrain information to determine home vs frontier terrains
         """
         self.setTitle(
-            f"{player_data.get('name', 'N/A')}'s Army"
+            f"{strict_get(player_data, 'name')}'s Army"
         )  # Update title in case name changes (though unlikely here)
 
         summary_html = "<ul>"
         summary_html += f"<li>Captured Terrains: {player_data.get('captured_terrains', 0)}/{player_data.get('terrains_to_win', 2)}</li>"
 
-        armies = player_data.get("armies", [])
+        armies = strict_get(player_data, "armies")
         for army in armies:
-            army_type = army.get("army_type", "home")  # Default to home army
-            army_points = army.get("points", 0)
-            army_location = army.get("location", "N/A")
+            army_type = strict_get(army, "army_type")
+            army_points = strict_get(army, "points")
+            army_location = strict_get(army, "location")
 
             # Use the army's display_name if available, otherwise use army_type
             formatted_army_type = army.get("display_name", army_type.title())
@@ -52,9 +53,9 @@ class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled bor
             # Format location using utility function for consistency with Available Armies
             if terrain_data and army_location in terrain_data:
                 terrain_info = terrain_data[army_location]
-                terrain_type = terrain_info.get("type", "")
-                face_number = terrain_info.get("face", 1)
-                terrain_controller = terrain_info.get("controller", "")
+                terrain_type = strict_get(terrain_info, "type")
+                face_number = strict_get(terrain_info, "face")
+                terrain_controller = strict_get_optional(terrain_info, "controller")
 
                 # Use standard formatting for consistency
                 formatted_location = format_terrain_summary(

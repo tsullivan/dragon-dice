@@ -34,10 +34,13 @@ class TestEighthFaceFlows(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Highland Guard",
                         "location": "Player 1 Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Dwarven Warrior",
@@ -59,6 +62,7 @@ class TestEighthFaceFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Highland Expeditionary Force",
                         "location": "Frontier",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Dwarven Footman",
@@ -82,10 +86,13 @@ class TestEighthFaceFlows(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Coastal Defense",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Coral Elf Warrior",
@@ -100,6 +107,7 @@ class TestEighthFaceFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Coastal Strike Force",
                         "location": "Frontier",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Coral Elf Archer",

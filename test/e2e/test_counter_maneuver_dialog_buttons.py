@@ -32,10 +32,14 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
             {
                 "name": "Player 1",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Soldier",
@@ -52,10 +56,13 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
             {
                 "name": "Player 2",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Home Army",
                         "location": "Player 2 Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Runner",
@@ -70,6 +77,8 @@ class TestCounterManeuverDialogButtons(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Coastland",  # Same frontier terrain as Player 1
+                        
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Seer",

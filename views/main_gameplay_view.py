@@ -40,6 +40,8 @@ from views.missile_combat_dialog import MissileCombatDialog
 from views.reserves_phase_dialog import ReservesPhaseDialog
 from views.species_abilities_phase_dialog import SpeciesAbilitiesPhaseDialog
 
+from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
+
 
 class MainGameplayView(QWidget):
     """
@@ -346,14 +348,14 @@ class MainGameplayView(QWidget):
         print(f"Maneuver completed: {maneuver_result}")
 
         # Apply maneuver results to game state (including terrain face changes)
-        if maneuver_result.get("success"):
+        if strict_get(maneuver_result, "success", "maneuver result"):
             success = self.game_engine.apply_maneuver_results(maneuver_result)
             if success:
-                army_name = maneuver_result.get("army", {}).get("name", "Unknown Army")
-                location = maneuver_result.get("location", "Unknown")
-                direction = maneuver_result.get("direction", "UP")
-                old_face = maneuver_result.get("old_face", "?")
-                new_face = maneuver_result.get("new_face", "?")
+                army_name = strict_get(maneuver_result, "army").get("name", "Unknown Army")
+                location = strict_get(maneuver_result, "location", "maneuver result")
+                direction = strict_get(maneuver_result, "direction", "maneuver result")
+                old_face = strict_get(maneuver_result, "old_face", "maneuver result")
+                new_face = strict_get(maneuver_result, "new_face", "maneuver result")
                 result_text = f"{army_name} maneuvered at {location} - turned terrain {direction} from face {old_face} to {new_face}"
                 self.maneuver_input_submitted_signal.emit(result_text)
             else:
@@ -428,9 +430,9 @@ class MainGameplayView(QWidget):
         # Clear dialog reference
         self.active_action_dialog = None
 
-        action_type = action_result.get("action_type", "UNKNOWN")
-        attacker = action_result.get("attacker", "Unknown")
-        location = action_result.get("location", "Unknown")
+        action_type = strict_get(action_result, "action_type", "action result")
+        attacker = strict_get(action_result, "attacker")
+        location = strict_get(action_result, "location", "action result")
 
         # Apply action results to game state if needed
         # For now, just advance to the next phase
@@ -593,7 +595,7 @@ class MainGameplayView(QWidget):
         terrain_data = self.game_engine.get_all_terrain_data()
         widgets_added = 0
         for player_data in all_players_data:
-            player_name = player_data.get("name", "Unknown Player")
+            player_name = strict_get(player_data, "name")
             summary_widget = PlayerSummaryWidget(player_name)
             summary_widget.update_summary(player_data, terrain_data)
             self.player_armies_info_layout.addWidget(summary_widget)
@@ -612,11 +614,11 @@ class MainGameplayView(QWidget):
 
         relevant_terrains = self.game_engine.get_relevant_terrains_info()
         for terrain in relevant_terrains:
-            terrain_name = terrain.get("name", "N/A")
-            terrain_type = terrain.get("type", "N/A")
-            face_number = terrain.get("face", 1)
-            controller = terrain.get("controller", None)
-            face_details = terrain.get("details", f"Face {face_number}")
+            terrain_name = strict_get(terrain, "name")
+            terrain_type = strict_get(terrain, "type")
+            face_number = strict_get(terrain, "face")
+            controller = strict_get_optional(terrain, "controller")
+            face_details = strict_get(terrain, "details")
 
             # Use utility function for consistent formatting but include face description
             formatted_summary = format_terrain_summary_with_description(
@@ -673,16 +675,17 @@ class MainGameplayView(QWidget):
             current_player = self.game_engine.get_current_player_name()
             all_players_data = self.game_engine.get_all_players_data()
             terrain_data = self.game_engine.get_all_terrain_data()
-            player_data = all_players_data.get(current_player, {})
+            player_data = strict_get(all_players_data, current_player, "players data")
             available_armies = []
 
-            for army_type, army_data in player_data.get("armies", {}).items():
+            for army_type, army_data in strict_get(player_data, "armies", "player data").items():
                 army_info = {
-                    "name": army_data.get("name", f"{army_type.title()} Army"),
+                    "name": strict_get(army_data, "name"),
                     "army_type": army_type,
-                    "location": army_data.get("location", "Unknown"),
-                    "units": army_data.get("units", []),
-                    "unique_id": army_data.get("unique_id", f"{current_player}_{army_type}"),
+                    "location": strict_get(army_data, "location", "army data"),
+                    "units": strict_get_optional(army_data, "units", []),
+                    "unique_id": strict_get_with_fallback(army_data, "unique_id", "id", "army data"),
+                    "points": strict_get_with_fallback(army_data, "points_value", "allocated_points", "army data"),
                 }
                 available_armies.append(army_info)
 
@@ -826,9 +829,11 @@ class MainGameplayView(QWidget):
         terrain_armies = {}
         all_terrain_data = self.game_engine.get_all_terrain_data()
         for terrain_name, terrain_info in all_terrain_data.items():
-            armies = terrain_info.get("armies", {})
+            armies = strict_get_optional(terrain_info, "armies", {})
             player_armies = {
-                army_id: army_data for army_id, army_data in armies.items() if army_data.get("player") == current_player
+                army_id: army_data
+                for army_id, army_data in armies.items()
+                if strict_get(army_data, "player", "army data") == current_player
             }
             if player_armies:
                 # For simplicity, use the first army found
@@ -861,8 +866,8 @@ class MainGameplayView(QWidget):
         print(f"[MainGameplayView] Reserves Phase completed: {results}")
 
         # Process reserves phase results
-        results.get("reinforce_step", {})
-        results.get("retreat_step", {})
+        strict_get_optional(results, "reinforce_step", {})
+        strict_get_optional(results, "retreat_step", {})
 
         # TODO: Apply reserves phase changes to game state
         # This would involve:
@@ -970,16 +975,16 @@ class MainGameplayView(QWidget):
         print(f"[MainGameplayView] Magic completed: {results}")
 
         # Apply magic results to game state
-        if results.get("cast_spells"):
+        if strict_get_optional(results, "cast_spells", False):
             spell_effects = self.game_engine.process_spell_effects(results)
             print(f"[MainGameplayView] Spell effects processed: {spell_effects}")
 
             # Show feedback for spell effects
-            if spell_effects.get("effects_applied"):
+            if strict_get_optional(spell_effects, "effects_applied", False):
                 effects_msg = "\n".join(spell_effects["effects_applied"])
                 print(f"Spell effects applied:\n{effects_msg}")
 
-            if spell_effects.get("errors"):
+            if strict_get_optional(spell_effects, "errors", []):
                 error_msg = "\n".join(spell_effects["errors"])
                 print(f"Spell processing errors:\n{error_msg}")
 
@@ -1002,9 +1007,9 @@ class MainGameplayView(QWidget):
         all_terrain_data = self.game_engine.get_all_terrain_data()
 
         for terrain_name, terrain_info in all_terrain_data.items():
-            armies = terrain_info.get("armies", {})
+            armies = strict_get_optional(terrain_info, "armies", {})
             for _army_id, army_data in armies.items():
-                if army_data.get("player") == current_player:
+                if strict_get(army_data, "player", "army data") == current_player:
                     terrains_with_armies.append(terrain_name)
                     break
 
@@ -1029,8 +1034,8 @@ class MainGameplayView(QWidget):
         # Get marching army at this terrain
         terrain_info = all_terrain_data[target_terrain]
         marching_army = None
-        for _army_id, army_data in terrain_info.get("armies", {}).items():
-            if army_data.get("player") == current_player:
+        for _army_id, army_data in strict_get_optional(terrain_info, "armies", {}).items():
+            if strict_get(army_data, "player", "army data") == current_player:
                 marching_army = army_data
                 break
 
@@ -1089,28 +1094,28 @@ class MainGameplayView(QWidget):
     # Game Areas Widget Handlers
     def _handle_dragon_selected(self, dragon_data: dict):
         """Handle dragon selection from summoning pool."""
-        print(f"[MainGameplayView] Dragon selected: {dragon_data.get('dragon_type', 'Unknown')}")
+        print(f"[MainGameplayView] Dragon selected: {strict_get(dragon_data, 'dragon_type')}")
         # Could show dragon details, enable summoning actions, etc.
 
     def _handle_reserve_unit_selected(self, unit_data: dict):
         """Handle reserve unit selection."""
-        print(f"[MainGameplayView] Reserve unit selected: {unit_data.get('name', 'Unknown')}")
+        print(f"[MainGameplayView] Reserve unit selected: {strict_get(unit_data, 'name')}")
         # Could show unit details, enable deployment actions, etc.
 
     def _handle_area_unit_selected(self, unit_data: dict, area_type: str):
         """Handle unit selection from DUA/BUA."""
-        print(f"[MainGameplayView] {area_type} unit selected: {unit_data.get('name', 'Unknown')}")
+        print(f"[MainGameplayView] {area_type} unit selected: {strict_get(unit_data, 'name')}")
         # Could show unit details, enable resurrection actions for DUA, etc.
 
     def _handle_deploy_unit(self, unit_data: dict):
         """Handle unit deployment request from reserves."""
-        print(f"[MainGameplayView] Deploy unit requested: {unit_data.get('name', 'Unknown')}")
+        print(f"[MainGameplayView] Deploy unit requested: {strict_get(unit_data, 'name')}")
         # TODO: Implement deployment logic
         # Would need to show terrain selection, handle deployment rules, etc.
 
     def _handle_resurrect_unit(self, unit_data: dict):
         """Handle unit resurrection request from DUA."""
-        print(f"[MainGameplayView] Resurrect unit requested: {unit_data.get('name', 'Unknown')}")
+        print(f"[MainGameplayView] Resurrect unit requested: {strict_get(unit_data, 'name')}")
         # TODO: Implement resurrection logic
         # Would need to check for resurrection spells, handle costs, etc.
 

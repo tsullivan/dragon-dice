@@ -6,31 +6,40 @@ from game_logic.engine import GameEngine  # To instantiate the game engine for t
 from models.game_phase_model import get_turn_phases
 from test.utils.visual_test_helpers import capture_widget_screenshot
 from views.main_gameplay_view import MainGameplayView
+from models.test.mock import create_player_setup_dict, create_army_dict
 
 
 def setup_game_engine():
-    """Helper to create a GameEngine instance with mock data."""
-    # Mock data for GameEngine initialization
-    mock_player_setup_data = [
-        {
-            "name": "Player 1",
-            "home_terrain": "Highland",
-            "armies": {
-                "home": {"name": "P1 Home", "points": 10},
-                "campaign": {"name": "P1 Campaign", "points": 10},
-                "horde": {"name": "P1 Horde", "points": 4},
-            },
-        },
-        {
-            "name": "Player 2",
-            "home_terrain": "Coastland",
-            "armies": {
-                "home": {"name": "P2 Home", "points": 12},
-                "campaign": {"name": "P2 Campaign", "points": 8},
-                "horde": {"name": "P2 Horde", "points": 4},
-            },
-        },
-    ]
+    """Helper to create a GameEngine instance with type-safe mock data."""
+    # Create Player 1 with complete mock data
+    player1_data = create_player_setup_dict(name="Player 1", home_terrain="Highland", force_size=24)
+    player1_data["armies"] = {
+        "home": create_army_dict(
+            name="P1 Home", location="Player 1 Highland", allocated_points=10, unique_id="player_1_home", unit_count=1
+        ),
+        "campaign": create_army_dict(
+            name="P1 Campaign", location="Flatland", allocated_points=10, unique_id="player_1_campaign", unit_count=1
+        ),
+        "horde": create_army_dict(
+            name="P1 Horde", location="Player 2 Coastland", allocated_points=4, unique_id="player_1_horde", unit_count=1
+        ),
+    }
+
+    # Create Player 2 with complete mock data
+    player2_data = create_player_setup_dict(name="Player 2", home_terrain="Coastland", force_size=24)
+    player2_data["armies"] = {
+        "home": create_army_dict(
+            name="P2 Home", location="Player 2 Coastland", allocated_points=12, unique_id="player_2_home", unit_count=1
+        ),
+        "campaign": create_army_dict(
+            name="P2 Campaign", location="Flatland", allocated_points=8, unique_id="player_2_campaign", unit_count=1
+        ),
+        "horde": create_army_dict(
+            name="P2 Horde", location="Player 1 Highland", allocated_points=4, unique_id="player_2_horde", unit_count=1
+        ),
+    }
+
+    mock_player_setup_data = [player1_data, player2_data]
     mock_first_player_name = "Player 1"
     mock_frontier_terrain = "Flatland"
     mock_distance_rolls = [("Player 1", 3), ("Player 2", 5)]

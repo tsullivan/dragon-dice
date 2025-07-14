@@ -37,10 +37,13 @@ class TestTerrainActionRestrictions(unittest.TestCase):
             {
                 "name": "Action Player",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Highland Guard",
                         "location": "Action Player Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Charioteer",
@@ -63,6 +66,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
                     "campaign": {
                         "name": "Test Army",
                         "location": terrain_name,
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Soldier",
@@ -87,10 +91,13 @@ class TestTerrainActionRestrictions(unittest.TestCase):
             {
                 "name": "Opponent Player",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "home": {
                         "name": "Coastal Defense",
                         "location": "Opponent Player Coastland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Runner",
@@ -554,10 +561,13 @@ class TestTerrainActionRestrictions(unittest.TestCase):
             {
                 "name": "Action Player",
                 "home_terrain": "Highland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Test Army",
                         "location": "Highland",
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Soldier",
@@ -575,10 +585,13 @@ class TestTerrainActionRestrictions(unittest.TestCase):
             {
                 "name": "Opponent Player",
                 "home_terrain": "Coastland",
+                "force_size": 24,
+                "selected_dragons": [],
                 "armies": {
                     "campaign": {
                         "name": "Opponent Army",
                         "location": "Highland",  # Same location for combat
+                        "allocated_points": 10,
                         "units": [
                             {
                                 "name": "Amazon Runner",
@@ -839,6 +852,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # Add a unit to reserves for testing
         reserve_unit_data = {
             "name": "Amazon Reserve",
+                                "unit_id": "unit_1",
             "species": "amazon",
             "health": 2,
             "elements": ["WATER"],
