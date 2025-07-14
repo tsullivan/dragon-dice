@@ -113,8 +113,8 @@ class EighthFaceManager(QObject):
             control_result = self._determine_terrain_controller(terrain_id, terrain_info, all_players_data)
             terrain_control[terrain_id] = {
                 "terrain_name": strict_get(terrain_info, "name"),
-                "terrain_eighth_face": strict_get_with_fallback(terrain_info, "current_face", "face"),
-                "terrain_subtype": strict_get_with_fallback(terrain_info, "subtype", "type"),
+                "terrain_current_face": strict_get_with_fallback(terrain_info, "current_face", "face"),
+                "terrain_eighth_face": strict_get_with_fallback(terrain_info, "eighth_face", "type"),
                 "controller": control_result["controller"],
                 "control_strength": control_result["control_strength"],
                 "armies_present": control_result["armies_present"],
@@ -231,36 +231,36 @@ class EighthFaceManager(QObject):
         Returns:
             Effect result dictionary if an effect was processed, None otherwise
         """
-        terrain_subtype = strict_get(terrain_data, "terrain_subtype")
+        terrain_eighth_face = strict_get(terrain_data, "terrain_eighth_face")
         terrain_name = strict_get(terrain_data, "terrain_name")
 
         effect_result = {
             "terrain_id": terrain_id,
             "terrain_name": terrain_name,
-            "terrain_subtype": terrain_subtype,
+            "terrain_eighth_face": terrain_eighth_face,
             "player": player_name,
-            "effect_type": terrain_subtype.lower(),
+            "effect_type": terrain_eighth_face.lower(),
             "choice_required": False,
             "choices": [],
             "automatic_effect": False,
         }
 
-        # Process effect based on terrain subtype
-        if terrain_subtype == "City":
+        # Process effect based on terrain eighth_face
+        if terrain_eighth_face == "City":
             effect_result.update(self._process_city_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Dragon Lair":
+        elif terrain_eighth_face == "Dragon Lair":
             effect_result.update(self._process_dragon_lair_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Grove":
+        elif terrain_eighth_face == "Grove":
             effect_result.update(self._process_grove_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Standing Stones":
+        elif terrain_eighth_face == "Standing Stones":
             effect_result.update(self._process_standing_stones_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Temple":
+        elif terrain_eighth_face == "Temple":
             effect_result.update(self._process_temple_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Tower":
+        elif terrain_eighth_face == "Tower":
             effect_result.update(self._process_tower_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Vortex":
+        elif terrain_eighth_face == "Vortex":
             effect_result.update(self._process_vortex_eighth_face(player_name, terrain_id))
-        elif terrain_subtype == "Castle":
+        elif terrain_eighth_face == "Castle":
             effect_result.update(self._process_castle_eighth_face(player_name, terrain_id))
         else:
             # Unknown terrain eighth_face

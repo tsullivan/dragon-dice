@@ -2325,12 +2325,12 @@ class GameEngine(QObject):
             return False
 
         terrain_name = strict_get(terrain_data, "name").lower()
-        terrain_subtype = strict_get(terrain_data, "subtype").lower()
+        terrain_eighth_face = strict_get(terrain_data, "eighth_face").lower()
         terrain_face = terrain_data.get("current_face", strict_get(terrain_data, "face"))
         controller = terrain_data.get("controller") or terrain_data.get("controlling_player")
 
         # Check if this is a Temple terrain at eighth face controlled by the player
-        is_temple = "temple" in terrain_name or "temple" in terrain_subtype
+        is_temple = "temple" in terrain_name or "temple" in terrain_eighth_face
         return is_temple and terrain_face == 8 and controller == player_name
 
     def _get_default_species(self):
