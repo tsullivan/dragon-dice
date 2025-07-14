@@ -15,7 +15,7 @@ from game_logic.minor_terrain_manager import MinorTerrainManager
 from game_logic.promotion_manager import PromotionManager
 from game_logic.reserves_manager import ReservesManager, ReserveUnit
 from game_logic.sai_processor import SAIProcessor
-from game_logic.spell_database import SpellDatabase
+from models.spell_model import SpellDatabase
 from game_logic.spell_targeting import SpellTargetingManager
 from game_logic.summoning_pool_manager import SummoningPoolManager
 from game_logic.turn_manager import TurnManager

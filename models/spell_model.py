@@ -630,3 +630,103 @@ def get_spell_statistics() -> Dict[str, Any]:
     }
 
     return stats
+
+
+class SpellDatabase:
+    """Manages the Dragon Dice spell database and spell selection logic."""
+
+    def __init__(self):
+        pass  # All functionality now uses the module-level functions
+
+    def get_available_spells(
+        self,
+        magic_points_by_element: Dict[str, int],
+        army_species: List[str],
+        cantrip_points: int = 0,
+        cantrip_only: bool = False,
+    ) -> List[SpellModel]:
+        """
+        Get list of spells that can be cast with available magic points.
+
+        Args:
+            magic_points_by_element: Dictionary of element -> available magic points
+            army_species: List of species present in the casting army
+            cantrip_points: Magic points available specifically for cantrip spells
+            cantrip_only: If True, only return cantrip spells
+
+        Returns:
+            List of spells that can be cast
+        """
+        available_spells = []
+
+        for spell in ALL_SPELLS.values():
+            if spell.reserves:
+                continue  # Skip reserve spells for now
+
+            # Check if this is cantrip-only mode
+            if cantrip_only and not spell.cantrip:
+                continue
+
+            # Check if we have enough magic points
+            if cantrip_only:
+                # Use cantrip points
+                if spell.cost > cantrip_points:
+                    continue
+            else:
+                # Use regular magic points
+                if spell.element == "ELEMENTAL":
+                    # Elemental spells can be cast with any element
+                    total_available = sum(magic_points_by_element.values())
+                    if spell.cost > total_available:
+                        continue
+                else:
+                    # Element-specific spell
+                    element_key = spell.element.lower() if spell.element else "elemental"
+                    available_for_element = strict_get(magic_points_by_element, element_key)
+                    if spell.cost > available_for_element:
+                        continue
+
+            # Check species restrictions
+            if spell.species != "Any" and spell.species not in army_species:
+                continue
+
+            available_spells.append(spell)
+
+        # Sort by element, then by cost, then by name
+        available_spells.sort(key=lambda s: (s.element or "ELEMENTAL", s.cost, s.name))
+        return available_spells
+
+    def get_spell_by_name(self, name: str) -> Optional[SpellModel]:
+        """Get a spell by its name."""
+        return get_spell(name)
+
+    def get_spells_by_element(self, element: str) -> List[SpellModel]:
+        """Get all spells of a specific element."""
+        element_spells = get_spells_by_element(element)
+        return [spell for spell in element_spells.values() if not spell.reserves]
+
+    def get_cantrip_spells(self) -> List[SpellModel]:
+        """Get all cantrip spells."""
+        return [spell for spell in get_cantrip_spells() if not spell.reserves]
+
+    def format_spell_description(self, spell: SpellModel) -> str:
+        """Format a spell for display."""
+        element_icons = {"AIR": "💨", "DEATH": "💀", "EARTH": "🌍", "FIRE": "🔥", "WATER": "🌊", "ELEMENTAL": "✨"}
+
+        icon = element_icons.get(spell.element or "ELEMENTAL", "✨")
+        species_text = f" ({spell.species})" if spell.species != "Any" else ""
+        cantrip_text = " [Cantrip]" if spell.cantrip else ""
+
+        return f"{icon} {spell.name}{species_text}{cantrip_text} - Cost: {spell.cost}\n    {spell.effect}"
+
+    def get_element_color(self, element: str) -> str:
+        """Get CSS color for an element."""
+        element_colors = {
+            "AIR": "#87ceeb",  # Sky blue
+            "DEATH": "#2f2f2f",  # Dark gray
+            "EARTH": "#daa520",  # Goldenrod
+            "FIRE": "#ff6347",  # Tomato red
+            "WATER": "#4682b4",  # Steel blue
+            "ELEMENTAL": "#9370db",  # Medium purple
+        }
+        return element_colors.get(element.upper(), "#9370db")
