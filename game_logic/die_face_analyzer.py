@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Tuple
 from typing import Counter as TypingCounter
 
 from models.die_face_model import get_face_icon_by_name
-from utils import strict_get
+from utils import strict_get, strict_get_optional
 
 
 @dataclass
@@ -58,6 +58,54 @@ class DieFaceAnalyzer:
             unit_roster: Optional unit roster for looking up unit definitions
         """
         self.unit_roster = unit_roster
+
+    def count_magic_results_by_element(self, units: List[Any]) -> Dict[str, int]:
+        """
+        Count magic results by element from a list of units.
+
+        Args:
+            units: List of unit objects or dictionaries
+
+        Returns:
+            Dictionary mapping element names to magic result counts
+        """
+        if not self.unit_roster or not units:
+            return {}
+
+        element_magic_counts: Dict[str, int] = {}
+
+        for unit in units:
+            # Get unit species elements
+            if hasattr(unit, "species"):
+                species = unit.species
+                if hasattr(species, "elements"):
+                    unit_elements = species.elements
+                else:
+                    unit_elements = []
+            else:
+                # Handle dict format
+                species_data = unit.get("species", {})
+                unit_elements = species_data.get("elements", [])
+
+            # Get magic face count for this unit
+            unit_type = getattr(unit, "unit_type", strict_get_optional(unit, "unit_type", ""))
+            unit_def = self.unit_roster.get_unit_by_type_id(unit_type)
+
+            if unit_def:
+                magic_faces = [face for face in unit_def.faces if "magic" in face.name.lower()]
+                magic_count = len(magic_faces)
+
+                # Distribute magic results among unit's elements
+                if unit_elements and magic_count > 0:
+                    # For multi-element units, player chooses element distribution
+                    # For now, distribute evenly among elements
+                    for element in unit_elements:
+                        element_name = element.lower()
+                        if element_name not in element_magic_counts:
+                            element_magic_counts[element_name] = 0
+                        element_magic_counts[element_name] += magic_count
+
+        return element_magic_counts
 
     def count_die_faces(self, units: List[Any]) -> Dict[str, int]:
         """

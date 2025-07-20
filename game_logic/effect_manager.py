@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal
 
 import constants
-from utils import strict_get
+from utils import strict_get, strict_get_optional
 
 
 class EffectManager(QObject):
@@ -55,6 +55,30 @@ class EffectManager(QObject):
     def _generate_unique_effect_id(self):
         return str(uuid.uuid4())
 
+    def add_spell_effect(self, caster_player: str, spell_effect_data: Dict[str, Any]) -> str:
+        """Add a spell effect with proper duration tracking."""
+        effect_id = self._generate_unique_effect_id()
+
+        spell_effect = {
+            "id": effect_id,
+            "type": "spell",
+            "spell_name": strict_get(spell_effect_data, "spell_name"),
+            "caster_player_name": caster_player,
+            "affected_player_name": strict_get(spell_effect_data, "target_player"),
+            "effect_type": strict_get(spell_effect_data, "effect_type"),
+            "modifier_data": strict_get_optional(spell_effect_data, "modifier_data", {}),
+            "duration": strict_get(spell_effect_data, "duration"),
+            "created_turn": strict_get_optional(spell_effect_data, "current_turn", 1),
+            "description": f"{spell_effect_data.get('spell_name')} cast by {caster_player}",
+            "target_type": strict_get(spell_effect_data, "target_type"),
+            "target_identifier": strict_get(spell_effect_data, "target_identifier"),
+        }
+
+        self.active_effects.append(spell_effect)
+        print(f"EffectManager: Added spell effect: {spell_effect['spell_name']} by {caster_player}")
+        self.effects_changed.emit()
+        return effect_id
+
     def add_effect(
         self,
         description: str,
@@ -69,6 +93,7 @@ class EffectManager(QObject):
         """Adds a new active effect."""
         effect = {
             "id": self._generate_unique_effect_id(),
+            "type": "general",
             "description": description,
             "source": source,
             "target_type": target_type,
@@ -83,12 +108,73 @@ class EffectManager(QObject):
         self.effects_changed.emit()
         return effect["id"]  # Return effect ID for potential removal
 
+    def expire_spell_effects_for_player(self, player_name: str) -> List[str]:
+        """Expire spell effects that last 'until beginning of your next turn' for a specific player."""
+        expired_effects = []
+        remaining_effects = []
+
+        for effect in self.active_effects:
+            if (
+                effect.get("type") == "spell"
+                and effect.get("caster_player_name") == player_name
+                and effect.get("duration") == "until_next_turn"
+            ):
+                expired_effects.append(effect["spell_name"])
+                print(f"EffectManager: Expired spell effect: {effect['spell_name']} by {player_name}")
+            else:
+                remaining_effects.append(effect)
+
+        self.active_effects = remaining_effects
+
+        if expired_effects:
+            self.effects_changed.emit()
+
+        return expired_effects
+
+    def get_active_spell_effects_for_target(self, target_type: str, target_identifier: str) -> List[Dict[str, Any]]:
+        """Get all active spell effects affecting a specific target."""
+        return [
+            effect
+            for effect in self.active_effects
+            if (
+                effect.get("type") == "spell"
+                and effect.get("target_type") == target_type
+                and effect.get("target_identifier") == target_identifier
+            )
+        ]
+
+    def get_modifier_effects_for_army(self, army_identifier: str) -> List[Dict[str, Any]]:
+        """Get all modifier effects (spell or otherwise) affecting a specific army."""
+        modifiers = []
+
+        for effect in self.active_effects:
+            if (
+                effect.get("target_type") == "army"
+                and effect.get("target_identifier") == army_identifier
+                and effect.get("effect_type") == "modifier"
+            ):
+                modifiers.append(effect)
+
+        return modifiers
+
     def process_effect_expirations(self, current_player_name: str, current_phase: Optional[str] = None):
         """Processes effects that might expire at the start of a player's turn or round."""
         effects_to_remove = []
 
+        # First, process spell-specific expirations
+        spell_effects_expired = self.expire_spell_effects_for_player(current_player_name)
+        if spell_effects_expired:
+            print(f"EffectManager: Expired {len(spell_effects_expired)} spell effects for {current_player_name}")
+
+        # Then process general effects
         for effect in self.active_effects:
             should_expire = False
+            effect_type = strict_get(effect, "type")
+
+            # Skip spell effects as they're handled separately
+            if effect_type == "spell":
+                continue
+
             if "duration_type" not in effect:
                 raise ValueError("Effect missing required 'duration_type' field")
             if "caster_player_name" not in effect:
@@ -154,7 +240,7 @@ class EffectManager(QObject):
             target = strict_get(effect, "target_identifier")
             caster = strict_get(effect, "caster_player_name")
             duration_type = strict_get(effect, "duration_type")
-            duration_value = effect.get("duration_value", 0)
+            duration_value = strict_get_optional(effect, "duration_value", 0)
 
             # Format duration display
             duration_display = ""

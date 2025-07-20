@@ -3,7 +3,9 @@ from typing import Optional, List, Dict, Any
 from PySide6.QtCore import QObject, Signal
 
 from .effect_manager import EffectManager
+from .spell_resolver import SpellResolver
 from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+from models.spell_model import get_available_spells
 
 # Forward declaration for type hinting if GameStateManager and EffectManager are in different files
 # and create circular dependencies. Or import them directly if no circular dependency.
@@ -22,12 +24,14 @@ class ActionResolver(QObject):
         game_state_manager: GameStateManager,
         effect_manager: EffectManager,
         minor_terrain_manager=None,
+        spell_resolver: Optional[SpellResolver] = None,
         parent: Optional[QObject] = None,
     ):
         super().__init__(parent)
         self.game_state_manager = game_state_manager
         self.effect_manager = effect_manager
         self.minor_terrain_manager = minor_terrain_manager
+        self.spell_resolver = spell_resolver
 
         # Store context for determining target armies
         self._current_combat_location = None
@@ -782,27 +786,48 @@ class ActionResolver(QObject):
 
         self.next_action_step_determined.emit("")  # End action
 
-    def resolve_magic_action(self, casting_player_name: str, magic_roll_results_str: str):
-        """Resolves a magic action (effects and SAIs)."""
+    def resolve_magic_action(
+        self, casting_player_name: str, magic_roll_results_str: str, spell_casting_data: Optional[Dict[str, Any]] = None
+    ):
+        """Resolves a magic action (effects, SAIs, and spell casting)."""
         print(f"ActionResolver: Resolving magic action for {casting_player_name}")
 
         # Parse magic dice results
         parsed_magic_dice = self.parse_dice_string(magic_roll_results_str, "MAGIC")
 
+        # Count available magic results by element
+        magic_results_by_element = self._count_magic_results_by_element(casting_player_name, parsed_magic_dice)
+        print(f"ActionResolver: Magic results by element: {magic_results_by_element}")
+
         magic_effects = []
+        spells_cast = []
+
+        # Handle spell casting if spell data provided
+        if spell_casting_data and self.spell_resolver:
+            spell_results = self._process_spell_casting(
+                casting_player_name, spell_casting_data, magic_results_by_element
+            )
+            spells_cast = spell_results.get("spells_cast", [])
+            magic_effects.extend(spell_results.get("effects", []))
+
+        # Process non-spell magic effects
         for icon_data in parsed_magic_dice:
             if icon_data.get("type") == "Magic":
-                # Magic icons might generate effects
-                magic_effects.append(f"Magic effect x{icon_data.get('count', 1)}")
+                # Non-spell magic icons might generate other effects
+                count = icon_data.get("count", 1)
+                if not spell_casting_data:  # Only add if no spells were cast
+                    magic_effects.append(f"Unallocated magic results x{count}")
             elif icon_data.get("type") == "SAI":
                 # SAIs from magic might have special effects
                 sai_type = strict_get_optional(icon_data, "sai_type", "unknown")
-                magic_effects.append(f"SAI: {sai_type}")
+                magic_effects.append(f"Magic SAI: {sai_type}")
 
         self.action_resolved.emit(
             {
                 "type": "magic_complete",
                 "caster": casting_player_name,
+                "magic_results_by_element": magic_results_by_element,
+                "spells_cast": spells_cast,
                 "effects": magic_effects,
             }
         )
@@ -1039,3 +1064,161 @@ class ActionResolver(QObject):
                     available_actions.append(action_data)
 
         return available_actions
+
+    def _count_magic_results_by_element(
+        self, player_name: str, parsed_magic_dice: List[Dict[str, Any]]
+    ) -> Dict[str, int]:
+        """Count magic results by element from parsed dice and player's units."""
+        if not parsed_magic_dice:
+            return {}
+
+        # Get total magic result count
+        total_magic_count = sum(
+            icon_data.get("count", 0) for icon_data in parsed_magic_dice if icon_data.get("type") == "Magic"
+        )
+
+        if total_magic_count == 0:
+            return {}
+
+        # Get player's active army units
+        active_units = self.game_state_manager.get_active_army_units(player_name)
+        if not active_units:
+            return {}
+
+        # Count available elements from units
+        element_counts = {}
+        for unit in active_units:
+            # Get unit species elements
+            if hasattr(unit, "species"):
+                species = unit.species
+                if hasattr(species, "elements"):
+                    unit_elements = species.elements
+                else:
+                    unit_elements = []
+            else:
+                # Handle dict format
+                species_data = unit.get("species", {})
+                unit_elements = species_data.get("elements", [])
+
+            for element in unit_elements:
+                element_name = element.lower()
+                if element_name not in element_counts:
+                    element_counts[element_name] = 0
+                element_counts[element_name] += total_magic_count  # Each unit contributes all its magic
+
+        return element_counts
+
+    def _process_spell_casting(
+        self, casting_player: str, spell_casting_data: Dict[str, Any], available_magic: Dict[str, int]
+    ) -> Dict[str, Any]:
+        """Process spell casting with available magic results."""
+        if not self.spell_resolver:
+            return {"spells_cast": [], "effects": ["Spell resolver not available"]}
+
+        spells_to_cast = spell_casting_data.get("spells", [])
+        spells_cast = []
+        effects = []
+        remaining_magic = available_magic.copy()
+
+        for spell_request in spells_to_cast:
+            spell_name = spell_request.get("name")
+            target_data = spell_request.get("target", {})
+            element_used = spell_request.get("element")
+            casting_count = spell_request.get("count", 1)
+
+            if not spell_name or not element_used:
+                effects.append(f"Invalid spell request: missing name or element")
+                continue
+
+            # Check if enough magic results available
+            element_lower = element_used.lower()
+            if remaining_magic.get(element_lower, 0) < casting_count:
+                effects.append(
+                    f"Insufficient {element_used} magic for {spell_name} (need {casting_count}, have {remaining_magic.get(element_lower, 0)})"
+                )
+                continue
+
+            # Validate spell availability
+            available_spells = get_available_spells(
+                magic_points_by_element=remaining_magic,
+                army_species=self._get_player_species(casting_player),
+                from_reserves=self._is_player_in_reserves(casting_player),
+            )
+
+            spell_available = any(
+                spell.name.upper().replace(" ", "_") == spell_name.upper().replace(" ", "_")
+                for spell in available_spells
+            )
+            if not spell_available:
+                effects.append(f"Spell {spell_name} not available to cast")
+                continue
+
+            # Cast the spell
+            spell_result = self.spell_resolver.cast_spell(
+                spell_name, casting_player, target_data, element_used, casting_count
+            )
+
+            if spell_result.get("success"):
+                # Deduct magic results
+                remaining_magic[element_lower] -= casting_count
+                spells_cast.append(
+                    {
+                        "name": spell_name,
+                        "element": element_used,
+                        "count": casting_count,
+                        "target": target_data,
+                        "results": spell_result.get("results", {}),
+                    }
+                )
+                effects.append(f"Cast {spell_name} using {casting_count} {element_used} magic")
+            else:
+                effects.append(f"Failed to cast {spell_name}: {spell_result.get('error')}")
+
+        return {"spells_cast": spells_cast, "effects": effects, "remaining_magic": remaining_magic}
+
+    def _get_player_elements(self, player_name: str) -> List[str]:
+        """Get all elements available to a player from their active units."""
+        active_units = self.game_state_manager.get_active_army_units(player_name)
+        elements = set()
+
+        for unit in active_units:
+            if hasattr(unit, "species"):
+                species = unit.species
+                if hasattr(species, "elements"):
+                    unit_elements = species.elements
+                else:
+                    unit_elements = []
+            else:
+                species_data = unit.get("species", {})
+                unit_elements = species_data.get("elements", [])
+
+            elements.update(unit_elements)
+
+        return list(elements)
+
+    def _get_player_species(self, player_name: str) -> List[str]:
+        """Get all species available to a player from their active units."""
+        active_units = self.game_state_manager.get_active_army_units(player_name)
+        species = set()
+
+        for unit in active_units:
+            if hasattr(unit, "species"):
+                unit_species = unit.species
+                if hasattr(unit_species, "name"):
+                    species.add(unit_species.name)
+                else:
+                    # Handle dict format
+                    species_name = strict_get(unit_species, "name")
+                    species.add(species_name)
+            else:
+                # Handle dict format
+                species_data = unit.get("species", {})
+                species_name = strict_get(species_data, "name")
+                species.add(species_name)
+
+        return list(species)
+
+    def _is_player_in_reserves(self, player_name: str) -> bool:
+        """Check if player's active army is in reserves."""
+        army_location = self.game_state_manager.get_army_location(player_name)
+        return army_location == "reserves" if army_location else False

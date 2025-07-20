@@ -15,7 +15,6 @@ from game_logic.minor_terrain_manager import MinorTerrainManager
 from game_logic.promotion_manager import PromotionManager
 from game_logic.reserves_manager import ReservesManager, ReserveUnit
 from game_logic.sai_processor import SAIProcessor
-from models.spell_model import SpellDatabase
 from game_logic.spell_targeting import SpellTargetingManager
 from game_logic.summoning_pool_manager import SummoningPoolManager
 from game_logic.turn_manager import TurnManager
@@ -89,8 +88,15 @@ class GameEngine(QObject):
         self.game_state_manager = GameStateManager(player_setup_data, frontier_terrain, distance_rolls, parent=self)
         # Create minor terrain manager first
         self.minor_terrain_manager = MinorTerrainManager(parent=self)
+
+        # Create spell resolver
+        from game_logic.spell_resolver import SpellResolver
+
+        self.spell_resolver = SpellResolver(self.game_state_manager, self.effect_manager, parent=self)
+
+        # Create action resolver with spell resolver
         self.action_resolver = ActionResolver(
-            self.game_state_manager, self.effect_manager, self.minor_terrain_manager, parent=self
+            self.game_state_manager, self.effect_manager, self.minor_terrain_manager, self.spell_resolver, parent=self
         )
 
         # Advanced managers
@@ -99,7 +105,6 @@ class GameEngine(QObject):
         self.summoning_pool_manager = SummoningPoolManager(parent=self)
         self.reserves_manager = ReservesManager(parent=self)
         self.sai_processor = SAIProcessor(dua_manager=self.dua_manager)
-        self.spell_database = SpellDatabase()
 
         # Spell targeting manager (depends on other managers)
         self.spell_targeting_manager = SpellTargetingManager(

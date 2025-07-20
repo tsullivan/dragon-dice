@@ -69,8 +69,9 @@ class SpellModel:
         )
 
 
-# Air element spells
-AIR_SPELLS = {
+# All spells in a single dictionary for easy access - main export
+ALL_SPELLS = {
+    # Air Element Spells
     "HAILSTORM": SpellModel(
         name="Hailstorm",
         species="Any",
@@ -134,10 +135,7 @@ AIR_SPELLS = {
         effect="Target any opposing unit. The target makes a save roll. If it does not generate a save result, it is killed. A unit may not be targeted by more than one Lightning Strike per magic action.",
         element="AIR",
     ),
-}
-
-# Death element spells
-DEATH_SPELLS = {
+    # Death Element Spells
     "PALSY": SpellModel(
         name="Palsy",
         species="Any",
@@ -237,10 +235,7 @@ DEATH_SPELLS = {
         effect="Target any terrain. Until the beginning of your next turn, any unit killed at that terrain that goes into the DUA must make a save roll. Those that do not generate a save result are buried.",
         element="DEATH",
     ),
-}
-
-# Earth element spells
-EARTH_SPELLS = {
+    # Earth Element Spells
     "STONE_SKIN": SpellModel(
         name="Stone Skin",
         species="Any",
@@ -304,10 +299,7 @@ EARTH_SPELLS = {
         effect="Target any opposing army. Subtract six maneuver results from the target's rolls until the beginning of your next turn.",
         element="EARTH",
     ),
-}
-
-# Fire element spells
-FIRE_SPELLS = {
+    # Fire Element Spells
     "ASH_STORM": SpellModel(
         name="Ash Storm",
         species="Any",
@@ -371,10 +363,7 @@ FIRE_SPELLS = {
         effect="Target any opposing army. Subtract six melee results from the target's rolls until the beginning of your next turn.",
         element="FIRE",
     ),
-}
-
-# Water element spells
-WATER_SPELLS = {
+    # Water Element Spells
     "WATERY_DOUBLE": SpellModel(
         name="Watery Double",
         species="Any",
@@ -438,10 +427,7 @@ WATER_SPELLS = {
         effect="Target any terrain. Subtract six missile results from any missile attack targeting an army at that terrain until the beginning of your next turn.",
         element="WATER",
     ),
-}
-
-# Elemental spells (any element)
-ELEMENTAL_SPELLS = {
+    # Elemental Spells (any element)
     "EVOLVE_DRAGONKIN": SpellModel(
         name="Evolve Dragonkin",
         species="Eldarim",
@@ -516,20 +502,15 @@ ELEMENTAL_SPELLS = {
     ),
 }
 
-# Combined spell data organized by element
+# Helper data structures for organization
 SPELLS_BY_ELEMENT = {
-    "AIR": AIR_SPELLS,
-    "DEATH": DEATH_SPELLS,
-    "EARTH": EARTH_SPELLS,
-    "FIRE": FIRE_SPELLS,
-    "WATER": WATER_SPELLS,
-    "ELEMENTAL": ELEMENTAL_SPELLS,
+    "AIR": {k: v for k, v in ALL_SPELLS.items() if v.element == "AIR"},
+    "DEATH": {k: v for k, v in ALL_SPELLS.items() if v.element == "DEATH"},
+    "EARTH": {k: v for k, v in ALL_SPELLS.items() if v.element == "EARTH"},
+    "FIRE": {k: v for k, v in ALL_SPELLS.items() if v.element == "FIRE"},
+    "WATER": {k: v for k, v in ALL_SPELLS.items() if v.element == "WATER"},
+    "ELEMENTAL": {k: v for k, v in ALL_SPELLS.items() if v.element == "ELEMENTAL"},
 }
-
-# All spells in a single dictionary for easy access
-ALL_SPELLS = {}
-for element_spells in SPELLS_BY_ELEMENT.values():
-    ALL_SPELLS.update(element_spells)
 
 
 # Helper functions for spell data access
@@ -589,6 +570,94 @@ def get_spells_by_element_and_species(element: str, species: str) -> List[SpellM
     return [spell for spell in element_spells.values() if spell.is_available_to_species(species)]
 
 
+def get_available_spells(
+    magic_points_by_element: Dict[str, int],
+    army_species: List[str],
+    cantrip_points: int = 0,
+    cantrip_only: bool = False,
+    from_reserves: bool = False,
+) -> List[SpellModel]:
+    """
+    Get list of spells that can be cast with available magic points.
+
+    Args:
+        magic_points_by_element: Dictionary of element -> available magic points
+        army_species: List of species present in the casting army
+        cantrip_points: Magic points available specifically for cantrip spells
+        cantrip_only: If True, only return cantrip spells
+        from_reserves: If True, include spells that can be cast from reserves
+
+    Returns:
+        List of spells that can be cast
+    """
+    available_spells = []
+
+    for spell in ALL_SPELLS.values():
+        # Check reserve restriction
+        if spell.reserves and not from_reserves:
+            continue
+        if not spell.reserves and from_reserves:
+            continue
+
+        # Check if this is cantrip-only mode
+        if cantrip_only and not spell.cantrip:
+            continue
+
+        # Check if we have enough magic points
+        if cantrip_only:
+            # Use cantrip points
+            if spell.cost > cantrip_points:
+                continue
+        else:
+            # Use regular magic points
+            if spell.element == "ELEMENTAL":
+                # Elemental spells can be cast with any element
+                total_available = sum(magic_points_by_element.values())
+                if spell.cost > total_available:
+                    continue
+            else:
+                # Element-specific spell
+                element_key = spell.element.lower() if spell.element else "elemental"
+                available_for_element = strict_get_optional(magic_points_by_element, element_key, 0)
+                if spell.cost > available_for_element:
+                    continue
+
+        # Check species restrictions
+        if spell.species != "Any" and spell.species not in army_species:
+            continue
+
+        available_spells.append(spell)
+
+    # Sort by element, then by cost, then by name
+    available_spells.sort(key=lambda s: (s.element or "ELEMENTAL", s.cost, s.name))
+    return available_spells
+
+
+def format_spell_description(spell: SpellModel) -> str:
+    """Format a spell for display."""
+    element_icons = {"AIR": "💨", "DEATH": "💀", "EARTH": "🌍", "FIRE": "🔥", "WATER": "🌊", "ELEMENTAL": "✨"}
+
+    icon = element_icons.get(spell.element or "ELEMENTAL", "✨")
+    species_text = f" ({spell.species})" if spell.species != "Any" else ""
+    cantrip_text = " [Cantrip]" if spell.cantrip else ""
+    reserves_text = " [Reserves]" if spell.reserves else ""
+
+    return f"{icon} {spell.name}{species_text}{cantrip_text}{reserves_text} - Cost: {spell.cost}\n    {spell.effect}"
+
+
+def get_element_color(element: str) -> str:
+    """Get CSS color for an element."""
+    element_colors = {
+        "AIR": "#87ceeb",  # Sky blue
+        "DEATH": "#2f2f2f",  # Dark gray
+        "EARTH": "#daa520",  # Goldenrod
+        "FIRE": "#ff6347",  # Tomato red
+        "WATER": "#4682b4",  # Steel blue
+        "ELEMENTAL": "#9370db",  # Medium purple
+    }
+    return element_colors.get(element.upper(), "#9370db")
+
+
 def validate_spell_elements() -> bool:
     """Validate that all spell elements are valid (match ELEMENT_DATA keys)."""
     valid_elements = set(ELEMENT_DATA.keys())
@@ -632,101 +701,11 @@ def get_spell_statistics() -> Dict[str, Any]:
     return stats
 
 
-class SpellDatabase:
-    """Manages the Dragon Dice spell database and spell selection logic."""
+def get_all_spell_objects() -> List[SpellModel]:
+    """Get all spell objects."""
+    return list(ALL_SPELLS.values())
 
-    def __init__(self):
-        pass  # All functionality now uses the module-level functions
 
-    def get_available_spells(
-        self,
-        magic_points_by_element: Dict[str, int],
-        army_species: List[str],
-        cantrip_points: int = 0,
-        cantrip_only: bool = False,
-    ) -> List[SpellModel]:
-        """
-        Get list of spells that can be cast with available magic points.
-
-        Args:
-            magic_points_by_element: Dictionary of element -> available magic points
-            army_species: List of species present in the casting army
-            cantrip_points: Magic points available specifically for cantrip spells
-            cantrip_only: If True, only return cantrip spells
-
-        Returns:
-            List of spells that can be cast
-        """
-        available_spells = []
-
-        for spell in ALL_SPELLS.values():
-            if spell.reserves:
-                continue  # Skip reserve spells for now
-
-            # Check if this is cantrip-only mode
-            if cantrip_only and not spell.cantrip:
-                continue
-
-            # Check if we have enough magic points
-            if cantrip_only:
-                # Use cantrip points
-                if spell.cost > cantrip_points:
-                    continue
-            else:
-                # Use regular magic points
-                if spell.element == "ELEMENTAL":
-                    # Elemental spells can be cast with any element
-                    total_available = sum(magic_points_by_element.values())
-                    if spell.cost > total_available:
-                        continue
-                else:
-                    # Element-specific spell
-                    element_key = spell.element.lower() if spell.element else "elemental"
-                    available_for_element = strict_get(magic_points_by_element, element_key)
-                    if spell.cost > available_for_element:
-                        continue
-
-            # Check species restrictions
-            if spell.species != "Any" and spell.species not in army_species:
-                continue
-
-            available_spells.append(spell)
-
-        # Sort by element, then by cost, then by name
-        available_spells.sort(key=lambda s: (s.element or "ELEMENTAL", s.cost, s.name))
-        return available_spells
-
-    def get_spell_by_name(self, name: str) -> Optional[SpellModel]:
-        """Get a spell by its name."""
-        return get_spell(name)
-
-    def get_spells_by_element(self, element: str) -> List[SpellModel]:
-        """Get all spells of a specific element."""
-        element_spells = get_spells_by_element(element)
-        return [spell for spell in element_spells.values() if not spell.reserves]
-
-    def get_cantrip_spells(self) -> List[SpellModel]:
-        """Get all cantrip spells."""
-        return [spell for spell in get_cantrip_spells() if not spell.reserves]
-
-    def format_spell_description(self, spell: SpellModel) -> str:
-        """Format a spell for display."""
-        element_icons = {"AIR": "💨", "DEATH": "💀", "EARTH": "🌍", "FIRE": "🔥", "WATER": "🌊", "ELEMENTAL": "✨"}
-
-        icon = element_icons.get(spell.element or "ELEMENTAL", "✨")
-        species_text = f" ({spell.species})" if spell.species != "Any" else ""
-        cantrip_text = " [Cantrip]" if spell.cantrip else ""
-
-        return f"{icon} {spell.name}{species_text}{cantrip_text} - Cost: {spell.cost}\n    {spell.effect}"
-
-    def get_element_color(self, element: str) -> str:
-        """Get CSS color for an element."""
-        element_colors = {
-            "AIR": "#87ceeb",  # Sky blue
-            "DEATH": "#2f2f2f",  # Dark gray
-            "EARTH": "#daa520",  # Goldenrod
-            "FIRE": "#ff6347",  # Tomato red
-            "WATER": "#4682b4",  # Steel blue
-            "ELEMENTAL": "#9370db",  # Medium purple
-        }
-        return element_colors.get(element.upper(), "#9370db")
+def get_all_spell_keys() -> List[str]:
+    """Get all spell keys."""
+    return list(ALL_SPELLS.keys())
