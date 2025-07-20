@@ -1,7 +1,6 @@
 output.log
 test/e2e/screenshots/
 views/test/screenshots/
-CLAUDE.md
 .claude
 test-visuals
 
