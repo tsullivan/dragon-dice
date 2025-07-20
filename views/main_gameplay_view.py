@@ -301,8 +301,11 @@ class MainGameplayView(QWidget):
         else:
             # Player chose not to maneuver, proceed to action decision
             self.maneuver_decision_signal.emit(False)
-            self.game_engine.march_step_change_requested.emit("DECIDE_ACTION")
-            self.game_engine._current_march_step = "DECIDE_ACTION"
+            # Use controller to handle state transition properly
+            if hasattr(self, "gameplay_controller"):
+                self.gameplay_controller.handle_march_step_transition("DECIDE_ACTION")
+            else:
+                self.game_engine.march_step_change_requested.emit("DECIDE_ACTION")
             self.game_engine.game_state_updated.emit()
 
     def _handle_action_decision(self, wants_to_take_action: bool):
@@ -365,8 +368,10 @@ class MainGameplayView(QWidget):
         self.maneuver_decision_signal.emit(True)
 
         # Transition to action decision step
-        self.game_engine.march_step_change_requested.emit("DECIDE_ACTION")
-        self.game_engine._current_march_step = "DECIDE_ACTION"
+        if hasattr(self, "gameplay_controller"):
+            self.gameplay_controller.handle_march_step_transition("DECIDE_ACTION")
+        else:
+            self.game_engine.march_step_change_requested.emit("DECIDE_ACTION")
 
         # Update UI
         self.game_state_updated.emit()
@@ -439,7 +444,8 @@ class MainGameplayView(QWidget):
         print(f"{attacker} completed {action_type} action at {location}")
 
         # Clear the action step before advancing phase
-        self.game_engine._current_action_step = ""
+        if hasattr(self, "gameplay_controller"):
+            self.gameplay_controller.handle_action_completed()
         print(f"[MainGameplayView] Cleared action step after completing {action_type}")
 
         # Advance to next phase
@@ -453,8 +459,10 @@ class MainGameplayView(QWidget):
         self.active_action_dialog = None
 
         # Return to action selection
-        self.game_engine.march_step_change_requested.emit("SELECT_ACTION")
-        self.game_engine._current_march_step = "SELECT_ACTION"
+        if hasattr(self, "gameplay_controller"):
+            self.gameplay_controller.handle_march_step_transition("SELECT_ACTION")
+        else:
+            self.game_engine.march_step_change_requested.emit("SELECT_ACTION")
         self.game_engine.game_state_updated.emit()
 
     def _update_continue_button_state(self):
@@ -726,12 +734,15 @@ class MainGameplayView(QWidget):
                 self._show_reserves_phase()
 
         # Special handling for first turn
-        if (
-            current_phase == "FIRST_MARCH"
-            and hasattr(self.game_engine, "_is_very_first_turn")
-            and self.game_engine._is_very_first_turn
-            and not current_march_step
-        ):
+        # Check for very first turn using proper API
+        is_very_first_turn = False
+        if hasattr(self.game_engine, "is_very_first_turn"):
+            is_very_first_turn = self.game_engine.is_very_first_turn()
+        elif hasattr(self.game_engine, "_is_very_first_turn"):
+            # Fallback to private access if public method not available
+            is_very_first_turn = self.game_engine._is_very_first_turn
+
+        if current_phase == "FIRST_MARCH" and is_very_first_turn and not current_march_step:
             help_key = "FIRST_MARCH"
         else:
             help_key = current_action_step or current_march_step or current_phase
@@ -793,16 +804,10 @@ class MainGameplayView(QWidget):
         player_armies: List[Dict[str, Any]] = []  # TODO: Get actual player armies
         opponent_reserves: Dict[str, List[Dict[str, Any]]] = {}  # TODO: Get actual opponent reserves
 
-        # Create placeholder managers (these should be passed from game engine)
-        from game_logic.dua_manager import DUAManager
-        from game_logic.bua_manager import BUAManager
-        from game_logic.reserves_manager import ReservesManager
-
-        # TODO: Get actual turn manager from game engine
-        turn_manager = None  # This should come from self.game_engine.turn_manager
-        dua_manager = DUAManager(turn_manager)
-        bua_manager = BUAManager()
-        reserves_manager = ReservesManager()
+        # Get managers from game engine (proper dependency injection)
+        dua_manager = self.game_engine.dua_manager
+        bua_manager = self.game_engine.bua_manager
+        reserves_manager = self.game_engine.reserves_manager
 
         dialog = SpeciesAbilitiesPhaseDialog(
             current_player, player_armies, opponent_reserves, dua_manager, bua_manager, reserves_manager, parent=self

@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from game_logic.sai_processor import SAIProcessor
+# Combat analysis handled through CombatAnalysisController
 
 
 class ManeuverDieRollInputWidget(QWidget):
@@ -130,7 +130,8 @@ class EnhancedManeuverDialog(QDialog):
         self.final_counter_total = 0
         self.chosen_direction: Optional[str] = None
 
-        self.sai_processor = SAIProcessor()
+        # Combat analysis delegated to controller
+        self.combat_analysis_controller = None  # Should be injected
 
         self.setWindowTitle(f"🏃 Maneuver at {location}")
         self.setModal(True)

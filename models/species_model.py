@@ -603,6 +603,14 @@ def search_abilities_by_name(ability_name: str) -> List[Tuple[str, SpeciesAbilit
     return results
 
 
+def get_species_elements(species_name: str) -> List[str]:
+    """Get elements for a unit species."""
+    species = ALL_SPECIES.get(species_name.upper())
+    if species:
+        return species.elements
+    return []
+
+
 def validate_species_elements() -> bool:
     """Validate that all species use valid elements from ELEMENT_DATA."""
     valid_elements = set(ELEMENT_DATA.keys())

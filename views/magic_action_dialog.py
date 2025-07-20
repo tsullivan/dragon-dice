@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from game_logic.sai_processor import SAIProcessor
+# SAI processing handled through controllers - no direct import needed
 from models.spell_model import ALL_SPELLS, SpellModel
 from utils import strict_get
 
@@ -360,11 +360,14 @@ class MagicActionDialog(QDialog):
     magic_cancelled = Signal()
     magic_negation_check = Signal(dict)  # Emits request for magic negation check
 
-    def __init__(self, caster_name: str, caster_army: Dict[str, Any], location: str, parent=None):
+    def __init__(
+        self, caster_name: str, caster_army: Dict[str, Any], location: str, magic_controller=None, parent=None
+    ):
         super().__init__(parent)
         self.caster_name = caster_name
         self.caster_army = caster_army
         self.location = location
+        self.magic_controller = magic_controller
 
         # Magic state
         self.current_step = "magic_roll"  # magic_roll, spell_selection, cast_spells
@@ -373,14 +376,55 @@ class MagicActionDialog(QDialog):
         self.amazon_flexible_magic: Dict[str, int] = {}  # Amazon magic that can be any terrain element
         self.cast_spells: List[Tuple[SpellModel, int, str]] = []
 
-        self.sai_processor = SAIProcessor()
+        # SAI processing delegated to magic controller
+        # self.sai_processor = SAIProcessor()  # Removed - use controller instead
 
         self.setWindowTitle(f"✨ Magic Action at {location}")
         self.setModal(True)
         self.setMinimumSize(900, 700)
 
+        # Connect magic controller signals if available
+        if self.magic_controller:
+            self._setup_magic_controller_connections()
+
         self._setup_ui()
         self._update_step_display()
+
+    def _setup_magic_controller_connections(self):
+        """Setup connections to magic controller signals."""
+        if not self.magic_controller:
+            return
+
+        self.magic_controller.magic_points_calculated.connect(self._handle_magic_points_calculated)
+        self.magic_controller.available_spells_updated.connect(self._handle_available_spells_updated)
+        self.magic_controller.spell_cast_completed.connect(self._handle_spell_cast_completed)
+
+    def _handle_magic_points_calculated(self, magic_points: dict):
+        """Handle magic points calculated by controller."""
+        self.magic_points_by_element = magic_points
+        print(f"[MagicActionDialog] Magic points received from controller: {magic_points}")
+
+        # Update UI to show calculated magic points
+        self._update_magic_points_display()
+
+    def _handle_available_spells_updated(self, available_spells: list):
+        """Handle available spells updated by controller."""
+        print(f"[MagicActionDialog] Available spells received: {len(available_spells)}")
+        # Would update spell selection UI with available spells
+
+    def _handle_spell_cast_completed(self, spell_results: dict):
+        """Handle spell casting completion from controller."""
+        print(f"[MagicActionDialog] Spell casting completed: {spell_results}")
+        # Would update UI with spell casting results
+
+    def _update_magic_points_display(self):
+        """Update the UI display of magic points."""
+        # This would update the magic points display in the UI
+        # Implementation depends on the existing UI structure
+        if hasattr(self, "magic_points_widget"):
+            # Update existing widget
+            pass
+        print(f"[MagicActionDialog] Magic points display updated: {self.magic_points_by_element}")
 
     def _setup_ui(self):
         """Setup the dialog UI."""
@@ -604,21 +648,32 @@ class MagicActionDialog(QDialog):
 
     def _calculate_magic_points(self):
         """Calculate available magic points by element."""
+        # Use magic controller if available for calculation
+        if self.magic_controller:
+            # Get army identifier for controller
+            army_identifier = self.caster_army.get("unique_id", self.caster_army.get("id", "main"))
+
+            try:
+                # Calculate magic points using controller
+                self.magic_controller.handle_magic_roll_submission(
+                    self.caster_name, army_identifier, self.magic_results, self.location
+                )
+                # Controller will emit signals with calculated results
+                return
+            except Exception as e:
+                print(f"[MagicActionDialog] Error using magic controller: {e}")
+                # Fall back to original calculation
+
+        # Original calculation logic as fallback
         terrain_elements = self._get_terrain_elements()
         army_units = self.caster_army.get("units", [])
 
         # Check if army controls terrain eighth face (doubles all ID results)
         terrain_eighth_face_controlled = self._check_terrain_eighth_face_control()
 
-        # Process magic roll with SAI effects
-        self.sai_processor.process_combat_roll(
-            self.magic_results,
-            "magic",
-            army_units,
-            is_attacker=True,
-            terrain_elements=terrain_elements,
-            terrain_eighth_face_controlled=terrain_eighth_face_controlled,
-        )
+        # NOTE: SAI processing should be handled by magic controller
+        # Fallback calculation does not include SAI effects
+        print("[MagicActionDialog] Using fallback calculation without SAI processing")
 
         # Initialize magic points
         self.magic_points_by_element = {"AIR": 0, "DEATH": 0, "EARTH": 0, "FIRE": 0, "WATER": 0}

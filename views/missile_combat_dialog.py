@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from game_logic.sai_processor import SAIProcessor
+# Combat analysis handled through CombatAnalysisController
 
 from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
 
@@ -109,6 +109,7 @@ class MissileCombatDialog(QDialog):
         attacker_army: Dict[str, Any],
         available_targets: List[Dict[str, Any]],  # List of {player_name, army_data, location}
         location: str,
+        combat_analysis_controller=None,
         parent=None,
     ):
         super().__init__(parent)
@@ -127,7 +128,8 @@ class MissileCombatDialog(QDialog):
         self.defensive_volley_results: Dict[str, List[str]] = {}
         self.defensive_volley_damage = 0
 
-        self.sai_processor = SAIProcessor()
+        # Combat analysis through controller
+        self.combat_analysis_controller = combat_analysis_controller
 
         self.setWindowTitle(f"🏹 Missile Attack from {location}")
         self.setModal(True)
@@ -135,6 +137,31 @@ class MissileCombatDialog(QDialog):
 
         self._setup_ui()
         self._update_step_display()
+    
+    def _analyze_combat_results(self, roll_results: Dict[str, List[str]], combat_type: str, 
+                               army_units: List[Dict[str, Any]], is_attacker: bool = True) -> Dict[str, Any]:
+        """Analyze combat results using controller or fallback."""
+        if self.combat_analysis_controller:
+            terrain_elements = self._get_terrain_elements()
+            return self.combat_analysis_controller.analyze_combat_roll(
+                roll_results, combat_type, army_units, terrain_elements, is_attacker
+            )
+        else:
+            # Fallback - simplified analysis without SAI processing
+            return self._fallback_combat_analysis(roll_results, combat_type)
+    
+    def _fallback_combat_analysis(self, roll_results: Dict[str, List[str]], combat_type: str) -> Dict[str, Any]:
+        """Simplified combat analysis fallback when no controller available."""
+        print(f"[MissileCombatDialog] Using fallback analysis for {combat_type}")
+        # Simple counting without SAI effects
+        total_results = {"missile": 0, "save": 0}
+        for unit_name, faces in roll_results.items():
+            for face in faces:
+                if face.lower() in ['mi', 'missile']:
+                    total_results["missile"] += 1
+                elif face.lower() in ['s', 'save']:
+                    total_results["save"] += 1
+        return {"total_results": total_results, "summary": f"{combat_type}: {total_results}", "final_missile": total_results["missile"], "final_save": total_results["save"]}
 
     def _setup_ui(self):
         """Setup the dialog UI."""

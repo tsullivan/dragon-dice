@@ -1110,6 +1110,21 @@ def get_terrains_by_eighth_face(eighth_face: str) -> List[Terrain]:
     return [terrain for terrain in TERRAIN_DATA.values() if terrain.eighth_face.lower() == eighth_face.lower()]
 
 
+def get_terrain_elements(terrain_name: str) -> List[str]:
+    """Get elements for a terrain."""
+    terrain = get_terrain(terrain_name)
+    if terrain:
+        return terrain.elements
+
+    # Fallback to parsing if exact terrain not found
+    base_terrain = terrain_name.split("(")[0].strip() if "(" in terrain_name else terrain_name.strip()
+    terrain = get_terrain(base_terrain)
+    if terrain:
+        return terrain.elements
+
+    return []
+
+
 def get_terrain_icon(terrain_name: str) -> str:
     """Get terrain icon based on its elements.
 

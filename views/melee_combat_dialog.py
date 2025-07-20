@@ -24,8 +24,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from game_logic.die_face_analyzer import DieFaceAnalyzer
-from game_logic.sai_processor import SAIProcessor
+# Combat analysis handled through CombatAnalysisController
 
 
 class DieRollInputWidget(QWidget):
@@ -106,6 +105,7 @@ class MeleeCombatDialog(QDialog):
         defender_name: str,
         defender_army: Dict[str, Any],
         location: str,
+        combat_analysis_controller=None,
         parent=None,
     ):
         super().__init__(parent)
@@ -122,8 +122,10 @@ class MeleeCombatDialog(QDialog):
         self.final_damage = 0
         self.counter_attack_damage = 0
 
-        self.die_face_analyzer = DieFaceAnalyzer()
-        self.sai_processor = SAIProcessor()
+        # Combat analysis through controller or fallback
+        self.combat_analysis_controller = combat_analysis_controller
+        if not self.combat_analysis_controller:
+            print("[MeleeCombatDialog] No combat analysis controller provided - using fallback")
 
         self.setWindowTitle(f"⚔️ Melee Combat at {location}")
         self.setModal(True)
@@ -131,6 +133,31 @@ class MeleeCombatDialog(QDialog):
 
         self._setup_ui()
         self._update_step_display()
+    
+    def _analyze_combat_results(self, roll_results: Dict[str, List[str]], combat_type: str, 
+                               army_units: List[Dict[str, Any]], is_attacker: bool = True) -> Dict[str, Any]:
+        """Analyze combat results using controller or fallback."""
+        if self.combat_analysis_controller:
+            terrain_elements = self._get_terrain_elements()
+            return self.combat_analysis_controller.analyze_combat_roll(
+                roll_results, combat_type, army_units, terrain_elements, is_attacker
+            )
+        else:
+            # Fallback - simplified analysis without SAI processing
+            return self._fallback_combat_analysis(roll_results, combat_type)
+    
+    def _fallback_combat_analysis(self, roll_results: Dict[str, List[str]], combat_type: str) -> Dict[str, Any]:
+        """Simplified combat analysis fallback when no controller available."""
+        print(f"[MeleeCombatDialog] Using fallback analysis for {combat_type}")
+        # Simple counting without SAI effects
+        total_results = {"melee": 0, "save": 0}
+        for unit_name, faces in roll_results.items():
+            for face in faces:
+                if face.lower() in ['m', 'melee']:
+                    total_results["melee"] += 1
+                elif face.lower() in ['s', 'save']:
+                    total_results["save"] += 1
+        return {"total_results": total_results, "summary": f"{combat_type}: {total_results}"}
 
     def _setup_ui(self):
         """Setup the dialog UI."""
@@ -262,13 +289,12 @@ class MeleeCombatDialog(QDialog):
         self.step_label.setText("Step 2: 🛡️ Defender Save Roll")
         self.results_display.show()
 
-        # Show attacker results with SAI processing
-        terrain_elements = self._get_terrain_elements()
+        # Show attacker results with analysis
         attacker_army_units = self.attacker_army.get("units", [])
-        attacker_result = self.sai_processor.process_combat_roll(
-            self.attacker_results, "melee", attacker_army_units, is_attacker=True, terrain_elements=terrain_elements
+        attacker_result = self._analyze_combat_results(
+            self.attacker_results, "melee", attacker_army_units, is_attacker=True
         )
-        attacker_summary = self.sai_processor.format_combat_summary(attacker_result, "melee")
+        attacker_summary = attacker_result.get("summary", str(attacker_result))
         self.results_display.setText(f"Attacker Results:\n{attacker_summary}")
 
         # Instructions
@@ -299,24 +325,26 @@ class MeleeCombatDialog(QDialog):
         # Get terrain elements (in a real implementation, this would come from game state)
         terrain_elements = self._get_terrain_elements()
 
-        # Process attacker results with SAI effects
+        # Process attacker results
         attacker_army_units = self.attacker_army.get("units", [])
-        attacker_result = self.sai_processor.process_combat_roll(
-            self.attacker_results, "melee", attacker_army_units, is_attacker=True, terrain_elements=terrain_elements
+        attacker_result = self._analyze_combat_results(
+            self.attacker_results, "melee", attacker_army_units, is_attacker=True
         )
 
-        # Process defender results with SAI effects
+        # Process defender results  
         defender_army_units = self.defender_army.get("units", [])
-        defender_result = self.sai_processor.process_combat_roll(
-            self.defender_results, "save", defender_army_units, is_attacker=False, terrain_elements=terrain_elements
+        defender_result = self._analyze_combat_results(
+            self.defender_results, "save", defender_army_units, is_attacker=False
         )
 
         # Calculate final damage
-        self.final_damage = max(0, attacker_result.final_melee - defender_result.final_save)
+        attacker_melee = attacker_result.get("total_results", {}).get("melee", 0)
+        defender_saves = defender_result.get("total_results", {}).get("save", 0)
+        self.final_damage = max(0, attacker_melee - defender_saves)
 
         # Format detailed results
-        attacker_summary = self.sai_processor.format_combat_summary(attacker_result, "melee")
-        defender_summary = self.sai_processor.format_combat_summary(defender_result, "save")
+        attacker_summary = attacker_result.get("summary", str(attacker_result))
+        defender_summary = defender_result.get("summary", str(defender_result))
 
         # Display results
         results_text = f"""ATTACKER RESULTS:

@@ -93,3 +93,66 @@ class GameplayController(QObject):
     def handle_terrain_direction_choice_request(self, location: str, current_face: int):
         print(f"[GameplayController] Terrain direction choice requested at {location}, current face: {current_face}")
         # TODO: Show terrain direction choice dialog
+
+    # March step management
+    @Slot(str)
+    def handle_march_step_transition(self, new_step: str):
+        """Handle march step transitions through proper game engine API."""
+        print(f"[GameplayController] Transitioning to march step: {new_step}")
+        self.game_engine.march_step_change_requested.emit(new_step)
+
+    @Slot(str)
+    def handle_action_step_transition(self, new_step: str):
+        """Handle action step transitions through proper game engine API."""
+        print(f"[GameplayController] Transitioning to action step: {new_step}")
+        self.game_engine.action_step_change_requested.emit(new_step)
+
+    @Slot()
+    def handle_action_completed(self):
+        """Handle completion of an action."""
+        print("[GameplayController] Action completed, clearing action step")
+        self.game_engine.action_step_change_requested.emit("")
+
+    @Slot(bool)
+    def handle_maneuver_decision_response(self, wants_to_maneuver: bool):
+        """Handle player's decision about maneuvering."""
+        print(f"[GameplayController] Player maneuver decision: {wants_to_maneuver}")
+        self.handle_maneuver_decision(wants_to_maneuver)
+
+        if not wants_to_maneuver:
+            # Proceed directly to action decision
+            self.handle_march_step_transition("DECIDE_ACTION")
+
+    @Slot(bool)
+    def handle_action_decision_response(self, wants_to_take_action: bool):
+        """Handle player's decision about taking an action."""
+        print(f"[GameplayController] Player action decision: {wants_to_take_action}")
+
+        if wants_to_take_action:
+            self.handle_march_step_transition("SELECT_ACTION")
+        else:
+            # Skip action and advance phase
+            self.handle_continue_to_next_phase()
+
+    @Slot(dict)
+    def handle_maneuver_completion(self, maneuver_result: dict):
+        """Handle completion of maneuver."""
+        print(f"[GameplayController] Maneuver completed: {maneuver_result}")
+
+        # Apply maneuver results through game engine
+        success = self.game_engine.apply_maneuver_results(maneuver_result)
+
+        if success:
+            # Transition to action decision
+            self.handle_march_step_transition("DECIDE_ACTION")
+        else:
+            print("[GameplayController] Maneuver failed, staying at current step")
+
+    @Slot(str, str)
+    def handle_action_completion(self, action_type: str, player_name: str):
+        """Handle completion of any action type."""
+        print(f"[GameplayController] {action_type} action completed by {player_name}")
+
+        # Clear action step and advance phase
+        self.handle_action_completed()
+        self.handle_continue_to_next_phase()

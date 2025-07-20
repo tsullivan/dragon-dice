@@ -30,9 +30,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from game_logic.dua_manager import DUAManager
-from game_logic.bua_manager import BUAManager
-from game_logic.reserves_manager import ReservesManager
+# Managers are received as parameters - no direct imports needed
 
 from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
 

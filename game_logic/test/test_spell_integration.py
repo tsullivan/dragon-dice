@@ -22,9 +22,7 @@ class TestSpellIntegration(unittest.TestCase):
         self.spell_resolver = SpellResolver(self.mock_gsm, self.effect_manager)
 
         # Create action resolver with spell resolver
-        self.action_resolver = ActionResolver(
-            self.mock_gsm, self.effect_manager, None, self.spell_resolver
-        )
+        self.action_resolver = ActionResolver(self.mock_gsm, self.effect_manager, None, self.spell_resolver)
 
     def test_spell_resolver_initialization(self):
         """Test that spell resolver initializes correctly."""
@@ -40,7 +38,7 @@ class TestSpellIntegration(unittest.TestCase):
     def test_spell_requirements_lookup(self):
         """Test spell requirements lookup."""
         requirements = self.spell_resolver.get_spell_requirements("Stone Skin")
-        
+
         self.assertIn("spell_name", requirements)
         self.assertEqual(requirements["spell_name"], "Stone Skin")
         self.assertIn("cost", requirements)
@@ -49,21 +47,21 @@ class TestSpellIntegration(unittest.TestCase):
     def test_effect_manager_spell_effect_addition(self):
         """Test adding spell effects to effect manager."""
         initial_count = len(self.effect_manager.active_effects)
-        
+
         effect_data = {
             "spell_name": "Stone Skin",
             "target_player": "TestPlayer",
             "effect_type": "modifier",
             "duration": "until_next_turn",
             "target_type": "army",
-            "target_identifier": "test_army"
+            "target_identifier": "test_army",
         }
-        
+
         effect_id = self.effect_manager.add_spell_effect("TestPlayer", effect_data)
-        
+
         self.assertIsNotNone(effect_id)
         self.assertEqual(len(self.effect_manager.active_effects), initial_count + 1)
-        
+
         # Verify effect structure
         added_effect = self.effect_manager.active_effects[-1]
         self.assertEqual(added_effect["type"], "spell")
@@ -75,19 +73,19 @@ class TestSpellIntegration(unittest.TestCase):
         # Add a spell effect
         effect_data = {
             "spell_name": "Wind Walk",
-            "target_player": "TestPlayer", 
+            "target_player": "TestPlayer",
             "effect_type": "modifier",
             "duration": "until_next_turn",
             "target_type": "army",
-            "target_identifier": "test_army"
+            "target_identifier": "test_army",
         }
-        
+
         self.effect_manager.add_spell_effect("TestPlayer", effect_data)
         initial_count = len(self.effect_manager.active_effects)
-        
+
         # Expire effects for the player
         expired_spells = self.effect_manager.expire_spell_effects_for_player("TestPlayer")
-        
+
         self.assertEqual(len(expired_spells), 1)
         self.assertEqual(expired_spells[0], "Wind Walk")
         self.assertEqual(len(self.effect_manager.active_effects), initial_count - 1)
@@ -98,11 +96,11 @@ class TestSpellIntegration(unittest.TestCase):
         mock_unit = Mock()
         mock_unit.species.elements = ["earth", "fire"]
         self.mock_gsm.get_active_army_units.return_value = [mock_unit]
-        
+
         parsed_dice = [{"type": "Magic", "count": 2}]
-        
+
         element_counts = self.action_resolver._count_magic_results_by_element("TestPlayer", parsed_dice)
-        
+
         # Should have both elements available
         self.assertIn("earth", element_counts)
         self.assertIn("fire", element_counts)
@@ -116,11 +114,11 @@ class TestSpellIntegration(unittest.TestCase):
         mock_unit1.species.name = "Dwarf"
         mock_unit2 = Mock()
         mock_unit2.species.name = "Goblin"
-        
+
         self.mock_gsm.get_active_army_units.return_value = [mock_unit1, mock_unit2]
-        
+
         species = self.action_resolver._get_player_species("TestPlayer")
-        
+
         self.assertIn("Dwarf", species)
         self.assertIn("Goblin", species)
         self.assertEqual(len(species), 2)
@@ -132,11 +130,11 @@ class TestSpellIntegration(unittest.TestCase):
         mock_unit1.species.elements = ["earth", "fire"]
         mock_unit2 = Mock()
         mock_unit2.species.elements = ["air", "earth"]  # earth overlaps
-        
+
         self.mock_gsm.get_active_army_units.return_value = [mock_unit1, mock_unit2]
-        
+
         elements = self.action_resolver._get_player_elements("TestPlayer")
-        
+
         # Should have unique elements
         self.assertIn("earth", elements)
         self.assertIn("fire", elements)
@@ -149,18 +147,18 @@ class TestSpellIntegration(unittest.TestCase):
         effect_data = {
             "spell_name": "Blizzard",
             "target_player": "TestPlayer",
-            "effect_type": "modifier", 
+            "effect_type": "modifier",
             "duration": "until_next_turn",
             "target_type": "army",
-            "target_identifier": "test_army"
+            "target_identifier": "test_army",
         }
-        
+
         self.effect_manager.add_spell_effect("TestPlayer", effect_data)
         initial_count = len(self.effect_manager.active_effects)
-        
+
         # Process expiration for the player
         self.effect_manager.process_effect_expirations("TestPlayer")
-        
+
         # Spell effect should be expired
         self.assertEqual(len(self.effect_manager.active_effects), initial_count - 1)
 
