@@ -1,0 +1,5 @@
+# Species Abilities
+
+Each species in Dragon Dice® has its own special abilities, generally tied to the elements of that species’ dice. Utilizing these abilities is often key to creating a powerful and balanced army. This section details those species abilities. Species abilities are applied to both army rolls and when a unit is rolling individually.
+
+The symbol ⚰️ has the following meaning: Some species have abilities which are connected to the number of units in their DUA. These abilities each state a maximum limit for the ability, followed by ⚰️. The limit stated is per 24 points of total force size, or part thereof. For example, an ability which states, **“…up to a maximum of five ⚰️”**, would have a limit of 5 in games up to 24 points, a limit of 10 in games from 25 to 48 points, and so on.
