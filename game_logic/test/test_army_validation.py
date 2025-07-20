@@ -8,7 +8,7 @@ to ensure rules are correctly enforced independently of UI components.
 import unittest
 from unittest.mock import Mock
 
-from game_logic.army_validation import (
+from models.army_validation import (
     ArmyComposition,
     ArmyCompositionBuilder,
     DragonDiceArmyValidator,

@@ -3,7 +3,7 @@ Example usage of the mock data infrastructure.
 Shows how to replace incomplete test data with type-safe mocks.
 """
 
-from models.test.mock import create_unit_dict, create_army_dict, create_player_setup_dict, create_two_player_setup
+from models.test.mock import create_army_dict, create_player_setup_dict, create_two_player_setup, create_unit_dict
 
 # === BEFORE: Incomplete test data (causes runtime errors) ===
 
@@ -11,18 +11,7 @@ from models.test.mock import create_unit_dict, create_army_dict, create_player_s
 def bad_test_setup():
     """Example of problematic test data that strict accessors will catch."""
     # Missing required fields - will cause MissingFieldError
-    incomplete_unit = {
-        "name": "Warrior",
-        "health": 2,
-        "max_health": 2,
-        # Missing: unit_id, unit_type, species, faces
-    }
 
-    incomplete_army = {
-        "name": "Test Army",
-        "location": "Highland",
-        # Missing: allocated_points, units, unique_id
-    }
 
     incomplete_player = {
         "name": "Player 1",
@@ -40,12 +29,12 @@ def good_test_setup():
     """Example of proper test data using mock infrastructure."""
 
     # Create complete unit data
-    unit = create_unit_dict(
+    create_unit_dict(
         unit_id="warrior_1", name="Highland Warrior", unit_type="amazon_warrior", health=2, max_health=2
     )
 
     # Create complete army data
-    army = create_army_dict(
+    create_army_dict(
         name="Highland Guard",
         location="Player 1 Highland",
         allocated_points=10,
@@ -90,8 +79,8 @@ def create_test_game_setup():
 
 def create_test_models():
     """Example of creating model instances directly (fully type-checked)."""
+    from game_logic.game_orchestrator import GameOrchestrator as GameEngine
     from models.test.mock.unit_mock import create_unit_instance
-    from game_logic.engine import GameEngine
 
     # This is fully type-checked - missing arguments will be caught by mypy
     unit = create_unit_instance(

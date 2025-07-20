@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
-from game_logic.game_state_manager import GameStateManager
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.game_state.game_state_manager import GameStateManager
 
 
 class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
@@ -168,7 +168,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                     "campaign": {
                         "name": "Feral Hunters",
                         "location": "Highland",  # Terrain with earth element
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -526,7 +526,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
         opponent_reserves = self.engine.reserves_manager.get_player_reserves("Opponent Player")
         assert len(opponent_reserves) > 0, "Opponent should have units in reserves"
 
-        print(f"✅ Mutate conditions met:")
+        print("✅ Mutate conditions met:")
         print(f"  - Swamp Stalker armies: {len(swamp_armies)}")
         print(f"  - Dead Swamp Stalkers in DUA: {len(dead_swamp_stalkers)}")
         print(f"  - Opponent units in reserves: {len(opponent_reserves)}")
@@ -600,10 +600,10 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
         # Check Feralization conditions
         feral_armies = []
         all_players_data = self.engine.get_all_players_data()
-        
+
         for army_name, army_data in all_players_data["Feral Player"]["armies"].items():
             has_feral = any("feral" in unit.get("unit_type", "").lower() for unit in army_data.get("units", []))
-            
+
             # For simplicity in E2E test, assume armies at certain terrains have the right elements
             location = army_data.get("location", "")
             has_earth_or_air = ("Highland" in location or "Wasteland" in location)  # Assume these have earth/air
@@ -613,7 +613,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
 
         assert len(feral_armies) >= 1, f"Should have at least 1 eligible Feral army, found {len(feral_armies)}"
 
-        print(f"✅ Feralization conditions met:")
+        print("✅ Feralization conditions met:")
         print(f"  - Eligible Feral armies: {len(feral_armies)}")
         for army in feral_armies:
             feral_count = len([u for u in army.get("units", []) if "feral" in u.get("unit_type", "").lower()])
@@ -637,7 +637,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
                 "army_data": feral_armies[1],
             })
 
-        feralization_data = {
+        {
             "ability_type": "feralization",
             "feral_player": "Feral Player",
             "actions": feralization_actions,
@@ -712,7 +712,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
         for army_data in all_players_data["Frostwing Player"]["armies"].values():
             has_frostwing = any("frostwing" in unit.get("unit_type", "").lower() for unit in army_data.get("units", []))
-            
+
             # For E2E test simplicity, assume Frozen Wastes has air element
             location = army_data.get("location", "")
             has_air = ("Frozen Wastes" in location)
@@ -730,24 +730,19 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
             {
                 "name": "BUA Frostwing Scout",
                                 "unit_id": "unit_2",
-                "species": "Frostwing", 
+                "species": "Frostwing",
                 "health": 1,
                 "unit_type": "frostwing_apprentice",
             }
         ]
 
-        print(f"✅ Winter's Fortitude conditions met:")
+        print("✅ Winter's Fortitude conditions met:")
         print(f"  - Qualifying army: {qualifying_army['name']} (AIR terrain)")
         print(f"  - Frostwing units in BUA: {len(simulated_bua_frostwings)}")
 
         # Simulate Species Abilities Phase dialog usage
         selected_unit = simulated_bua_frostwings[0]
 
-        fortitude_data = {
-            "ability_type": "winters_fortitude",
-            "frostwing_player": "Frostwing Player",
-            "selected_unit": selected_unit,
-        }
 
         print("--- Executing Winter's Fortitude Ability ---")
         print(f"Moving {selected_unit['name']} from BUA to DUA")
@@ -756,7 +751,7 @@ class TestSpeciesAbilitiesAndDragonAttacks(unittest.TestCase):
         # For E2E test, directly add the unit to DUA to represent the movement
         dua_unit_data = {
             "name": selected_unit["name"],
-            "species": "Frostwing", 
+            "species": "Frostwing",
             "health": selected_unit["health"],
             "max_health": selected_unit["health"],
             "unit_id": "moved_frost_1",

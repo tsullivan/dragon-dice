@@ -12,8 +12,8 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
-from game_logic.game_state_manager import GameStateManager
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.game_state.game_state_manager import GameStateManager
 
 
 class TestEighthFaceFlows(unittest.TestCase):
@@ -191,7 +191,7 @@ class TestEighthFaceFlows(unittest.TestCase):
         )
 
         # Connect eighth face specific signals
-        if hasattr(engine, 'eighth_face_manager'):
+        if hasattr(engine, "eighth_face_manager"):
             engine.eighth_face_manager.eighth_face_phase_started.connect(
                 lambda player: self.game_log.append(f"Eighth Face Phase started for {player}")
             )
@@ -216,7 +216,7 @@ class TestEighthFaceFlows(unittest.TestCase):
             self.game_log.append(f"Advancing {terrain_name} from face {current_face} to {current_face + 1}")
 
             # Mock a successful maneuver result
-            maneuver_result = {
+            {
                 "success": True,
                 "terrain_advanced": True,
                 "new_face": current_face + 1,
@@ -307,8 +307,8 @@ class TestEighthFaceFlows(unittest.TestCase):
 
         # Verify initial setup
         terrain_data = engine.game_state_manager.terrains["Wasteland Vortex"]
-        self.assertEqual(terrain_data["current_face"], 5)
-        self.assertEqual(terrain_data["eighth_face"], "Vortex")
+        assert terrain_data["current_face"] == 5
+        assert terrain_data["eighth_face"] == "Vortex"
         self.game_log.append(f"Initial setup: Wasteland Vortex at face {terrain_data['face']}")
 
         # Simulate turn cycles to reach eighth face
@@ -316,8 +316,8 @@ class TestEighthFaceFlows(unittest.TestCase):
 
         # Verify terrain is at eighth face
         terrain_data = engine.game_state_manager.terrains["Wasteland Vortex"]
-        self.assertEqual(terrain_data["current_face"], 8)
-        self.assertEqual(terrain_data["controller"], "Player 1")
+        assert terrain_data["current_face"] == 8
+        assert terrain_data["controller"] == "Player 1"
         self.game_log.append("Terrain advanced to face 8 and controlled by Player 1")
 
         # Execute eighth face phase
@@ -325,40 +325,40 @@ class TestEighthFaceFlows(unittest.TestCase):
         phase_result = engine.eighth_face_manager.start_eighth_face_phase(current_player)
 
         # Verify eighth face phase results
-        self.assertIsNotNone(phase_result)
-        self.assertEqual(phase_result["player"], current_player)
-        self.assertFalse(phase_result["victory_achieved"])
+        assert phase_result is not None
+        assert phase_result["player"] == current_player
+        assert not phase_result["victory_achieved"]
 
         # Check terrain control results
         terrain_control = phase_result["terrain_control"]
-        self.assertIn("Wasteland Vortex", terrain_control)
+        assert "Wasteland Vortex" in terrain_control
 
         vortex_control = terrain_control["Wasteland Vortex"]
-        self.assertEqual(vortex_control["controller"], "Player 1")
-        self.assertTrue(vortex_control["at_eighth_face"])
-        self.assertEqual(vortex_control["terrain_eighth_face"], "Vortex")
+        assert vortex_control["controller"] == "Player 1"
+        assert vortex_control["at_eighth_face"]
+        assert vortex_control["terrain_eighth_face"] == "Vortex"
 
         # Check eighth face effects
         eighth_face_effects = phase_result["eighth_face_effects"]
-        self.assertEqual(len(eighth_face_effects), 1)
+        assert len(eighth_face_effects) == 1
 
         vortex_effect = eighth_face_effects[0]
-        self.assertEqual(vortex_effect["effect_type"], "vortex")
-        self.assertTrue(vortex_effect["automatic_effect"])
-        self.assertTrue(vortex_effect["persistent_effect"])
-        self.assertIn("reroll one unit", vortex_effect["description"])
+        assert vortex_effect["effect_type"] == "vortex"
+        assert vortex_effect["automatic_effect"]
+        assert vortex_effect["persistent_effect"]
+        assert "reroll one unit" in vortex_effect["description"]
 
         # Verify effect details
         effect_details = vortex_effect["effect_details"]
-        self.assertTrue(effect_details["reroll_ability"])
-        self.assertEqual(effect_details["applies_to"], "terrain_rolls")
-        self.assertEqual(effect_details["restrictions"], "non-maneuver rolls only")
-        self.assertEqual(effect_details["timing"], "before resolving SAIs")
+        assert effect_details["reroll_ability"]
+        assert effect_details["applies_to"] == "terrain_rolls"
+        assert effect_details["restrictions"] == "non-maneuver rolls only"
+        assert effect_details["timing"] == "before resolving SAIs"
 
         # Verify no player choices required for Vortex (it's automatic)
-        self.assertFalse(vortex_effect.get("choice_required", False))
+        assert not vortex_effect.get("choice_required", False)
         choices_required = phase_result["choices_required"]
-        self.assertEqual(len(choices_required), 0)
+        assert len(choices_required) == 0
 
         self.game_log.append("✅ Vortex eighth face effect successfully activated")
         self.game_log.append(f"   - Reroll ability: {effect_details['reroll_ability']}")
@@ -369,10 +369,10 @@ class TestEighthFaceFlows(unittest.TestCase):
         # with the effect manager for use during subsequent army rolls
 
         print("\n📋 Test Summary:")
-        print(f"   ✅ Terrain advanced from face 5 to 8")
-        print(f"   ✅ Player 1 controls Wasteland Vortex at eighth face")
-        print(f"   ✅ Vortex reroll ability activated automatically")
-        print(f"   ✅ Effect properly registered for future use")
+        print("   ✅ Terrain advanced from face 5 to 8")
+        print("   ✅ Player 1 controls Wasteland Vortex at eighth face")
+        print("   ✅ Vortex reroll ability activated automatically")
+        print("   ✅ Effect properly registered for future use")
 
         # Print game log for debugging
         print(f"\n📜 Game Flow Log ({len(self.game_log)} events):")
@@ -399,7 +399,7 @@ class TestEighthFaceFlows(unittest.TestCase):
         engine = self._create_engine_with_terrain_at_face("Coastland City", "City", 5)
 
         # Add some units to Player 1's DUA to enable recruitment
-        from game_logic.dua_manager import DUAUnit
+        from controllers.dua_manager import DUAUnit
         player_1_name = "Player 1"
 
         # Create DUA units for recruitment
@@ -430,8 +430,8 @@ class TestEighthFaceFlows(unittest.TestCase):
 
         # Verify initial setup
         terrain_data = engine.game_state_manager.terrains["Coastland City"]
-        self.assertEqual(terrain_data["current_face"], 5)
-        self.assertEqual(terrain_data["eighth_face"], "City")
+        assert terrain_data["current_face"] == 5
+        assert terrain_data["eighth_face"] == "City"
         self.game_log.append(f"Initial setup: Coastland City at face {terrain_data['face']}")
 
         # Simulate turn cycles to reach eighth face
@@ -439,8 +439,8 @@ class TestEighthFaceFlows(unittest.TestCase):
 
         # Verify terrain is at eighth face
         terrain_data = engine.game_state_manager.terrains["Coastland City"]
-        self.assertEqual(terrain_data["current_face"], 8)
-        self.assertEqual(terrain_data["controller"], "Player 1")
+        assert terrain_data["current_face"] == 8
+        assert terrain_data["controller"] == "Player 1"
         self.game_log.append("Terrain advanced to face 8 and controlled by Player 1")
 
         # Execute eighth face phase
@@ -448,54 +448,54 @@ class TestEighthFaceFlows(unittest.TestCase):
         phase_result = engine.eighth_face_manager.start_eighth_face_phase(current_player)
 
         # Verify eighth face phase results
-        self.assertIsNotNone(phase_result)
-        self.assertEqual(phase_result["player"], current_player)
-        self.assertFalse(phase_result["victory_achieved"])
+        assert phase_result is not None
+        assert phase_result["player"] == current_player
+        assert not phase_result["victory_achieved"]
 
         # Check terrain control results
         terrain_control = phase_result["terrain_control"]
-        self.assertIn("Coastland City", terrain_control)
+        assert "Coastland City" in terrain_control
 
         city_control = terrain_control["Coastland City"]
-        self.assertEqual(city_control["controller"], "Player 1")
-        self.assertTrue(city_control["at_eighth_face"])
-        self.assertEqual(city_control["terrain_eighth_face"], "City")
+        assert city_control["controller"] == "Player 1"
+        assert city_control["at_eighth_face"]
+        assert city_control["terrain_eighth_face"] == "City"
 
         # Check eighth face effects
         eighth_face_effects = phase_result["eighth_face_effects"]
-        self.assertEqual(len(eighth_face_effects), 1)
+        assert len(eighth_face_effects) == 1
 
         city_effect = eighth_face_effects[0]
-        self.assertEqual(city_effect["effect_type"], "city")
-        self.assertFalse(city_effect["automatic_effect"])
-        self.assertTrue(city_effect["choice_required"])
-        self.assertEqual(city_effect["choice_type"], "city_eighth_face")
+        assert city_effect["effect_type"] == "city"
+        assert not city_effect["automatic_effect"]
+        assert city_effect["choice_required"]
+        assert city_effect["choice_type"] == "city_eighth_face"
 
         # Verify recruitment choices are available
         choices = city_effect["choices"]
-        self.assertEqual(len(choices), 2)
+        assert len(choices) == 2
 
         # Check recruitment choice
         recruit_choice = next((c for c in choices if c["type"] == "recruit_unit"), None)
-        self.assertIsNotNone(recruit_choice)
-        self.assertEqual(recruit_choice["description"], "Recruit a 1-health (small) unit")
+        assert recruit_choice is not None
+        assert recruit_choice["description"] == "Recruit a 1-health (small) unit"
 
         available_units = recruit_choice["available_units"]
-        self.assertGreater(len(available_units), 0)  # Should have recruitment options
+        assert len(available_units) > 0  # Should have recruitment options
 
         # Check promotion choice
         promote_choice = next((c for c in choices if c["type"] == "promote_unit"), None)
-        self.assertIsNotNone(promote_choice)
-        self.assertEqual(promote_choice["description"], "Promote one unit in the controlling army")
+        assert promote_choice is not None
+        assert promote_choice["description"] == "Promote one unit in the controlling army"
 
         # Verify player choices are required
         choices_required = phase_result["choices_required"]
-        self.assertEqual(len(choices_required), 1)
-        self.assertEqual(choices_required[0]["choice_type"], "city_eighth_face")
+        assert len(choices_required) == 1
+        assert choices_required[0]["choice_type"] == "city_eighth_face"
 
         self.game_log.append("✅ City eighth face effect successfully activated")
         self.game_log.append(f"   - Recruitment choice available: {len(available_units)} units")
-        self.game_log.append(f"   - Promotion choice available")
+        self.game_log.append("   - Promotion choice available")
         self.game_log.append(f"   - Player choice required: {city_effect['choice_type']}")
 
         # Test making a recruitment choice
@@ -509,17 +509,17 @@ class TestEighthFaceFlows(unittest.TestCase):
         )
 
         # Verify choice was applied
-        self.assertTrue(choice_result["success"])
-        self.assertEqual(choice_result["action"], "city_choice_applied")
+        assert choice_result["success"]
+        assert choice_result["action"] == "city_choice_applied"
 
         self.game_log.append("✅ Successfully applied recruitment choice")
 
         print("\n📋 Test Summary:")
-        print(f"   ✅ Terrain advanced from face 5 to 8")
-        print(f"   ✅ Player 1 controls Coastland City at eighth face")
-        print(f"   ✅ City recruitment/promotion choices activated")
-        print(f"   ✅ Player choice system working correctly")
-        print(f"   ✅ Recruitment choice successfully applied")
+        print("   ✅ Terrain advanced from face 5 to 8")
+        print("   ✅ Player 1 controls Coastland City at eighth face")
+        print("   ✅ City recruitment/promotion choices activated")
+        print("   ✅ Player choice system working correctly")
+        print("   ✅ Recruitment choice successfully applied")
 
         # Print game log for debugging
         print(f"\n📜 Game Flow Log ({len(self.game_log)} events):")
@@ -543,7 +543,7 @@ class TestEighthFaceFlows(unittest.TestCase):
 
         # Verify initial state
         terrain_data = engine.game_state_manager.terrains[terrain_name]
-        self.assertEqual(terrain_data["current_face"], 5)
+        assert terrain_data["current_face"] == 5
         self.game_log.append(f"Starting terrain face: {terrain_data['face']}")
 
         # Test advancement face by face
@@ -551,22 +551,22 @@ class TestEighthFaceFlows(unittest.TestCase):
             self._advance_terrain_to_face(engine, terrain_name, target_face)
 
             updated_data = engine.game_state_manager.terrains[terrain_name]
-            self.assertEqual(updated_data["current_face"], target_face)
+            assert updated_data["current_face"] == target_face
             self.game_log.append(f"✅ Successfully advanced to face {target_face}")
 
         # Test setting terrain controller
         self._set_terrain_controller(engine, terrain_name, "Player 1")
 
         final_data = engine.game_state_manager.terrains[terrain_name]
-        self.assertEqual(final_data["controller"], "Player 1")
-        self.assertEqual(final_data["current_face"], 8)
+        assert final_data["controller"] == "Player 1"
+        assert final_data["current_face"] == 8
 
         self.game_log.append("✅ Terrain controller set successfully")
 
         print("\n📋 Test Summary:")
-        print(f"   ✅ Terrain advanced from face 5 to 8 step by step")
-        print(f"   ✅ Terrain controller assignment working")
-        print(f"   ✅ Game state updates correctly")
+        print("   ✅ Terrain advanced from face 5 to 8 step by step")
+        print("   ✅ Terrain controller assignment working")
+        print("   ✅ Game state updates correctly")
 
 
 if __name__ == "__main__":

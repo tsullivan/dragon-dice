@@ -10,8 +10,8 @@ from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
-from models.unit_model import UnitModel
 from models.minor_terrain_model import MinorTerrain
+from models.unit_model import UnitModel
 
 
 class BUAManager(QObject):

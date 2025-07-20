@@ -1,5 +1,5 @@
 # models/unit_model.py
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
 
 from utils.field_access import strict_get, strict_get_optional
 
@@ -115,7 +115,7 @@ class UnitModel:
             )
 
         # Handle faces data
-        faces_data = strict_get_optional(data, "faces", [])
+        faces_data: List[Any] = strict_get_optional(data, "faces", [])
         faces = []
         for face_data in faces_data:
             if isinstance(face_data, dict):

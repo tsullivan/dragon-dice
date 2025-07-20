@@ -2,11 +2,11 @@ import pytest
 from PySide6.QtWidgets import QApplication
 
 import constants
-from game_logic.engine import GameEngine  # To instantiate the game engine for the view
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine  # To instantiate the game engine for the view
 from models.game_phase_model import get_turn_phases
+from models.test.mock import create_army_dict, create_player_setup_dict
 from test.utils.visual_test_helpers import capture_widget_screenshot
 from views.main_gameplay_view import MainGameplayView
-from models.test.mock import create_player_setup_dict, create_army_dict
 
 
 def setup_game_engine():

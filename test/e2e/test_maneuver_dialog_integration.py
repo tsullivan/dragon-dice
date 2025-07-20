@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QEventLoop, QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 from views.maneuver_dialog import ManeuverDialog
 
 
@@ -38,7 +38,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -62,7 +62,7 @@ class TestManeuverDialogIntegration(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Coastland",  # Same frontier terrain
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {

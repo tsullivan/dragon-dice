@@ -52,13 +52,12 @@ class DieFaceModel:
         """
         if die_type == "six_sided":
             return self.base_value  # Number of icons on this face
-        elif die_type in ["large_equipment", "large_dragonkin"]:
+        if die_type in ["large_equipment", "large_dragonkin"]:
             return 3  # Fixed value per rules
-        elif die_type in ["monster", "artifact", "medallion", "relic", "champion"]:
+        if die_type in ["monster", "artifact", "medallion", "relic", "champion"]:
             return 4  # Fixed value per rules
-        else:
-            # Default to base_value for unknown die types
-            return self.base_value
+        # Default to base_value for unknown die types
+        return self.base_value
 
     def get_face_icon(self) -> str:
         """Get display icon for this face type."""
@@ -179,7 +178,6 @@ class DieFaceModel:
             "Frost Breath": "❄️",
             "Frost Cantrip": "❄️",
             "Hypnotic Glare": "👁️",
-            "Rise From Ashes": "🔥",
             "Smother": "💨",
             "Surprise": "😲",
             "Trumpet": "🎺",

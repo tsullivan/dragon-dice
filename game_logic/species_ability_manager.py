@@ -6,9 +6,10 @@ and ability activation according to Dragon Dice rules.
 """
 
 from typing import Any, Dict, List, Optional
+
 from PySide6.QtCore import QObject, Signal
 
-from utils.field_access import strict_get, strict_get_optional
+from utils.field_access import strict_get
 
 
 class SpeciesAbilityManager(QObject):

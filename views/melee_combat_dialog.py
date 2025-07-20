@@ -133,29 +133,33 @@ class MeleeCombatDialog(QDialog):
 
         self._setup_ui()
         self._update_step_display()
-    
-    def _analyze_combat_results(self, roll_results: Dict[str, List[str]], combat_type: str, 
-                               army_units: List[Dict[str, Any]], is_attacker: bool = True) -> Dict[str, Any]:
+
+    def _analyze_combat_results(
+        self,
+        roll_results: Dict[str, List[str]],
+        combat_type: str,
+        army_units: List[Dict[str, Any]],
+        is_attacker: bool = True,
+    ) -> Dict[str, Any]:
         """Analyze combat results using controller or fallback."""
         if self.combat_analysis_controller:
             terrain_elements = self._get_terrain_elements()
             return self.combat_analysis_controller.analyze_combat_roll(
                 roll_results, combat_type, army_units, terrain_elements, is_attacker
             )
-        else:
-            # Fallback - simplified analysis without SAI processing
-            return self._fallback_combat_analysis(roll_results, combat_type)
-    
+        # Fallback - simplified analysis without SAI processing
+        return self._fallback_combat_analysis(roll_results, combat_type)
+
     def _fallback_combat_analysis(self, roll_results: Dict[str, List[str]], combat_type: str) -> Dict[str, Any]:
         """Simplified combat analysis fallback when no controller available."""
         print(f"[MeleeCombatDialog] Using fallback analysis for {combat_type}")
         # Simple counting without SAI effects
         total_results = {"melee": 0, "save": 0}
-        for unit_name, faces in roll_results.items():
+        for _unit_name, faces in roll_results.items():
             for face in faces:
-                if face.lower() in ['m', 'melee']:
+                if face.lower() in ["m", "melee"]:
                     total_results["melee"] += 1
-                elif face.lower() in ['s', 'save']:
+                elif face.lower() in ["s", "save"]:
                     total_results["save"] += 1
         return {"total_results": total_results, "summary": f"{combat_type}: {total_results}"}
 
@@ -323,7 +327,7 @@ class MeleeCombatDialog(QDialog):
         self.results_display.show()
 
         # Get terrain elements (in a real implementation, this would come from game state)
-        terrain_elements = self._get_terrain_elements()
+        self._get_terrain_elements()
 
         # Process attacker results
         attacker_army_units = self.attacker_army.get("units", [])
@@ -331,7 +335,7 @@ class MeleeCombatDialog(QDialog):
             self.attacker_results, "melee", attacker_army_units, is_attacker=True
         )
 
-        # Process defender results  
+        # Process defender results
         defender_army_units = self.defender_army.get("units", [])
         defender_result = self._analyze_combat_results(
             self.defender_results, "save", defender_army_units, is_attacker=False

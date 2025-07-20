@@ -6,7 +6,8 @@ providing formatted data for UI consumption while keeping business logic
 separate from the presentation layer.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 from PySide6.QtCore import QObject, Signal
 
 from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
@@ -103,10 +104,9 @@ class ArmyDataService(QObject):
 
         if health == max_health:
             return name
-        elif health > 0:
+        if health > 0:
             return f"{name} ({health}/{max_health})"
-        else:
-            return f"{name} (Dead)"
+        return f"{name} (Dead)"
 
     def _get_unit_elements(self, unit: Dict[str, Any]) -> List[str]:
         """Get elements for a unit."""
@@ -126,7 +126,7 @@ class ArmyDataService(QObject):
             return False
 
         location = strict_get(army_data, "location")
-        army_id = strict_get_with_fallback(army_data, "unique_id", "id", army_data)
+        strict_get_with_fallback(army_data, "unique_id", "id", army_data)
 
         try:
             controller = self.game_state_manager.get_terrain_controller(location)
@@ -145,7 +145,7 @@ class ArmyDataService(QObject):
         actions.extend(["melee", "missile", "magic", "maneuver"])
 
         # Check for special actions based on terrain/eighth face
-        location = strict_get(army_data, "location")
+        strict_get(army_data, "location")
         if self._check_terrain_control(army_data):
             actions.append("eighth_face_action")
 
@@ -172,10 +172,9 @@ class ArmyDataService(QObject):
 
         if not alive_units:
             return "eliminated"
-        elif len(alive_units) == len(units):
+        if len(alive_units) == len(units):
             return "full_strength"
-        else:
-            return "damaged"
+        return "damaged"
 
     def get_army_summary_for_selection(self, player_name: str) -> List[Dict[str, Any]]:
         """Get simplified army data for army selection dialogs."""

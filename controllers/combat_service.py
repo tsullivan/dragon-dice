@@ -6,10 +6,11 @@ abstracting away the underlying game logic components from the UI layer.
 """
 
 from typing import Any, Dict, List
+
 from PySide6.QtCore import QObject, Signal
 
-from game_logic.die_face_analyzer import DieFaceAnalyzer
-from game_logic.sai_processor import SAIProcessor
+from models.die_face_analyzer import DieFaceAnalyzer
+from models.sai_processor import SAIProcessor
 from utils.field_access import strict_get, strict_get_optional
 
 
@@ -67,9 +68,7 @@ class CombatService(QObject):
             if not unit_data:
                 continue
 
-            unit_analysis = self.die_face_analyzer.analyze_unit_results(
-                unit_data, face_results, combat_type
-            )
+            unit_analysis = self.die_face_analyzer.analyze_unit_results(unit_data, face_results, combat_type)
             analysis_results[unit_name] = unit_analysis
 
         # Compile comprehensive results
@@ -96,7 +95,7 @@ class CombatService(QObject):
             "sai": 0,
         }
 
-        for unit_name, analysis in unit_analyses.items():
+        for _unit_name, analysis in unit_analyses.items():
             results = strict_get_optional(analysis, "results", {})
             for result_type, count in results.items():
                 if result_type.lower() in totals:
@@ -166,9 +165,7 @@ class CombatService(QObject):
 
         return actions
 
-    def calculate_damage_potential(
-        self, combat_results: Dict[str, Any], target_type: str = "army"
-    ) -> Dict[str, Any]:
+    def calculate_damage_potential(self, combat_results: Dict[str, Any], target_type: str = "army") -> Dict[str, Any]:
         """
         Calculate potential damage from combat results.
 

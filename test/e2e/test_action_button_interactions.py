@@ -14,7 +14,7 @@ from PySide6.QtWidgets import QApplication
 
 from components.action_choice_widget import ActionChoiceWidget
 from controllers.gameplay_controller import GameplayController
-from game_logic.engine import GameEngine
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 from views.main_gameplay_view import MainGameplayView
 
 

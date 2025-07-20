@@ -3,10 +3,11 @@ Type-safe game setup helpers for testing.
 Creates GameEngine instances with fully typed model data.
 """
 
-from typing import List, Tuple, Dict, Any
-from game_logic.engine import GameEngine
-from models.test.mock.typed_models import create_home_army_typed, create_campaign_army_typed
+from typing import Any, Dict, List, Tuple
+
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 from models.test.mock.player_mock import create_player_setup_dict
+from models.test.mock.typed_models import create_campaign_army_typed, create_home_army_typed
 
 
 def create_typed_game_engine(
@@ -94,7 +95,7 @@ def create_engine_with_armies_chosen(acting_army_unique_id: str, **engine_kwargs
     # Find and choose the specified army
     all_players_data = engine.get_all_players_data()
 
-    for player_name, player_data in all_players_data.items():
+    for _player_name, player_data in all_players_data.items():
         for army_type, army_data in player_data.get("armies", {}).items():
             if army_data.get("unique_id") == acting_army_unique_id:
                 army_choice_data = {

@@ -19,10 +19,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .carousel import CarouselInputWidget
-from models.minor_terrain_model import MinorTerrain, get_all_minor_terrain_objects, get_minor_terrain
 from models.element_model import get_element_icon
+from models.minor_terrain_model import MinorTerrain, get_all_minor_terrain_objects, get_minor_terrain
 from utils import strict_get
+
+from .carousel import CarouselInputWidget
 
 
 class MinorTerrainDisplayItem(QFrame):

@@ -17,7 +17,7 @@ from PySide6.QtWidgets import QApplication, QComboBox, QLineEdit, QPushButton
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from game_logic.engine import GameEngine
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 from main_window import MainWindow
 from models.app_data_model import AppDataModel
 

@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 
 
 class TestPhaseTransitions(unittest.TestCase):

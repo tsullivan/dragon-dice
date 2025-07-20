@@ -5,7 +5,8 @@ This module handles dragon attack mechanics including targeting determination,
 damage calculation, breath effects, and combat resolution according to Dragon Dice rules.
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
+
 from PySide6.QtCore import QObject, Signal
 
 from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
@@ -47,7 +48,7 @@ class DragonCombatResolver(QObject):
 
         # Get all armies at terrain (including the marching army)
         armies_at_terrain = self._get_armies_at_terrain(terrain_name)
-        other_dragons = [d for d in dragons_present]  # All dragons can potentially target each other
+        other_dragons = list(dragons_present)  # All dragons can potentially target each other
 
         for dragon in dragons_present:
             dragon_id = strict_get_with_fallback(dragon, "dragon_id", "id", dragon)
@@ -112,15 +113,14 @@ class DragonCombatResolver(QObject):
                     "target_data": marching_army,
                     "reason": "Targeting marching army",
                 }
-            else:
-                # Target first enemy army
-                target_army = enemy_armies[0]
-                return {
-                    "target_type": "army",
-                    "description": f"{strict_get(target_army, 'owner')}'s army ({strict_get(target_army, 'name')})",
-                    "target_data": target_army,
-                    "reason": "No other dragons available",
-                }
+            # Target first enemy army
+            target_army = enemy_armies[0]
+            return {
+                "target_type": "army",
+                "description": f"{strict_get(target_army, 'owner')}'s army ({strict_get(target_army, 'name')})",
+                "target_data": target_army,
+                "reason": "No other dragons available",
+            }
 
         # No valid targets
         return {"target_type": "none", "description": "No valid targets", "reason": "Dragon has no enemies at terrain"}

@@ -1,15 +1,16 @@
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
-from .effect_manager import EffectManager
-from .spell_resolver import SpellResolver
-from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
-from models.spell_model import get_available_spells
+from models.effect_state.effect_manager import EffectManager
 
 # Forward declaration for type hinting if GameStateManager and EffectManager are in different files
 # and create circular dependencies. Or import them directly if no circular dependency.
-from .game_state_manager import GameStateManager
+from models.game_state.game_state_manager import GameStateManager
+from models.spell_model import get_available_spells
+from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
+
+from .spell_resolver import SpellResolver
 
 
 class ActionResolver(QObject):
@@ -1127,7 +1128,7 @@ class ActionResolver(QObject):
             casting_count = spell_request.get("count", 1)
 
             if not spell_name or not element_used:
-                effects.append(f"Invalid spell request: missing name or element")
+                effects.append("Invalid spell request: missing name or element")
                 continue
 
             # Check if enough magic results available

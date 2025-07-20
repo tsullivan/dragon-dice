@@ -11,8 +11,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from views.display_utils import format_terrain_summary
 from utils import strict_get, strict_get_optional, strict_get_with_fallback
+from views.display_utils import format_terrain_summary
 
 
 class ActingArmyWidget(QWidget):

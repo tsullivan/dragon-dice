@@ -6,6 +6,7 @@ attack resolution, and combat management through the proper domain layers.
 """
 
 from typing import Any, Dict, List
+
 from PySide6.QtCore import QObject, Signal, Slot
 
 from utils.field_access import strict_get, strict_get_optional
@@ -73,7 +74,7 @@ class DragonCombatController(QObject):
         terrain_name: str,
     ):
         """Determine dragon targeting using the combat resolver."""
-        print(f"[DragonCombatController] Determining dragon targeting")
+        print("[DragonCombatController] Determining dragon targeting")
 
         if not self.dragon_combat_resolver:
             print("[DragonCombatController] ERROR: Dragon combat resolver not set")
@@ -89,7 +90,7 @@ class DragonCombatController(QObject):
     @Slot(dict, list)
     def handle_dragon_attack_resolution(self, targeting_results: dict, dragons_present: list):
         """Handle the resolution of dragon attacks."""
-        print(f"[DragonCombatController] Resolving dragon attacks")
+        print("[DragonCombatController] Resolving dragon attacks")
 
         if not self.dragon_combat_resolver:
             print("[DragonCombatController] ERROR: Dragon combat resolver not set")
@@ -108,7 +109,7 @@ class DragonCombatController(QObject):
 
     def _request_army_response(self, attack_results: List[Dict[str, Any]], targeting_results: Dict[str, Any]):
         """Request army response to dragon attacks."""
-        print(f"[DragonCombatController] Army under attack, requesting response")
+        print("[DragonCombatController] Army under attack, requesting response")
 
         # Get the attacked army from targeting results
         attacked_army = None
@@ -140,7 +141,7 @@ class DragonCombatController(QObject):
     @Slot(dict, list)
     def handle_army_response_submission(self, army_response_results: dict, attack_results: list):
         """Handle submission of army response results."""
-        print(f"[DragonCombatController] Processing army response")
+        print("[DragonCombatController] Processing army response")
 
         # Extract damage dealt to dragons from army response
         dragon_damage = strict_get_optional(army_response_results, "dragon_damage", {})
@@ -155,7 +156,7 @@ class DragonCombatController(QObject):
     @Slot(list)
     def handle_no_army_response(self, attack_results: list):
         """Handle case where no army response is needed."""
-        print(f"[DragonCombatController] No army response needed, completing combat")
+        print("[DragonCombatController] No army response needed, completing combat")
 
         # No army response, so no dragons killed by army
         dragon_deaths = {"dragons_killed": [], "total_killed": 0, "kill_details": []}
@@ -166,7 +167,7 @@ class DragonCombatController(QObject):
         self, attack_results: List[Dict[str, Any]], army_response_results: Dict[str, Any], dragon_deaths: Dict[str, Any]
     ):
         """Complete the dragon combat phase."""
-        print(f"[DragonCombatController] Completing dragon combat")
+        print("[DragonCombatController] Completing dragon combat")
 
         # Calculate total damage dealt to army
         total_army_damage = sum(
@@ -214,7 +215,7 @@ class DragonCombatController(QObject):
 
     def _apply_combat_results_to_game_state(self, combat_results: Dict[str, Any]):
         """Apply dragon combat results to the game state."""
-        print(f"[DragonCombatController] Applying combat results to game state")
+        print("[DragonCombatController] Applying combat results to game state")
 
         # Apply army damage
         total_damage = strict_get(combat_results, "total_army_damage")
@@ -238,8 +239,8 @@ class DragonCombatController(QObject):
 
         # Process treasure effects
         treasure_effects = strict_get(combat_results, "treasure_effects")
-        for treasure_attack in treasure_effects:
-            print(f"[DragonCombatController] Treasure effect available for army")
+        for _treasure_attack in treasure_effects:
+            print("[DragonCombatController] Treasure effect available for army")
             # Would trigger promotion opportunities
 
     @Slot(str, list, str)

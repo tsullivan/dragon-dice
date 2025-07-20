@@ -5,7 +5,7 @@ from PySide6.QtCore import QObject, Signal
 # For type hinting and potential reconstruction
 # For type hinting and potential reconstruction
 from models.unit_model import UnitModel
-from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+from utils.field_access import strict_get, strict_get_optional
 
 
 # Custom exceptions for game state management
@@ -257,8 +257,8 @@ class GameStateManager(QObject):
         Create reserve units based on available points using actual unit roster.
         Uses a simplified cost system based on unit health (1 health = 1 point).
         """
-        from models.unit_roster_model import UnitRosterModel
         from models.app_data_model import AppDataModel
+        from models.unit_roster_model import UnitRosterModel
 
         reserve_units = []
         remaining_points = points_available
@@ -1064,6 +1064,102 @@ class GameStateManager(QObject):
                     )
 
         return armies_at_terrain
+
+    def get_player_armies_summary(self, player_name: str) -> List[Dict[str, Any]]:
+        """
+        Get a summary of all armies for a specific player.
+
+        Returns a list of army summary dictionaries containing:
+        - army_id: Unique identifier for the army
+        - name: Display name of the army
+        - location: Where the army is positioned (terrain name or "reserves")
+        - race: Primary race/species of the army
+        - unit_count: Number of units in the army
+        - total_health: Sum of all unit health points
+        - points_value: Total point value of the army
+        - units: List of unit data for the army
+        """
+        player_data = self.get_player_data_safe(player_name)
+        if not player_data:
+            return []
+
+        armies_summary = []
+        armies_data = strict_get(player_data, "armies")
+
+        for army_type, army_data in armies_data.items():
+            # Get units and calculate summary stats
+            units = strict_get_optional(army_data, "units", [])
+            unit_count = len(units)
+            total_health = sum(strict_get_optional(unit, "health", 1) for unit in units)
+            points_value = strict_get_optional(army_data, "points_value", 0)
+
+            # Determine primary race from units
+            primary_race = self._determine_army_primary_race(units)
+
+            # Get location - could be a terrain name or "reserves"
+            location = strict_get_optional(army_data, "location", "unknown")
+
+            # Generate army ID (using existing method if available)
+            army_id = strict_get_optional(army_data, "unique_id", f"{player_name}_{army_type}")
+
+            # Create army summary
+            army_summary = {
+                "army_id": army_id,
+                "army_type": army_type,  # e.g., "home", "horde", "campaign"
+                "name": strict_get_optional(army_data, "name", army_type.title() + " Army"),
+                "location": location,
+                "race": primary_race,
+                "unit_count": unit_count,
+                "total_health": total_health,
+                "points_value": points_value,
+                "units": units.copy(),  # Include full unit data for phase controllers
+                "player_name": player_name,
+            }
+
+            armies_summary.append(army_summary)
+
+        return armies_summary
+
+    def _determine_army_primary_race(self, units: List[Dict[str, Any]]) -> str:
+        """Determine the primary race/species of an army based on its units."""
+        if not units:
+            return "none"
+
+        # Count units by race/species
+        race_counts = {}
+        for unit in units:
+            # Try different possible field names for race/species
+            # Ensure we get a string value, not a dict
+            race_value = (
+                strict_get_optional(unit, "race")
+                or strict_get_optional(unit, "species")
+                or strict_get_optional(unit, "type")
+            )
+
+            # Handle cases where the value might be a dict or other complex type
+            if isinstance(race_value, dict):
+                # If it's a dict, try to extract a name or id field
+                race = race_value.get("name") or race_value.get("id") or str(race_value.get("type", "unknown"))
+            elif isinstance(race_value, str):
+                race = race_value
+            elif race_value is not None:
+                # Convert other types to string
+                race = str(race_value)
+            else:
+                race = "unknown"
+
+            race_counts[race] = race_counts.get(race, 0) + 1
+
+        # Return the most common race, or "mixed" if tied
+        if not race_counts:
+            return "unknown"
+
+        max_count = max(race_counts.values())
+        primary_races = [race for race, count in race_counts.items() if count == max_count]
+
+        if len(primary_races) == 1:
+            return primary_races[0]
+        return "mixed"  # Multiple races with equal representation
 
     def get_current_state(self) -> Dict[str, Any]:
         """

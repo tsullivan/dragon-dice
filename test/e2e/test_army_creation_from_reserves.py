@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
-from game_logic.game_state_manager import GameStateManager
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.game_state.game_state_manager import GameStateManager
 
 
 class TestArmyCreationFromReserves(unittest.TestCase):
@@ -167,7 +167,7 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         all_players_data = self.engine.get_all_players_data()
         player_data = all_players_data[player_name]
         army_data = player_data["armies"][army_type]
-        
+
         # Move each unit to reserves
         for unit in army_data["units"]:
             unit_dict = {
@@ -176,18 +176,18 @@ class TestArmyCreationFromReserves(unittest.TestCase):
                 "health": unit["health"],
                 "elements": ["IVORY"],  # Default elements
             }
-            
+
             # Add to reserves using the reserves manager
             self.engine.reserves_manager.add_unit_to_reserves(
-                unit_dict, 
+                unit_dict,
                 player_name,
                 army_data["location"],
                 "retreat"
             )
-            
+
         # Clear the army's units
         army_data["units"] = []
-        
+
         print(f"Moved all units from {player_name}'s {army_type} army to reserves")
 
     def _advance_to_reserves_phase(self):
@@ -239,26 +239,26 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         """Simulate reserves phase operations using the reserves manager directly."""
         # Get available reserves for the player
         reserves = self.engine.reserves_manager.get_player_reserves(player_name)
-        
+
         if not reserves:
             print(f"No reserves available for {player_name}")
             return {}
-            
+
         # Simulate reinforcement plan: move some units to a new terrain
         new_terrain = "Badland"  # A terrain where player doesn't have an army
-        
+
         # Select first 2 units from reserves for reinforcement
         units_to_reinforce = reserves[:2] if len(reserves) >= 2 else reserves[:1]
         unit_names = [unit.name for unit in units_to_reinforce]
-        
+
         reinforcement_plan = {new_terrain: unit_names}
-        
+
         # Process the reinforcement
         results = self.engine.reserves_manager.process_reinforcement(player_name, reinforcement_plan)
-        
+
         # Simulate army creation with a name (normally done by UI)
         new_army_name = "Strike Force"  # Simulate user input
-        
+
         return {
             "reinforcement_results": results,
             "new_army_name": new_army_name,
@@ -272,7 +272,7 @@ class TestArmyCreationFromReserves(unittest.TestCase):
 
         Flow:
         1. Set up player with Campaign and Horde armies containing units
-        2. Move all units from Campaign army to Reserve Area  
+        2. Move all units from Campaign army to Reserve Area
         3. Move all units from Horde army to Reserve Area
         4. Advance to next turn's Reserves Phase
         5. Move some units from reserves to new terrain (creating new army)
@@ -283,7 +283,7 @@ class TestArmyCreationFromReserves(unittest.TestCase):
 
         # Set up scenario
         self._setup_army_creation_scenario()
-        
+
         # Verify initial state
         assert self.engine.get_current_player_name() == "Player 1"
         print("✅ Initial game state established")
@@ -292,9 +292,9 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         print("\n--- Moving Campaign Army to Reserves ---")
         initial_campaign_units = len(self.engine.get_all_players_data()["Player 1"]["armies"]["campaign"]["units"])
         print(f"Campaign army has {initial_campaign_units} units")
-        
+
         self._move_units_to_reserves("Player 1", "campaign")
-        
+
         # Verify campaign army is now empty
         campaign_units_after = len(self.engine.get_all_players_data()["Player 1"]["armies"]["campaign"]["units"])
         assert campaign_units_after == 0, f"Campaign army should be empty, has {campaign_units_after} units"
@@ -304,9 +304,9 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         print("\n--- Moving Horde Army to Reserves ---")
         initial_horde_units = len(self.engine.get_all_players_data()["Player 1"]["armies"]["horde"]["units"])
         print(f"Horde army has {initial_horde_units} units")
-        
+
         self._move_units_to_reserves("Player 1", "horde")
-        
+
         # Verify horde army is now empty
         horde_units_after = len(self.engine.get_all_players_data()["Player 1"]["armies"]["horde"]["units"])
         assert horde_units_after == 0, f"Horde army should be empty, has {horde_units_after} units"
@@ -317,20 +317,20 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         player_reserves = self.engine.reserves_manager.get_player_reserves("Player 1")
         expected_reserve_count = initial_campaign_units + initial_horde_units
         actual_reserve_count = len(player_reserves)
-        
+
         assert actual_reserve_count == expected_reserve_count, \
             f"Expected {expected_reserve_count} units in reserves, got {actual_reserve_count}"
-        
+
         print(f"✅ {actual_reserve_count} units confirmed in reserves")
         for reserve_unit in player_reserves:
             print(f"  - {reserve_unit.name} ({reserve_unit.species})")
 
         # === STEP 4: Advance to next turn's Reserves Phase ===
         print("\n--- Advancing to Reserves Phase ---")
-        
+
         # Skip current turn phases to get to reserves
         self._advance_to_reserves_phase()
-        
+
         # If not in reserves phase yet, advance to next player and their reserves
         if self.engine.current_phase != "RESERVES":
             # Complete current player's turn
@@ -342,53 +342,53 @@ class TestArmyCreationFromReserves(unittest.TestCase):
 
         # === STEP 5: Create new army from reserves ===
         print("\n--- Creating New Army from Reserves ---")
-        
+
         # Simulate the reserves phase operations
         army_creation_results = self._simulate_reserves_phase_operations("Player 1")
-        
+
         if army_creation_results:
             reinforcement_results = army_creation_results["reinforcement_results"]
             new_army_name = army_creation_results["new_army_name"]
             new_terrain = army_creation_results["new_terrain"]
             units_moved = army_creation_results["units_moved"]
-            
+
             # Verify reinforcement was successful
             assert reinforcement_results["success"], "Reinforcement should succeed"
             assert reinforcement_results["units_moved"] > 0, "Should move at least one unit"
-            
+
             print(f"✅ Moved {reinforcement_results['units_moved']} units to {new_terrain}")
             print(f"✅ New army name: '{new_army_name}'")
-            
+
             # === STEP 6: Verify new army creation ===
             print("\n--- Verifying New Army Creation ---")
-            
+
             # Check that units were removed from reserves
             remaining_reserves = self.engine.reserves_manager.get_player_reserves("Player 1")
             expected_remaining = expected_reserve_count - reinforcement_results["units_moved"]
             actual_remaining = len(remaining_reserves)
-            
+
             assert actual_remaining == expected_remaining, \
                 f"Expected {expected_remaining} units remaining in reserves, got {actual_remaining}"
-            
+
             print(f"✅ {actual_remaining} units remaining in reserves")
-            
+
             # Verify reinforcement data structure
             assert new_terrain in reinforcement_results["reinforcements"], \
                 f"Reinforcement results should include {new_terrain}"
-            
+
             reinforced_units = reinforcement_results["reinforcements"][new_terrain]
             assert len(reinforced_units) == len(units_moved), \
                 f"Should have reinforced {len(units_moved)} units"
-            
+
             print(f"✅ Reinforced {len(reinforced_units)} units to {new_terrain}")
-            
+
             # In a real game, the UI would create the new army in game state
             # For this test, we verify the reinforcement process completed successfully
             print("✅ Army creation process completed successfully")
 
         else:
             print("❌ No reserves available for army creation")
-            
+
         print("✅ Test completed - New army creation from reserves flow successful")
 
     def test_e2e_army_creation_with_multiple_terrains(self):
@@ -405,27 +405,27 @@ class TestArmyCreationFromReserves(unittest.TestCase):
 
         # Set up scenario
         self._setup_army_creation_scenario()
-        
+
         # Move units to reserves from multiple armies
         self._move_units_to_reserves("Player 1", "campaign")
         self._move_units_to_reserves("Player 1", "horde")
-        
+
         # Verify we have enough units in reserves
         player_reserves = self.engine.reserves_manager.get_player_reserves("Player 1")
         initial_reserve_count = len(player_reserves)
         assert initial_reserve_count >= 4, f"Need at least 4 units for multiple army test, got {initial_reserve_count}"
-        
+
         print(f"Starting with {initial_reserve_count} units in reserves")
 
         # === Create multiple reinforcement plans ===
         print("\n--- Creating Multiple Armies ---")
-        
+
         # Plan 1: 2 units to Badland
         terrain_1 = "Badland"
         units_1 = [player_reserves[0].name, player_reserves[1].name]
         reinforcement_plan_1 = {terrain_1: units_1}
-        
-        # Plan 2: 2 units to Swampland  
+
+        # Plan 2: 2 units to Swampland
         terrain_2 = "Swampland"
         remaining_reserves = player_reserves[2:]
         if len(remaining_reserves) >= 2:
@@ -440,7 +440,7 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         assert results_1["success"], "First reinforcement should succeed"
         print(f"✅ Created army at {terrain_1} with {len(units_1)} units")
 
-        # Process second reinforcement  
+        # Process second reinforcement
         if units_2:
             results_2 = self.engine.reserves_manager.process_reinforcement("Player 1", reinforcement_plan_2)
             assert results_2["success"], "Second reinforcement should succeed"
@@ -467,34 +467,36 @@ class TestArmyCreationFromReserves(unittest.TestCase):
 
         # Set up scenario
         self._setup_army_creation_scenario()
-        
+
         # Move some units to reserves
         self._move_units_to_reserves("Player 1", "campaign")
-        
+
         player_reserves = self.engine.reserves_manager.get_player_reserves("Player 1")
         assert len(player_reserves) > 0, "Need units in reserves for name validation test"
 
         # === Test name validation scenarios ===
         print("\n--- Testing Army Name Validation ---")
-        
+
         # Simulate the validation logic from reserves_phase_dialog.py
-        def validate_army_name(army_name: str, existing_new_army_names: list = []) -> tuple:
+        def validate_army_name(army_name: str, existing_new_army_names: list = None) -> tuple:
             """Simulate army name validation logic."""
+            if existing_new_army_names is None:
+                existing_new_army_names = []
             army_name = army_name.strip()
-            
+
             # Check for empty name
             if not army_name:
                 return False, "Army name cannot be empty."
-            
+
             # Check for reserved names
             reserved_names = ["Home", "Campaign", "Horde"]
             if army_name in reserved_names:
                 return False, f"'{army_name}' is a reserved army name. Please choose a different name."
-            
+
             # Check for duplicate names in current session
             if army_name in existing_new_army_names:
                 return False, f"You've already chosen '{army_name}' for another new army. Please choose a different name."
-            
+
             return True, "Valid name"
 
         # Test cases
@@ -509,10 +511,10 @@ class TestArmyCreationFromReserves(unittest.TestCase):
         ]
 
         existing_names = []
-        
+
         for test_name, should_be_valid, description in test_names:
             is_valid, message = validate_army_name(test_name, existing_names)
-            
+
             if should_be_valid:
                 assert is_valid, f"'{test_name}' should be valid ({description}): {message}"
                 existing_names.append(test_name)  # Add to existing names for duplicate check

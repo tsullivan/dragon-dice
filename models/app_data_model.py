@@ -3,12 +3,12 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal
 
 if TYPE_CHECKING:
-    from game_logic.engine import GameEngine
+    from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 
 from models.dragon_model import calculate_required_dragons
+from utils import strict_get
 
 from .terrain_model import TERRAIN_DATA, Terrain
-from utils import strict_get
 
 
 class AppDataModel(QObject):
@@ -147,7 +147,7 @@ class AppDataModel(QObject):
             return None
 
         # Import GameEngine here to avoid circular import
-        from game_logic.engine import GameEngine
+        from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 
         self._game_engine = GameEngine(
             self._player_setup_data_list,

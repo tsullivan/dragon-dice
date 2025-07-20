@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
-from game_logic.game_state_manager import GameStateManager
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.game_state.game_state_manager import GameStateManager
 
 
 class TestCompleteGameFlows(unittest.TestCase):
@@ -67,7 +67,7 @@ class TestCompleteGameFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Highland Expeditionary Force",
                         "location": "Coastland",  # Frontier terrain
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -134,7 +134,7 @@ class TestCompleteGameFlows(unittest.TestCase):
                     "horde": {
                         "name": "Coastal Raiders",
                         "location": "Player 1 Highland",  # Invading Player 1's home
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -157,7 +157,7 @@ class TestCompleteGameFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Coastal Strike Force",
                         "location": "Coastland",  # Also at frontier
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {

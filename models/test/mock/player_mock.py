@@ -3,7 +3,8 @@ Mock data helpers for Player setup testing.
 Provides type-safe mock data generation for player-related tests.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from models.test.mock.army_mock import create_player_armies_dict
 
 

@@ -3,23 +3,23 @@ from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QObject, Signal, Slot
 
 import constants
-from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
 from game_logic.action_resolver import ActionResolver
-from game_logic.bua_manager import BUAManager
 from game_logic.dragon_attack_manager import DragonAttackManager
-from game_logic.dua_manager import DUAManager, DUAUnit
-from game_logic.effect_manager import EffectManager
 from game_logic.eighth_face_manager import EighthFaceManager
-from game_logic.game_state_manager import GameStateManager
 from game_logic.minor_terrain_manager import MinorTerrainManager
 from game_logic.promotion_manager import PromotionManager
-from game_logic.reserves_manager import ReservesManager, ReserveUnit
-from game_logic.sai_processor import SAIProcessor
-from game_logic.spell_targeting import SpellTargetingManager
-from game_logic.summoning_pool_manager import SummoningPoolManager
 from game_logic.turn_manager import TurnManager
+from models.effect_state.effect_manager import EffectManager
+from models.game_state.bua_manager import BUAManager
+from models.game_state.dua_manager import DUAManager, DUAUnit
+from models.game_state.game_state_manager import GameStateManager
+from models.game_state.reserves_manager import ReservesManager, ReserveUnit
+from models.game_state.summoning_pool_manager import SummoningPoolManager
+from models.sai_processor import SAIProcessor
+from models.spell_targeting import SpellTargetingManager
 from models.terrain_model import get_terrain_icon
 from models.unit_model import UnitModel
+from utils.field_access import strict_get, strict_get_optional
 
 
 class GameEngine(QObject):
@@ -2080,10 +2080,9 @@ class GameEngine(QObject):
                     "message": f"Successfully placed {minor_terrain.name} on {major_terrain_name}",
                     "minor_terrain_name": minor_terrain.name,
                 }
-            else:
-                # Return to pool if placement failed
-                self.summoning_pool_manager.add_minor_terrain_to_pool(player_name, minor_terrain)
-                return {"success": False, "message": f"Failed to place {minor_terrain.name} on {major_terrain_name}"}
+            # Return to pool if placement failed
+            self.summoning_pool_manager.add_minor_terrain_to_pool(player_name, minor_terrain)
+            return {"success": False, "message": f"Failed to place {minor_terrain.name} on {major_terrain_name}"}
 
         except Exception as e:
             return {"success": False, "message": f"Error placing minor terrain: {str(e)}"}
@@ -2100,8 +2099,7 @@ class GameEngine(QObject):
                     "success": True,
                     "message": f"Successfully moved {minor_terrain_key} from BUA to summoning pool",
                 }
-            else:
-                return {"success": False, "message": f"Failed to move {minor_terrain_key} from BUA to summoning pool"}
+            return {"success": False, "message": f"Failed to move {minor_terrain_key} from BUA to summoning pool"}
         except Exception as e:
             return {"success": False, "message": f"Error moving minor terrain: {str(e)}"}
 
@@ -2117,8 +2115,7 @@ class GameEngine(QObject):
                     "success": True,
                     "message": f"Successfully moved {minor_terrain_key} from summoning pool to BUA",
                 }
-            else:
-                return {"success": False, "message": f"Failed to move {minor_terrain_key} from summoning pool to BUA"}
+            return {"success": False, "message": f"Failed to move {minor_terrain_key} from summoning pool to BUA"}
         except Exception as e:
             return {"success": False, "message": f"Error moving minor terrain: {str(e)}"}
 
@@ -2133,11 +2130,10 @@ class GameEngine(QObject):
 
             if success:
                 return {"success": True, "message": f"Successfully set {minor_terrain_name} to face {face_index}"}
-            else:
-                return {
-                    "success": False,
-                    "message": f"Failed to set face for {minor_terrain_name} on {major_terrain_name}",
-                }
+            return {
+                "success": False,
+                "message": f"Failed to set face for {minor_terrain_name} on {major_terrain_name}",
+            }
         except Exception as e:
             return {"success": False, "message": f"Error setting minor terrain face: {str(e)}"}
 
@@ -2162,13 +2158,12 @@ class GameEngine(QObject):
                     "buried_count": len(buried_terrains),
                     "buried_terrains": terrain_names,
                 }
-            else:
-                return {
-                    "success": True,
-                    "message": "No minor terrains needed burial",
-                    "buried_count": 0,
-                    "buried_terrains": [],
-                }
+            return {
+                "success": True,
+                "message": "No minor terrains needed burial",
+                "buried_count": 0,
+                "buried_terrains": [],
+            }
         except Exception as e:
             return {"success": False, "message": f"Error processing minor terrain burial: {str(e)}"}
 
@@ -2220,23 +2215,22 @@ class GameEngine(QObject):
         try:
             if action_type == "recruitment":
                 return self._process_city_recruitment(player_name, action_data)
-            elif action_type == "promotion":
+            if action_type == "promotion":
                 return self._process_city_promotion(player_name, action_data)
-            elif action_type == "magic_conversion":
+            if action_type == "magic_conversion":
                 return self._process_standing_stones_conversion(player_name, action_data)
-            elif action_type == "forced_burial":
+            if action_type == "forced_burial":
                 return self._process_temple_forced_burial(player_name, action_data)
-            elif action_type == "missile_attack":
+            if action_type == "missile_attack":
                 return self._process_tower_missile_attack(player_name, action_data)
-            else:
-                return {"success": False, "message": f"Unknown eighth face action: {action_type}"}
+            return {"success": False, "message": f"Unknown eighth face action: {action_type}"}
 
         except Exception as e:
             return {"success": False, "message": f"Error processing eighth face action: {str(e)}"}
 
     def _process_city_recruitment(self, player_name: str, action_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process City eighth face recruitment (move 1-health unit from DUA to army)."""
-        unit_name = strict_get_optional(action_data, "unit_id") or strict_get_optional(action_data, "unit_name")
+        strict_get_optional(action_data, "unit_id") or strict_get_optional(action_data, "unit_name")
 
         # Get units from DUA
         dua_units = self.dua_manager.get_player_dua(player_name)

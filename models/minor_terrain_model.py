@@ -1178,7 +1178,7 @@ def get_minor_terrains_by_base_name(base_name: str) -> List[MinorTerrain]:
 
 def get_minor_terrains_by_elements(elements: List[str]) -> List[MinorTerrain]:
     """Get all minor terrains that have the specified elements."""
-    elements_set = set(elem.upper() for elem in elements)
+    elements_set = {elem.upper() for elem in elements}
     return [terrain for terrain in MINOR_TERRAIN_DATA.values() if set(terrain.elements) == elements_set]
 
 

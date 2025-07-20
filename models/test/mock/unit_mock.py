@@ -3,10 +3,11 @@ Mock data helpers for UnitModel testing.
 Provides type-safe mock data generation for tests.
 """
 
-from typing import Dict, Any, List, Optional
-from models.unit_model import UnitModel
-from models.species_model import SPECIES_DATA
+from typing import Any, Dict, List, Optional
+
 from models.die_face_model import DieFaceModel
+from models.species_model import SPECIES_DATA
+from models.unit_model import UnitModel
 
 
 def create_unit_dict(
@@ -34,7 +35,6 @@ def create_unit_dict(
         Complete unit dictionary that can be used with UnitModel.from_dict()
     """
     # Get the actual species model from SPECIES_DATA
-    from models.species_model import SPECIES_DATA
 
     if species_name not in SPECIES_DATA:
         raise ValueError(f"Unknown species: {species_name}. Available: {list(SPECIES_DATA.keys())}")
@@ -147,7 +147,6 @@ def create_unit_instance(
     Create a UnitModel instance directly, bypassing dict parsing.
     This is type-safe and will catch missing arguments at creation time.
     """
-    from models.species_model import SPECIES_DATA
 
     # Get species (this will fail fast if species doesn't exist)
     if species_name not in SPECIES_DATA:

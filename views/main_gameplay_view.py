@@ -25,8 +25,9 @@ from components.tabbed_view_widget import TabbedViewWidget
 from components.unit_areas_widget import UnitAreasWidget
 
 # No change, good comment
-from game_logic.engine import GameEngine
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 from models.help_text_model import HelpTextModel
+from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
 from views.action_dialog import ActionDialog
 from views.display_utils import (
     format_player_turn_label,
@@ -39,8 +40,6 @@ from views.melee_combat_dialog import MeleeCombatDialog
 from views.missile_combat_dialog import MissileCombatDialog
 from views.reserves_phase_dialog import ReservesPhaseDialog
 from views.species_abilities_phase_dialog import SpeciesAbilitiesPhaseDialog
-
-from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
 
 
 class MainGameplayView(QWidget):
@@ -624,7 +623,7 @@ class MainGameplayView(QWidget):
         for terrain in relevant_terrains:
             terrain_name = strict_get(terrain, "name")
             terrain_type = strict_get(terrain, "type")
-            face_number = strict_get(terrain, "face")
+            strict_get(terrain, "face")
             controller = strict_get_optional(terrain, "controller")
             face_details = strict_get(terrain, "details")
 

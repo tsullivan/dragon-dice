@@ -3,7 +3,8 @@ Mock data helpers for Army testing.
 Provides type-safe mock data generation for army-related tests.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from models.test.mock.unit_mock import create_army_units_list, create_unit_dict
 
 

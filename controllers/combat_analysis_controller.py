@@ -5,11 +5,9 @@ This controller provides views with access to combat analysis services
 without requiring direct imports from game_logic.
 """
 
-from typing import Any, Dict, List
 from PySide6.QtCore import QObject, Signal, Slot
 
-from game_logic.combat_service import CombatService
-from utils.field_access import strict_get, strict_get_optional
+from controllers.combat_service import CombatService
 
 
 class CombatAnalysisController(QObject):

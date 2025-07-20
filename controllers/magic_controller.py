@@ -5,7 +5,8 @@ This controller coordinates magic actions including magic point calculation,
 spell selection, and spell casting through the proper domain layers.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
+
 from PySide6.QtCore import QObject, Signal, Slot
 
 from utils.field_access import strict_get, strict_get_optional
@@ -42,7 +43,7 @@ class MagicController(QObject):
         # Get available spells
         army_data = self.game_engine.game_state_manager.get_army_data(player_name, army_identifier)
         army_units = strict_get(army_data, "units")
-        army_species = list(set(strict_get(unit, "species") for unit in army_units))
+        army_species = list({strict_get(unit, "species") for unit in army_units})
 
         available_spells = self.game_engine.magic_resolver.get_spell_availability(magic_points, army_species, location)
 
@@ -121,7 +122,7 @@ class MagicController(QObject):
         # Get player's army species
         army_data = self.game_engine.game_state_manager.get_active_army_data(player_name)
         army_units = strict_get(army_data, "units")
-        army_species = list(set(strict_get(unit, "species") for unit in army_units))
+        army_species = list({strict_get(unit, "species") for unit in army_units})
 
         # Create magic points dict for validation
         magic_points = {element_used.upper(): available_magic}

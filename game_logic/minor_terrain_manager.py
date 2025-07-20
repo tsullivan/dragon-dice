@@ -161,14 +161,13 @@ class MinorTerrainManager(QObject):
         """Categorize the type of effect based on face name."""
         if face_name == "ID":
             return "choice"
-        elif face_name in ["Magic", "Melee", "Missile"]:
+        if face_name in ["Magic", "Melee", "Missile"]:
             return "action"
-        elif face_name in ["Double Saves", "Double Maneuvers"]:
+        if face_name in ["Double Saves", "Double Maneuvers"]:
             return "enhancement"
-        elif face_name in ["Flood", "Flanked", "Landslide", "Revolt"]:
+        if face_name in ["Flood", "Flanked", "Landslide", "Revolt"]:
             return "negative"
-        else:
-            return "unknown"
+        return "unknown"
 
     def process_burial_requirements(self, major_terrain_name: str) -> List[Tuple[str, MinorTerrainPlacement]]:
         """Get minor terrains that need to be buried and remove them."""
@@ -179,7 +178,7 @@ class MinorTerrainManager(QObject):
         to_bury = []
 
         # Find placements that need burial
-        for i, placement in enumerate(placements):
+        for _i, placement in enumerate(placements):
             if placement.needs_burial:
                 to_bury.append((placement.minor_terrain.name, placement))
 
@@ -212,7 +211,7 @@ class MinorTerrainManager(QObject):
             "placements_needing_burial": 0,
         }
 
-        for terrain_name, placements in self._terrain_placements.items():
+        for _terrain_name, placements in self._terrain_placements.items():
             if placements:
                 stats["terrains_with_minor_terrains"] += 1
 

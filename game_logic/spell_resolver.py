@@ -5,12 +5,12 @@ This module handles the execution of spell effects, including damage, modifiers,
 movement, summoning, and other spell mechanics according to Dragon Dice rules.
 """
 
-from typing import Any, Dict
 from enum import Enum
+from typing import Any, Dict
 
 from PySide6.QtCore import QObject, Signal
 
-from models.spell_model import SpellModel, ALL_SPELLS
+from models.spell_model import ALL_SPELLS, SpellModel
 from utils.field_access import strict_get, strict_get_optional
 
 
@@ -227,26 +227,26 @@ class SpellResolver(QObject):
     ) -> Dict[str, Any]:
         """Resolve the specific effect of a spell based on its type."""
 
-        spell_key = spell.name.upper().replace(" ", "_")
+        spell.name.upper().replace(" ", "_")
 
         if effect_type == SpellEffectType.DAMAGE:
             return self._resolve_damage_effect(spell, caster_player, target_data, casting_count)
-        elif effect_type == SpellEffectType.MODIFIER:
+        if effect_type == SpellEffectType.MODIFIER:
             return self._resolve_modifier_effect(spell, caster_player, target_data, casting_count)
-        elif effect_type == SpellEffectType.MOVEMENT:
+        if effect_type == SpellEffectType.MOVEMENT:
             return self._resolve_movement_effect(spell, caster_player, target_data, casting_count)
-        elif effect_type == SpellEffectType.SUMMONING:
+        if effect_type == SpellEffectType.SUMMONING:
             return self._resolve_summoning_effect(spell, caster_player, target_data, magic_element_used, casting_count)
-        elif effect_type == SpellEffectType.RESURRECTION:
+        if effect_type == SpellEffectType.RESURRECTION:
             return self._resolve_resurrection_effect(
                 spell, caster_player, target_data, magic_element_used, casting_count
             )
-        elif effect_type == SpellEffectType.PROMOTION:
+        if effect_type == SpellEffectType.PROMOTION:
             return self._resolve_promotion_effect(spell, caster_player, target_data, magic_element_used, casting_count)
-        elif effect_type == SpellEffectType.TERRAIN_MANIPULATION:
+        if effect_type == SpellEffectType.TERRAIN_MANIPULATION:
             return self._resolve_terrain_effect(spell, caster_player, target_data, casting_count)
-        else:  # SpellEffectType.SPECIAL
-            return self._resolve_special_effect(spell, caster_player, target_data, magic_element_used, casting_count)
+        # SpellEffectType.SPECIAL
+        return self._resolve_special_effect(spell, caster_player, target_data, magic_element_used, casting_count)
 
     def _resolve_damage_effect(
         self, spell: SpellModel, caster_player: str, target_data: Dict[str, Any], casting_count: int
@@ -313,20 +313,20 @@ class SpellResolver(QObject):
                 "destination_terrain": strict_get(target_data, "destination_terrain"),
                 "unit_data": strict_get(target_data, "unit"),
             }
-        elif spell_key == "RALLY":
+        if spell_key == "RALLY":
             return {
                 "effect_type": "move_multiple_units",
                 "max_units": 3,
                 "unit_restriction": "Amazons",
                 "destination_requirement": "terrain_with_amazons",
             }
-        elif spell_key == "SCENT_OF_FEAR":
+        if spell_key == "SCENT_OF_FEAR":
             return {
                 "effect_type": "force_to_reserves",
                 "max_health_worth": 3 * casting_count,
                 "target_data": target_data,
             }
-        elif spell_key == "MIRAGE":
+        if spell_key == "MIRAGE":
             return {
                 "effect_type": "save_or_move_to_reserves",
                 "max_health_worth": 5 * casting_count,
@@ -353,13 +353,13 @@ class SpellResolver(QObject):
                 "target_terrain": strict_get(target_data, "terrain"),
                 "allow_ivory": True,
             }
-        elif spell_key == "SUMMON_WHITE_DRAGON":
+        if spell_key == "SUMMON_WHITE_DRAGON":
             return {
                 "effect_type": "summon_white_dragon",
                 "target_terrain": strict_get(target_data, "terrain"),
                 "cost_elements": strict_get_optional(target_data, "elements_used", []),
             }
-        elif spell_key == "SUMMON_DRAGONKIN":
+        if spell_key == "SUMMON_DRAGONKIN":
             return {
                 "effect_type": "summon_dragonkin",
                 "element_required": magic_element_used,
@@ -387,7 +387,7 @@ class SpellResolver(QObject):
                 "health_worth": 1 * casting_count,
                 "target_army": strict_get(target_data, "army"),
             }
-        elif spell_key == "EXHUME":
+        if spell_key == "EXHUME":
             return {
                 "effect_type": "force_burial_and_resurrect",
                 "max_target_health": 3 * casting_count,
@@ -417,7 +417,7 @@ class SpellResolver(QObject):
                 "promotion_amount": promotion_amount,
                 "target_unit": strict_get(target_data, "unit"),
             }
-        elif spell_key == "RISE_OF_THE_ELDARIM":
+        if spell_key == "RISE_OF_THE_ELDARIM":
             return {
                 "effect_type": "promote_eldarim",
                 "element_required": magic_element_used,
@@ -441,7 +441,7 @@ class SpellResolver(QObject):
                 "max_per_turn": 1,  # terrain reduction limit
                 "target_terrain": strict_get(target_data, "terrain"),
             }
-        elif spell_key == "TIDAL_WAVE":
+        if spell_key == "TIDAL_WAVE":
             return {
                 "effect_type": "damage_and_reduce_terrain",
                 "damage_amount": 4 * casting_count,
@@ -473,7 +473,7 @@ class SpellResolver(QObject):
                 "duration": "until_next_turn",
                 "conditions": "save_roll_death_only",
             }
-        elif spell_key == "SOILED_GROUND":
+        if spell_key == "SOILED_GROUND":
             return {
                 "effect_type": "death_burial_check",
                 "target_terrain": strict_get(target_data, "terrain"),

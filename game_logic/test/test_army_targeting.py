@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from game_logic.game_state_manager import GameStateManager
-from models.test.mock import create_player_setup_dict, create_army_dict
+from models.game_state.game_state_manager import GameStateManager
+from models.test.mock import create_army_dict, create_player_setup_dict
 
 
 class TestArmyTargeting(unittest.TestCase):

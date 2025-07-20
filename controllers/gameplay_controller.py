@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Slot
 
-from game_logic.engine import GameEngine
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
 from utils import strict_get
 
 

@@ -2,10 +2,10 @@
 from typing import Any, Dict, List, Optional
 
 import constants
+from utils import strict_get
 
 from .app_data_model import AppDataModel
 from .unit_model import UnitModel
-from utils import strict_get
 
 
 class UnitRosterModel:

@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import Mock
 
 import constants
-from game_logic.die_face_analyzer import (
+from models.die_face_analyzer import (
     DieFaceAnalyzer,
     DieFaceCount,
     UnitDieFaceExtractor,

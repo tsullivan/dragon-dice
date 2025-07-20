@@ -32,8 +32,6 @@ from PySide6.QtWidgets import (
 
 # Managers are received as parameters - no direct imports needed
 
-from utils.field_access import strict_get, strict_get_optional, strict_get_with_fallback
-
 
 class MutateAbilityWidget(QWidget):
     """Widget for managing Swamp Stalkers' Mutate ability."""

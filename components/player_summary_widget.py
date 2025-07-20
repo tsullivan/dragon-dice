@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
-from views.display_utils import format_terrain_summary
 from utils import strict_get, strict_get_optional
+from views.display_utils import format_terrain_summary
 
 
 class PlayerSummaryWidget(QGroupBox):  # Inherit from QGroupBox for a titled border

@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
-from game_logic.game_state_manager import GameStateManager
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.game_state.game_state_manager import GameStateManager
 
 
 class TestTerrainActionRestrictions(unittest.TestCase):
@@ -233,16 +233,14 @@ class TestTerrainActionRestrictions(unittest.TestCase):
                 test_terrain = terrain_info
                 break
 
-        self.assertIsNotNone(test_terrain, f"Terrain {terrain_name} not found")
-        self.assertEqual(test_terrain["face"], expected_face,
-                         f"Terrain {terrain_name} should be on face {expected_face}")
+        assert test_terrain is not None, f"Terrain {terrain_name} not found"
+        assert test_terrain["face"] == expected_face, f"Terrain {terrain_name} should be on face {expected_face}"
 
         # Verify available actions match terrain face rules
         if acting_player is None:
             acting_player = self.engine.get_current_player_name()
         actual_actions = self._get_available_actions_for_terrain_face(expected_face, terrain_name, acting_player)
-        self.assertEqual(sorted(expected_actions), actual_actions,
-                         f"Available actions should match terrain face {expected_face}")
+        assert sorted(expected_actions) == actual_actions, f"Available actions should match terrain face {expected_face}"
 
         print(f"✅ Terrain {terrain_name} on face {expected_face} allows: {', '.join(sorted(expected_actions))}")
 
@@ -290,7 +288,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
 
         Flow:
         1. Set up army on terrain with face 2
-        2. Navigate to action selection phase  
+        2. Navigate to action selection phase
         3. Verify UI shows Missile, Melee, and Skip buttons only (no Magic)
         4. Select Missile action and verify it works
         """
@@ -422,7 +420,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         print("\n--- Testing Skip on Face 1 ---")
         expected_actions = ["MELEE", "SKIP"]
         self._verify_terrain_and_actions("Swampland", 1, expected_actions)
-        self.assertIn("SKIP", expected_actions, "Skip should be available on face 1")
+        assert "SKIP" in expected_actions, "Skip should be available on face 1"
 
         # Select skip to complete this march and test next scenario
         self.engine.select_action("SKIP")
@@ -435,7 +433,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         print("\n--- Testing Skip on Face 2 ---")
         expected_actions = ["MELEE", "MISSILE", "SKIP"]
         self._verify_terrain_and_actions("Frozen Wastes", 2, expected_actions)
-        self.assertIn("SKIP", expected_actions, "Skip should be available on face 2")
+        assert "SKIP" in expected_actions, "Skip should be available on face 2"
 
         # Select skip to complete this march
         self.engine.select_action("SKIP")
@@ -640,12 +638,12 @@ class TestTerrainActionRestrictions(unittest.TestCase):
 
         # Verify terrain control effects are present
         terrain_effects = [effect for effect in outcome.get("effects", []) if effect.get("type") == "terrain_control"]
-        self.assertTrue(len(terrain_effects) > 0, "Terrain control ID doubling should be applied")
+        assert len(terrain_effects) > 0, "Terrain control ID doubling should be applied"
 
         # Verify the doubling effect is properly described
         doubling_effect = terrain_effects[0].get("description", "")
-        self.assertIn("Doubled ID results", doubling_effect, "Should describe ID doubling effect")
-        self.assertIn("(3 -> 6)", doubling_effect, "Should show ID results doubled from 3 to 6")
+        assert "Doubled ID results" in doubling_effect, "Should describe ID doubling effect"
+        assert "(3 -> 6)" in doubling_effect, "Should show ID results doubled from 3 to 6"
 
         print("✅ Test completed - ID results doubled when controlling terrain")
 
@@ -669,7 +667,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # Verify initial eighth face
         terrains_info = self.engine.get_relevant_terrains_info()
         flatland = next(t for t in terrains_info if t["name"] == "Flatland")
-        self.assertEqual(flatland["face"], 8, "Terrain should start at eighth face")
+        assert flatland["face"] == 8, "Terrain should start at eighth face"
 
         # Simulate control loss by removing all units from controlling army
         self.engine.game_state_manager.apply_damage_to_units("Action Player", "action_player_campaign", 99)
@@ -677,11 +675,11 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # Verify terrain face reset to seventh
         terrains_info = self.engine.get_relevant_terrains_info()
         flatland = next(t for t in terrains_info if t["name"] == "Flatland")
-        self.assertEqual(flatland["face"], 7, "Terrain should reset to seventh face when control lost")
+        assert flatland["face"] == 7, "Terrain should reset to seventh face when control lost"
 
         # Verify controller is cleared
         controller = self.engine.game_state_manager.get_terrain_controller("Flatland")
-        self.assertIsNone(controller, "Terrain should have no controller after control lost")
+        assert controller is None, "Terrain should have no controller after control lost"
 
         print("✅ Test completed - Terrain face resets when control is lost")
 
@@ -704,7 +702,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         self.engine.game_state_manager.set_terrain_controller("City", "Action Player")
 
         # Add units to DUA for recruitment
-        from game_logic.dua_manager import DUAUnit
+        from controllers.dua_manager import DUAUnit
         dua_unit = DUAUnit(
             name="Amazon Recruit",
             species="amazon",
@@ -722,7 +720,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
 
         # Verify recruitment is available for City
         eighth_face_options = self.engine.get_eighth_face_options("Action Player", "City")
-        self.assertIn("recruitment", [opt.get("type") for opt in eighth_face_options])
+        assert "recruitment" in [opt.get("type") for opt in eighth_face_options]
 
         # Perform recruitment
         initial_dua_size = len(self.engine.dua_manager.get_player_dua("Action Player"))
@@ -730,8 +728,8 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         final_dua_size = len(self.engine.dua_manager.get_player_dua("Action Player"))
 
         # Verify recruitment succeeded
-        self.assertTrue(recruitment_result.get("success", False), "Recruitment should succeed")
-        self.assertEqual(final_dua_size, initial_dua_size - 1, "DUA should lose one unit from recruitment")
+        assert recruitment_result.get("success", False), "Recruitment should succeed"
+        assert final_dua_size == initial_dua_size - 1, "DUA should lose one unit from recruitment"
 
         print("✅ Test completed - City eighth face recruitment works correctly")
 
@@ -758,7 +756,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
 
         # Verify magic conversion is available for Standing Stones
         eighth_face_options = self.engine.get_eighth_face_options("Action Player", "Standing Stones")
-        self.assertIn("magic_conversion", [opt.get("type") for opt in eighth_face_options])
+        assert "magic_conversion" in [opt.get("type") for opt in eighth_face_options]
 
         # Simulate magic roll and conversion
         magic_results = {"magic": 3, "other": 2}
@@ -766,7 +764,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
             "Action Player", "magic_conversion", {"magic_results": magic_results}
         )
 
-        self.assertTrue(conversion_result.get("success", False), "Magic conversion should succeed")
+        assert conversion_result.get("success", False), "Magic conversion should succeed"
 
         print("✅ Test completed - Standing Stones magic conversion works correctly")
 
@@ -799,7 +797,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # First check if the army exists
         player_data = self.engine.game_state_manager.get_player_data("Action Player")
         print(f"Player armies: {list(player_data.get('armies', {}).keys())}")
-        campaign_army = player_data.get('armies', {}).get('campaign', {})
+        campaign_army = player_data.get("armies", {}).get("campaign", {})
         print(f"Campaign army location: {campaign_army.get('location')}")
         print(f"Campaign army unique_id: {campaign_army.get('unique_id')}")
 
@@ -815,19 +813,19 @@ class TestTerrainActionRestrictions(unittest.TestCase):
 
         immunity_status = self.engine.check_death_magic_immunity("Action Player", "action_player_campaign")
         print(f"Death magic immunity status: {immunity_status}")
-        self.assertTrue(immunity_status, "Army controlling Temple should be immune to death magic")
+        assert immunity_status, "Army controlling Temple should be immune to death magic"
 
         # Test forced burial option in Eighth Face Phase
         self.engine.enter_eighth_face_phase()
         eighth_face_options = self.engine.get_eighth_face_options("Action Player", "Temple")
-        self.assertIn("forced_burial", [opt.get("type") for opt in eighth_face_options])
+        assert "forced_burial" in [opt.get("type") for opt in eighth_face_options]
 
         # Execute forced burial
         burial_result = self.engine.process_eighth_face_action(
             "Action Player", "forced_burial", {"target_player": "Opponent Player", "unit_choice": "any"}
         )
 
-        self.assertTrue(burial_result.get("success", False), "Forced burial should succeed")
+        assert burial_result.get("success", False), "Forced burial should succeed"
 
         print("✅ Test completed - Temple death magic immunity and forced burial work correctly")
 
@@ -865,7 +863,7 @@ class TestTerrainActionRestrictions(unittest.TestCase):
 
         # Verify missile attack option is available
         eighth_face_options = self.engine.get_eighth_face_options("Action Player", "Tower")
-        self.assertIn("missile_attack", [opt.get("type") for opt in eighth_face_options])
+        assert "missile_attack" in [opt.get("type") for opt in eighth_face_options]
 
         # Execute missile attack on Reserve Army
         missile_results = "2 missile, 1 id"  # Only non-ID should count against reserves
@@ -874,8 +872,8 @@ class TestTerrainActionRestrictions(unittest.TestCase):
             {"target": "opponent_reserves", "missile_results": missile_results}
         )
 
-        self.assertTrue(attack_result.get("success", False), "Tower missile attack should succeed")
-        self.assertEqual(attack_result.get("effective_hits", 0), 2, "Only non-ID results should count against Reserve Army")
+        assert attack_result.get("success", False), "Tower missile attack should succeed"
+        assert attack_result.get("effective_hits", 0) == 2, "Only non-ID results should count against Reserve Army"
 
         print("✅ Test completed - Tower missile attack works correctly including Reserve Army rules")
 
@@ -918,14 +916,14 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # Test ID doubling directly through action resolver
         outcome = self.engine.action_resolver.resolve_attacker_melee("1 melee, 2 id", "Action Player")
         terrain_effects = [effect for effect in outcome.get("effects", []) if effect.get("type") == "terrain_control"]
-        self.assertTrue(len(terrain_effects) > 0, "Terrain control ID doubling should be applied")
+        assert len(terrain_effects) > 0, "Terrain control ID doubling should be applied"
 
         # Test eighth face effect (City recruitment)
         self.engine.enter_eighth_face_phase()
         recruitment_available = "recruitment" in [
             opt.get("type") for opt in self.engine.get_eighth_face_options("Action Player", "City")
         ]
-        self.assertTrue(recruitment_available, "City recruitment should be available")
+        assert recruitment_available, "City recruitment should be available"
 
         # Simulate control loss - this triggers automatic terrain control loss
         print("\n--- Testing Control Loss ---")
@@ -936,10 +934,10 @@ class TestTerrainActionRestrictions(unittest.TestCase):
         # Verify terrain reset
         terrains_info = self.engine.get_relevant_terrains_info()
         city = next(t for t in terrains_info if t["name"] == "City")
-        self.assertEqual(city["face"], 7, "City should reset to face 7 after control loss")
+        assert city["face"] == 7, "City should reset to face 7 after control loss"
 
         controller = self.engine.game_state_manager.get_terrain_controller("City")
-        self.assertIsNone(controller, "City should have no controller after army destruction")
+        assert controller is None, "City should have no controller after army destruction"
 
         print("✅ Test completed - Complete terrain control flow works correctly")
 

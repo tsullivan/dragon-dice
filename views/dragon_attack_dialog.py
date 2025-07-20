@@ -580,7 +580,7 @@ class DragonAttackDialog(QDialog):
     def _simulate_targeting(self) -> Dict[str, Any]:
         """Simulate dragon targeting for demonstration."""
         targeting = {}
-        for i, dragon in enumerate(self.dragons_present):
+        for _i, dragon in enumerate(self.dragons_present):
             dragon_id = strict_get_with_fallback(dragon, "dragon_id", "id", "dragon")
             targeting[dragon_id] = {
                 "dragon_name": strict_get(dragon, "name"),

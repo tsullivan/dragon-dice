@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 
 from PySide6.QtCore import QObject, Signal
 
-from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+from utils.field_access import strict_get_optional
 
 
 class DragonTargetType(Enum):

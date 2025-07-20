@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
-from game_logic.engine import GameEngine
-from game_logic.game_state_manager import GameStateManager
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.game_state.game_state_manager import GameStateManager
 
 
 class TestCounterManeuverFlows(unittest.TestCase):
@@ -60,7 +60,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Frontier terrain
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -113,7 +113,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Coastland",  # Same frontier terrain as Player 1 campaign
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -136,7 +136,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Also at frontier
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -323,7 +323,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Coastland",  # Also at contested location
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -424,7 +424,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Player 2 Coastland",  # Attacking Player 2's home
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -463,7 +463,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "campaign": {
                         "name": "Campaign Army",
                         "location": "Player 2 Coastland",  # Same location as home
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {
@@ -479,7 +479,7 @@ class TestCounterManeuverFlows(unittest.TestCase):
                     "horde": {
                         "name": "Horde Army",
                         "location": "Player 2 Coastland",  # Same location as home and campaign
-                        
+
                         "allocated_points": 10,
                         "units": [
                             {

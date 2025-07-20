@@ -6,9 +6,9 @@ including cantrips, combat modifications, and other special effects.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
-from utils.field_access import strict_get, strict_get_with_fallback, strict_get_optional
+from utils.field_access import strict_get, strict_get_optional
 
 
 @dataclass
@@ -944,22 +944,20 @@ class SAIProcessor:
         # Check for specific die types based on unit classification
         if "monster" in unit_type:
             return "monster"
-        elif "artifact" in unit_type:
+        if "artifact" in unit_type:
             return "artifact"
-        elif "medallion" in unit_type:
+        if "medallion" in unit_type:
             return "medallion"
-        elif "relic" in unit_type:
+        if "relic" in unit_type:
             return "relic"
-        elif "champion" in unit_type:
+        if "champion" in unit_type:
             return "champion"
-        elif "large" in size and ("equipment" in unit_type or "dragonkin" in unit_type):
+        if "large" in size and ("equipment" in unit_type or "dragonkin" in unit_type):
             if "equipment" in unit_type:
                 return "large_equipment"
-            else:
-                return "large_dragonkin"
-        else:
-            # Default to six-sided for regular units
-            return "six_sided"
+            return "large_dragonkin"
+        # Default to six-sided for regular units
+        return "six_sided"
 
     def _calculate_x_value_for_sai(self, die_type: str, icons_rolled: int) -> int:
         """Calculate X-value for SAI based on die type and icons rolled."""
@@ -967,13 +965,12 @@ class SAIProcessor:
             # For 6-sided dice, X = number of icons on the face
             # For now, assume 1 icon per face (will be improved with actual face data)
             return icons_rolled  # Each SAI face counts as 1 icon
-        elif die_type in ["large_equipment", "large_dragonkin"]:
+        if die_type in ["large_equipment", "large_dragonkin"]:
             return 3  # Fixed value per rules
-        elif die_type in ["monster", "artifact", "medallion", "relic", "champion"]:
+        if die_type in ["monster", "artifact", "medallion", "relic", "champion"]:
             return 4  # Fixed value per rules
-        else:
-            # Default fallback
-            return icons_rolled
+        # Default fallback
+        return icons_rolled
 
     def _generate_sai_modifiers(
         self,
@@ -1016,7 +1013,7 @@ class SAIProcessor:
         unit_name = strict_get(unit_data, "name", "Unit")
 
         # Check if this SAI applies to the current roll type
-        applies_to = strict_get_optional(sai_info, "applies", [])
+        applies_to: List[str] = strict_get_optional(sai_info, "applies", [])
         current_roll_type = self._normalize_roll_type(combat_type, is_attacker)
 
         if not ("any" in applies_to or current_roll_type in applies_to):
@@ -1071,16 +1068,15 @@ class SAIProcessor:
         """Normalize roll type to match SAI applies conditions."""
         if combat_type == "save":
             return "save"
-        elif combat_type == "magic":
+        if combat_type == "magic":
             return "magic"
-        elif combat_type == "maneuver":
+        if combat_type == "maneuver":
             return "maneuver"
-        elif combat_type == "melee":
+        if combat_type == "melee":
             return "melee"
-        elif combat_type == "missile":
+        if combat_type == "missile":
             return "missile"
-        else:
-            return "other"
+        return "other"
 
     def _apply_cantrip_effect(
         self,
@@ -1880,7 +1876,7 @@ class SAIProcessor:
         available_units: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
         """Apply targeting restrictions based on SAI rules and fullest extent rule."""
-        sai_name = targeting_request.sai_name.lower()
+        targeting_request.sai_name.lower()
 
         # Check if this army/unit has already been targeted by multiply/divide SAIs
         restricted_units = []
@@ -1943,11 +1939,9 @@ class SAIProcessor:
 
         for army_id, army_units in all_armies.items():
             # Filter by army type (attacking/defending/any)
-            if target_army_type == "defending" and "defending" not in army_id.lower():
+            if target_army_type == "defending" and "defending" not in army_id.lower() or target_army_type == "attacking" and "attacking" not in army_id.lower():
                 continue
-            elif target_army_type == "attacking" and "attacking" not in army_id.lower():
-                continue
-            elif target_army_type == "any":
+            if target_army_type == "any":
                 pass  # All armies are valid
 
             # Filter units at current terrain

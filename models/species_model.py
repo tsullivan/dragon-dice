@@ -91,7 +91,7 @@ class SpeciesModel:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SpeciesModel":
-        abilities_data = strict_get_optional(data, "abilities", [])
+        abilities_data: List[Dict[str, Any]] = strict_get_optional(data, "abilities", [])
         abilities = [SpeciesAbility.from_dict(ability_dict) for ability_dict in abilities_data]
         return cls(
             name=strict_get(data, "name", "SpeciesModel"),

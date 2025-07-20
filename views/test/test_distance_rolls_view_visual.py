@@ -1,8 +1,8 @@
 import pytest
 
+from models.test.mock import create_player_setup_dict
 from test.utils.visual_test_helpers import capture_widget_screenshot
 from views.distance_rolls_view import DistanceRollsView
-from models.test.mock import create_player_setup_dict
 
 
 def test_distance_rolls_view_render(qtbot):

@@ -17,23 +17,21 @@ Benefits:
 """
 
 # Re-export commonly used mock functions for convenience
-from .unit_mock import create_unit_dict, create_unit_instance, create_minimal_unit_dict, create_army_units_list
-
 from .army_mock import (
     create_army_dict,
-    create_home_army_dict,
     create_campaign_army_dict,
+    create_home_army_dict,
     create_horde_army_dict,
-    create_player_armies_dict,
     create_minimal_army_dict,
+    create_player_armies_dict,
 )
-
 from .player_mock import (
-    create_player_setup_dict,
-    create_two_player_setup,
-    create_player_with_dragons,
     create_minimal_player_setup,
+    create_player_setup_dict,
+    create_player_with_dragons,
+    create_two_player_setup,
 )
+from .unit_mock import create_army_units_list, create_minimal_unit_dict, create_unit_dict, create_unit_instance
 
 __all__ = [
     # Unit mocks

@@ -4,10 +4,11 @@ Creates actual model instances with full type checking, bypassing dict-based cre
 """
 
 from typing import List, Optional
-from models.unit_model import UnitModel
+
+from models.army_model import ArmyModel
 from models.die_face_model import DieFaceModel
 from models.species_model import SPECIES_DATA
-from models.army_model import ArmyModel
+from models.unit_model import UnitModel
 
 
 def create_test_die_face(

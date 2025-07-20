@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import MagicMock, Mock, patch
 
 import constants
-from game_logic.engine import GameEngine
-from models.test.mock import create_player_setup_dict, create_army_dict
+from game_logic.game_orchestrator import GameOrchestrator as GameEngine
+from models.test.mock import create_army_dict, create_player_setup_dict
 
 
 class TestEngineIntegration(unittest.TestCase):
